@@ -6,6 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AuthException extends RuntimeException{
-
     private final AuthErrorResult errorResult;
 }

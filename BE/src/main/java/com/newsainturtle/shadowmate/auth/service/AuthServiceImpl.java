@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
 
@@ -18,10 +18,11 @@ public class AuthServiceImpl implements AuthService{
     public void certifyEmail(CertifyEmailRequest certifyEmailRequest) {
         String email = certifyEmailRequest.getEmail();
         User user = userRepository.findByEmail(email);
-        if(user!=null) {
+      
+      if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
         }
 
-        // **구현 필요: 이메일 인증 전송**
+        // ** 구현 필요: 이메일 인증 번호 전송
     }
 }

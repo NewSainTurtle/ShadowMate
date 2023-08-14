@@ -55,4 +55,9 @@ public class User {
         this.withdrawal = withdrawal;
         this.plannerAccessScope = plannerAccessScope;
     }
+
+    public void setPassword(String password){
+        this.password = new BCryptPasswordEncoder().encode(password);
+    }
+  
 }

@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PlannerAccessScope {
     PUBLIC("전체공개"),
-    PRIVATE("비공개"),
     FOLLOW("친구공개"),
+    PRIVATE("비공개"),
     ;
 
     private final String scope;
