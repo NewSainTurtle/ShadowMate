@@ -3,7 +3,6 @@ package com.newsainturtle.shadowmate.user.entity;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
@@ -16,7 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private Long userId;
 
     @Column(length = 30, unique = true, nullable = false)
@@ -60,4 +59,5 @@ public class User {
     public void setPassword(String password){
         this.password = new BCryptPasswordEncoder().encode(password);
     }
+  
 }

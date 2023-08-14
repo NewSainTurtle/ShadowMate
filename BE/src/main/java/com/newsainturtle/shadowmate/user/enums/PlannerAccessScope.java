@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.user.enums;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -18,11 +18,11 @@ public class AuthServiceImpl implements AuthService {
     public void certifyEmail(CertifyEmailRequest certifyEmailRequest) {
         String email = certifyEmailRequest.getEmail();
         User user = userRepository.findByEmail(email);
-        if (user != null) {
+      
+      if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
         }
 
         // ** 구현 필요: 이메일 인증 번호 전송
-
     }
 }
