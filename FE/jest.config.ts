@@ -17,10 +17,9 @@ const jestConfig: JestConfigWithTsJest = {
   moduleNameMapper: {
     "\\.(css|scss)$": "identity-obj-proxy",
     "^@api/(.*)$": "<rootDir>/src/api/$1",
-    "^@hooks/(.*)$": "<rootDir>/src/hooks/$1",
     "^@assets/(.*)$": "<rootDir>/src/assets/$1",
     "^@components/(.*)$": "<rootDir>/src/components/$1",
-    "^@features/(.*)$": "<rootDir>/src/features/$1",
+    "^@hooks/(.*)$": "<rootDir>/src/hooks/$1",
     "^@pages/(.*)$": "<rootDir>/src/pages/$1",
     "^@store/(.*)$": "<rootDir>/src/store/$1",
     "^@styles/(.*)$": "<rootDir>/src/styles/$1",
