@@ -102,6 +102,26 @@ class AuthControllerTest {
     }
 
     @Test
+    public void 실패_이메일전송실패() throws Exception {
+        //given
+        final String url = "/api/auth/email-certificated";
+        final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+                .email("test1234@test.com")
+                .build();
+        doThrow(new AuthException(AuthErrorResult.FAIL_SEND_EMAIL)).when(authServiceImpl).certifyEmail(any());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(certifyEmailRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isInternalServerError());
+    }
+
+    @Test
     public void 성공_이메일중복아님() throws Exception {
         //given
         final String url = "/api/auth/email-certificated";
