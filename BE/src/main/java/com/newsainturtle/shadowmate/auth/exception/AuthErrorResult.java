@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum AuthErrorResult {
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST,"중복된 이메일입니다."),
+    FAIL_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR,"메시지 전송 실패")
     ;
 
     private final HttpStatus httpStatus;
