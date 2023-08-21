@@ -32,9 +32,9 @@ public class AuthServiceImpl implements AuthService {
         String email = certifyEmailRequest.getEmail();
         User user = userRepository.findByEmail(email);
 
-        if (user != null) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
-        }
+      if (user != null) {
+          throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
+      }
 
         try {
             mailSender.send(createMessage(email));
