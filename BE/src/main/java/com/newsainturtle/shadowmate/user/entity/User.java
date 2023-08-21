@@ -2,7 +2,6 @@ package com.newsainturtle.shadowmate.user.entity;
 
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
