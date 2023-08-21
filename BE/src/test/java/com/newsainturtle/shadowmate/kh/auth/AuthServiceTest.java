@@ -68,6 +68,7 @@ public class AuthServiceTest {
         public void 성공_이메일중복아님() {
             //given
             doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(message).when(emailSender).createMimeMessage();
             final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("test1234@naver.com").build();
 
             //when
@@ -84,19 +85,6 @@ public class AuthServiceTest {
                 System.out.println(code);
                 assertThat(code.length()).isEqualTo(6);
             }
-        }
-
-        @Test
-        public void 이메일코드검증() {
-            //given
-            doReturn(null).when(userRepository).findByEmail(email);
-            doReturn(message).when(emailSender).createMimeMessage();
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("test1234@naver.com").build();
-
-            //when
-            authServiceImpl.certifyEmail(certifyEmailRequest);
-
-            //then
         }
 
         private String createRandomCode() {
