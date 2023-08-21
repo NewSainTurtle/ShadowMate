@@ -3,21 +3,22 @@ package com.newsainturtle.shadowmate.kh.auth;
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
-import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+
+import javax.mail.internet.MimeMessage;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
@@ -30,6 +31,12 @@ public class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private JavaMailSender emailSender;
+
+    @Mock
+    private MimeMessage message;
 
     private final String email = "test1234@naver.com";
     private final User user = User.builder()
@@ -61,6 +68,7 @@ public class AuthServiceTest {
         public void 성공_이메일중복아님() {
             //given
             doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(message).when(emailSender).createMimeMessage();
             final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("test1234@naver.com").build();
 
             //when
@@ -69,5 +77,19 @@ public class AuthServiceTest {
             //then
 
         }
+
+        @Test
+        public void 랜덤숫자생성() {
+            for(int i=0; i<10; i++) {
+                String code = createRandomCode();
+                System.out.println(code);
+                assertThat(code.length()).isEqualTo(6);
+            }
+        }
+
+        private String createRandomCode() {
+            return String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
+        }
+
     }
 }
