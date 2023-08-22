@@ -1,9 +1,11 @@
 package com.newsainturtle.shadowmate.auth.service;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +43,18 @@ public class AuthServiceImpl implements AuthService {
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new AuthException(AuthErrorResult.FAIL_SEND_EMAIL);
         }
+    }
+
+    @Override
+    public void join(JoinRequest joinRequest) {
+        User userEntity =
+                User.builder()
+                        .email(joinRequest.getEmail())
+                        .password(joinRequest.getPassword())
+                        .nickname(joinRequest.getNickname())
+                        .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                        .build();
+        userRepository.save(userEntity);
     }
 
     public MimeMessage createMessage(String email) throws MessagingException, UnsupportedEncodingException {
