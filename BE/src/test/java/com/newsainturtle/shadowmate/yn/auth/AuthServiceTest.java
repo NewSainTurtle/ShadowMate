@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.yn.auth;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
@@ -19,7 +20,7 @@ import javax.mail.internet.MimeMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
@@ -79,7 +80,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_코드생성(){
+        public void 성공_코드생성() {
             //given
 
             //when
@@ -87,6 +88,52 @@ public class AuthServiceTest {
 
             //then
             assertThat(code.length()).isEqualTo(6);
+        }
+    }
+
+    @Nested
+    class 회원가입 {
+        @Test
+        public void 실패_이메일중복() {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email(email)
+                    .nickname("테스트중")
+                    .password("test1234")
+                    .build();
+            doReturn(user).when(userRepository).findByEmail(joinRequest.getEmail());
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.join(joinRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(joinRequest.getEmail());
+            verify(userRepository, times(0)).save(any(User.class));
+        }
+
+        @Test
+        public void 성공_회원가입() {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email(email)
+                    .nickname("테스트중")
+                    .password("test1234")
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(joinRequest.getEmail());
+            doReturn(user).when(userRepository).save(any(User.class));
+
+            //when
+            authServiceImpl.join(joinRequest);
+
+            //then
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(joinRequest.getEmail());
+            verify(userRepository, times(1)).save(any(User.class));
         }
     }
 
