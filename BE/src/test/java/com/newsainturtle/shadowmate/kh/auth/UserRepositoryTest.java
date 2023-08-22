@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.kh.auth;
 
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -33,9 +35,7 @@ public class UserRepositoryTest {
             final User user = User.builder()
                     .email("test1234@naver.com")
                     .password("12345")
-                    .socialLogin(false)
                     .nickname("거북이")
-                    .withdrawal(false)
                     .plannerAccessScope(PlannerAccessScope.PUBLIC)
                     .build();
             userRepository.save(user);
@@ -60,6 +60,32 @@ public class UserRepositoryTest {
 
             //then
             assertThat(result).isNull();
+        }
+
+        @Test
+        void 성공_회원가입() {
+            // given
+            final JoinRequest joinRequest =
+                    JoinRequest.builder()
+                            .email("test@test.com")
+                            .password("1234")
+                            .nickname("닉")
+                            .build();
+            final User userEntity =
+                    User.builder()
+                            .email(joinRequest.getEmail())
+                            .password(joinRequest.getPassword())
+                            .nickname(joinRequest.getNickname())
+                            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                            .build();
+            // when
+            final User user = userRepository.save(userEntity);
+
+            // then
+            assertThat(user.getEmail()).isEqualTo(joinRequest.getEmail());
+            assertThat(user.getNickname()).isEqualTo(joinRequest.getNickname());
+            assertThat(new BCryptPasswordEncoder().matches(
+                    joinRequest.getPassword(), user.getPassword())).isTrue();
         }
     }
 }
