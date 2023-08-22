@@ -3,6 +3,8 @@ package com.newsainturtle.shadowmate.kh.auth;
 import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.controller.AuthController;
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
+import com.newsainturtle.shadowmate.auth.dto.JoinResponse;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
@@ -47,9 +49,7 @@ public class AuthControlloerTest {
     final User user = User.builder()
             .email("test1234@naver.com")
             .password("12345")
-            .socialLogin(false)
             .nickname("거북이")
-            .withdrawal(false)
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
 
@@ -127,6 +127,34 @@ public class AuthControlloerTest {
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
                         .content(gson.toJson(certifyEmailRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void 성공_회원가입() throws Exception {
+        //given
+        final String url = "/api/auth/join";
+        final JoinRequest joinRequest =
+                JoinRequest.builder()
+                        .email("test@test.com")
+                        .password("1234")
+                        .nickname("닉")
+                        .build();
+        final JoinResponse joinResponse =
+                JoinResponse.builder()
+                        .email(joinRequest.getEmail())
+                        .nickname(joinRequest.getNickname())
+                        .build();
+        doReturn(joinResponse).when(authServiceImpl).join(any());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(joinRequest))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
