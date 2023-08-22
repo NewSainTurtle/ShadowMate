@@ -16,9 +16,11 @@ public class JoinRequest {
     @NotNull
     String email;
 
+    @NotNull
     @Size(min = 6, max = 20, message = "비밀번호는 6~20자로 입력해야합니다.")
     String password;
 
+    @NotNull
     @Size(min = 2, max = 10, message = "닉네임는 2~10자로 입력해야합니다.")
     String nickname;
 
