@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.kh.auth;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
@@ -21,6 +22,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,9 +44,7 @@ public class AuthServiceTest {
     private final User user = User.builder()
             .email("test1234@naver.com")
             .password("12345")
-            .socialLogin(false)
             .nickname("거북이")
-            .withdrawal(false)
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
 
@@ -85,6 +85,32 @@ public class AuthServiceTest {
                 System.out.println(code);
                 assertThat(code.length()).isEqualTo(6);
             }
+        }
+
+        @Test
+        void 성공_회원가입() {
+            //given
+            final JoinRequest joinRequest =
+                    JoinRequest.builder()
+                            .email("test@test.com")
+                            .password("1234")
+                            .nickname("닉")
+                            .build();
+            final User userEntity =
+                    User.builder()
+                            .email(joinRequest.getEmail())
+                            .password(joinRequest.getPassword())
+                            .nickname(joinRequest.getNickname())
+                            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                            .build();
+            doReturn(userEntity).when(userRepository).save(any(User.class));
+
+            //when
+            authServiceImpl.join(joinRequest);
+
+            //then
+            assertThat(userEntity.getEmail()).isEqualTo(joinRequest.getEmail());
+            assertThat(userEntity.getNickname()).isEqualTo(joinRequest.getNickname());
         }
 
         private String createRandomCode() {

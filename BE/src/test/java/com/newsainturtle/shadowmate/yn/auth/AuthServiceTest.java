@@ -40,10 +40,8 @@ public class AuthServiceTest {
     private final User user = User.builder()
             .email("test@test.com")
             .password("123456")
-            .socialLogin(false)
             .nickname("거북이")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
-            .withdrawal(false)
             .build();
 
     @Nested
