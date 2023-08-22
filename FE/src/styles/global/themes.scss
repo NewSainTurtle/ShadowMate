@@ -1,7 +1,23 @@
 $color-white: #fff;
 $color-black: #000;
+$color-gray: (
+  color-gray-dark-1: #323232,
+  color-gray-dark-4: #b0b6b7,
+  color-gray-light-1: #f8f8f8,
+  color-gray-light-4: #b0b6b7,
+);
 $color-dark: #3b3b3e;
 $color-warning: #ff5f5f;
+
+:export {
+  @each $key, $value in $color-gray {
+    #{$key}: $value;
+  }
+  color-white: #fff;
+  color-black: $color-black;
+  color-dark: $color-dark;
+  color-warning: #ff5f5f;
+}
 
 html[data-theme="light"] {
   --color-background: #{$color-white};
