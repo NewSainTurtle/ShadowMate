@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styles from "@styles/Main.module.scss";
+import Text from "@components/common/Text";
+import themes from "@styles/global/themes.scss";
 
 const MainPage = () => {
   const [number, setNumber] = useState<number>(0);
@@ -12,6 +14,7 @@ const MainPage = () => {
         <h4>number: {number}</h4>
         <button onClick={() => setNumber(number + 3)}>증가</button>
         <button onClick={() => setNumber(number - 2)}>감소</button>
+        <Text value="어쩌구~" type="groupTitle" color="colorWarning" />
       </div>
     </>
   );
