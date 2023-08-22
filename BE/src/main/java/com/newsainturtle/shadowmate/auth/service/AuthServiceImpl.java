@@ -1,14 +1,17 @@
 package com.newsainturtle.shadowmate.auth.service;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,6 +22,7 @@ import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -28,19 +32,43 @@ public class AuthServiceImpl implements AuthService {
     private String serverEmail;
 
     @Override
-    public void certifyEmail(CertifyEmailRequest certifyEmailRequest) {
+    public void certifyEmail(final CertifyEmailRequest certifyEmailRequest) {
         String email = certifyEmailRequest.getEmail();
         User user = userRepository.findByEmail(email);
 
-      if (user != null) {
-          throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
-      }
+        if (user != null) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
+        }
 
         try {
             mailSender.send(createMessage(email));
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new AuthException(AuthErrorResult.FAIL_SEND_EMAIL);
         }
+    }
+
+    @Override
+    @Transactional
+    public void join(final JoinRequest joinRequest) {
+        String email = joinRequest.getEmail();
+        String nickname = joinRequest.getNickname();
+        String password = joinRequest.getPassword();
+        User user = userRepository.findByEmail(email);
+
+        if (user != null) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
+        }
+
+        user = User.builder()
+                .email(email)
+                .password(password)
+                .socialLogin(false)
+                .nickname(nickname)
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+
+        userRepository.save(user);
     }
 
     public MimeMessage createMessage(String email) throws MessagingException, UnsupportedEncodingException {
