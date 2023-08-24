@@ -41,10 +41,12 @@ public class AuthServiceTest {
     private MimeMessage message;
 
     private final String email = "test1234@naver.com";
-    private final User user = User.builder()
+    final User user = User.builder()
             .email("test1234@naver.com")
             .password("12345")
+            .socialLogin(false)
             .nickname("거북이")
+            .withdrawal(false)
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
 

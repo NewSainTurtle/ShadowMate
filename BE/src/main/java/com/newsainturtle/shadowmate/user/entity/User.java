@@ -45,14 +45,15 @@ public class User {
     private PlannerAccessScope plannerAccessScope;
 
     @Builder
-    public User(String email, String password, String profileImage, String nickname, String statusMessage, PlannerAccessScope plannerAccessScope) {
+    public User(Long userId, String email, String password, Boolean socialLogin, String profileImage, String nickname, String statusMessage, Boolean withdrawal, PlannerAccessScope plannerAccessScope) {
+        this.userId = userId;
         this.email = email;
         this.password = new BCryptPasswordEncoder().encode(password);
-        this.socialLogin = false;
+        this.socialLogin = socialLogin;
         this.profileImage = profileImage;
         this.nickname = nickname;
         this.statusMessage = statusMessage;
-        this.withdrawal = false;
+        this.withdrawal = withdrawal;
         this.plannerAccessScope = plannerAccessScope;
     }
 

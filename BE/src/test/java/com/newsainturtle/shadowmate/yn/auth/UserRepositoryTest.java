@@ -27,8 +27,10 @@ public class UserRepositoryTest {
             final User user = User.builder()
                     .email("test1234@naver.com")
                     .password("123456")
+                    .socialLogin(false)
                     .nickname("거북이")
                     .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
                     .build();
             userRepository.save(user);
 
