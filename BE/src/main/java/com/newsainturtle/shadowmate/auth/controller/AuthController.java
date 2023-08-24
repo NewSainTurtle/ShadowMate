@@ -34,5 +34,4 @@ public class AuthController {
         authServiceImpl.join(joinRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_JOIN));
     }
-
 }

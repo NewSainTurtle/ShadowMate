@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface AuthService {
-    void certifyEmail(CertifyEmailRequest certifyEmailRequest);
+  
+    void certifyEmail(final CertifyEmailRequest certifyEmailRequest);
 
     void join(JoinRequest joinRequest);
 }
