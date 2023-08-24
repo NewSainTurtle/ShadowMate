@@ -146,12 +146,6 @@ public class AuthControlloerTest {
                         .password("1234")
                         .nickname("닉")
                         .build();
-        final JoinResponse joinResponse =
-                JoinResponse.builder()
-                        .email(joinRequest.getEmail())
-                        .nickname(joinRequest.getNickname())
-                        .build();
-        doReturn(joinResponse).when(authServiceImpl).join(any());
 
         //when
         final ResultActions resultActions = mockMvc.perform(
