@@ -1,36 +1,29 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import styles from "@styles/common/Text.module.scss";
-import colors, { ColorsKeyTypes } from "src/util/colors";
 
 interface Props {
-  value: string;
-  type?: "smallText" | "caption" | "text" | "groupTitle" | "textTitle" | "pageTitle" | "title";
+  children: ReactNode;
+  type?: "small" | "default" | "semi-medium" | "medium" | "semi-large" | "large";
   bold?: boolean;
-  color?: ColorsKeyTypes;
-  en?: boolean;
 }
 
-const Text = ({ value, type = "text", bold, color = "colorBlack", en }: Props) => {
-  console.log(color);
+const Text = ({ type = "default", bold, children }: Props) => {
   const style = {
-    fontFamily: en ? "Montserrat" : "Pretendard-Regular",
     fontWeight: bold ? "600" : "400",
-    color: colors[color],
   };
 
   return (
     <>
-      <span className={`${styles[type]}`} style={style}>
-        {value}
+      <span className={`${styles[`text-${type}`]}`} style={style}>
+        {children}
       </span>
     </>
   );
 };
 
 Text.defaultProps = {
-  value: "내용이 들어갑니다.",
-  type: "text",
-  color: "black",
+  children: "내용이 들어갑니다.",
+  type: "default",
 };
 
 export default Text;
