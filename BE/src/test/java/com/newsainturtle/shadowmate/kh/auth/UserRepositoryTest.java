@@ -77,11 +77,14 @@ public class UserRepositoryTest {
                     User.builder()
                             .email(joinRequest.getEmail())
                             .password(joinRequest.getPassword())
+                            .socialLogin(false)
                             .nickname(joinRequest.getNickname())
                             .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                            .withdrawal(false)
                             .build();
+
             // when
-            final User user = userRepository.save(userEntity);
+            User user = userRepository.save(userEntity);
 
             // then
             assertThat(user.getEmail()).isEqualTo(joinRequest.getEmail());
