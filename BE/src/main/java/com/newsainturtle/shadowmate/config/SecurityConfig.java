@@ -1,20 +1,60 @@
 package com.newsainturtle.shadowmate.config;
 
+import com.newsainturtle.shadowmate.config.jwt.JwtAuthenticationFilter;
+import com.newsainturtle.shadowmate.config.jwt.JwtAuthorizationFilter;
+import com.newsainturtle.shadowmate.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CorsFilter corsFilter;
+
+    private final UserRepository userRepository;
+
+    private static final String[] PERMIT_ALL_URL_ARRAY = {
+            "/api/auth/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.authorizeRequests()
-                .anyRequest()
-                .permitAll()
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .apply(new CustomFilter())
+                .and()
+                .authorizeRequests(authorize -> authorize
+                        .antMatchers(PERMIT_ALL_URL_ARRAY).permitAll()
+                        .anyRequest().authenticated())
                 ;
+
         return http.build();
+    }
+
+    public class CustomFilter extends AbstractHttpConfigurer<CustomFilter, HttpSecurity> {
+
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager);
+            jwtAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
+            http.addFilter(corsFilter)
+                    .addFilter(jwtAuthenticationFilter)
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
+        }
     }
 }

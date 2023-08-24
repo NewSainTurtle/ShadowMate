@@ -48,7 +48,7 @@ public class User {
     public User(Long userId, String email, String password, Boolean socialLogin, String profileImage, String nickname, String statusMessage, Boolean withdrawal, PlannerAccessScope plannerAccessScope) {
         this.userId = userId;
         this.email = email;
-        this.password = new BCryptPasswordEncoder().encode(password);
+        this.password = password;
         this.socialLogin = socialLogin;
         this.profileImage = profileImage;
         this.nickname = nickname;
@@ -56,9 +56,4 @@ public class User {
         this.withdrawal = withdrawal;
         this.plannerAccessScope = plannerAccessScope;
     }
-
-    public void setPassword(String password){
-        this.password = new BCryptPasswordEncoder().encode(password);
-    }
-  
 }

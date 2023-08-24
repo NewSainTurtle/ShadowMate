@@ -10,6 +10,7 @@ import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Value("${spring.mail.username}")
     private String serverEmail;
@@ -52,9 +54,11 @@ public class AuthServiceImpl implements AuthService {
         User userEntity =
                 User.builder()
                         .email(email)
-                        .password(joinRequest.getPassword())
+                        .password(bCryptPasswordEncoder.encode(joinRequest.getPassword()))
                         .nickname(joinRequest.getNickname())
+                        .socialLogin(false)
                         .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                        .withdrawal(false)
                         .build();
         userRepository.save(userEntity);
     }
