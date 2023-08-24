@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.auth.controller;
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,4 +29,9 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.from(SEND_CERTIFICATION_CODE));
     }
 
+    @PostMapping("/join")
+    public ResponseEntity<BaseResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
+        authServiceImpl.join(joinRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_JOIN));
+    }
 }

@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.user.entity;
 
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
@@ -17,7 +18,7 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(length = 30, unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(length = 60, nullable = false)
@@ -36,6 +37,7 @@ public class User {
     private String statusMessage;
 
     @Column(nullable = false)
+    @ColumnDefault("false")
     private Boolean withdrawal;
 
     @Column(name = "planner_access_scope")

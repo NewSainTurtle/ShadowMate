@@ -1,14 +1,17 @@
 package com.newsainturtle.shadowmate.auth.service;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,6 +22,7 @@ import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -28,18 +32,37 @@ public class AuthServiceImpl implements AuthService {
     private String serverEmail;
 
     @Override
-    public void certifyEmail(CertifyEmailRequest certifyEmailRequest) {
+    public void certifyEmail(final CertifyEmailRequest certifyEmailRequest) {
         String email = certifyEmailRequest.getEmail();
-        User user = userRepository.findByEmail(email);
-
-      if (user != null) {
-          throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
-      }
+        checkDuplicatedEmail(email);
 
         try {
             mailSender.send(createMessage(email));
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new AuthException(AuthErrorResult.FAIL_SEND_EMAIL);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void join(JoinRequest joinRequest) {
+        String email = joinRequest.getEmail();
+        checkDuplicatedEmail(email);
+
+        User userEntity =
+                User.builder()
+                        .email(email)
+                        .password(joinRequest.getPassword())
+                        .nickname(joinRequest.getNickname())
+                        .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                        .build();
+        userRepository.save(userEntity);
+    }
+
+    private void checkDuplicatedEmail(String email){
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
         }
     }
 
