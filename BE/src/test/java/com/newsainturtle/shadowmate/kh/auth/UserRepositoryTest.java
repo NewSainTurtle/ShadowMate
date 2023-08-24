@@ -84,7 +84,7 @@ public class UserRepositoryTest {
                             .build();
 
             // when
-            User user = userRepository.save(userEntity);
+            final User user = userRepository.save(userEntity);
 
             // then
             assertThat(user.getEmail()).isEqualTo(joinRequest.getEmail());
