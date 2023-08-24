@@ -1,7 +1,6 @@
 package com.newsainturtle.shadowmate.auth.controller;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
-import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +27,4 @@ public class AuthController {
         authServiceImpl.certifyEmail(certifyEmailRequest);
         return ResponseEntity.ok(BaseResponse.from(SEND_CERTIFICATION_CODE));
     }
-
-    @PostMapping("/join")
-    public ResponseEntity<BaseResponse> join(@RequestBody @Valid final JoinRequest joinRequest) {
-        authServiceImpl.join(joinRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_JOIN));
-    }
-
 }
