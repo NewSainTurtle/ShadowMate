@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    @Transactional
     @Override
     public void join(JoinRequest joinRequest) {
         User userEntity =
