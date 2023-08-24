@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.controller.AuthController;
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
-import com.newsainturtle.shadowmate.auth.dto.JoinResponse;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
@@ -24,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -143,8 +141,8 @@ public class AuthControlloerTest {
         final JoinRequest joinRequest =
                 JoinRequest.builder()
                         .email("test@test.com")
-                        .password("1234")
-                        .nickname("닉")
+                        .password("123456")
+                        .nickname("닉네임")
                         .build();
 
         //when

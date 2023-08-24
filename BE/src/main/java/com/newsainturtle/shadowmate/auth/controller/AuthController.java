@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<BaseResponse> join(@RequestBody JoinRequest joinRequest) {
+    public ResponseEntity<BaseResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
         authServiceImpl.join(joinRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_JOIN));
     }

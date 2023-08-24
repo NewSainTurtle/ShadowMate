@@ -34,11 +34,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void certifyEmail(final CertifyEmailRequest certifyEmailRequest) {
         String email = certifyEmailRequest.getEmail();
-        User user = userRepository.findByEmail(email);
-
-        if (user != null) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
-        }
+        checkDuplicatedEmail(email);
 
         try {
             mailSender.send(createMessage(email));
@@ -50,14 +46,24 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public void join(JoinRequest joinRequest) {
+        String email = joinRequest.getEmail();
+        checkDuplicatedEmail(email);
+
         User userEntity =
                 User.builder()
-                        .email(joinRequest.getEmail())
+                        .email(email)
                         .password(joinRequest.getPassword())
                         .nickname(joinRequest.getNickname())
                         .plannerAccessScope(PlannerAccessScope.PUBLIC)
                         .build();
         userRepository.save(userEntity);
+    }
+
+    private void checkDuplicatedEmail(String email){
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
+        }
     }
 
     public MimeMessage createMessage(String email) throws MessagingException, UnsupportedEncodingException {
