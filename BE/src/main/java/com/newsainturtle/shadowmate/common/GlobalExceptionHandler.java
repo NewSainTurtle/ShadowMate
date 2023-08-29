@@ -2,8 +2,6 @@ package com.newsainturtle.shadowmate.common;
 
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -53,13 +51,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorResponse> makeAuthErrorResponseEntity(final AuthErrorResult errorResult) {
         return ResponseEntity.status(errorResult.getHttpStatus())
                 .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    static class ErrorResponse {
-        private final String code;
-        private final String message;
     }
 
 }
