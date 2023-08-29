@@ -6,11 +6,7 @@ import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -34,4 +30,5 @@ public class AuthController {
         authServiceImpl.join(joinRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_JOIN));
     }
+
 }
