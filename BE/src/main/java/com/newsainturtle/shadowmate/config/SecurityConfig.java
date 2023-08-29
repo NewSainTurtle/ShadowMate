@@ -1,10 +1,11 @@
 package com.newsainturtle.shadowmate.config;
 
+import com.newsainturtle.shadowmate.config.jwt.JwtException;
 import com.newsainturtle.shadowmate.config.jwt.JwtAuthenticationFilter;
 import com.newsainturtle.shadowmate.config.jwt.JwtAuthorizationFilter;
+import com.newsainturtle.shadowmate.config.jwt.JwtProvider;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,10 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
 
+    private final JwtProvider jwtProvider;
+
+    private final JwtException jwtException;
+
     private static final String[] PERMIT_ALL_URL_ARRAY = {
             "/api/auth/**"
     };
@@ -36,6 +41,8 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .apply(new CustomFilter())
+                .and()
+                .exceptionHandling().authenticationEntryPoint(jwtException)
                 .and()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(PERMIT_ALL_URL_ARRAY).permitAll()
@@ -50,11 +57,11 @@ public class SecurityConfig {
         @Override
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager,jwtProvider);
             jwtAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
             http.addFilter(corsFilter)
                     .addFilter(jwtAuthenticationFilter)
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository,jwtProvider));
         }
     }
 }
