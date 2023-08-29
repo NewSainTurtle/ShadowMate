@@ -1,9 +1,9 @@
 package com.newsainturtle.shadowmate.user.entity;
 
+import com.newsainturtle.shadowmate.common.entity.CommonEntity;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 
@@ -11,12 +11,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "user")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+@AttributeOverride(name = "id", column = @Column(name= "user_id"))
+public class User extends CommonEntity {
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -45,8 +41,7 @@ public class User {
     private PlannerAccessScope plannerAccessScope;
 
     @Builder
-    public User(Long userId, String email, String password, Boolean socialLogin, String profileImage, String nickname, String statusMessage, Boolean withdrawal, PlannerAccessScope plannerAccessScope) {
-        this.userId = userId;
+    public User(String email, String password, Boolean socialLogin, String profileImage, String nickname, String statusMessage, Boolean withdrawal, PlannerAccessScope plannerAccessScope) {
         this.email = email;
         this.password = password;
         this.socialLogin = socialLogin;
