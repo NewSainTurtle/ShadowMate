@@ -1,12 +1,8 @@
 package com.newsainturtle.shadowmate.config.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.newsainturtle.shadowmate.common.util.JwtUtil;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,29 +19,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
 
-    @Value("${shadowmate.jwt.secret}")
-    private String secret;
+    private JwtProvider jwtProvider;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtProvider jwtProvider) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String jwtHeader = request.getHeader(JwtUtil.HEADER_STRING);
-        if (jwtHeader == null || !jwtHeader.startsWith(JwtUtil.TOKEN_PREFIX)) {
+        if(!jwtProvider.validateHeader(request)) {
             chain.doFilter(request, response);
             return;
         }
-
-        String jwtToken = jwtHeader.replace(JwtUtil.TOKEN_PREFIX, "");
-        String email = JWT.require(Algorithm.HMAC512(secret))
-                .build()
-                .verify(jwtToken)
-                .getClaim("email")
-                .asString();
-
+        String email = jwtProvider.validateToken(request);
         if (email != null) {
             User userEntity = userRepository.findByEmail(email);
 
