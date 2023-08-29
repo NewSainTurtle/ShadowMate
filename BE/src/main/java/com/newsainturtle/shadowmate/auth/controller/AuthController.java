@@ -31,9 +31,4 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_JOIN));
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<BaseResponse> test() {
-        return ResponseEntity.ok(BaseResponse.from("test"));
-    }
-
 }
