@@ -2,16 +2,16 @@ import React, { DOMAttributes, ReactNode } from "react";
 import styles from "@styles/common/Button.module.scss";
 import Text from "../Text";
 
-interface ButtonProps {
+interface Props {
   children: ReactNode;
-  type?: "gray" | "red" | "blue";
+  types?: "gray" | "red" | "blue";
   onClick?: DOMAttributes<HTMLDivElement>;
 }
 
-const Button = ({ children, type = "blue", onClick }: ButtonProps) => {
+const Button = ({ children, types = "blue", onClick }: Props) => {
   return (
-    <div className={`${styles.button} ${styles[`__${type}`]}`}>
-      <Text type="small">{children}</Text>
+    <div className={`${styles.button} ${styles[`__${types}`]}`}>
+      <Text types="small">{children}</Text>
     </div>
   );
 };

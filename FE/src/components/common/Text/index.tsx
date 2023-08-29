@@ -3,18 +3,18 @@ import styles from "@styles/common/Text.module.scss";
 
 interface Props {
   children: ReactNode;
-  type?: "small" | "default" | "semi-medium" | "medium" | "semi-large" | "large";
+  types?: "small" | "default" | "semi-medium" | "medium" | "semi-large" | "large";
   bold?: boolean;
 }
 
-const Text = ({ type = "default", bold, children }: Props) => {
+const Text = ({ types = "default", bold, children }: Props) => {
   const style = {
     fontWeight: bold ? "600" : "400",
   };
 
   return (
     <>
-      <span className={`${styles[`text-${type}`]}`} style={style}>
+      <span className={`${styles[`text-${types}`]}`} style={style}>
         {children}
       </span>
     </>
@@ -23,7 +23,7 @@ const Text = ({ type = "default", bold, children }: Props) => {
 
 Text.defaultProps = {
   children: "내용이 들어갑니다.",
-  type: "default",
+  types: "default",
 };
 
 export default Text;
