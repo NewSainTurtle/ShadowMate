@@ -1,13 +1,9 @@
 package com.newsainturtle.shadowmate.config.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newsainturtle.shadowmate.common.util.JwtUtil;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,18 +15,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
-    @Value("${shadowmate.jwt.secret}")
-    private String secret;
+    private JwtProvider jwtProvider;
 
-    @Value("${shadowmate.jwt.expires}")
-    private long expires;
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProvider jwtProvider) {
+        this.authenticationManager = authenticationManager;
+        this.jwtProvider = jwtProvider;
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -50,14 +46,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
-        String jwtToken = JWT.create()
-                .withSubject("ShadowMate 토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis() + expires))
-                .withClaim("id", principalDetails.getUser().getUserId())
-                .withClaim("email", principalDetails.getUser().getEmail())
-                .sign(Algorithm.HMAC512(secret));
-
-        response.addHeader(JwtUtil.HEADER_STRING, JwtUtil.TOKEN_PREFIX + jwtToken);
+        String jwtToken = jwtProvider.createToken(principalDetails);
+        jwtProvider.addTokenHeader(response, jwtToken);
     }
 
 }
