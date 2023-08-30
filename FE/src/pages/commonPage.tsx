@@ -29,6 +29,14 @@ const commonPage = () => {
       <div>
         <Dday>-127</Dday>
       </div>
+
+      <br />
+      <div style={{ width: "25em", display: "flex", flexDirection: "column" }}>
+        <Input placeholder="이메일" />
+        <Input types="password" placeholder="비밀번호" />
+        <Input types="search" placeholder="사용자 닉네임으로 검색" />
+      </div>
+      <br />
     </>
   );
 };
