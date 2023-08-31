@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.mail.internet.MimeMessage;
 
@@ -39,6 +40,9 @@ public class AuthServiceTest {
 
     @Mock
     private MimeMessage message;
+
+    @Mock
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final String email = "test1234@naver.com";
     final User user = User.builder()
@@ -103,7 +107,9 @@ public class AuthServiceTest {
                             .email(joinRequest.getEmail())
                             .password(joinRequest.getPassword())
                             .nickname(joinRequest.getNickname())
+                            .socialLogin(false)
                             .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                            .withdrawal(false)
                             .build();
             doReturn(userEntity).when(userRepository).save(any(User.class));
 
