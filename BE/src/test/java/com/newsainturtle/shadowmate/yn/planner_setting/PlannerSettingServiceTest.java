@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CategoryServiceTest {
+class PlannerSettingServiceTest {
 
     @InjectMocks
     PlannerSettingServiceImpl plannerSettingService;
