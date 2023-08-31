@@ -1,4 +1,4 @@
-.container {
+.profile_container {
   display: flex;
   flex-direction: row;
 
@@ -8,31 +8,32 @@
   // background-color: aqua;
 }
 
-.img > img {
+.profile_img > img {
   height: 100%;
   margin-left: 0.8em;
   padding: 0.4em;
   box-sizing: border-box;
   border-radius: 50%;
+  cursor: pointer;
 }
 
-.profile {
+.profile_content {
   display: flex;
   flex-direction: column;
   justify-content: center;
   margin-left: 0.2em;
+  cursor: pointer;
 }
 
-.profile span:nth-child(1) {
+.profile_content span:nth-child(1) {
   margin-bottom: 0.2em;
 }
 
-.button {
+.profile_button {
   display: flex;
   align-items: center;
   margin-left: auto;
   margin-right: 0.8em;
-
   > button {
     justify-content: center;
     width: 6.2em;

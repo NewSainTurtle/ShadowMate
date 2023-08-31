@@ -44,6 +44,7 @@ const commonPage = () => {
       </div>
       <br />
       <div>
+        <FriendProfile types="기본" profile={profileInfo} />
         <FriendProfile types="삭제" profile={profileInfo} />
         <FriendProfile types="추가" profile={profileInfo} />
         <FriendProfile types="요청" profile={profileInfo} />
