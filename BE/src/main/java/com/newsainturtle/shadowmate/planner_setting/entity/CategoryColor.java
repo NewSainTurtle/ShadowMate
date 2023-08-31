@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.planner_setting.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +21,8 @@ public class CategoryColor {
     @Column(name = "category_color_name", length = 7, nullable = false)
     private String categoryColorCode;
 
+    @Builder
+    public CategoryColor(String categoryColorCode) {
+        this.categoryColorCode = categoryColorCode;
+    }
 }
