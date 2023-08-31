@@ -23,6 +23,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public void addCategory(Long userId, AddCategoryRequest addCategoryRequest) {
         final User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
