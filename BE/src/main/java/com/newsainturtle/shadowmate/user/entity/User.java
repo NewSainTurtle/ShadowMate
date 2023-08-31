@@ -3,10 +3,12 @@ package com.newsainturtle.shadowmate.user.entity;
 import com.newsainturtle.shadowmate.common.entity.CommonEntity;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
+@SuperBuilder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -39,16 +41,4 @@ public class User extends CommonEntity {
     @Column(name = "planner_access_scope")
     @Enumerated(EnumType.STRING)
     private PlannerAccessScope plannerAccessScope;
-
-    @Builder
-    public User(String email, String password, Boolean socialLogin, String profileImage, String nickname, String statusMessage, Boolean withdrawal, PlannerAccessScope plannerAccessScope) {
-        this.email = email;
-        this.password = password;
-        this.socialLogin = socialLogin;
-        this.profileImage = profileImage;
-        this.nickname = nickname;
-        this.statusMessage = statusMessage;
-        this.withdrawal = withdrawal;
-        this.plannerAccessScope = plannerAccessScope;
-    }
 }
