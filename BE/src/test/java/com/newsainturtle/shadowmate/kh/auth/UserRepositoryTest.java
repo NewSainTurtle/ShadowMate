@@ -92,8 +92,6 @@ public class UserRepositoryTest {
                             .build();
 
             // when
-            System.out.println(userEntity.getPassword());
-            System.out.println("bCryptPasswordEncoder = " + bCryptPasswordEncoder.encode("123456"));
             final User user = userRepository.save(userEntity);
 
             // then
