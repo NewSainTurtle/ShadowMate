@@ -88,7 +88,6 @@ public class AuthServiceTest {
         public void 랜덤숫자생성() {
             for(int i=0; i<10; i++) {
                 String code = createRandomCode();
-                System.out.println(code);
                 assertThat(code.length()).isEqualTo(6);
             }
         }
