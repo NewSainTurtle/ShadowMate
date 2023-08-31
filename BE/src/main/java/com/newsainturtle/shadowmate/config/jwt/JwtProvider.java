@@ -31,7 +31,7 @@ public class JwtProvider {
         return JWT.create()
                 .withSubject("ShadowMate 토큰")
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRES))
-                .withClaim("id", principalDetails.getUser().getUserId())
+                .withClaim("id", principalDetails.getUser().getId())
                 .withClaim("email", principalDetails.getUser().getEmail())
                 .sign(Algorithm.HMAC512(SECRETKEY));
     }
