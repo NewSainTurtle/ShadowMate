@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -49,7 +50,8 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     }
 
     @Override
-    public List<CategoryColor> getCategoryList() {
-        return categoryColorRepository.findAll();
+    public GetCategoryColorListResponse getCategoryList() {
+        List<CategoryColor> result = categoryColorRepository.findAll();
+        return GetCategoryColorListResponse.builder().categoryColorList(result).build();
     }
 }
