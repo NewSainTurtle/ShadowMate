@@ -4,9 +4,12 @@ import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingController;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
+import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -201,6 +205,68 @@ public class PlannerSettingControllerTest {
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    class 플래너공개여부설정 {
+        final Long userId = 1L;
+        final String url = "/api/planner-settings/{userId}/access-scopes";
+
+        @Test
+        public void 실패_없는사용자() throws Exception {
+            //given
+            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("비공개")
+                    .build();
+            doThrow(new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER)).when(plannerSettingServiceImpl).setAccessScope(any(Long.class), any(), any(SetAccessScopeRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(setAccessScopeRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_잘못된범위값() throws Exception {
+            //given
+            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("잘못된범위값")
+                    .build();
+            doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE)).when(plannerSettingServiceImpl).setAccessScope(any(Long.class), any(), any(SetAccessScopeRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(setAccessScopeRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 성공_플래너공개여부설정() throws Exception {
+            //given
+            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("비공개")
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(setAccessScopeRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
             );
 
             //then
