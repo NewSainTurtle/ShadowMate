@@ -163,6 +163,7 @@ class PlannerSettingServiceTest {
     @Nested
     class 플래너공개여부설정 {
         final User user = User.builder()
+                .id(1L)
                 .email("test@test.com")
                 .password("123456")
                 .socialLogin(SocialType.BASIC)
@@ -170,33 +171,49 @@ class PlannerSettingServiceTest {
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
                 .withdrawal(false)
                 .build();
-        final Long userId = 1L;
-        final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
-                .plannerAccessScope(PlannerAccessScope.FOLLOW)
-                .build();
 
         @Test
         public void 실패_없는사용자() {
             //given
-            doReturn(Optional.empty()).when(userRepository).findById(userId);
+            final Long userId = 2L;
+            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("비공개")
+                    .build();
 
             //when
-            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(userId, request));
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(userId, user, request));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.UNREGISTERED_USER);
         }
 
         @Test
-        public void 성공_플래너공개여부설정() {
+        public void 실패_잘못된범위값() {
             //given
-            doReturn(Optional.of(user)).when(userRepository).findById(userId);
+            final Long userId = 1L;
+            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("잘못된범위값")
+                    .build();
 
             //when
-            plannerSettingService.setAccessScope(userId, request);
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(userId, user, request));
 
             //then
-            verify(userRepository, times(1)).findById(userId);
+            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
+        }
+
+        @Test
+        public void 성공_플래너공개여부설정() {
+            //given
+            final Long userId = 1L;
+            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("비공개")
+                    .build();
+
+            //when
+            plannerSettingService.setAccessScope(userId, user, request);
+
+            //then
             verify(userRepository, times(1)).save(any(User.class));
         }
     }
