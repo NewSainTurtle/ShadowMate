@@ -8,6 +8,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +51,7 @@ public class AuthServiceTest {
     final User user = User.builder()
             .email("test1234@naver.com")
             .password("12345")
-            .socialLogin(false)
+            .socialLogin(SocialType.BASIC)
             .nickname("거북이")
             .withdrawal(false)
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -115,7 +116,7 @@ public class AuthServiceTest {
                             .email(joinRequest.getEmail())
                             .password(joinRequest.getPassword())
                             .nickname(joinRequest.getNickname())
-                            .socialLogin(false)
+                            .socialLogin(SocialType.BASIC)
                             .plannerAccessScope(PlannerAccessScope.PUBLIC)
                             .withdrawal(false)
                             .build();
