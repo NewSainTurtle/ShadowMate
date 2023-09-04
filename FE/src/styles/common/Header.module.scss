@@ -1,31 +1,56 @@
+.header_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  width: 10em;
+  padding: 2em 0;
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  top: 0;
+  border-right: 1px solid var(--color-scroll);
+}
+
+.header_logo {
+  text-align: center;
+  > span {
+    font-family: "Sansita", sans-serif;
+    font-size: 1.5em;
+    font-style: italic;
+    font-weight: 800;
+  }
+}
+
+.header_profile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu_item {
+  display: flex;
+  margin: 0.5em 0;
+  > svg {
+    font-size: large;
+    margin-right: 0.2em;
+  }
+}
+
 .toggle {
-  input[type="checkbox"] {
-    height: 0;
-    width: 0;
-    visibility: hidden;
-  }
+  margin-bottom: 1em;
+}
 
-  label {
-    cursor: pointer;
-    text-indent: -9999px;
-    width: 55px;
-    height: 30px;
-    background-color: var(--color-btn-blue);
-  }
-
-  label:after {
-  }
-
-  input:checked + label {
-    background: var(--color-btn-blue);
-  }
-
-  input:checked + label:after {
-    left: calc(100% - 5px);
-    -webkit-transform: translateX(-100%);
-    -moz-transform: translateX(-100%);
-    -ms-transform: translateX(-100%);
-    -o-transform: translateX(-100%);
-    transform: translateX(-100%);
+.toggle_icon {
+  > svg {
+    font-size: medium;
+    margin-right: -0.3em;
   }
 }

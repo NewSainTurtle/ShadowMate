@@ -23,6 +23,7 @@ const jestConfig: JestConfigWithTsJest = {
     "^@pages/(.*)$": "<rootDir>/src/pages/$1",
     "^@store/(.*)$": "<rootDir>/src/store/$1",
     "^@styles/(.*)$": "<rootDir>/src/styles/$1",
+    "^@util/(.*)$": "<rootDir>/src/util/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/setupTest.ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],

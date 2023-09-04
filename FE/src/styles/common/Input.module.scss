@@ -1,0 +1,47 @@
+$color-border: 2px solid var(--color-gray-3);
+$color-text-placeholder: var(--color-gray-4);
+$color-text: var(--color-text);
+$color-icon: var(--color-gray-5);
+
+input__underline {
+  border-bottom: $color-border;
+  color: $color-text-placeholder;
+  transition: none;
+}
+
+.input {
+  min-width: 15em;
+  width: 100%;
+
+  & input {
+    font-size: 1.125rem;
+    padding-left: 0.25em;
+    color: $color-text;
+
+    &::placeholder {
+      color: $color-text-placeholder;
+    }
+  }
+
+  & :before {
+    @extend input__underline;
+  }
+
+  & :hover:not(.Mui-disabled, .Mui-error):before {
+    @extend input__underline;
+  }
+
+  & :after {
+    @extend input__underline;
+  }
+}
+
+.input__icon {
+  color: $color-icon;
+  margin-left: 0.25rem;
+  margin-right: 0;
+
+  & * {
+    font-size: 1.3rem;
+  }
+}

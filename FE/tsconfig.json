@@ -8,7 +8,8 @@
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/pages/*"],
       "@store/*": ["src/store/*"],
-      "@styles/*": ["src/styles/*"]
+      "@styles/*": ["src/styles/*"],
+      "@util/*": ["src/util/*"]
     },
     "target": "es5",
     "module": "esnext",
