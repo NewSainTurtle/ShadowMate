@@ -21,29 +21,31 @@ const theme = createTheme({
 });
 
 const App = () => {
+  const pathName = ["/", "/login", "/signup"].includes(location.pathname);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "light");
   }, []);
 
   return (
     <ThemeProvider theme={theme}>
-      <Header />
-      <div id="App" style={{ marginLeft: "10em" }}>
+      {!pathName && <Header />}
+      <div id="App" style={pathName ? {} : { marginLeft: "10em" }}>
         <Routes>
           <Route path="/common" element={<CommonPage />} />
-          
+
           <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          
+
           <Route path="/day" element={<DayPage />} />
           <Route path="/week" element={<WeekPage />} />
           <Route path="/month" element={<MonthPage />} />
-          
+
           <Route path="/social" element={<SocialPage />} />
 
           <Route path="/mypage" element={<MyPage />} />
-          
+
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
