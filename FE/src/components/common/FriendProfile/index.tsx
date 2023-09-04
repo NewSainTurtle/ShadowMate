@@ -1,7 +1,8 @@
 import React, { DOMAttributes } from "react";
-import styles from "@styles/common/FriendProfile.module.scss";
+import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { Avatar } from "@mui/material";
 
 export interface ProfileProps {
   nickname: string;
@@ -34,17 +35,17 @@ const buttons = {
 
 const FriendProfile = ({ types, profile, onClick }: Props) => {
   return (
-    <div className={styles.profile_container}>
+    <div className={styles.fprofile_container}>
       <div className={styles.profile_img}>
-        <img src={profile.src} alt="profile img" />
+        <Avatar src={profile.src} sx={{ width: 48, height: 48 }} />
       </div>
-      <div className={styles.profile_content}>
+      <div className={styles.fprofile_content}>
         <Text types="semi-medium" bold>
           {profile.nickname}
         </Text>
         <Text types="default">{profile.message}</Text>
       </div>
-      <div className={styles.profile_button}>{buttons[types]}</div>
+      <div className={styles.fprofile_button}>{buttons[types]}</div>
     </div>
   );
 };

@@ -1,17 +1,29 @@
-$color-gray: var(--color-gray-1);
+$color-gray_1: var(--color-gray-1);
+$color-gray_4: var(--color-gray-4);
 $color-blue: var(--color-btn-blue);
 $color-white: var(--color-white);
 
-.profile_container {
+.profile_container,
+.fprofile_container {
   display: flex;
   flex-direction: row;
-  height: 4em;
   border-radius: 1em;
-  background-color: $color-gray;
 }
 
-.profile_img > img {
-  height: 100%;
+.profile_container {
+  height: 7em;
+  border: 0.5px solid $color-gray_4;
+  background-color: $color-white;
+}
+
+.fprofile_container {
+  height: 4em;
+  background-color: $color-gray_1;
+}
+
+.profile_img {
+  display: flex;
+  align-items: center;
   margin-left: 0.8em;
   padding: 0.4em;
   box-sizing: border-box;
@@ -19,18 +31,35 @@ $color-white: var(--color-white);
   cursor: pointer;
 }
 
-.profile_content {
+.profile_content,
+.fprofile_content {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-left: 0.2em;
+  margin-left: 0.4em;
   cursor: pointer;
+}
+
+.fprofile_content {
   > span:nth-child(1) {
     margin-bottom: 0.2em;
   }
 }
 
+.profile_content {
+  > span:nth-child(1) {
+    margin-bottom: 0.5em;
+  }
+}
+
 .profile_button {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 1.4em;
+}
+
+.fprofile_button {
   display: flex;
   align-items: center;
   margin-left: auto;

@@ -4,6 +4,7 @@ import Button from "@components/common/Button";
 import Dday from "@components/common/Dday";
 import Input from "@components/common/Input";
 import FriendProfile, { ProfileProps } from "@components/common/FriendProfile";
+import Profile from "@components/common/Profile";
 
 const commonPage = () => {
   const profileInfo: ProfileProps = {
@@ -49,6 +50,12 @@ const commonPage = () => {
         <FriendProfile types="추가" profile={profileInfo} />
         <FriendProfile types="요청" profile={profileInfo} />
         <FriendProfile types="아이콘" profile={profileInfo} />
+      </div>
+      <br />
+      <div>
+        <Profile types="기본" profile={profileInfo} />
+        <br />
+        <Profile types="로그아웃" profile={profileInfo} />
       </div>
     </>
   );
