@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.planner_setting.controller;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static com.newsainturtle.shadowmate.planner_setting.constant.PlannerSettingConstant.SUCCESS_ADD_CATEGORY;
-import static com.newsainturtle.shadowmate.planner_setting.constant.PlannerSettingConstant.SUCCESS_GET_CATEGORY_COLOR_LIST;
+import static com.newsainturtle.shadowmate.planner_setting.constant.PlannerSettingConstant.*;
 
 @RestController
 @RequestMapping("/api/planner-settings")
@@ -33,5 +33,13 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> getCategoryColorList(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                              @PathVariable("userId") final Long userId) {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingServiceImpl.getCategoryList()));
+    }
+
+    @PutMapping("/{userId}/access-scopes")
+    public ResponseEntity<BaseResponse> setAccessScope(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final SetAccessScopeRequest setAccessScopeRequest) {
+        plannerSettingServiceImpl.setAccessScope(userId, principalDetails.getUser(), setAccessScopeRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SET_PLANNER_ACCESS_SCOPE));
     }
 }
