@@ -1,9 +1,8 @@
 package com.newsainturtle.shadowmate.common;
 
-import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
-import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
+import com.newsainturtle.shadowmate.user.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -47,21 +46,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({AuthException.class})
     public ResponseEntity<ErrorResponse> handleAuthException(final AuthException exception) {
         log.warn("AuthException occur: ", exception);
-        return this.makeAuthErrorResponseEntity(exception.getErrorResult());
-    }
-
-    private ResponseEntity<ErrorResponse> makeAuthErrorResponseEntity(final AuthErrorResult errorResult) {
-        return ResponseEntity.status(errorResult.getHttpStatus())
-                .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
+        return this.makeErrorResponseEntity(exception.getErrorResult());
     }
 
     @ExceptionHandler({PlannerSettingException.class})
     public ResponseEntity<ErrorResponse> handlePlannerSettingException(final PlannerSettingException exception) {
         log.warn("PlannerSettingException occur: ", exception);
-        return this.makePlannerSettingErrorResponseEntity(exception.getErrorResult());
+        return this.makeErrorResponseEntity(exception.getErrorResult());
     }
 
-    private ResponseEntity<ErrorResponse> makePlannerSettingErrorResponseEntity(final PlannerSettingErrorResult errorResult) {
+    @ExceptionHandler({UserException.class})
+    public ResponseEntity<ErrorResponse> handlePlannerSettingException(final UserException exception) {
+        log.warn("PlannerSettingException occur: ", exception);
+        return this.makeErrorResponseEntity(exception.getErrorResult());
+    }
+
+    private ResponseEntity<ErrorResponse> makeErrorResponseEntity(final BaseErrorResult errorResult) {
         return ResponseEntity.status(errorResult.getHttpStatus())
                 .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
     }
