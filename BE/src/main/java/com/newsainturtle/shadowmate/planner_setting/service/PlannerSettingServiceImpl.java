@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.planner_setting.service;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -62,7 +64,18 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
         if (user == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
         }
+
         final List<Category> result = categoryRepository.findByUser(user);
-        return GetCategoryListResponse.builder().categoryList(result).build();
+        List<GetCategoryResponse> categoryList = new ArrayList<>();
+
+        for (Category category : result) {
+            categoryList.add(GetCategoryResponse.builder()
+                    .categoryId(category.getId())
+                    .categoryColorCode(category.getCategoryColor().getCategoryColorCode())
+                    .categoryEmoticon(category.getCategoryEmoticon())
+                    .categoryTitle(category.getCategoryTitle())
+                    .build());
+        }
+        return GetCategoryListResponse.builder().categoryList(categoryList).build();
     }
 }
