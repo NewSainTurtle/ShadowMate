@@ -29,16 +29,16 @@ import static org.mockito.Mockito.*;
 class PlannerSettingServiceTest {
 
     @InjectMocks
-    PlannerSettingServiceImpl plannerSettingService;
+    private PlannerSettingServiceImpl plannerSettingService;
 
     @Mock
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Mock
-    CategoryColorRepository categoryColorRepository;
+    private CategoryColorRepository categoryColorRepository;
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
 
     @Nested
