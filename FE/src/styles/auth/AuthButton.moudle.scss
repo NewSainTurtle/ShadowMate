@@ -1,0 +1,16 @@
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 20em;
+  height: 2.8em;
+  border-radius: 0.625em;
+  background: var(--color-scroll);
+
+  cursor: pointer;
+
+  > span:nth-child(1) {
+    color: var(--color-background);
+  }
+}
