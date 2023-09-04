@@ -11,6 +11,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +49,7 @@ public class AuthControlloerTest {
     final User user = User.builder()
             .email("test1234@naver.com")
             .password("12345")
-            .socialLogin(false)
+            .socialLogin(SocialType.BASIC)
             .nickname("거북이")
             .withdrawal(false)
             .plannerAccessScope(PlannerAccessScope.PUBLIC)

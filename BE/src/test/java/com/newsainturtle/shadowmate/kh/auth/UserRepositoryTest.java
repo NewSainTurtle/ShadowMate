@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.kh.auth;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +33,7 @@ public class UserRepositoryTest {
     private final User user = User.builder()
             .email("aa@test.com")
             .password("123456")
-            .socialLogin(false)
+            .socialLogin(SocialType.BASIC)
             .nickname("닉네임임")
             .withdrawal(false)
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -89,7 +90,7 @@ public class UserRepositoryTest {
                     User.builder()
                             .email(joinRequest.getEmail())
                             .password(bCryptPasswordEncoder.encode(joinRequest.getPassword()))
-                            .socialLogin(false)
+                            .socialLogin(SocialType.BASIC)
                             .nickname(joinRequest.getNickname())
                             .plannerAccessScope(PlannerAccessScope.PUBLIC)
                             .withdrawal(false)
