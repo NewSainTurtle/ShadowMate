@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.auth.controller;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
@@ -31,4 +32,9 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_JOIN));
     }
 
+    @PostMapping("/nickname-duplicated")
+    public ResponseEntity<BaseResponse> duplicatedCheckNickname(@RequestBody @Valid DuplicatedNicknameRequest duplicatedNicknameRequest) {
+        authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_NICKNAME_CHECK));
+    }
 }

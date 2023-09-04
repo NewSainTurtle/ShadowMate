@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.kh.auth;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
@@ -9,6 +10,7 @@ import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,6 +94,13 @@ public class AuthServiceTest {
             }
         }
 
+        private String createRandomCode() {
+            return String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
+        }
+
+    }
+    @Nested
+    class 회원가입 {
         @Test
         void 성공_회원가입() {
             //given
@@ -119,10 +128,39 @@ public class AuthServiceTest {
             assertThat(userEntity.getEmail()).isEqualTo(joinRequest.getEmail());
             assertThat(userEntity.getNickname()).isEqualTo(joinRequest.getNickname());
         }
+    }
 
-        private String createRandomCode() {
-            return String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
+    @Nested
+    class 닉네임인증 {
+
+        @Test
+        @DisplayName("닉네임이 중복된 경우")
+        void 실패_닉네임중복() {
+            // given
+            String nickname = "거북이";
+            doReturn(user).when(userRepository).findByNickname(nickname);
+
+            // when
+            User userEntity = userRepository.findByNickname(nickname);
+
+            // then
+            assertThat(userEntity.getNickname()).isEqualTo(user.getNickname());
+
         }
 
+        @Test
+        @DisplayName("닉네임이 중복되지 않은 경우")
+        void 성공_닉네임중복안됨() {
+            // given
+            final String nickname = "거북이";
+            doReturn(user).when(userRepository).findByNickname(nickname);
+            DuplicatedNicknameRequest duplicatedNicknameRequest = DuplicatedNicknameRequest.builder().nickname(nickname).build();
+
+            // when
+            final AuthException authException = Assertions.assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
+
+            // then
+            assertThat(authException.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_NICKNAME);
+        }
     }
 }

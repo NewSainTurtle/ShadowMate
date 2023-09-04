@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.kh.auth;
 import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.controller.AuthController;
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
@@ -12,6 +13,7 @@ import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -153,6 +155,52 @@ public class AuthControlloerTest {
         );
 
         //then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("닉네임 중복된 경우")
+    void 실패_닉네임중복() throws Exception {
+        // given
+        final String url = "/api/auth/nickname-duplicated";
+        final String nickname = "거북이";
+        final DuplicatedNicknameRequest duplicatedNicknameRequest =
+                DuplicatedNicknameRequest.builder()
+                        .nickname(nickname)
+                        .build();
+        doThrow(new AuthException(AuthErrorResult.DUPLICATED_NICKNAME)).when(authServiceImpl).duplicatedCheckNickname(any());
+
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(duplicatedNicknameRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("닉네임 중복되지 않은 경우")
+    void 성공_닉네임중복아님() throws Exception {
+        // given
+        final String url = "/api/auth/nickname-duplicated";
+        final String nickname = "거북이";
+        final DuplicatedNicknameRequest duplicatedNicknameRequest =
+                DuplicatedNicknameRequest.builder()
+                        .nickname(nickname)
+                        .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(duplicatedNicknameRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
         resultActions.andExpect(status().isOk());
     }
 }

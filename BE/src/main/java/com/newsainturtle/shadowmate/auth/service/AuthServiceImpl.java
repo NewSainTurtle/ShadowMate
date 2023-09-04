@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.auth.service;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
@@ -45,9 +46,17 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    @Override
+    public void duplicatedCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest) {
+        User user = userRepository.findByNickname(duplicatedNicknameRequest.getNickname());
+        if(user!=null) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
+        }
+    }
+
     @Transactional
     @Override
-    public void join(JoinRequest joinRequest) {
+    public void join(final JoinRequest joinRequest) {
         String email = joinRequest.getEmail();
         checkDuplicatedEmail(email);
 
@@ -63,14 +72,14 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(userEntity);
     }
 
-    private void checkDuplicatedEmail(String email){
+    private void checkDuplicatedEmail(final String email){
         User user = userRepository.findByEmail(email);
         if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
         }
     }
 
-    public MimeMessage createMessage(String email) throws MessagingException, UnsupportedEncodingException {
+    public MimeMessage createMessage(final String email) throws MessagingException, UnsupportedEncodingException {
         String code = createRandomCode();
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(Message.RecipientType.TO, email);

@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,15 @@ public class UserRepositoryTest {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private final User user = User.builder()
+            .email("aa@test.com")
+            .password("123456")
+            .socialLogin(false)
+            .nickname("닉네임임")
+            .withdrawal(false)
+            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .build();
+
     @BeforeEach
     public void init() {
         bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -40,17 +50,9 @@ public class UserRepositoryTest {
         @Test
         public void 실패_이메일이_중복된_경우() {
             //given
-            final User user = User.builder()
-                    .email("test1234@naver.com")
-                    .password("12345")
-                    .socialLogin(false)
-                    .nickname("거북이")
-                    .withdrawal(false)
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .build();
             userRepository.save(user);
 
-            final String email = "test1234@naver.com";
+            final String email = "aa@test.com";
 
             //when
             final User result = userRepository.findByEmail(email);
@@ -71,7 +73,9 @@ public class UserRepositoryTest {
             //then
             assertThat(result).isNull();
         }
-
+    }
+    @Nested
+    class 회원가입 {
         @Test
         void 성공_회원가입() {
             // given
@@ -99,6 +103,35 @@ public class UserRepositoryTest {
             assertThat(user.getNickname()).isEqualTo(joinRequest.getNickname());
             assertThat(bCryptPasswordEncoder.matches(
                     joinRequest.getPassword(), user.getPassword())).isTrue();
+        }
+    }
+
+    @Nested
+    class 닉네임인증 {
+        @Test
+        @DisplayName("닉네임이 중복된 경우")
+        void 실패_닉네임중복() {
+            //given
+            userRepository.save(user);
+
+            //when
+            final User userEntity = userRepository.findByNickname(user.getNickname());
+
+            //then
+            assertThat(userEntity).isNotNull();
+            assertThat(userEntity.getNickname()).isEqualTo(user.getNickname());
+        }
+
+        @Test
+        @DisplayName("닉네임이 중복되지 않은 경우")
+        void 성공_닉네임중복이아님() {
+            // given
+
+            // when
+            final User userEntity = userRepository.findByNickname(user.getNickname());
+
+            // then
+            assertThat(userEntity).isNull();
         }
     }
 }
