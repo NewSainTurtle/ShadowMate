@@ -18,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,5 +139,21 @@ class PlannerSettingServiceTest {
         }
     }
 
+    @Nested
+    class 플래너설정_조회 {
+        @Test
+        public void 카테고리색상목록조회() {
+            //given
+            final List<CategoryColor> list = new ArrayList<>();
+            list.add(CategoryColor.builder().categoryColorCode("FFCBE1").build());
+            doReturn(list).when(categoryColorRepository).findAll();
 
+            //when
+            final List<CategoryColor> result = plannerSettingService.getCategoryList();
+
+            //then
+            assertThat(result).isNotNull();
+            assertThat(result.size()).isEqualTo(1);
+        }
+    }
 }

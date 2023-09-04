@@ -23,10 +23,11 @@ public class CategoryColorRepositoryTest {
         //given
 
         //when
-        List<CategoryColor> result = categoryColorRepository.findAll();
+        final List<CategoryColor> result = categoryColorRepository.findAll();
 
         //then
         assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(16);
     }
 
 }
