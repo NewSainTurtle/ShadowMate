@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -12,6 +13,8 @@ import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +47,11 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
                 .build();
 
         categoryRepository.save(category);
+    }
+
+    @Override
+    public GetCategoryColorListResponse getCategoryList() {
+        final List<CategoryColor> result = categoryColorRepository.findAll();
+        return GetCategoryColorListResponse.builder().categoryColorList(result).build();
     }
 }

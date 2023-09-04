@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static com.newsainturtle.shadowmate.planner_setting.constant.PlannerSettingConstant.SUCCESS_ADD_CATEGORY;
+import static com.newsainturtle.shadowmate.planner_setting.constant.PlannerSettingConstant.SUCCESS_GET_CATEGORY_COLOR_LIST;
 
 @RestController
 @RequestMapping("/api/planner-settings")
@@ -26,5 +27,11 @@ public class PlannerSettingController {
                                                     @RequestBody @Valid final AddCategoryRequest addCategoryRequest) {
         plannerSettingServiceImpl.addCategory(userId, addCategoryRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY));
+    }
+
+    @GetMapping("/{userId}/categories/colors")
+    public ResponseEntity<BaseResponse> getCategoryColorList(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                             @PathVariable("userId") final Long userId) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingServiceImpl.getCategoryList()));
     }
 }

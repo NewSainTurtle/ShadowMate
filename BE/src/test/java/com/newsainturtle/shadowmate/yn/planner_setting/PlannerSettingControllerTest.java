@@ -189,4 +189,22 @@ public class PlannerSettingControllerTest {
             resultActions.andExpect(status().isOk());
         }
     }
+
+    @Nested
+    class 플래너설정_조회 {
+        @Test
+        public void 성공_카테고리색상목록조회() throws Exception {
+            //given
+            final Long userId = 1L;
+            final String url = "/api/planner-settings/{userId}/categories/colors";
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
 }
