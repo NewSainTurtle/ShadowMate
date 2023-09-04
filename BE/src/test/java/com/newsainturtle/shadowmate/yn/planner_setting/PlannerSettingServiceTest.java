@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.yn.planner_setting;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -176,6 +177,34 @@ class PlannerSettingServiceTest {
             //then
             assertThat(result.getCategoryColorList()).isNotNull();
             assertThat(result.getCategoryColorList().size()).isEqualTo(1);
+        }
+
+        @Test
+        public void 실패_카테고리목록조회_사용자없음() {
+            //given
+            doReturn(Optional.empty()).when(userRepository).findById(userId);
+
+            //when
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.getCategoryList(userId));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.UNREGISTERED_USER);
+        }
+
+        @Test
+        public void 성공_카테고리목록조회() {
+            //given
+            final List<Category> list = new ArrayList<>();
+            list.add(category);
+            doReturn(Optional.of(user)).when(userRepository).findById(userId);
+            doReturn(list).when(categoryRepository).findByUser(user);
+
+            //when
+            final GetCategoryListResponse result = plannerSettingService.getCategoryList(userId);
+
+            //then
+            assertThat(result.getCategoryList()).isNotNull();
+            assertThat(result.getCategoryList().size()).isEqualTo(1);
         }
     }
 }
