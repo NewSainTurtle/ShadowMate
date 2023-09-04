@@ -2,6 +2,8 @@ package com.newsainturtle.shadowmate.common;
 
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
+import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
+import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +51,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> makeAuthErrorResponseEntity(final AuthErrorResult errorResult) {
+        return ResponseEntity.status(errorResult.getHttpStatus())
+                .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
+    }
+
+    @ExceptionHandler({PlannerSettingException.class})
+    public ResponseEntity<ErrorResponse> handlePlannerSettingException(final PlannerSettingException exception) {
+        log.warn("PlannerSettingException occur: ", exception);
+        return this.makePlannerSettingErrorResponseEntity(exception.getErrorResult());
+    }
+
+    private ResponseEntity<ErrorResponse> makePlannerSettingErrorResponseEntity(final PlannerSettingErrorResult errorResult) {
         return ResponseEntity.status(errorResult.getHttpStatus())
                 .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
     }
