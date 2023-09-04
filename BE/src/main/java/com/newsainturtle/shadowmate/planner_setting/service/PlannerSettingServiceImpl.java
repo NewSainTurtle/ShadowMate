@@ -10,6 +10,7 @@ import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingExce
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,16 +59,26 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     @Transactional
-    public void setAccessScope(final Long userId, final SetAccessScopeRequest setAccessScopeRequest) {
-        final User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
+    public void setAccessScope(final Long userId, final User user, final SetAccessScopeRequest setAccessScopeRequest) {
+        if (!userId.equals(user.getId())) {
             throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
+        }
+        final PlannerAccessScope accessScope = PlannerAccessScope.parsing(setAccessScopeRequest.getPlannerAccessScope());
+        if (accessScope == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
         }
 
         final User changeUser = User.builder()
                 .id(user.getId())
-                .plannerAccessScope(setAccessScopeRequest.getPlannerAccessScope())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .socialLogin(user.getSocialLogin())
+                .nickname(user.getNickname())
+                .plannerAccessScope(accessScope)
+                .withdrawal(user.getWithdrawal())
+                .createTime(user.getCreateTime())
                 .build();
+
         userRepository.save(changeUser);
     }
 }
