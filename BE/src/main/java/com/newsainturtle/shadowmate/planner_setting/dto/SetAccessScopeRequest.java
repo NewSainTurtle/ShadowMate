@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
 public class SetAccessScopeRequest {
 
     @NotNull
-    private PlannerAccessScope plannerAccessScope;
+    private String plannerAccessScope;
 
     @Builder
-    public SetAccessScopeRequest(PlannerAccessScope plannerAccessScope) {
+    public SetAccessScopeRequest(String plannerAccessScope) {
         this.plannerAccessScope = plannerAccessScope;
     }
 }
