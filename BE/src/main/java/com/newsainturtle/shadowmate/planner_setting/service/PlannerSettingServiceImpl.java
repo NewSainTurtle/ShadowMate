@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.planner_setting.service;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -27,7 +28,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     @Transactional
-    public void addCategory(Long userId, AddCategoryRequest addCategoryRequest) {
+    public void addCategory(final Long userId, final AddCategoryRequest addCategoryRequest) {
         final User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
@@ -53,5 +54,15 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     public GetCategoryColorListResponse getCategoryColorList() {
         final List<CategoryColor> result = categoryColorRepository.findAll();
         return GetCategoryColorListResponse.builder().categoryColorList(result).build();
+    }
+
+    @Override
+    public GetCategoryListResponse getCategoryList(final Long userId) {
+        final User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
+        }
+        final List<Category> result = categoryRepository.findByUser(user);
+        return GetCategoryListResponse.builder().categoryList(result).build();
     }
 }
