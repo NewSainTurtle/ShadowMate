@@ -1,4 +1,5 @@
-@use "./styles/global/themes.scss";
+@use "@styles/global/themes.scss";
+@import url("https://fonts.googleapis.com/css2?family=Sansita:ital,wght@0,800;1,700;1,800&display=swap");
 
 @font-face {
   font-family: "Pretendard-Regular";
@@ -14,4 +15,26 @@
 html,
 body {
   background-color: var(--color-background);
+  color: var(--color-text);
+
+  &::-webkit-scrollbar {
+    width: 0.3em;
+    background-color: var(--color-gray-3);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 1.25em;
+    background-color: var(--color-scroll);
+  }
+
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-text);
 }
