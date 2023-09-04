@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.user.entity;
 
 import com.newsainturtle.shadowmate.common.entity.CommonEntity;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
@@ -23,7 +24,8 @@ public class User extends CommonEntity {
     private String password;
 
     @Column(name = "social_login", nullable = false)
-    private Boolean socialLogin;
+    @Enumerated(EnumType.STRING)
+    private SocialType socialLogin;
 
     @Column(name = "profile_image")
     private String profileImage;
