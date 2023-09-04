@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepo
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -36,7 +37,7 @@ public class CategoryRepositoryTest {
         userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
-                .socialLogin(false)
+                .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
                 .withdrawal(false)
