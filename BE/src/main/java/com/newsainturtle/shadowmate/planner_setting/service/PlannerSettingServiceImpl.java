@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.planner_setting.service;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -53,5 +54,20 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     public GetCategoryColorListResponse getCategoryList() {
         final List<CategoryColor> result = categoryColorRepository.findAll();
         return GetCategoryColorListResponse.builder().categoryColorList(result).build();
+    }
+
+    @Override
+    @Transactional
+    public void setAccessScope(final Long userId, final SetAccessScopeRequest setAccessScopeRequest) {
+        final User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
+        }
+
+        final User changeUser = User.builder()
+                .id(user.getId())
+                .plannerAccessScope(setAccessScopeRequest.getPlannerAccessScope())
+                .build();
+        userRepository.save(changeUser);
     }
 }
