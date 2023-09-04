@@ -3,11 +3,11 @@ import Text from "@components/common/Text";
 import Button from "@components/common/Button";
 import Dday from "@components/common/Dday";
 import Input from "@components/common/Input";
-import FriendProfile, { ProfileProps } from "@components/common/FriendProfile";
+import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import Profile from "@components/common/Profile";
 
 const commonPage = () => {
-  const profileInfo: ProfileProps = {
+  const profileInfo: ProfileConfig = {
     nickname: "ribbonE",
     message: "방가방가",
     src: "https://avatars.githubusercontent.com/u/85155789?v=4",
