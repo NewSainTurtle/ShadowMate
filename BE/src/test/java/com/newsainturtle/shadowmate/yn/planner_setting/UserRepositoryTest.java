@@ -33,7 +33,13 @@ public class UserRepositoryTest {
         final User findUser = userRepository.findById(user.getId()).orElse(null);
         final User changeUser = User.builder()
                 .id(findUser.getId())
+                .email(findUser.getEmail())
+                .password(findUser.getPassword())
+                .socialLogin(findUser.getSocialLogin())
+                .nickname(findUser.getNickname())
                 .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                .withdrawal(findUser.getWithdrawal())
+                .createTime(findUser.getCreateTime())
                 .build();
         userRepository.save(changeUser);
 
