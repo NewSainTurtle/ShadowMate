@@ -143,15 +143,35 @@ class PlannerSettingServiceTest {
 
     @Nested
     class 플래너설정_조회 {
+        final User user = User.builder()
+                .email("test@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("거북이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+        final CategoryColor categoryColor = CategoryColor.builder()
+                .categoryColorCode("D9B5D9")
+                .build();
+        final Long userId = 1L;
+        final Category category = Category.builder()
+                .categoryColor(categoryColor)
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build();
+
         @Test
         public void 카테고리색상목록조회() {
             //given
             final List<CategoryColor> list = new ArrayList<>();
-            list.add(CategoryColor.builder().categoryColorCode("FFCBE1").build());
+            list.add(categoryColor);
             doReturn(list).when(categoryColorRepository).findAll();
 
             //when
-            final GetCategoryColorListResponse result = plannerSettingService.getCategoryList();
+            final GetCategoryColorListResponse result = plannerSettingService.getCategoryColorList();
 
             //then
             assertThat(result.getCategoryColorList()).isNotNull();

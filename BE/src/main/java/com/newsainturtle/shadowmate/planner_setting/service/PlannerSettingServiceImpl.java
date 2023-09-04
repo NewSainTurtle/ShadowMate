@@ -50,7 +50,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     }
 
     @Override
-    public GetCategoryColorListResponse getCategoryList() {
+    public GetCategoryColorListResponse getCategoryColorList() {
         final List<CategoryColor> result = categoryColorRepository.findAll();
         return GetCategoryColorListResponse.builder().categoryColorList(result).build();
     }

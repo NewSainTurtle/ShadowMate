@@ -6,5 +6,5 @@ import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResp
 
 public interface PlannerSettingService {
     void addCategory(Long userId, AddCategoryRequest addCategoryRequest);
-    GetCategoryColorListResponse getCategoryList();
+    GetCategoryColorListResponse getCategoryColorList();
 }

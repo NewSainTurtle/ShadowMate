@@ -32,6 +32,6 @@ public class PlannerSettingController {
     @GetMapping("/{userId}/categories/colors")
     public ResponseEntity<BaseResponse> getCategoryColorList(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                              @PathVariable("userId") final Long userId) {
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingServiceImpl.getCategoryList()));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingServiceImpl.getCategoryColorList()));
     }
 }
