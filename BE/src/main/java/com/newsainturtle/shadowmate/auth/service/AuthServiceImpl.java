@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
                         .email(email)
                         .password(bCryptPasswordEncoder.encode(joinRequest.getPassword()))
                         .nickname(joinRequest.getNickname())
-                        .socialLogin(false)
+                        .socialLogin(SocialType.BASIC)
                         .plannerAccessScope(PlannerAccessScope.PUBLIC)
                         .withdrawal(false)
                         .build();
