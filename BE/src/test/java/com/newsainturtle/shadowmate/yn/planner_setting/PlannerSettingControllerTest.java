@@ -1,17 +1,16 @@
 package com.newsainturtle.shadowmate.yn.planner_setting;
 
 import com.google.gson.Gson;
+import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
+import com.newsainturtle.shadowmate.auth.exception.AuthException;
+import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingController;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
-import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
-import com.newsainturtle.shadowmate.user.entity.User;
-import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,16 +24,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +36,9 @@ public class PlannerSettingControllerTest {
 
     @Mock
     private PlannerSettingServiceImpl plannerSettingServiceImpl;
+
+    @Mock
+    private AuthService authServiceImpl;
 
     private MockMvc mockMvc;
     private Gson gson;
@@ -263,7 +257,7 @@ public class PlannerSettingControllerTest {
             final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("비공개")
                     .build();
-            doThrow(new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER)).when(plannerSettingServiceImpl).setAccessScope(any(Long.class), any(), any(SetAccessScopeRequest.class));
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -282,7 +276,7 @@ public class PlannerSettingControllerTest {
             final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("잘못된범위값")
                     .build();
-            doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE)).when(plannerSettingServiceImpl).setAccessScope(any(Long.class), any(), any(SetAccessScopeRequest.class));
+            doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE)).when(plannerSettingServiceImpl).setAccessScope(any(), any(SetAccessScopeRequest.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
