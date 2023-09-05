@@ -49,8 +49,8 @@ public class UserRepositoryTest {
         @Test
         void 성공_프로필조회() {
             // given
-            final Long userId = user.getId();
-            userRepository.save(user);
+            final User userResponse = userRepository.save(user);
+            final Long userId = userResponse.getId();
 
             // when
             final User userEntity = userRepository.findById(userId).get();
