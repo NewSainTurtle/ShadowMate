@@ -123,7 +123,7 @@ public class PlannerSettingControllerTest {
                     .categoryEmoticon("🍅")
                     .categoryColorId(1L)
                     .build();
-            doThrow(new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER)).when(plannerSettingServiceImpl).addCategory(any(Long.class), any(AddCategoryRequest.class));
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -133,7 +133,7 @@ public class PlannerSettingControllerTest {
             );
 
             //then
-            resultActions.andExpect(status().isBadRequest());
+            resultActions.andExpect(status().isForbidden());
         }
 
         @Test
@@ -144,7 +144,7 @@ public class PlannerSettingControllerTest {
                     .categoryEmoticon("🍅")
                     .categoryColorId(1L)
                     .build();
-            doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR)).when(plannerSettingServiceImpl).addCategory(any(Long.class), any(AddCategoryRequest.class));
+            doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR)).when(plannerSettingServiceImpl).addCategory(any(), any(AddCategoryRequest.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -219,7 +219,7 @@ public class PlannerSettingControllerTest {
             //given
             final Long userId = 1L;
             final String url = "/api/planner-settings/{userId}/categories";
-            doThrow(new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER)).when(plannerSettingServiceImpl).getCategoryList(any(Long.class));
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -227,7 +227,7 @@ public class PlannerSettingControllerTest {
             );
 
             //then
-            resultActions.andExpect(status().isBadRequest());
+            resultActions.andExpect(status().isForbidden());
         }
 
         @Test

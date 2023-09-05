@@ -75,26 +75,12 @@ class PlannerSettingServiceTest {
                 .build();
 
         @Test
-        public void 실패_없는사용자() {
-            //given
-            doReturn(Optional.empty()).when(userRepository).findById(userId);
-
-            //when
-            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addCategory(userId, request));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.UNREGISTERED_USER);
-        }
-
-        @Test
         public void 실패_없는카테고리색상() {
             //given
-
-            doReturn(Optional.of(user)).when(userRepository).findById(userId);
             doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
 
             //when
-            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addCategory(userId, request));
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addCategory(user, request));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR);
@@ -109,17 +95,15 @@ class PlannerSettingServiceTest {
                     .categoryColorId(1L)
                     .build();
 
-            doReturn(Optional.of(user)).when(userRepository).findById(userId);
             doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
             doReturn(category).when(categoryRepository).save(any(Category.class));
 
             //when
-            plannerSettingService.addCategory(userId, addCategoryRequest);
+            plannerSettingService.addCategory(user, addCategoryRequest);
 
             //then
 
             //verify
-            verify(userRepository, times(1)).findById(userId);
             verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
             verify(categoryRepository, times(1)).save(any(Category.class));
         }
@@ -127,17 +111,15 @@ class PlannerSettingServiceTest {
         @Test
         public void 성공_카테고리등록_이모티콘있음() {
             //given
-            doReturn(Optional.of(user)).when(userRepository).findById(userId);
             doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
             doReturn(category).when(categoryRepository).save(any(Category.class));
 
             //when
-            plannerSettingService.addCategory(userId, request);
+            plannerSettingService.addCategory(user, request);
 
             //then
 
             //verify
-            verify(userRepository, times(1)).findById(userId);
             verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
             verify(categoryRepository, times(1)).save(any(Category.class));
         }
@@ -181,27 +163,14 @@ class PlannerSettingServiceTest {
         }
 
         @Test
-        public void 실패_카테고리목록조회_사용자없음() {
-            //given
-            doReturn(Optional.empty()).when(userRepository).findById(userId);
-
-            //when
-            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.getCategoryList(userId));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.UNREGISTERED_USER);
-        }
-
-        @Test
         public void 성공_카테고리목록조회() {
             //given
             final List<Category> list = new ArrayList<>();
             list.add(category);
-            doReturn(Optional.of(user)).when(userRepository).findById(userId);
             doReturn(list).when(categoryRepository).findByUser(user);
 
             //when
-            final GetCategoryListResponse result = plannerSettingService.getCategoryList(userId);
+            final GetCategoryListResponse result = plannerSettingService.getCategoryList(user);
 
             //then
             assertThat(result.getCategoryList()).isNotNull();
