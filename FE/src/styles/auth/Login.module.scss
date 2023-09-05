@@ -1,0 +1,118 @@
+@use "../auth/AuthButton.moudle.scss";
+$color-white: var(--color-white);
+$color-warning: var(--color-warning);
+$color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
+$color-blue: var(--color-btn-blue);
+
+.login_display {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+}
+
+.login_container {
+  width: 20em;
+}
+
+.login_logo {
+  margin-bottom: 2em;
+  text-align: center;
+  font-family: "Sansita", sans-serif;
+  font-size: 2.4em;
+  font-style: italic;
+  font-weight: 800;
+}
+
+.login_input {
+  > div:nth-child(1) {
+    margin: 1em 0 3em 0;
+  }
+}
+
+.login_toolbox {
+  display: flex;
+  justify-content: space-between;
+  margin: 1em 0;
+  color: $color-gray-5;
+}
+
+.login_checkbox {
+  line-height: calc(100%);
+  display: flex;
+  align-items: center;
+  > input[type="checkbox"] {
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    padding: 0.2em;
+    margin-right: 0.4em;
+    border: 1.5px solid gainsboro;
+    border-radius: 0.2rem;
+    accent-color: $color-blue;
+    cursor: pointer;
+    &:checked {
+      border-color: transparent;
+      background: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
+      background-size: 100% 100%;
+      background-position: 50%;
+      background-repeat: no-repeat;
+      background-color: $color-blue;
+    }
+    + label {
+      cursor: pointer;
+    }
+  }
+}
+
+.login_warning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.7em 0;
+  > span {
+    color: $color-warning;
+  }
+}
+
+.login_signup {
+  margin: 2.5em 0;
+  text-align: center;
+  > span:nth-child(1) {
+    color: $color-gray-4;
+  }
+  > span:nth-child(2) {
+    color: $color-gray-5;
+    text-decoration: underline;
+  }
+}
+
+.login_divider {
+  position: relative;
+  text-align: center;
+  margin-bottom: 1em;
+  > div {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: $color-gray-4;
+  }
+  > span {
+    display: inline-block;
+    position: relative;
+    width: 2em;
+    background-color: $color-white;
+    color: $color-gray-4;
+  }
+}
+
+.login_social {
+  > button {
+    @extend .button;
+    width: 100%;
+    background-color: var(--color-background);
+    border: 0.5px solid $color-gray-4;
+  }
+}
