@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.planner_setting.service;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
@@ -11,6 +12,7 @@ import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingExce
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,28 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     public GetCategoryColorListResponse getCategoryColorList() {
         final List<CategoryColor> result = categoryColorRepository.findAll();
         return GetCategoryColorListResponse.builder().categoryColorList(result).build();
+    }
+
+    @Override
+    @Transactional
+    public void setAccessScope(final User user, final SetAccessScopeRequest setAccessScopeRequest) {
+        final PlannerAccessScope accessScope = PlannerAccessScope.parsing(setAccessScopeRequest.getPlannerAccessScope());
+        if (accessScope == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
+        }
+
+        final User changeUser = User.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .socialLogin(user.getSocialLogin())
+                .nickname(user.getNickname())
+                .plannerAccessScope(accessScope)
+                .withdrawal(user.getWithdrawal())
+                .createTime(user.getCreateTime())
+                .build();
+
+        userRepository.save(changeUser);
     }
 
     @Override

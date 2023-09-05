@@ -5,6 +5,8 @@ import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
+import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
+import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -36,6 +38,13 @@ public class AuthServiceImpl implements AuthService {
     private String serverEmail;
 
     @Override
+    public void certifyUser(Long userId, User user) {
+        if (!userId.equals(user.getId())) {
+            throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
+        }
+    }
+
+    @Override
     public void certifyEmail(final CertifyEmailRequest certifyEmailRequest) {
         String email = certifyEmailRequest.getEmail();
         checkDuplicatedEmail(email);
@@ -50,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void duplicatedCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest) {
         User user = userRepository.findByNickname(duplicatedNicknameRequest.getNickname());
-        if(user!=null) {
+        if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
         }
     }
@@ -73,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(userEntity);
     }
 
-    private void checkDuplicatedEmail(final String email){
+    private void checkDuplicatedEmail(final String email) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);

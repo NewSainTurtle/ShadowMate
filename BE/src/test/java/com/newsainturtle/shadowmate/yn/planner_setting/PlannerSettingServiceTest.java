@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.yn.planner_setting;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
@@ -205,6 +206,49 @@ class PlannerSettingServiceTest {
             //then
             assertThat(result.getCategoryList()).isNotNull();
             assertThat(result.getCategoryList().size()).isEqualTo(1);
+        }
+    }
+
+    @Nested
+    class 플래너공개여부설정 {
+        final User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("거북이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+
+        @Test
+        public void 실패_잘못된범위값() {
+            //given
+            final Long userId = 1L;
+            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("잘못된범위값")
+                    .build();
+
+            //when
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
+        }
+
+        @Test
+        public void 성공_플래너공개여부설정() {
+            //given
+            final Long userId = 1L;
+            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("비공개")
+                    .build();
+
+            //when
+            plannerSettingService.setAccessScope(user, request);
+
+            //then
+            verify(userRepository, times(1)).save(any(User.class));
         }
     }
 }
