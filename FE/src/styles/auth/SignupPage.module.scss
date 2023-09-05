@@ -1,0 +1,61 @@
+%flex-colum {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  @extend %flex-colum;
+  height: 100%;
+  gap: 3.75em;
+
+  > span:nth-child(1) {
+    font: {
+      family: Sansita;
+      style: italic;
+      weight: 800 !important;
+    }
+  }
+}
+
+.box_1 {
+  @extend %flex-colum;
+  width: 20em;
+  gap: 2.5em;
+
+  .input__button {
+    display: flex;
+    width: 100%;
+    gap: 0.1em;
+    align-items: baseline;
+
+    > :nth-child(2) {
+      min-width: 22%;
+    }
+  }
+}
+
+.box_2 {
+  @extend %flex-colum;
+  justify-content: space-between;
+  height: 5em;
+
+  > span:nth-child(1) {
+    color: var(--color-warning);
+  }
+}
+
+.context {
+  display: flex;
+  gap: 0.5rem;
+
+  > span:nth-child(1) {
+    color: var(--color-gray-4);
+  }
+
+  > a {
+    color: var(--color-gray-5);
+    text-decoration-line: underline;
+  }
+}
