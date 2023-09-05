@@ -49,7 +49,7 @@ public class UserRepositoryTest {
         @Test
         void 성공_프로필조회() {
             // given
-            final Long userId = 1L;
+            final Long userId = user.getId();
             userRepository.save(user);
 
             // when

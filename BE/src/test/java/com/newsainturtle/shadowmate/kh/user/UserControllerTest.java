@@ -65,12 +65,12 @@ public class UserControllerTest {
 
     @Nested
     class 프로필TEST {
+        final Long userId = 1L;
+        final String url = "/api/users/{userId}/profiles";
 
         @Test
         void 실패_프로필조회() throws Exception {
             // given
-            final Long userId = 1L;
-            final String url = "/api/users/{userId}/profiles";
             doThrow(new UserException(UserErrorResult.NOT_FOUND_PROFILE)).when(userService).getProfile(any());
 
             // when
@@ -84,8 +84,6 @@ public class UserControllerTest {
         @Test
         void 성공_프로필조회() throws Exception {
             // given
-            final Long userId = 1L;
-            final String url = "/api/users/{userId}/profiles";
 
             // when
             final ResultActions resultActions = mockMvc.perform(
