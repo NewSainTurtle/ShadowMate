@@ -142,4 +142,40 @@ public class AuthServiceTest {
         }
     }
 
+    @Nested
+    class 사용자인증 {
+        private final User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("거북이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+
+        @Test
+        public void 실패_없는사용자() {
+            //given
+            final Long userId = 2L;
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.certifyUser(userId, user));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNREGISTERED_USER);
+        }
+
+        @Test
+        public void 성공_없는사용자() {
+            //given
+            final Long userId = 1L;
+
+            //when
+            authServiceImpl.certifyUser(userId, user);
+
+            //then
+        }
+    }
+
 }
