@@ -1,12 +1,13 @@
 package com.newsainturtle.shadowmate.auth.exception;
 
+import com.newsainturtle.shadowmate.common.BaseErrorResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum AuthErrorResult {
+public enum AuthErrorResult implements BaseErrorResult {
     UNREGISTERED_USER(HttpStatus.BAD_REQUEST, "등록되지 않은 사용자입니다."),
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST,"중복된 이메일입니다."),
     DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "중복된 닉네임입니다."),

@@ -1,0 +1,30 @@
+package com.newsainturtle.shadowmate.user.dto;
+
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class ProfileResponse {
+
+    private String email;
+
+    private String nickname;
+
+    private String profileImage;
+
+    private String statusMessage;
+
+    private PlannerAccessScope plannerAccessScope;
+
+    @Builder
+    public ProfileResponse(String email, String nickname, String profileImage, String statusMessage, PlannerAccessScope plannerAccessScope) {
+        this.email = email;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.statusMessage = statusMessage;
+        this.plannerAccessScope = plannerAccessScope;
+    }
+}
