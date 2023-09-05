@@ -1,30 +1,33 @@
-%flex-colum {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.signup_display {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
 }
 
-.container {
-  @extend %flex-colum;
-  height: 100%;
+.signup_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 3.75em;
+  width: 20em;
+}
 
-  > span:nth-child(1) {
-    font: {
-      family: Sansita;
-      style: italic;
-      weight: 800 !important;
-    }
+.signup_logo {
+  font: {
+    family: Sansita;
+    style: italic;
+    size: 2.4em;
+    weight: 800;
   }
 }
 
-.box_1 {
-  @extend %flex-colum;
-  width: 20em;
+.signup_box_1 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   gap: 2.5em;
 
-  .input__button {
+  .input_box__button {
     display: flex;
     width: 100%;
     gap: 0.1em;
@@ -36,17 +39,18 @@
   }
 }
 
-.box_2 {
-  @extend %flex-colum;
-  justify-content: space-between;
-  height: 5em;
+.signup_box_2 {
+  display: flex;
+  margin-top: -2em;
+  gap: 1.5em;
+  flex-direction: column;
 
-  > span:nth-child(1) {
+  .text_warning {
     color: var(--color-warning);
   }
 }
 
-.context {
+.signup_context {
   display: flex;
   gap: 0.5rem;
 

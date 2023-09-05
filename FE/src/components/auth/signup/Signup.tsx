@@ -25,11 +25,12 @@ const Signup = () => {
   const isSame = password === passwordCheck;
 
   return (
-    <>
-      <div className={styles.container}>
-        <Text types="large">Sign up</Text>
-        <div className={styles.box_1}>
-          <div className={styles.input__button}>
+    <div className={styles.signup_display}>
+      <div className={styles.signup_container}>
+        <div className={styles.signup_logo}>Sign up</div>
+
+        <div className={styles.signup_box_1}>
+          <div className={styles.input_box__button}>
             <Input placeholder="이메일" name="email" value={email} onChange={handleInput} />
             <Button types="gray">인증</Button>
           </div>
@@ -41,23 +42,27 @@ const Signup = () => {
             value={passwordCheck}
             onChange={handleInput}
           />
-          <div className={styles.input__button}>
+          <div className={styles.input_box__button}>
             <Input placeholder="닉네임" name="name" value={name} onChange={handleInput} />
             <Button types="gray">중복검사</Button>
           </div>
-          <div className={styles.box_2}>
-            <Text types="small">{!isSame && "비밀번호가 다릅니다."}</Text>
-            <AuthButton>Sign up</AuthButton>
-          </div>
         </div>
-        <div className={styles.context}>
+
+        <div className={styles.signup_box_2}>
+          <div className={styles.signup_warning} style={{ visibility: !isSame ? "visible" : "hidden" }}>
+            <Text types="small">{"비밀번호가 다릅니다."}</Text>
+          </div>
+          <AuthButton>Sign up</AuthButton>
+        </div>
+
+        <div className={styles.signup_context}>
           <Text types="small">이미 회원이신가요?</Text>
           <NavLink to={"/login"}>
             <Text types="small">Login</Text>
           </NavLink>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
