@@ -267,7 +267,7 @@ public class PlannerSettingControllerTest {
             );
 
             //then
-            resultActions.andExpect(status().isBadRequest());
+            resultActions.andExpect(status().isForbidden());
         }
 
         @Test
