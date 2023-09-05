@@ -63,7 +63,6 @@ public class UserServiceTest {
             doReturn(optUser).when(userRepository).findById(userId);
 
             // when
-
             final ProfileResponse profileResponse = userService.getProfile(userId);
 
             // then
