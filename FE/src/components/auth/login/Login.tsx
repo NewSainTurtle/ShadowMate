@@ -3,6 +3,8 @@ import styles from "@styles/auth/Login.module.scss";
 import InputStyles from "@components/common/Input";
 import AuthButton from "../AuthButton";
 import Text from "@components/common/Text";
+import Google from "@assets/Icons/google_icon.svg";
+import { NavLink } from "react-router-dom";
 
 const Login = () => {
   const [showAlert, setShowAlert] = useState(false);
@@ -18,10 +20,10 @@ const Login = () => {
           <div className={styles.login_checkbox}>
             <input id="auto" type="checkbox" />
             <label htmlFor="auto">
-              <Text>자동로그인</Text>
+              <Text types="small">자동로그인</Text>
             </label>
           </div>
-          <Text>비밀번호 찾기</Text>
+          <Text types="small">비밀번호 찾기</Text>
         </div>
         <div className={styles.login_warning} style={{ visibility: showAlert ? "visible" : "hidden" }}>
           <Text types="small">아이디 또는 비밀번호를 잘못 입력했습니다.</Text>
@@ -30,15 +32,19 @@ const Login = () => {
         <AuthButton>Login</AuthButton>
         <div className={styles.login_signup}>
           <Text types="small">아직 회원이 아니신가요? </Text>
-          <Text types="small">Sign Up</Text>
+          <NavLink to="/signup">
+            <Text types="small">Sign Up</Text>
+          </NavLink>
         </div>
         <div className={styles.login_divider}>
           <div />
           <Text types="small">or</Text>
         </div>
-
         <div className={styles.login_social}>
-          <button>Continue with Google</button>
+          <button>
+            <img src={Google} alt="Goolgle Icon" />
+            <span>Continue with Google</span>
+          </button>
         </div>
       </div>
     </div>

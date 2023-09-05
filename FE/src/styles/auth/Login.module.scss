@@ -33,8 +33,11 @@ $color-blue: var(--color-btn-blue);
 .login_toolbox {
   display: flex;
   justify-content: space-between;
-  margin: 1em 0;
+  margin: 0.8em 0;
   color: $color-gray-5;
+  > span {
+    cursor: pointer;
+  }
 }
 
 .login_checkbox {
@@ -81,9 +84,10 @@ $color-blue: var(--color-btn-blue);
   > span:nth-child(1) {
     color: $color-gray-4;
   }
-  > span:nth-child(2) {
+  > a:nth-child(2) {
     color: $color-gray-5;
     text-decoration: underline;
+    cursor: pointer;
   }
 }
 
@@ -114,5 +118,9 @@ $color-blue: var(--color-btn-blue);
     width: 100%;
     background-color: var(--color-background);
     border: 0.5px solid $color-gray-4;
+    > img {
+      width: 1.2em;
+      margin-right: 0.3em;
+    }
   }
 }
