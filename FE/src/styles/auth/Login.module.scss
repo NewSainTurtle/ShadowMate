@@ -1,4 +1,4 @@
-@use "../auth/AuthButton.moudle.scss";
+@use "./AuthButton.module.scss";
 $color-white: var(--color-white);
 $color-warning: var(--color-warning);
 $color-gray-4: var(--color-gray-4);
@@ -107,7 +107,7 @@ $color-blue: var(--color-btn-blue);
     display: inline-block;
     position: relative;
     width: 2em;
-    background-color: $color-white;
+    background-color: var(--color-background);
     color: $color-gray-4;
   }
 }
@@ -121,6 +121,9 @@ $color-blue: var(--color-btn-blue);
     > img {
       width: 1.2em;
       margin-right: 0.3em;
+    }
+    > span {
+      color: $color-gray-5;
     }
   }
 }
