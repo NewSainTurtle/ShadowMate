@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingController;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
+import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
@@ -20,7 +22,14 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -197,6 +206,37 @@ public class PlannerSettingControllerTest {
             //given
             final Long userId = 1L;
             final String url = "/api/planner-settings/{userId}/categories/colors";
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+
+        @Test
+        public void 실패_카테고리목록조회_사용자없음() throws Exception {
+            //given
+            final Long userId = 1L;
+            final String url = "/api/planner-settings/{userId}/categories";
+            doThrow(new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER)).when(plannerSettingServiceImpl).getCategoryList(any(Long.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 성공_카테고리목록조회() throws Exception {
+            //given
+            final Long userId = 1L;
+            final String url = "/api/planner-settings/{userId}/categories";
 
             //when
             final ResultActions resultActions = mockMvc.perform(

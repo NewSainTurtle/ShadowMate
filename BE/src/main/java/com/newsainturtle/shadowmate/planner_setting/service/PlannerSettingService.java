@@ -3,8 +3,12 @@ package com.newsainturtle.shadowmate.planner_setting.service;
 
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
 
 public interface PlannerSettingService {
-    void addCategory(Long userId, AddCategoryRequest addCategoryRequest);
-    GetCategoryColorListResponse getCategoryList();
+    void addCategory(final Long userId, final AddCategoryRequest addCategoryRequest);
+
+    GetCategoryColorListResponse getCategoryColorList();
+
+    GetCategoryListResponse getCategoryList(final Long userId);
 }
