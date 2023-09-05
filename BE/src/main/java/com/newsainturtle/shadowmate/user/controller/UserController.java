@@ -18,7 +18,6 @@ public class UserController {
 
     @GetMapping("/{userId}/profiles")
     public ResponseEntity<BaseResponse> getProfile(@PathVariable Long userId) {
-        System.out.println("get");
         ProfileResponse profileResponse = userService.getProfile(userId);
         return ResponseEntity.ok(BaseResponse.from(
                 SUCCESS_PROFILE, profileResponse));
