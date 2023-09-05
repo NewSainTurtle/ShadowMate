@@ -1,10 +1,6 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
-import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
-import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
-import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -32,12 +28,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     @Transactional
-    public void addCategory(final Long userId, final AddCategoryRequest addCategoryRequest) {
-        final User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
-        }
-
+    public void addCategory(final User user, final AddCategoryRequest addCategoryRequest) {
         final CategoryColor categoryColor = categoryColorRepository.findById(addCategoryRequest.getCategoryColorId()).orElse(null);
         if (categoryColor == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR);
@@ -83,12 +74,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     }
 
     @Override
-    public GetCategoryListResponse getCategoryList(final Long userId) {
-        final User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
-        }
-
+    public GetCategoryListResponse getCategoryList(final User user) {
         final List<Category> result = categoryRepository.findByUser(user);
         List<GetCategoryResponse> categoryList = new ArrayList<>();
 

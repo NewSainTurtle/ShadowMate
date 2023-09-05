@@ -24,27 +24,30 @@ public class PlannerSettingController {
     private final AuthService authServiceImpl;
 
     @PostMapping("/{userId}/categories")
-    public ResponseEntity<BaseResponse> addCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<BaseResponse> addCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                     @PathVariable("userId") final Long userId,
                                                     @RequestBody @Valid final AddCategoryRequest addCategoryRequest) {
-        plannerSettingServiceImpl.addCategory(userId, addCategoryRequest);
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY));
     }
 
     @GetMapping("/{userId}/categories")
-    public ResponseEntity<BaseResponse> getCategoryColor(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<BaseResponse> getCategoryColor(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                          @PathVariable("userId") final Long userId) {
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_LIST, plannerSettingServiceImpl.getCategoryList(userId)));
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_LIST, plannerSettingServiceImpl.getCategoryList(principalDetails.getUser())));
     }
 
     @GetMapping("/{userId}/categories/colors")
-    public ResponseEntity<BaseResponse> getCategoryColorList(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<BaseResponse> getCategoryColorList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                              @PathVariable("userId") final Long userId) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingServiceImpl.getCategoryColorList()));
     }
 
     @PutMapping("/{userId}/access-scopes")
-    public ResponseEntity<BaseResponse> setAccessScope(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public ResponseEntity<BaseResponse> setAccessScope(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final SetAccessScopeRequest setAccessScopeRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
