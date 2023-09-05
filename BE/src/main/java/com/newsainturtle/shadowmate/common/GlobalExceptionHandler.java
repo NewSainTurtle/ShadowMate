@@ -57,7 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({UserException.class})
     public ResponseEntity<ErrorResponse> handlePlannerSettingException(final UserException exception) {
-        log.warn("PlannerSettingException occur: ", exception);
+        log.warn("UserException occur: ", exception);
         return this.makeErrorResponseEntity(exception.getErrorResult());
     }
 
