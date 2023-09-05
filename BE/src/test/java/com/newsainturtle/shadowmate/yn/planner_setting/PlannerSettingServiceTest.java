@@ -222,21 +222,6 @@ class PlannerSettingServiceTest {
                 .build();
 
         @Test
-        public void 실패_없는사용자() {
-            //given
-            final Long userId = 2L;
-            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
-                    .plannerAccessScope("비공개")
-                    .build();
-
-            //when
-            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(userId, user, request));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.UNREGISTERED_USER);
-        }
-
-        @Test
         public void 실패_잘못된범위값() {
             //given
             final Long userId = 1L;
@@ -245,7 +230,7 @@ class PlannerSettingServiceTest {
                     .build();
 
             //when
-            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(userId, user, request));
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(user, request));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
@@ -260,7 +245,7 @@ class PlannerSettingServiceTest {
                     .build();
 
             //when
-            plannerSettingService.setAccessScope(userId, user, request);
+            plannerSettingService.setAccessScope(user, request);
 
             //then
             verify(userRepository, times(1)).save(any(User.class));
