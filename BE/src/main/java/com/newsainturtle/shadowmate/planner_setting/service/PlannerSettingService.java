@@ -14,6 +14,6 @@ public interface PlannerSettingService {
 
     GetCategoryListResponse getCategoryList(final Long userId);
 
-    void setAccessScope(final Long userId, final User user, final SetAccessScopeRequest setAccessScopeRequest);
-  
+    void setAccessScope(final User user, final SetAccessScopeRequest setAccessScopeRequest);
+
 }

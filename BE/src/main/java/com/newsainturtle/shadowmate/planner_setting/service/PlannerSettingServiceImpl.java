@@ -62,10 +62,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     @Transactional
-    public void setAccessScope(final Long userId, final User user, final SetAccessScopeRequest setAccessScopeRequest) {
-        if (!userId.equals(user.getId())) {
-            throw new PlannerSettingException(PlannerSettingErrorResult.UNREGISTERED_USER);
-        }
+    public void setAccessScope(final User user, final SetAccessScopeRequest setAccessScopeRequest) {
         final PlannerAccessScope accessScope = PlannerAccessScope.parsing(setAccessScopeRequest.getPlannerAccessScope());
         if (accessScope == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
@@ -83,8 +80,8 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
                 .build();
 
         userRepository.save(changeUser);
-  }
-  
+    }
+
     @Override
     public GetCategoryListResponse getCategoryList(final Long userId) {
         final User user = userRepository.findById(userId).orElse(null);
