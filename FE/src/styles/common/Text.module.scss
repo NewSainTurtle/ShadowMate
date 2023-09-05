@@ -1,27 +1,14 @@
-.smallText {
-  font-size: 0.7rem;
-}
+$text: (
+  small: 0.875rem,
+  default: 1rem,
+  semi-medium: 1.125rem,
+  medium: 1.3rem,
+  semi-large: 2rem,
+  large: 2.4rem,
+);
 
-.caption {
-  font-size: 0.875rem;
-}
-
-.text {
-  font-size: 1rem;
-}
-
-.groupTitle {
-  font-size: 1.375rem;
-}
-
-.textTitle {
-  font-size: 1.625rem;
-}
-
-.pageTitle {
-  font-size: 2.125rem;
-}
-
-.title {
-  font-size: 2.625rem;
+@each $key, $value in $text {
+  .text-#{$key} {
+    font-size: $value;
+  }
 }

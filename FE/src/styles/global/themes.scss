@@ -13,10 +13,17 @@ $color-warning: #ff5f5f;
   @each $key, $value in $color-gray {
     #{$key}: $value;
   }
-  color-white: #fff;
+  color-white: $color-white;
   color-black: $color-black;
   color-dark: $color-dark;
-  color-warning: #ff5f5f;
+  color-warning: $color-warning;
+}
+
+* {
+  --color-white: #{$color-white};
+  --color-black: #{$color-black};
+  --color-dark: #{$color-dark};
+  --color-warning: #{$color-warning};
 }
 
 html[data-theme="light"] {

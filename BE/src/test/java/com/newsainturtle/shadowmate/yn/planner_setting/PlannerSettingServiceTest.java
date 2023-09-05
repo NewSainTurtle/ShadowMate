@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.yn.planner_setting;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
 import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -144,19 +145,67 @@ class PlannerSettingServiceTest {
 
     @Nested
     class 플래너설정_조회 {
+        final User user = User.builder()
+                .email("test@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("거북이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+        final CategoryColor categoryColor = CategoryColor.builder()
+                .categoryColorCode("D9B5D9")
+                .build();
+        final Long userId = 1L;
+        final Category category = Category.builder()
+                .categoryColor(categoryColor)
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build();
+
         @Test
         public void 카테고리색상목록조회() {
             //given
             final List<CategoryColor> list = new ArrayList<>();
-            list.add(CategoryColor.builder().categoryColorCode("FFCBE1").build());
+            list.add(categoryColor);
             doReturn(list).when(categoryColorRepository).findAll();
 
             //when
-            final GetCategoryColorListResponse result = plannerSettingService.getCategoryList();
+            final GetCategoryColorListResponse result = plannerSettingService.getCategoryColorList();
 
             //then
             assertThat(result.getCategoryColorList()).isNotNull();
             assertThat(result.getCategoryColorList().size()).isEqualTo(1);
+        }
+
+        @Test
+        public void 실패_카테고리목록조회_사용자없음() {
+            //given
+            doReturn(Optional.empty()).when(userRepository).findById(userId);
+
+            //when
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.getCategoryList(userId));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.UNREGISTERED_USER);
+        }
+
+        @Test
+        public void 성공_카테고리목록조회() {
+            //given
+            final List<Category> list = new ArrayList<>();
+            list.add(category);
+            doReturn(Optional.of(user)).when(userRepository).findById(userId);
+            doReturn(list).when(categoryRepository).findByUser(user);
+
+            //when
+            final GetCategoryListResponse result = plannerSettingService.getCategoryList(userId);
+
+            //then
+            assertThat(result.getCategoryList()).isNotNull();
+            assertThat(result.getCategoryList().size()).isEqualTo(1);
         }
     }
 

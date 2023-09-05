@@ -29,10 +29,16 @@ public class PlannerSettingController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY));
     }
 
+    @GetMapping("/{userId}/categories")
+    public ResponseEntity<BaseResponse> getCategoryColor(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                         @PathVariable("userId") final Long userId) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_LIST, plannerSettingServiceImpl.getCategoryList(userId)));
+    }
+
     @GetMapping("/{userId}/categories/colors")
     public ResponseEntity<BaseResponse> getCategoryColorList(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                              @PathVariable("userId") final Long userId) {
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingServiceImpl.getCategoryList()));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingServiceImpl.getCategoryColorList()));
     }
 
     @PutMapping("/{userId}/access-scopes")
