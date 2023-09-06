@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "@styles/auth/Login.module.scss";
-import InputStyles from "@components/common/Input";
+import Input from "@components/common/Input";
 import AuthButton from "../AuthButton";
 import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
@@ -13,8 +13,8 @@ const Login = () => {
       <div className={styles.login_container}>
         <div className={styles.login_logo}>Login</div>
         <div className={styles.login_input}>
-          <InputStyles name="id" types="default" placeholder="이메일" />
-          <InputStyles name="password" types="password" placeholder="비밀번호" />
+          <Input name="id" types="default" placeholder="이메일" />
+          <Input name="password" types="password" placeholder="비밀번호" />
         </div>
         <div className={styles.login_toolbox}>
           <div className={styles.login_checkbox}>
