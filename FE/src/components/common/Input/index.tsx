@@ -13,7 +13,7 @@ type Props = {
   onKeyPress?: React.KeyboardEventHandler<HTMLInputElement>;
 };
 
-const InputStyles = ({ types, ...rest }: Props) => {
+const Input = ({ types, ...rest }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -48,10 +48,10 @@ const InputStyles = ({ types, ...rest }: Props) => {
   );
 };
 
-InputStyles.defaultProps = {
+Input.defaultProps = {
   name: "input이름",
   placeholder: "input설명",
   types: "default",
 };
 
-export default InputStyles;
+export default Input;

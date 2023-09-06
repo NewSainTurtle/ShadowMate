@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, ReactNode } from "react";
-import styles from "@styles/auth/AuthButton.moudle.scss";
+import styles from "@styles/auth/AuthButton.module.scss";
 import Text from "@components/common/Text";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 const AuthButton = ({ children, ...rest }: Props) => {
   return (
     <div className={styles.button} {...rest}>
-      <Text types="small">{children}</Text>
+      <Text types="medium">{children}</Text>
     </div>
   );
 };

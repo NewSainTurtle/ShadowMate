@@ -1,4 +1,4 @@
-$color-border: 2px solid var(--color-gray-3);
+$color-border: 1px solid var(--color-gray-3);
 $color-text-placeholder: var(--color-gray-4);
 $color-text: var(--color-text);
 $color-icon: var(--color-gray-5);
@@ -14,7 +14,7 @@ input__underline {
   width: 100%;
 
   & input {
-    font-size: 1.125rem;
+    font-size: 1rem;
     padding-left: 0.25em;
     color: $color-text;
 
