@@ -1,0 +1,38 @@
+.landing_container {
+  a > * {
+    width: 18em;
+  }
+}
+
+.landing {
+  &_backgroundImg {
+    position: fixed;
+    right: 0%;
+    width: 70%;
+    height: 100%;
+  }
+
+  &_content {
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    transform: translate(-15%, -50%);
+
+    align-items: center;
+    text-align: center;
+  }
+
+  &_title {
+    font: {
+      family: Sansita;
+      size: 3rem;
+      style: italic;
+      weight: 800;
+    }
+    margin: 0.5em 0;
+  }
+
+  &_description {
+    margin: 2em 0;
+  }
+}
