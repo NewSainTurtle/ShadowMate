@@ -1,5 +1,5 @@
 import React from "react";
-import MainPage from "@pages/MainPage";
+import MainPage from "@pages/LandingPage";
 import { describe, expect } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react";
 
