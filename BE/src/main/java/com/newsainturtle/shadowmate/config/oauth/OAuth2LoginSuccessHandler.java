@@ -22,12 +22,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("request = " + request);
-        System.out.println("response = " + response);
-        System.out.println("authentication = " + authentication.getDetails());
-        System.out.println("authentication = " + authentication.getPrincipal());
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        System.out.println("principalDetails.getUser().getEmail() = " + principalDetails.getUser().getEmail());
 
 
         String jwtToken = jwtProvider.createToken(principalDetails);
