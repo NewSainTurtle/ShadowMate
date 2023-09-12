@@ -3,7 +3,6 @@ import styles from "@styles/planner/day.module.scss";
 import { AddPhotoAlternateOutlined, RemoveCircle } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import Text from "@components/common/Text";
-import Dday from "@components/common/Dday";
 
 interface Props {
   title: string;
@@ -30,10 +29,10 @@ const FileImg = () => {
   };
 
   return (
-    <div className={styles["fileImg-container"]}>
+    <div className={styles["ment-preview__box"]}>
       <input type="file" id="imageFile" accept="image/*" onChange={(e) => saveImgFile(e)} />
       {imgURL ? (
-        <div className={styles["fileImg-preview__delete"]}>
+        <div className={styles["ment-preview__img"]}>
           <img src={imgURL} alt="img-preview" />
           <IconButton disableRipple onClick={() => imgDelete()}>
             <RemoveCircle fontSize="small" />
@@ -41,7 +40,7 @@ const FileImg = () => {
         </div>
       ) : (
         <label htmlFor="imageFile">
-          <div className={styles["fileImg-preview"]}>
+          <div className={styles["ment-preview__img__none"]}>
             <AddPhotoAlternateOutlined />
           </div>
         </label>
@@ -52,11 +51,13 @@ const FileImg = () => {
 
 const RemarksColumn = ({ title, children, fileImg }: Props) => {
   return (
-    <div className={styles.remark_box}>
-      <Text types="medium" bold>
-        {title}
-      </Text>
-      <Text types="semi-medium">{children}</Text>
+    <div className={styles["ment-container"]}>
+      <div className={styles["ment-content__box"]}>
+        <Text types="medium" bold>
+          {title}
+        </Text>
+        <Text types="semi-medium">{children}</Text>
+      </div>
       {fileImg && <FileImg />}
     </div>
   );
