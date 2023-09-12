@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 const values = [
   { icon: <CalendarToday />, message: "월별", link: "/month" },
   { icon: <EventNote />, message: "주별", link: "/week" },
-  { icon: <Today />, message: "일별", link: "/day" },
+  { icon: <Today />, message: "일별", link: `/day`, state: { date: new Date() } },
   { icon: <Groups />, message: "소셜", link: "/social" },
 ];
 
@@ -15,7 +15,7 @@ const Menu = () => {
   return (
     <div className={styles.menu_container}>
       {values.map((item) => (
-        <NavLink className={styles.menu_item} to={item.link}>
+        <NavLink className={styles.menu_item} to={item.link} state={item.state} key={item.link}>
           {item.icon}
           <Text types="small">{item.message}</Text>
         </NavLink>
