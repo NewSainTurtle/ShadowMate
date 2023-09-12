@@ -49,7 +49,7 @@ const FileImg = () => {
   );
 };
 
-const RemarksColumn = ({ title, children, fileImg }: Props) => {
+const Ment = ({ title, children, fileImg }: Props) => {
   return (
     <div className={styles["ment-container"]}>
       <div className={styles["ment-content__box"]}>
@@ -63,10 +63,10 @@ const RemarksColumn = ({ title, children, fileImg }: Props) => {
   );
 };
 
-RemarksColumn.defaultProps = {
+Ment.defaultProps = {
   title: "title",
   children: "내용이 들어갑니다.",
   fileImg: false,
 };
 
-export default RemarksColumn;
+export default Ment;
