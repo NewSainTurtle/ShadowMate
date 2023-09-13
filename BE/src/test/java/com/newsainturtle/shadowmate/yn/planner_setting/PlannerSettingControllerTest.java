@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingController;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.AddDdayRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.UpdateCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -24,6 +25,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -496,6 +502,146 @@ public class PlannerSettingControllerTest {
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(setAccessScopeRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+
+    @Nested
+    class 디데이등록 {
+        final String url = "/api/planner-settings/{userId}/d-days";
+
+        @Test
+        public void 실패_없는사용자() throws Exception {
+            //given
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle("생일")
+                    .ddayDate("2023-01-27")
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addDdayRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        public void 실패_타이틀Null() throws Exception {
+            //given
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle(null)
+                    .ddayDate("2023-01-27")
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addDdayRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_유효길이가아닌타이틀() throws Exception {
+            //given
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle("12345678901234567890123456789012345678901")
+                    .ddayDate("2023-01-27")
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addDdayRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_날짜Null() throws Exception {
+            //given
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(null)
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addDdayRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_유효하지않은날짜() throws Exception {
+            //given
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle("생일")
+                    .ddayDate("2023-13-27")
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addDdayRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_잘못된날짜포멧() throws Exception {
+            //given
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle("생일")
+                    .ddayDate("2023.01.27")
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addDdayRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 성공() throws Exception {
+            //given
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle("생일")
+                    .ddayDate("2023-01-27")
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addDdayRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
