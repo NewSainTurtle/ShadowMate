@@ -127,11 +127,11 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     @Transactional
     public void addDday(final User user, final AddDdayRequest addDdayRequest) {
         final Dday dday = Dday.builder()
-                .ddayDate(addDdayRequest.getDdayDate())
+                .ddayDate(Date.valueOf(addDdayRequest.getDdayDate()))
                 .ddayTitle(addDdayRequest.getDdayTitle())
                 .user(user)
                 .build();
-        
+
         ddayRepository.save(dday);
     }
 }

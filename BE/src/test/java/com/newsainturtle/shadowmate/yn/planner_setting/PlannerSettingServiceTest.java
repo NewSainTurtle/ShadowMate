@@ -307,7 +307,7 @@ class PlannerSettingServiceTest {
                 .build();
         final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                 .ddayTitle("생일")
-                .ddayDate(Date.valueOf("2023-02-09"))
+                .ddayDate("2023-02-09")
                 .build();
         final Dday dday = Dday.builder()
                 .ddayTitle("생일")
