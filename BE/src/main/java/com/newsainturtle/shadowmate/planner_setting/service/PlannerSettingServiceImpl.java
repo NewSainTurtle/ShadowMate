@@ -26,20 +26,50 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     private final CategoryColorRepository categoryColorRepository;
     private final UserRepository userRepository;
 
-    @Override
-    @Transactional
-    public void addCategory(final User user, final AddCategoryRequest addCategoryRequest) {
-        final CategoryColor categoryColor = categoryColorRepository.findById(addCategoryRequest.getCategoryColorId()).orElse(null);
+    private Category getCategory(final Long categoryId) {
+        final Category category = categoryRepository.findById(categoryId).orElse(null);
+        if (category == null || category.getCategoryRemove()) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
+        }
+        return category;
+    }
+
+    private CategoryColor getCategoryColor(final Long categoryColorId) {
+        final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
         if (categoryColor == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR);
         }
+        return categoryColor;
+    }
 
+    @Override
+    @Transactional
+    public void addCategory(final User user, final AddCategoryRequest addCategoryRequest) {
+        final CategoryColor categoryColor = getCategoryColor(addCategoryRequest.getCategoryColorId());
         final Category category = Category.builder()
                 .categoryTitle(addCategoryRequest.getCategoryTitle())
                 .categoryEmoticon(addCategoryRequest.getCategoryEmoticon())
                 .categoryRemove(false)
                 .categoryColor(categoryColor)
                 .user(user)
+                .build();
+
+        categoryRepository.save(category);
+    }
+
+    @Override
+    @Transactional
+    public void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest) {
+        final Category findCategory = getCategory(updateCategoryRequest.getCategoryId());
+        final CategoryColor categoryColor = getCategoryColor(updateCategoryRequest.getCategoryColorId());
+        final Category category = Category.builder()
+                .id(findCategory.getId())
+                .categoryTitle(updateCategoryRequest.getCategoryTitle())
+                .categoryEmoticon(updateCategoryRequest.getCategoryEmoticon())
+                .categoryRemove(findCategory.getCategoryRemove())
+                .categoryColor(categoryColor)
+                .user(user)
+                .createTime(findCategory.getCreateTime())
                 .build();
 
         categoryRepository.save(category);
