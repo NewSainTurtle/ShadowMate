@@ -1,4 +1,4 @@
-package com.newsainturtle.shadowmate.yn.planner_setting;
+package com.newsainturtle.shadowmate.yn.planner_setting.repository;
 
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
