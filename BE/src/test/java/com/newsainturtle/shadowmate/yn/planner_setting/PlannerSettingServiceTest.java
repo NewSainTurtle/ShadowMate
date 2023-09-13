@@ -142,9 +142,8 @@ class PlannerSettingServiceTest {
                 .categoryColor(categoryColor)
                 .user(user)
                 .build();
-        final Long userId = 1L;
         final UpdateCategoryRequest request = UpdateCategoryRequest.builder()
-                .categoryId(userId)
+                .categoryId(1L)
                 .categoryTitle("국어")
                 .categoryEmoticon("🍅")
                 .categoryColorId(1L)
