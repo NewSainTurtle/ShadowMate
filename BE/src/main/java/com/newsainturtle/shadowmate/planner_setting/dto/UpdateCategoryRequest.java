@@ -22,7 +22,7 @@ public class UpdateCategoryRequest {
     @NotNull
     private Long categoryColorId;
 
-    @Size(max = 2)
+    @Size(max = 2, message = "이모티콘은 하나만 넣을 수 있습니다.")
     private String categoryEmoticon;
 
     @Builder

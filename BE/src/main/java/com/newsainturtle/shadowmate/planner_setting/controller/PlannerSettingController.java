@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.UpdateCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,15 @@ public class PlannerSettingController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY));
+    }
+
+    @PutMapping("/{userId}/categories")
+    public ResponseEntity<BaseResponse> updateCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final UpdateCategoryRequest updateCategoryRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.updateCategory(principalDetails.getUser(), updateCategoryRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_CATEGORY));
     }
 
     @GetMapping("/{userId}/categories")
