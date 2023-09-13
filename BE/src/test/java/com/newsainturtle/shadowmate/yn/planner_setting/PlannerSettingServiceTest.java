@@ -1,9 +1,6 @@
 package com.newsainturtle.shadowmate.yn.planner_setting;
 
-import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryColorListResponse;
-import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.GetCategoryListResponse;
+import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -126,6 +123,77 @@ class PlannerSettingServiceTest {
     }
 
     @Nested
+    class 카테고리수정 {
+        final User user = User.builder()
+                .email("test@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("거북이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+        final CategoryColor categoryColor = CategoryColor.builder()
+                .categoryColorCode("D9B5D9")
+                .build();
+        final Category category = Category.builder()
+                .categoryTitle("수학")
+                .categoryEmoticon("🌀")
+                .categoryRemove(false)
+                .categoryColor(categoryColor)
+                .user(user)
+                .build();
+        final Long userId = 1L;
+        final UpdateCategoryRequest request = UpdateCategoryRequest.builder()
+                .categoryId(userId)
+                .categoryTitle("국어")
+                .categoryEmoticon("🍅")
+                .categoryColorId(1L)
+                .build();
+
+        @Test
+        public void 실패_없는카테고리() {
+            //given
+            doReturn(Optional.empty()).when(categoryRepository).findById(request.getCategoryId());
+
+            //when
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY);
+        }
+
+        @Test
+        public void 실패_없는카테고리색상() {
+            //given
+            doReturn(Optional.of(category)).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
+
+            //when
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR);
+        }
+
+        @Test
+        public void 성공_카테고리등록() {
+            //given
+            doReturn(Optional.of(category)).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
+
+            //when
+            plannerSettingService.updateCategory(user, request);
+
+            //then
+
+            //verify
+            verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
+            verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
+            verify(categoryRepository, times(1)).save(any(Category.class));
+        }
+    }
+
+    @Nested
     class 플래너설정_조회 {
         final User user = User.builder()
                 .email("test@test.com")
@@ -163,7 +231,7 @@ class PlannerSettingServiceTest {
         }
 
         @Test
-        public void 성공_카테고리목록조회() {
+        public void 카테고리목록조회() {
             //given
             final List<Category> list = new ArrayList<>();
             list.add(category);
