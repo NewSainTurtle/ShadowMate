@@ -82,4 +82,22 @@ public class DdayRepositoryTest {
         assertThat(ddayList.size()).isEqualTo(2);
         assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("시험");
     }
+
+    @Test
+    public void 디데이삭제() {
+        //given
+        final Dday dday = Dday.builder()
+                .ddayTitle("생일")
+                .ddayDate(Date.valueOf("2023-02-09"))
+                .user(user)
+                .build();
+        final Dday saveDday = ddayRepository.save(dday);
+
+        //when
+        ddayRepository.deleteById(saveDday.getId());
+        final Dday checkDday = ddayRepository.findById(saveDday.getId()).orElse(null);
+
+        //then
+        assertThat(checkDday).isNull();
+    }
 }
