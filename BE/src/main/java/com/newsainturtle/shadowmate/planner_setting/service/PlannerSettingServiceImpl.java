@@ -134,4 +134,18 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
         ddayRepository.save(dday);
     }
+
+    @Override
+    public GetDdayListResponse getDdayList(final User user) {
+        final List<Dday> result = ddayRepository.findByUserOrderByDdayDateDesc(user);
+        List<GetDdayResponse> ddayList = new ArrayList<>();
+        for (Dday dday : result) {
+            ddayList.add(GetDdayResponse.builder()
+                    .ddayId(dday.getId())
+                    .ddayTitle(dday.getDdayTitle())
+                    .ddayDate(String.valueOf(dday.getDdayDate()))
+                    .build());
+        }
+        return GetDdayListResponse.builder().ddayList(ddayList).build();
+    }
 }

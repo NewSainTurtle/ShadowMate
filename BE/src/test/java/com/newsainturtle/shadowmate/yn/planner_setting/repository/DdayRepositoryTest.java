@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Date;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,5 +58,28 @@ public class DdayRepositoryTest {
         assertThat(saveDday.getDdayDate()).isEqualTo("2023-02-09");
         assertThat(saveDday.getDdayTitle()).isEqualTo("생일");
         assertThat(saveDday.getUser()).isEqualTo(user);
+    }
+
+    @Test
+    public void 디데이조회_미래순() {
+        //given
+        ddayRepository.save(Dday.builder()
+                .ddayTitle("생일")
+                .ddayDate(Date.valueOf("2023-02-09"))
+                .user(user)
+                .build());
+        ddayRepository.save(Dday.builder()
+                .ddayTitle("시험")
+                .ddayDate(Date.valueOf("2024-09-14"))
+                .user(user)
+                .build());
+
+        //when
+        final List<Dday> ddayList = ddayRepository.findByUserOrderByDdayDateDesc(user);
+
+        //then
+        assertThat(ddayList).isNotNull();
+        assertThat(ddayList.size()).isEqualTo(2);
+        assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("시험");
     }
 }
