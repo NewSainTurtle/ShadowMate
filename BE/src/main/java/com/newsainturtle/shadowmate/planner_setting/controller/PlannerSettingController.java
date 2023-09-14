@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.AddDdayRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.UpdateCategoryRequest;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingService;
@@ -63,5 +64,14 @@ public class PlannerSettingController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.setAccessScope(principalDetails.getUser(), setAccessScopeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SET_PLANNER_ACCESS_SCOPE));
+    }
+
+    @PostMapping("/{userId}/d-days")
+    public ResponseEntity<BaseResponse> addDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                @PathVariable("userId") final Long userId,
+                                                @RequestBody @Valid final AddDdayRequest addDdayRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.addDday(principalDetails.getUser(), addDdayRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DDAY));
     }
 }

@@ -3,10 +3,12 @@ package com.newsainturtle.shadowmate.yn.planner_setting;
 import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
+import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -19,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,9 @@ class PlannerSettingServiceTest {
 
     @Mock
     private CategoryColorRepository categoryColorRepository;
+
+    @Mock
+    private DdayRepository ddayRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -286,5 +292,36 @@ class PlannerSettingServiceTest {
             //then
             verify(userRepository, times(1)).save(any(User.class));
         }
+    }
+
+    @Test
+    public void 디데이등록_성공() {
+        //given
+        final User user = User.builder()
+                .email("test@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("거북이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+        final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                .ddayTitle("생일")
+                .ddayDate("2023-02-09")
+                .build();
+        final Dday dday = Dday.builder()
+                .ddayTitle("생일")
+                .ddayDate(Date.valueOf("2023-02-09"))
+                .user(user)
+                .build();
+        doReturn(dday).when(ddayRepository).save(any(Dday.class));
+
+        //when
+        plannerSettingService.addDday(user, addDdayRequest);
+
+        //then
+
+        //verity
+        verify(ddayRepository, times(1)).save(any(Dday.class));
     }
 }

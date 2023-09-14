@@ -3,10 +3,12 @@ package com.newsainturtle.shadowmate.planner_setting.service;
 import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
+import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryColorRepository categoryColorRepository;
+    private final DdayRepository ddayRepository;
     private final UserRepository userRepository;
 
     private Category getCategory(final Long categoryId) {
@@ -82,6 +86,22 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     }
 
     @Override
+    public GetCategoryListResponse getCategoryList(final User user) {
+        final List<Category> result = categoryRepository.findByUser(user);
+        List<GetCategoryResponse> categoryList = new ArrayList<>();
+
+        for (Category category : result) {
+            categoryList.add(GetCategoryResponse.builder()
+                    .categoryId(category.getId())
+                    .categoryColorCode(category.getCategoryColor().getCategoryColorCode())
+                    .categoryEmoticon(category.getCategoryEmoticon())
+                    .categoryTitle(category.getCategoryTitle())
+                    .build());
+        }
+        return GetCategoryListResponse.builder().categoryList(categoryList).build();
+    }
+
+    @Override
     @Transactional
     public void setAccessScope(final User user, final SetAccessScopeRequest setAccessScopeRequest) {
         final PlannerAccessScope accessScope = PlannerAccessScope.parsing(setAccessScopeRequest.getPlannerAccessScope());
@@ -104,18 +124,14 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     }
 
     @Override
-    public GetCategoryListResponse getCategoryList(final User user) {
-        final List<Category> result = categoryRepository.findByUser(user);
-        List<GetCategoryResponse> categoryList = new ArrayList<>();
+    @Transactional
+    public void addDday(final User user, final AddDdayRequest addDdayRequest) {
+        final Dday dday = Dday.builder()
+                .ddayDate(Date.valueOf(addDdayRequest.getDdayDate()))
+                .ddayTitle(addDdayRequest.getDdayTitle())
+                .user(user)
+                .build();
 
-        for (Category category : result) {
-            categoryList.add(GetCategoryResponse.builder()
-                    .categoryId(category.getId())
-                    .categoryColorCode(category.getCategoryColor().getCategoryColorCode())
-                    .categoryEmoticon(category.getCategoryEmoticon())
-                    .categoryTitle(category.getCategoryTitle())
-                    .build());
-        }
-        return GetCategoryListResponse.builder().categoryList(categoryList).build();
+        ddayRepository.save(dday);
     }
 }

@@ -15,4 +15,6 @@ public interface PlannerSettingService {
 
     void setAccessScope(final User user, final SetAccessScopeRequest setAccessScopeRequest);
 
+    void addDday(final User user, final AddDdayRequest addDdayRequest);
+
 }

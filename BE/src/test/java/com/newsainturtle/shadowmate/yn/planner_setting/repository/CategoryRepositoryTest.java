@@ -1,4 +1,4 @@
-package com.newsainturtle.shadowmate.yn.planner_setting;
+package com.newsainturtle.shadowmate.yn.planner_setting.repository;
 
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
