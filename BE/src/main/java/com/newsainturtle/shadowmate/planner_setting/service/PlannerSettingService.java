@@ -17,4 +17,6 @@ public interface PlannerSettingService {
 
     void addDday(final User user, final AddDdayRequest addDdayRequest);
 
+    GetDdayListResponse getDdayList(final User user);
+
 }
