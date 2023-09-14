@@ -49,21 +49,20 @@ class PlannerSettingServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    final User user = User.builder()
+            .email("test@test.com")
+            .password("123456")
+            .socialLogin(SocialType.BASIC)
+            .nickname("거북이")
+            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .withdrawal(false)
+            .build();
 
     @Nested
     class 카테고리등록 {
-        final User user = User.builder()
-                .email("test@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build();
         final CategoryColor categoryColor = CategoryColor.builder()
                 .categoryColorCode("D9B5D9")
                 .build();
-        final Long userId = 1L;
         final AddCategoryRequest request = AddCategoryRequest.builder()
                 .categoryTitle("국어")
                 .categoryEmoticon("🍅")
@@ -130,14 +129,6 @@ class PlannerSettingServiceTest {
 
     @Nested
     class 카테고리수정 {
-        final User user = User.builder()
-                .email("test@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build();
         final CategoryColor categoryColor = CategoryColor.builder()
                 .categoryColorCode("D9B5D9")
                 .build();
@@ -199,15 +190,7 @@ class PlannerSettingServiceTest {
     }
 
     @Nested
-    class 플래너설정_조회 {
-        final User user = User.builder()
-                .email("test@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build();
+    class 카테고리설정_조회 {
         final CategoryColor categoryColor = CategoryColor.builder()
                 .categoryColorCode("D9B5D9")
                 .build();
@@ -253,16 +236,6 @@ class PlannerSettingServiceTest {
 
     @Nested
     class 플래너공개여부설정 {
-        final User user = User.builder()
-                .id(1L)
-                .email("test@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build();
-
         @Test
         public void 실패_잘못된범위값() {
             //given
@@ -323,5 +296,46 @@ class PlannerSettingServiceTest {
 
         //verity
         verify(ddayRepository, times(1)).save(any(Dday.class));
+    }
+
+    @Nested
+    class 디데이조회 {
+        @Test
+        public void 등록된디데이목록이없음() {
+            //given
+            final List<Dday> list = new ArrayList<>();
+            doReturn(list).when(ddayRepository).findByUserOrderByDdayDateDesc(user);
+
+            //when
+            final GetDdayListResponse ddayListResponse = plannerSettingService.getDdayList(user);
+
+            //then
+            assertThat(ddayListResponse.getDdayList()).isNotNull();
+            assertThat(ddayListResponse.getDdayList().size()).isEqualTo(0);
+        }
+
+        @Test
+        public void 등록된디데이목록이있음() {
+            //given
+            final List<Dday> list = new ArrayList<>();
+            list.add(Dday.builder()
+                    .ddayTitle("시험")
+                    .ddayDate(Date.valueOf("2024-09-14"))
+                    .user(user)
+                    .build());
+            list.add(Dday.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(Date.valueOf("2023-02-09"))
+                    .user(user)
+                    .build());
+            doReturn(list).when(ddayRepository).findByUserOrderByDdayDateDesc(user);
+
+            //when
+            final GetDdayListResponse ddayListResponse = plannerSettingService.getDdayList(user);
+
+            //then
+            assertThat(ddayListResponse.getDdayList()).isNotNull();
+            assertThat(ddayListResponse.getDdayList().size()).isEqualTo(2);
+        }
     }
 }
