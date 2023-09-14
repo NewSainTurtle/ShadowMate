@@ -19,4 +19,6 @@ public interface PlannerSettingService {
 
     GetDdayListResponse getDdayList(final User user);
 
+    void removeDday(final User user, final RemoveDdayRequest removeDdayRequest);
+
 }

@@ -148,4 +148,10 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
         }
         return GetDdayListResponse.builder().ddayList(ddayList).build();
     }
+
+    @Override
+    @Transactional
+    public void removeDday(final User user, final RemoveDdayRequest removeDdayRequest) {
+        ddayRepository.deleteByUserAndId(user, removeDdayRequest.getDdayId());
+    }
 }
