@@ -338,4 +338,29 @@ class PlannerSettingServiceTest {
             assertThat(ddayListResponse.getDdayList().size()).isEqualTo(2);
         }
     }
+
+    @Test
+    public void 디데이삭제_성공() {
+        //given
+        final User user = User.builder()
+                .email("test@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("거북이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+        final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder()
+                .ddayId(1L)
+                .build();
+
+        //when
+        plannerSettingService.removeDday(user, removeDdayRequest);
+
+        //then
+
+        //verity
+        verify(ddayRepository, times(1)).deleteByUserAndId(any(), any(Long.class));
+    }
+
 }
