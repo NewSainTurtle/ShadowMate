@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -83,21 +84,66 @@ public class DdayRepositoryTest {
         assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("시험");
     }
 
-    @Test
-    public void 디데이삭제() {
-        //given
-        final Dday dday = Dday.builder()
-                .ddayTitle("생일")
-                .ddayDate(Date.valueOf("2023-02-09"))
-                .user(user)
-                .build();
-        final Dday saveDday = ddayRepository.save(dday);
+    @Nested
+    class 디데이삭제 {
+        @Test
+        public void 실패_나의디데이가아님() {
+            //given
+            final Dday dday = Dday.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(Date.valueOf("2023-02-09"))
+                    .user(user)
+                    .build();
+            final Dday saveDday = ddayRepository.save(dday);
+            final User other = user = userRepository.save(User.builder()
+                    .email("aa@naver.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("다른사람")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build());
 
-        //when
-        ddayRepository.deleteById(saveDday.getId());
-        final Dday checkDday = ddayRepository.findById(saveDday.getId()).orElse(null);
+            //when
+            ddayRepository.deleteByUserAndId(other, saveDday.getId());
+            final Dday checkDday = ddayRepository.findById(saveDday.getId()).orElse(null);
 
-        //then
-        assertThat(checkDday).isNull();
+            //then
+            assertThat(checkDday).isNotNull();
+        }
+
+        @Test
+        public void 실패_없는디데이ID() {
+            //given
+            final Dday dday = Dday.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(Date.valueOf("2023-02-09"))
+                    .user(user)
+                    .build();
+            final Dday saveDday = ddayRepository.save(dday);
+
+            //when
+            ddayRepository.deleteByUserAndId(user, Long.MAX_VALUE);
+
+            //then
+        }
+
+        @Test
+        public void 성공() {
+            //given
+            final Dday dday = Dday.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(Date.valueOf("2023-02-09"))
+                    .user(user)
+                    .build();
+            final Dday saveDday = ddayRepository.save(dday);
+
+            //when
+            ddayRepository.deleteByUserAndId(user, saveDday.getId());
+            final Dday checkDday = ddayRepository.findById(saveDday.getId()).orElse(null);
+
+            //then
+            assertThat(checkDday).isNull();
+        }
     }
 }
