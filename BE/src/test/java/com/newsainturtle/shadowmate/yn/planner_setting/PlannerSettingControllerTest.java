@@ -6,10 +6,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingController;
-import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.AddDdayRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.UpdateCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
@@ -672,6 +669,60 @@ public class PlannerSettingControllerTest {
                 //when
                 final ResultActions resultActions = mockMvc.perform(
                         MockMvcRequestBuilders.get(url, userId)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
+
+        @Nested
+        class 디데이삭제 {
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(1L).build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_디데이ID_Null() throws Exception {
+                //given
+                final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(null).build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(1L).build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
                 );
 
                 //then

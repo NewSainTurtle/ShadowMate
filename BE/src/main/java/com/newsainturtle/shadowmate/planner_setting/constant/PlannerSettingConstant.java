@@ -12,4 +12,5 @@ public class PlannerSettingConstant {
     public static final String SUCCESS_GET_CATEGORY_LIST = "카테고리 목록 조회가 완료되었습니다.";
     public static final String SUCCESS_ADD_DDAY = "디데이 등록이 완료되었습니다.";
     public static final String SUCCESS_GET_DDAY_LIST = "디데이 목록 조회가 완료되었습니다.";
+    public static final String SUCCESS_REMOVE_DDAY = "디데이 삭제가 완료되었습니다.";
 }
