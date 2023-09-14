@@ -3,10 +3,7 @@ package com.newsainturtle.shadowmate.planner_setting.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.AddDdayRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.UpdateCategoryRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -80,5 +77,14 @@ public class PlannerSettingController {
                                                     @PathVariable("userId") final Long userId) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_DDAY_LIST, plannerSettingServiceImpl.getDdayList(principalDetails.getUser())));
+    }
+
+    @DeleteMapping("/{userId}/d-days")
+    public ResponseEntity<BaseResponse> removeDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                   @PathVariable("userId") final Long userId,
+                                                   @RequestBody @Valid final RemoveDdayRequest removeDdayRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.removeDday(principalDetails.getUser(), removeDdayRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DDAY));
     }
 }
