@@ -270,14 +270,6 @@ class PlannerSettingServiceTest {
     @Test
     public void 디데이등록_성공() {
         //given
-        final User user = User.builder()
-                .email("test@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build();
         final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                 .ddayTitle("생일")
                 .ddayDate("2023-02-09")
@@ -361,6 +353,47 @@ class PlannerSettingServiceTest {
 
         //verity
         verify(ddayRepository, times(1)).deleteByUserAndId(any(), any(Long.class));
+    }
+
+    @Nested
+    class 디데이수정 {
+        final UpdateDdayRequest request = UpdateDdayRequest.builder()
+                .ddayId(1L)
+                .ddayTitle("시험")
+                .ddayDate("2023-09-18")
+                .build();
+        final Dday dday = Dday.builder()
+                .ddayTitle("생일")
+                .ddayDate(Date.valueOf("2023-02-09"))
+                .user(user)
+                .build();
+
+        @Test
+        public void 실패_유효하지않은디데이_권한이없는디데이() {
+            //given
+            doReturn(null).when(ddayRepository).findByUserAndId(user,1L);
+
+            //when
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateDday(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_DDAY);
+        }
+
+        @Test
+        public void 성공() {
+            //given
+            doReturn(dday).when(ddayRepository).findByUserAndId(user,1L);
+
+            //when
+            plannerSettingService.updateDday(user, request);
+
+            //then
+
+            //verify
+            verify(ddayRepository, times(1)).findByUserAndId(user,1L);
+            verify(ddayRepository, times(1)).save(any(Dday.class));
+        }
     }
 
 }
