@@ -166,7 +166,7 @@ public class DdayRepositoryTest {
                 .build();
         //when
         ddayRepository.save(changeDday);
-        final Dday findDday = ddayRepository.findById(saveDday.getId()).orElse(null);
+        final Dday findDday = ddayRepository.findByUserAndId(user, saveDday.getId());
 
         //then
         assertThat(findDday).isNotNull();
