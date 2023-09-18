@@ -146,4 +146,33 @@ public class DdayRepositoryTest {
             assertThat(checkDday).isNull();
         }
     }
+
+
+    @Test
+    public void 디데이수정() {
+        //given
+        final Dday dday = Dday.builder()
+                .ddayTitle("생일")
+                .ddayDate(Date.valueOf("2023-02-09"))
+                .user(user)
+                .build();
+        final Dday saveDday = ddayRepository.save(dday);
+        final Dday changeDday = Dday.builder()
+                .id(saveDday.getId())
+                .createTime(saveDday.getCreateTime())
+                .ddayTitle("시험")
+                .ddayDate(Date.valueOf("2023-02-11"))
+                .user(user)
+                .build();
+        //when
+        ddayRepository.save(changeDday);
+        final Dday findDday = ddayRepository.findById(saveDday.getId()).orElse(null);
+
+        //then
+        assertThat(findDday).isNotNull();
+        assertThat(findDday.getDdayTitle()).isEqualTo("시험");
+        assertThat(findDday.getDdayDate()).isEqualTo(Date.valueOf("2023-02-11"));
+    }
+
+
 }
