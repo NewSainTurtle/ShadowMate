@@ -10,8 +10,9 @@ dayjs.locale("ko");
 
 const Header = () => {
   const { state } = useLocation();
+  const date = state?.date || new Date();
 
-  const titleDay = dayjs(state.date).format("YYYY년 M월 DD일 ddd요일");
+  const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
   const [isHeartClick, setIsHeartClick] = useState(false);
   const [heartNum, setHeartNum] = useState(50); // 임시 좋아요 수
   const [isSocialClick, setIsSocialClick] = useState(false);
@@ -29,7 +30,7 @@ const Header = () => {
   return (
     <div className={styles["planner-header"]}>
       <div className={styles["planner-header__date"]}>
-        <Dday comparedDate={state.date} />
+        <Dday comparedDate={date} />
         <Text types="semi-large" bold>
           {titleDay}
         </Text>
