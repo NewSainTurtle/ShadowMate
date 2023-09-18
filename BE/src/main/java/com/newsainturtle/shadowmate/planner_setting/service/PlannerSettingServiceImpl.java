@@ -154,4 +154,22 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     public void removeDday(final User user, final RemoveDdayRequest removeDdayRequest) {
         ddayRepository.deleteByUserAndId(user, removeDdayRequest.getDdayId());
     }
+
+    @Override
+    @Transactional
+    public void updateDday(final User user, final UpdateDdayRequest updateDdayRequest) {
+        final Dday findDday = ddayRepository.findByUserAndId(user, updateDdayRequest.getDdayId());
+        if (findDday == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY);
+        }
+        final Dday dday = Dday.builder()
+                .id(findDday.getId())
+                .createTime(findDday.getCreateTime())
+                .ddayDate(Date.valueOf(updateDdayRequest.getDdayDate()))
+                .ddayTitle(updateDdayRequest.getDdayTitle())
+                .user(findDday.getUser())
+                .build();
+
+        ddayRepository.save(dday);
+    }
 }
