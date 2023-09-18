@@ -87,4 +87,13 @@ public class PlannerSettingController {
         plannerSettingServiceImpl.removeDday(principalDetails.getUser(), removeDdayRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DDAY));
     }
+
+    @PutMapping("/{userId}/d-days")
+    public ResponseEntity<BaseResponse> updateDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                   @PathVariable("userId") final Long userId,
+                                                   @RequestBody @Valid final UpdateDdayRequest updateDdayRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.updateDday(principalDetails.getUser(), updateDdayRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_DDAY));
+    }
 }
