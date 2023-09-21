@@ -730,5 +730,192 @@ public class PlannerSettingControllerTest {
             }
 
         }
+
+        @Nested
+        class 디데이수정 {
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle("생일")
+                        .ddayDate("2023-01-27")
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+
+            }
+
+            @Test
+            public void 실패_디데이ID_Null() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(null)
+                        .ddayTitle("생일")
+                        .ddayDate("2023-01-27")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_타이틀Null() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle(null)
+                        .ddayDate("2023-01-27")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효길이가아닌타이틀() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle("12345678901234567890123456789012345678901")
+                        .ddayDate("2023-01-27")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_날짜Null() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle("생일")
+                        .ddayDate(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은날짜() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle("생일")
+                        .ddayDate("2023-13-27")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_잘못된날짜포멧() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle("생일")
+                        .ddayDate("2023.01.27")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은디데이() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle("생일")
+                        .ddayDate("2023-01-27")
+                        .build();
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY)).when(plannerSettingServiceImpl).updateDday(any(), any(UpdateDdayRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                        .ddayId(1L)
+                        .ddayTitle("생일")
+                        .ddayDate("2023-01-27")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDdayRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
     }
 }

@@ -11,7 +11,10 @@ import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AddDdayRequest {
+public class UpdateDdayRequest {
+
+    @NotNull
+    private Long ddayId;
 
     @NotNull
     @Size(max = 40)
@@ -22,7 +25,8 @@ public class AddDdayRequest {
     private String ddayDate;
 
     @Builder
-    public AddDdayRequest(String ddayTitle, String ddayDate) {
+    public UpdateDdayRequest(Long ddayId, String ddayTitle, String ddayDate) {
+        this.ddayId = ddayId;
         this.ddayTitle = ddayTitle;
         this.ddayDate = ddayDate;
     }
