@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface DdayRepository extends JpaRepository<Dday, Long> {
     List<Dday> findByUserOrderByDdayDateDesc(final User user);
-
     void deleteByUserAndId(final User user, final Long id);
 }

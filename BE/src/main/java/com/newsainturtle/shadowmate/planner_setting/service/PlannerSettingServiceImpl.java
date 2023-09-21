@@ -30,14 +30,6 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     private final DdayRepository ddayRepository;
     private final UserRepository userRepository;
 
-    private Category getCategory(final Long categoryId) {
-        final Category category = categoryRepository.findById(categoryId).orElse(null);
-        if (category == null || category.getCategoryRemove()) {
-            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
-        }
-        return category;
-    }
-
     private CategoryColor getCategoryColor(final Long categoryColorId) {
         final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
         if (categoryColor == null) {
@@ -64,7 +56,10 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     @Override
     @Transactional
     public void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest) {
-        final Category findCategory = getCategory(updateCategoryRequest.getCategoryId());
+        final Category findCategory = categoryRepository.findByUserAndId(user, updateCategoryRequest.getCategoryId());
+        if (findCategory == null || findCategory.getCategoryRemove()) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
+        }
         final CategoryColor categoryColor = getCategoryColor(updateCategoryRequest.getCategoryColorId());
         final Category category = Category.builder()
                 .id(findCategory.getId())

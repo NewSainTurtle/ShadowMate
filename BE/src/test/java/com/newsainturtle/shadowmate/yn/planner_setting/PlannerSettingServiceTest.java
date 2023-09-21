@@ -149,7 +149,7 @@ class PlannerSettingServiceTest {
         @Test
         public void 실패_없는카테고리() {
             //given
-            doReturn(Optional.empty()).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
 
             //when
             final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, request));
@@ -161,7 +161,7 @@ class PlannerSettingServiceTest {
         @Test
         public void 실패_없는카테고리색상() {
             //given
-            doReturn(Optional.of(category)).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
             doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
 
             //when
@@ -174,7 +174,7 @@ class PlannerSettingServiceTest {
         @Test
         public void 성공_카테고리등록() {
             //given
-            doReturn(Optional.of(category)).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
             doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
 
             //when
