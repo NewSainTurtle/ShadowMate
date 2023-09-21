@@ -69,6 +69,7 @@ class PlannerSettingServiceTest {
                 .categoryColorId(1L)
                 .build();
         final Category category = Category.builder()
+                .id(1L)
                 .categoryTitle(request.getCategoryTitle())
                 .categoryEmoticon(request.getCategoryEmoticon())
                 .categoryRemove(false)
@@ -101,9 +102,11 @@ class PlannerSettingServiceTest {
             doReturn(category).when(categoryRepository).save(any(Category.class));
 
             //when
-            plannerSettingService.addCategory(user, addCategoryRequest);
+            final AddCategoryResponse saveCategory = plannerSettingService.addCategory(user, addCategoryRequest);
 
             //then
+            assertThat(saveCategory.getCategoryId()).isNotNull();
+            assertThat(saveCategory.getCategoryId()).isEqualTo(1L);
 
             //verify
             verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
@@ -117,9 +120,11 @@ class PlannerSettingServiceTest {
             doReturn(category).when(categoryRepository).save(any(Category.class));
 
             //when
-            plannerSettingService.addCategory(user, request);
+            final AddCategoryResponse saveCategory = plannerSettingService.addCategory(user, request);
 
             //then
+            assertThat(saveCategory.getCategoryId()).isNotNull();
+            assertThat(saveCategory.getCategoryId()).isEqualTo(1L);
 
             //verify
             verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());

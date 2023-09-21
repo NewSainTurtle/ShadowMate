@@ -40,7 +40,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     @Transactional
-    public void addCategory(final User user, final AddCategoryRequest addCategoryRequest) {
+    public AddCategoryResponse addCategory(final User user, final AddCategoryRequest addCategoryRequest) {
         final CategoryColor categoryColor = getCategoryColor(addCategoryRequest.getCategoryColorId());
         final Category category = Category.builder()
                 .categoryTitle(addCategoryRequest.getCategoryTitle())
@@ -50,7 +50,8 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
                 .user(user)
                 .build();
 
-        categoryRepository.save(category);
+        final Category saveCategory = categoryRepository.save(category);
+        return AddCategoryResponse.builder().categoryId(saveCategory.getId()).build();
     }
 
     @Override

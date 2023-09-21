@@ -5,7 +5,7 @@ import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface PlannerSettingService {
-    void addCategory(final User user, final AddCategoryRequest addCategoryRequest);
+    AddCategoryResponse addCategory(final User user, final AddCategoryRequest addCategoryRequest);
 
     void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest);
 
