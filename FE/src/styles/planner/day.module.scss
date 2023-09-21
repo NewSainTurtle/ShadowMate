@@ -1,41 +1,48 @@
 @use "@styles/common/Text.module.scss";
 $color-gray_4: var(--color-gray-4);
+$color-gray_3: var(--color-gray-3);
 $color-gray_2: var(--color-gray-2);
 $color-gray_1: var(--color-gray-1);
 $color-text: var(--color-text);
 $color-warning: var(--color-warning);
 $color-background: var(--color-background);
 
+%item-container {
+  padding: 0.5em 0.5rem;
+  box-sizing: border-box;
+}
+
+%set-input {
+  background-color: $color-background;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: $color-text;
+}
+
 .page-container {
   height: 100%;
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 2fr max-content 1fr;
-  grid-template-rows: max-content 1fr 6fr max-content;
-  column-gap: 0.2em;
-
-  > :nth-child(n) {
-    > div {
-      margin: 0 0.5rem;
-    }
-    padding: 0.5em 0;
-    box-sizing: border-box;
-  }
+  grid-template-rows: max-content 1fr max-content max-content;
 
   > .planner-header {
     grid-column: 1 / span 3;
     padding-bottom: 0.2em;
+    box-sizing: border-box;
   }
 
   > .item__driver {
     grid-row: 2 / 5;
     width: 1.06px;
-    margin: 0.5em 0;
+    margin: 0.5em 0.2em;
+    padding: 0;
     background-color: $color-text;
   }
 
-  > .item__schedule-table,
-  > .item__time-table {
+  > .item__todo-list,
+  > .item__timetable {
     border: {
       top: 1px solid $color-gray_4;
       bottom: 1px solid $color-gray_4;
@@ -55,10 +62,12 @@ $color-background: var(--color-background);
 }
 
 .planner-header {
-  border-bottom: solid 1px $color-gray_4;
-  display: flex;
+  @extend %item-container;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: end;
+  border-bottom: solid 1px $color-gray_4;
 
   &__date {
     display: flex;
@@ -81,6 +90,7 @@ $color-background: var(--color-background);
 }
 
 .ment-container {
+  @extend %item-container;
   width: 100%;
   height: 100%;
   display: grid;
@@ -95,14 +105,11 @@ $color-background: var(--color-background);
     align-items: center;
 
     > textarea {
+      @extend %set-input;
       @extend .text-default;
-      background-color: $color-background;
-      width: 100%;
       max-height: 100%;
-      outline: none;
-      border: none;
-      // overflow: hidden;
       resize: none;
+
       &::-webkit-scrollbar {
         display: none;
       }
@@ -160,6 +167,57 @@ $color-background: var(--color-background);
       justify-content: center;
       color: $color-gray_4;
       cursor: pointer;
+    }
+  }
+}
+
+.todo-list {
+  display: grid;
+  width: 100%;
+}
+
+.todo-item {
+  $item-height: 2.2rem;
+  width: 100%;
+  height: $item-height;
+  display: grid;
+  grid-template-columns: 7rem auto $item-height;
+  border-bottom: 1px solid $color-text;
+
+  > :nth-child(n) {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  > div:nth-child(-n + 2) {
+    border-right: 1px dashed $color-text;
+  }
+
+  &--disable {
+    border-bottom: 1px solid $color-gray_3;
+  }
+
+  &__category,
+  &__context {
+    > svg {
+      display: none;
+    }
+
+    &:hover > svg {
+      @extend .text-small;
+      display: block;
+      color: $color-gray_4;
+    }
+  }
+
+  &__context {
+    padding: 0 1em;
+    box-sizing: border-box;
+    > input {
+      @extend %set-input;
+      @extend .text-default;
     }
   }
 }
