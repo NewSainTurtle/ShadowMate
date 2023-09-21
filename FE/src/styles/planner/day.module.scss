@@ -1,12 +1,23 @@
+@use "@styles/common/Text.module.scss";
+$color-gray_4: var(--color-gray-4);
+$color-gray_2: var(--color-gray-2);
+$color-gray_1: var(--color-gray-1);
+$color-text: var(--color-text);
+$color-warning: var(--color-warning);
+$color-background: var(--color-background);
+
 .page-container {
   height: 100%;
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: 5fr max-content 2fr;
+  grid-template-columns: 2fr max-content 1fr;
   grid-template-rows: max-content 1fr 6fr max-content;
-  column-gap: 0.5em;
+  column-gap: 0.2em;
 
   > :nth-child(n) {
+    > div {
+      margin: 0 0.5rem;
+    }
     padding: 0.5em 0;
     box-sizing: border-box;
   }
@@ -18,16 +29,16 @@
 
   > .item__driver {
     grid-row: 2 / 5;
-    width: 0.065em;
+    width: 1.06px;
     margin: 0.5em 0;
-    background-color: var(--color-text);
+    background-color: $color-text;
   }
 
   > .item__schedule-table,
   > .item__time-table {
     border: {
-      top: 1px solid var(--color-gray-4);
-      bottom: 1px solid var(--color-gray-4);
+      top: 1px solid $color-gray_4;
+      bottom: 1px solid $color-gray_4;
     }
   }
 
@@ -44,7 +55,7 @@
 }
 
 .planner-header {
-  border-bottom: solid 1px var(--color-gray-4);
+  border-bottom: solid 1px $color-gray_4;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -77,10 +88,31 @@
   grid-template-columns: 1fr min-content;
 
   > .ment-content__box {
+    height: 100%;
+    position: relative;
     display: grid;
     grid-template-rows: min-content 1fr;
-    > span:nth-child(2) {
-      place-self: center;
+    align-items: center;
+
+    > textarea {
+      @extend .text-default;
+      background-color: $color-background;
+      width: 100%;
+      max-height: 100%;
+      outline: none;
+      border: none;
+      // overflow: hidden;
+      resize: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    > span:nth-child(3) {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      color: $color-gray_4;
     }
   }
 }
@@ -88,9 +120,10 @@
 .ment-preview__box {
   width: 10em;
   height: 9em;
+  background: $color-gray_1;
+  margin-left: 0.5em;
   border-radius: 0.625rem;
-  border: 1px solid var(--color-gray-2);
-  background: var(--color-gray-1);
+  border: 1px solid $color-gray_2;
 
   > input[type="file"] {
     display: none;
@@ -113,7 +146,7 @@
 
     &:hover > button {
       display: block;
-      color: var(--color-warning);
+      color: $color-warning;
       position: absolute;
       bottom: 0;
       right: 0;
@@ -125,7 +158,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--color-gray-4);
+      color: $color-gray_4;
       cursor: pointer;
     }
   }

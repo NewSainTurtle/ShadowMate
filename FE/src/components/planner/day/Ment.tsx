@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import { AddPhotoAlternateOutlined, RemoveCircle } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
@@ -6,8 +6,12 @@ import Text from "@components/common/Text";
 
 interface Props {
   title: string;
-  children: ReactNode;
   fileImg: boolean;
+  maxLength: 50 | 100;
+  name: string;
+  value: string;
+  rows?: number;
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
 }
 
 const FileImg = () => {
@@ -49,14 +53,24 @@ const FileImg = () => {
   );
 };
 
-const Ment = ({ title, children, fileImg }: Props) => {
+const Ment = ({ title, fileImg, ...rest }: Props) => {
+  const { value, maxLength } = rest;
+  const [inputCount, setInputCount] = useState(0);
+
+  useEffect(() => {
+    setInputCount(value.replace(/<br\s*\/?>/gm, "\n").length);
+  }, [value]);
+
   return (
     <div className={styles["ment-container"]}>
       <div className={styles["ment-content__box"]}>
         <Text types="medium" bold>
           {title}
         </Text>
-        <Text types="semi-medium">{children}</Text>
+        <textarea {...rest} />
+        <Text types="small">
+          ({inputCount}/{maxLength}자)
+        </Text>
       </div>
       {fileImg && <FileImg />}
     </div>
@@ -65,7 +79,7 @@ const Ment = ({ title, children, fileImg }: Props) => {
 
 Ment.defaultProps = {
   title: "title",
-  children: "내용이 들어갑니다.",
+  value: "내용이 들어갑니다.",
   fileImg: false,
 };
 
