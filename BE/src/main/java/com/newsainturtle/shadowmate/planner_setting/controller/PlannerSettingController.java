@@ -27,8 +27,7 @@ public class PlannerSettingController {
                                                     @PathVariable("userId") final Long userId,
                                                     @RequestBody @Valid final AddCategoryRequest addCategoryRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY, plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest)));
     }
 
     @PutMapping("/{userId}/categories")
@@ -68,8 +67,7 @@ public class PlannerSettingController {
                                                 @PathVariable("userId") final Long userId,
                                                 @RequestBody @Valid final AddDdayRequest addDdayRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        plannerSettingServiceImpl.addDday(principalDetails.getUser(), addDdayRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DDAY));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DDAY, plannerSettingServiceImpl.addDday(principalDetails.getUser(), addDdayRequest)));
     }
 
     @GetMapping("/{userId}/d-days")

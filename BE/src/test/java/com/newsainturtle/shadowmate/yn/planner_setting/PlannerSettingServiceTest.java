@@ -69,6 +69,7 @@ class PlannerSettingServiceTest {
                 .categoryColorId(1L)
                 .build();
         final Category category = Category.builder()
+                .id(1L)
                 .categoryTitle(request.getCategoryTitle())
                 .categoryEmoticon(request.getCategoryEmoticon())
                 .categoryRemove(false)
@@ -101,9 +102,11 @@ class PlannerSettingServiceTest {
             doReturn(category).when(categoryRepository).save(any(Category.class));
 
             //when
-            plannerSettingService.addCategory(user, addCategoryRequest);
+            final AddCategoryResponse saveCategory = plannerSettingService.addCategory(user, addCategoryRequest);
 
             //then
+            assertThat(saveCategory.getCategoryId()).isNotNull();
+            assertThat(saveCategory.getCategoryId()).isEqualTo(1L);
 
             //verify
             verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
@@ -117,9 +120,11 @@ class PlannerSettingServiceTest {
             doReturn(category).when(categoryRepository).save(any(Category.class));
 
             //when
-            plannerSettingService.addCategory(user, request);
+            final AddCategoryResponse saveCategory = plannerSettingService.addCategory(user, request);
 
             //then
+            assertThat(saveCategory.getCategoryId()).isNotNull();
+            assertThat(saveCategory.getCategoryId()).isEqualTo(1L);
 
             //verify
             verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
@@ -149,7 +154,7 @@ class PlannerSettingServiceTest {
         @Test
         public void 실패_없는카테고리() {
             //given
-            doReturn(Optional.empty()).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
 
             //when
             final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, request));
@@ -161,7 +166,7 @@ class PlannerSettingServiceTest {
         @Test
         public void 실패_없는카테고리색상() {
             //given
-            doReturn(Optional.of(category)).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
             doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
 
             //when
@@ -174,7 +179,7 @@ class PlannerSettingServiceTest {
         @Test
         public void 성공_카테고리등록() {
             //given
-            doReturn(Optional.of(category)).when(categoryRepository).findById(request.getCategoryId());
+            doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
             doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
 
             //when
@@ -275,6 +280,7 @@ class PlannerSettingServiceTest {
                 .ddayDate("2023-02-09")
                 .build();
         final Dday dday = Dday.builder()
+                .id(1L)
                 .ddayTitle("생일")
                 .ddayDate(Date.valueOf("2023-02-09"))
                 .user(user)
@@ -282,9 +288,11 @@ class PlannerSettingServiceTest {
         doReturn(dday).when(ddayRepository).save(any(Dday.class));
 
         //when
-        plannerSettingService.addDday(user, addDdayRequest);
+        AddDdayResponse addDdayResponse = plannerSettingService.addDday(user, addDdayRequest);
 
         //then
+        assertThat(addDdayResponse.getDdayId()).isNotNull();
+        assertThat(addDdayResponse.getDdayId()).isEqualTo(1L);
 
         //verity
         verify(ddayRepository, times(1)).save(any(Dday.class));

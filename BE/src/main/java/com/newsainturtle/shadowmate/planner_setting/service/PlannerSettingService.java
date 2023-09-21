@@ -5,7 +5,7 @@ import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface PlannerSettingService {
-    void addCategory(final User user, final AddCategoryRequest addCategoryRequest);
+    AddCategoryResponse addCategory(final User user, final AddCategoryRequest addCategoryRequest);
 
     void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest);
 
@@ -15,7 +15,7 @@ public interface PlannerSettingService {
 
     void setAccessScope(final User user, final SetAccessScopeRequest setAccessScopeRequest);
 
-    void addDday(final User user, final AddDdayRequest addDdayRequest);
+    AddDdayResponse addDday(final User user, final AddDdayRequest addDdayRequest);
 
     GetDdayListResponse getDdayList(final User user);
 
