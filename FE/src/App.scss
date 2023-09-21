@@ -10,13 +10,6 @@
 
 * {
   font-family: "Pretendard-Regular";
-}
-
-html,
-body {
-  background-color: var(--color-background);
-  color: var(--color-text);
-
   &::-webkit-scrollbar {
     width: 0.3em;
     background-color: var(--color-gray-3);
@@ -32,6 +25,12 @@ body {
   -webkit-user-select: none;
   -khtml-user-select: none;
   user-select: none;
+}
+
+html,
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
 }
 
 a {
