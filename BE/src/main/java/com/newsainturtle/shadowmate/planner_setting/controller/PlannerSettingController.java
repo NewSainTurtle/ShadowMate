@@ -67,8 +67,7 @@ public class PlannerSettingController {
                                                 @PathVariable("userId") final Long userId,
                                                 @RequestBody @Valid final AddDdayRequest addDdayRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        plannerSettingServiceImpl.addDday(principalDetails.getUser(), addDdayRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DDAY));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DDAY, plannerSettingServiceImpl.addDday(principalDetails.getUser(), addDdayRequest)));
     }
 
     @GetMapping("/{userId}/d-days")

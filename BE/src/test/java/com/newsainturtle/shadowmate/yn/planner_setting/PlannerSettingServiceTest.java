@@ -288,6 +288,7 @@ class PlannerSettingServiceTest {
                 .ddayDate("2023-02-09")
                 .build();
         final Dday dday = Dday.builder()
+                .id(1L)
                 .ddayTitle("생일")
                 .ddayDate(Date.valueOf("2023-02-09"))
                 .user(user)
@@ -295,9 +296,11 @@ class PlannerSettingServiceTest {
         doReturn(dday).when(ddayRepository).save(any(Dday.class));
 
         //when
-        plannerSettingService.addDday(user, addDdayRequest);
+        AddDdayResponse addDdayResponse = plannerSettingService.addDday(user, addDdayRequest);
 
         //then
+        assertThat(addDdayResponse.getDdayId()).isNotNull();
+        assertThat(addDdayResponse.getDdayId()).isEqualTo(1L);
 
         //verity
         verify(ddayRepository, times(1)).save(any(Dday.class));

@@ -121,14 +121,15 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     @Transactional
-    public void addDday(final User user, final AddDdayRequest addDdayRequest) {
+    public AddDdayResponse addDday(final User user, final AddDdayRequest addDdayRequest) {
         final Dday dday = Dday.builder()
                 .ddayDate(Date.valueOf(addDdayRequest.getDdayDate()))
                 .ddayTitle(addDdayRequest.getDdayTitle())
                 .user(user)
                 .build();
 
-        ddayRepository.save(dday);
+        final Dday saveDday = ddayRepository.save(dday);
+        return AddDdayResponse.builder().ddayId(saveDday.getId()).build();
     }
 
     @Override
