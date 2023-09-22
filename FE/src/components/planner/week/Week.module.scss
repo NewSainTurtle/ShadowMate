@@ -2,11 +2,8 @@ $color-text: var(--color-text);
 $color-white: var(--color-white);
 $color-black: var(--color-black);
 $color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
 $border: 1px;
-
-body {
-  margin: 0;
-}
 
 .top_border {
   border-top: $border solid $color-text;
@@ -16,7 +13,7 @@ body {
   border-bottom: $border solid $color-text;
 }
 
-flex_row {
+.flex_row {
   display: flex;
   flex-direction: row;
 }
@@ -24,14 +21,14 @@ flex_row {
 .week {
   // 타이틀 전체 영역
   &_title {
-    @extend .under_boder, flex_row;
+    @extend .under_boder, .flex_row;
     height: 4.5em;
     justify-content: space-between;
     align-items: center;
 
     // 타이틀 + 좌우 버튼
     > div:nth-child(1) {
-      @extend flex_row;
+      @extend .flex_row;
       align-items: center;
       margin-left: 1em;
 
@@ -54,12 +51,13 @@ flex_row {
   }
   // 위클리 영역
   &_weekList {
-    @extend flex_row;
+    @extend .flex_row;
     flex-wrap: wrap;
     height: calc(100% - 4.5em - $border); // ( 전체높이 - 타이틀 높이 - border 높이 )
   }
 }
 
+// Todo 영역
 .weekTodo {
   &_container {
     @extend .under_boder;
@@ -71,7 +69,7 @@ flex_row {
   }
 
   &_todoItem {
-    @extend flex_row;
+    @extend .flex_row;
     gap: $border;
     padding: 0 $border;
     align-items: center;
@@ -119,12 +117,13 @@ flex_row {
         color: $color-text;
       }
       &::placeholder {
-        color: var(--color-gray-5);
+        color: $color-gray-5;
       }
     }
   }
 }
 
+// 주간 영역
 .weekItem {
   &_container {
     @extend .under_boder;
@@ -134,7 +133,7 @@ flex_row {
     width: calc(100% / 4 - $border);
     border-right: $border solid $color-text;
   }
-
+  // 날짜
   &_title {
     @extend .under_boder;
     position: relative;
@@ -206,6 +205,7 @@ flex_row {
     }
   }
 
+  // 메모칸
   &_memo {
     > textarea {
       background: transparent;
@@ -224,7 +224,4 @@ flex_row {
       }
     }
   }
-}
-
-.weekTodo_checkbox {
 }
