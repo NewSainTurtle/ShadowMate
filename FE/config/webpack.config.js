@@ -42,7 +42,6 @@ module.exports = {
       },
     ],
   },
-
   output: {
     path: path.join(__dirname, "build"),
     publicPath: "/",
@@ -54,4 +53,7 @@ module.exports = {
       template: "./public/index.html",
     }),
   ],
+  stats: {
+    loggingDebug: ["sass-loader"],
+  },
 };

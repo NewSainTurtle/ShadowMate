@@ -6,13 +6,13 @@ import Input from "@components/common/Input";
 import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import Profile from "@components/common/Profile";
 
-const commonPage = () => {
-  const profileInfo: ProfileConfig = {
-    nickname: "ribbonE",
-    message: "방가방가",
-    src: "https://avatars.githubusercontent.com/u/85155789?v=4",
-  };
+export const profileInfo: ProfileConfig = {
+  nickname: "ribbonE",
+  message: "방가방가",
+  src: "https://avatars.githubusercontent.com/u/85155789?v=4",
+};
 
+const commonPage = () => {
   return (
     <>
       <div>
