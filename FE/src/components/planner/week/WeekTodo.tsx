@@ -1,19 +1,26 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 import styles from "../week/Week.module.scss";
 import Text from "@components/common/Text";
 
+interface WeekTodoItemConfig {
+  weeklyTodoContent: string;
+  weeklyTodoStatus: boolean;
+}
+
 const WeekTodo = () => {
-  const [todoItems, setTodoItems] = useState([
-    "국어 졸라게 열심히 풀기",
-    "수학 갈아버리기",
-    "영어 처참하게 눌러버리기",
+  const [todoItems, setTodoItems] = useState<WeekTodoItemConfig[]>([
+    { weeklyTodoContent: "국어 졸라게 열심히 풀기", weeklyTodoStatus: true },
+    { weeklyTodoContent: "수학 갈아버리기", weeklyTodoStatus: false },
+    { weeklyTodoContent: "영어 처참하게 눌러버리기", weeklyTodoStatus: false },
   ]);
   const [newTodo, setNewTodo] = useState<string>("");
   const todoEndRef = useRef<HTMLDivElement | null>(null);
-  const handleOnKeyPress = (e: any) => {
+
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (newTodo === "") return;
     if (e.key == "Enter") {
       if (e.nativeEvent.isComposing) return;
-      setTodoItems([...todoItems, newTodo]);
+      setTodoItems([...todoItems, { weeklyTodoContent: newTodo, weeklyTodoStatus: false }]);
       setNewTodo("");
     }
   };
@@ -31,12 +38,12 @@ const WeekTodo = () => {
         className={styles.weekItem_todoList}
         style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, calc(100% / 7)` }}
       >
-        {todoItems.map((item: any, key: number) => (
+        {todoItems.map((item: WeekTodoItemConfig, key: number) => (
           <div className={styles.weekTodo_todoItem} key={key}>
             <div className={styles.weekTodo_checkbox}>
-              <input type="checkbox" id={key.toString()} />
+              <input type="checkbox" id={key.toString()} checked={item.weeklyTodoStatus} />
               <label htmlFor={key.toString()}>
-                <Text types="small">{item}</Text>
+                <Text types="small">{item.weeklyTodoContent}</Text>
               </label>
             </div>
           </div>

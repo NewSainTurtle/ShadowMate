@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 import styles from "./Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
@@ -7,28 +7,28 @@ interface Props {
   date: string;
 }
 
+interface TodoItemConfig {
+  todoContents: string;
+  todoStatus: boolean;
+  categoryEmoticon?: string;
+}
+
 const WeekItem = ({ date }: Props) => {
   const todoEndRef = useRef<HTMLDivElement | null>(null);
   const [newTodo, setNewTodo] = useState<string>("");
-  const [todoItems, setTodoItems] = useState<any>([
-    // { contents: "비문학 지문 복습", done: true },
-    // { contents: "비문학 지문 복습", done: true },
-    // {
-    //   contents: "가나다라마바사아자차카타파하가나다라마바사아자차",
-    //   done: true,
-    // },
-    // { contents: "비문학 지문 복습", done: true },
-    // { contents: "비문학 지문 복습", done: true },
-    // {
-    //   contents: "가나다라마바사아자차카타파하가나다라마바사아자차",
-    //   done: true,
-    // },
+  const [todoItems, setTodoItems] = useState<TodoItemConfig[]>([
+    { todoContents: "비문학 지문 복습", todoStatus: true },
+    {
+      todoContents: "가나다라마바사아자차카타파하가나다라마바사아자차",
+      todoStatus: true,
+    },
   ]);
 
-  const handleOnKeyPress = (e: any) => {
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (newTodo === "") return;
     if (e.key == "Enter") {
       if (e.nativeEvent.isComposing) return;
-      setTodoItems([...todoItems, { contents: newTodo, done: false }]);
+      setTodoItems([...todoItems, { todoContents: newTodo, todoStatus: false }]);
       setNewTodo("");
     }
   };
@@ -44,11 +44,11 @@ const WeekItem = ({ date }: Props) => {
         <Dday>-304</Dday>
       </div>
       <div className={styles.weekItem_todoList} style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, 20%` }}>
-        {todoItems.map((item: any, key: number) => (
+        {todoItems.map((item: TodoItemConfig, key: number) => (
           <div className={styles.weekItem_todoItem} key={key}>
             <div>💻</div>
-            <Text types="small">{item.contents}</Text>
-            <div>{item.done ? "O" : "X"}</div>
+            <Text types="small">{item.todoContents}</Text>
+            <div>{item.todoStatus ? "O" : "X"}</div>
           </div>
         ))}
         <div ref={todoEndRef} className={styles.weekItem_todoItem}>
