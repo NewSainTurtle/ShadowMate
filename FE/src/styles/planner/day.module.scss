@@ -70,6 +70,16 @@ $color-background: var(--color-background);
   &__date {
     display: flex;
     flex-direction: column;
+
+    > div:nth-child(2) {
+      display: flex;
+      align-items: end;
+      margin-left: 0.5em;
+
+      svg {
+        @extend .text-semi-large;
+      }
+    }
   }
 
   &__default {

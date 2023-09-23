@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
 import Ment from "@components/planner/day/Ment";
 import TodoList from "@components/planner/day/TodoList";
 
 const DayPage = () => {
+  const { state } = useLocation();
+  const date = state?.date || new Date();
   const [ment, setMent] = useState({
     todayGoals: "",
     tomorrowGoals: "",
@@ -22,7 +25,7 @@ const DayPage = () => {
 
   return (
     <div className={styles["page-container"]}>
-      <Header />
+      <Header date={date} />
 
       <Ment title={"오늘의 다짐"} name="todayGoals" value={todayGoals} onChange={handleInput} rows={1} maxLength={50} />
 

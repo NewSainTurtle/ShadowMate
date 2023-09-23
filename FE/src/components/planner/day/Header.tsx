@@ -5,10 +5,36 @@ import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
 import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { todoData_friend } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");
+
+interface HeaderDateType {
+  date: string | Date;
+}
+
+const HeaderDate = ({ date }: HeaderDateType) => {
+  const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
+
+  return (
+    <div className={styles["planner-header__date"]}>
+      <Dday comparedDate={date} />
+      <div>
+        <Text types="semi-large" bold>
+          {titleDay}
+        </Text>
+        <div>
+          <NavigateBefore />
+        </div>
+        <div>
+          <NavigateNext />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const FriendHeader = ({ heart }: { heart: number }) => {
   const navigate = useNavigate();
@@ -33,15 +59,11 @@ const FriendHeader = ({ heart }: { heart: number }) => {
             ♥ {heartNum}
           </Button>
         </div>
-        <div>
-          <Button types="gray" onClick={() => socialClick()}>
-            주간보기
-          </Button>
-        </div>
+        <Button types="gray" onClick={() => socialClick()}>
+          주간보기
+        </Button>
       </div>
-      <div>
-        <FriendProfile types={"아이콘"} profile={todoData_friend} />
-      </div>
+      <FriendProfile types={"아이콘"} profile={todoData_friend} />
     </div>
   );
 };
@@ -65,21 +87,13 @@ const MyHeader = ({ heart }: { heart: number }) => {
   );
 };
 
-const Header = () => {
-  const { state } = useLocation();
-  const date = state?.date || new Date();
-  const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
+const Header = ({ date }: HeaderDateType) => {
   const heartNum = 50; // 임시 좋아요 수
-  const isFriend = false;
+  const isFriend = true;
 
   return (
     <div className={styles["planner-header"]}>
-      <div className={styles["planner-header__date"]}>
-        <Dday comparedDate={date} />
-        <Text types="semi-large" bold>
-          {titleDay}
-        </Text>
-      </div>
+      <HeaderDate date={date} />
       {isFriend ? <FriendHeader heart={heartNum} /> : <MyHeader heart={heartNum} />}
     </div>
   );
