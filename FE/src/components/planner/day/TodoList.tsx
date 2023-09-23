@@ -1,45 +1,46 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
-import { Add } from "@mui/icons-material";
+import { AddCircleOutline } from "@mui/icons-material";
+import { todoType, categoryType } from "@util/planner.interface";
+import { todoData_list as data, todoData_category } from "@util/data/DayTodos";
 
-interface TodoType {
-  id: number;
-  category: string;
-  context: string;
-  checked: 0 | 1 | 2; // none, O, X
+interface todoListType extends todoType {
   isPossible?: boolean;
 }
 
 interface TodoItemType {
-  item: TodoType;
+  item: todoListType;
   saveText?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
-const TodoItemDefalut: TodoType = {
-  id: 0,
-  category: "",
-  context: "",
-  checked: 0,
+const TodoItemDefalut: todoListType = {
+  todoId: 0,
+  categoryName: "",
+  categoryColorCode: "",
+  todoContent: "",
+  todoStatus: 0,
   isPossible: false,
 };
 
 const TodoItem = ({ item, saveText }: TodoItemType) => {
-  const { id, category, context, checked, isPossible } = item;
+  const { categoryName, todoContent, todoStatus, isPossible } = item;
   const checkedArr = [" ", "O", "X"];
-  const [text, setText] = useState(context);
+  const [text, setText] = useState(todoContent);
   const modifyText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
   };
 
   return (
     <div className={`${styles["todo-item"]} ${!isPossible && styles["todo-item--disable"]}`}>
-      <div className={styles["todo-item__category"]}>{isPossible ? <Text>{category}</Text> : <Add />}</div>
+      <div className={styles["todo-item__category"]}>
+        {isPossible ? <Text>{categoryName}</Text> : <AddCircleOutline />}
+      </div>
       <div className={styles["todo-item__context"]}>
-        {isPossible ? <input value={text} onChange={modifyText} onBlur={saveText} /> : <Add />}
+        {isPossible ? <input value={text} onChange={modifyText} onBlur={saveText} /> : <AddCircleOutline />}
       </div>
       <div className={styles["todo-item__checked"]}>
-        <Text types="semi-medium"> {checkedArr[checked]}</Text>
+        <Text types="semi-medium"> {checkedArr[todoStatus]}</Text>
       </div>
     </div>
   );
@@ -48,25 +49,15 @@ const TodoItem = ({ item, saveText }: TodoItemType) => {
 TodoItem.defaultProps = TodoItemDefalut;
 
 const TodoList = () => {
-  const data: TodoType[] = [
-    {
-      id: 0,
-      category: "수학",
-      context: "수능완성 수학 과목별 10문제",
-      checked: 2,
-      isPossible: true,
-    },
-  ];
-
-  const [todos, setTodos] = useState<TodoType[]>(() => {
+  const [todos, setTodos] = useState<todoListType[]>(() => {
     for (let idx = data.length; idx < 13; idx++) {
-      data.push({ ...TodoItemDefalut, id: idx });
+      data.push({ ...TodoItemDefalut, todoId: idx });
     }
     return data;
   });
 
   const saveText = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    todos[id].context = e.target.value;
+    todos[id].todoContent = e.target.value;
     setTodos([...todos]);
   };
 
@@ -74,10 +65,10 @@ const TodoList = () => {
     <div className={styles["todo-list"]}>
       {todos.map((todo) => (
         <TodoItem
-          key={todo.id}
+          key={todo.todoId}
           item={todo}
           saveText={(e) => {
-            saveText(todo.id, e);
+            saveText(todo.todoId, e);
           }}
         />
       ))}
