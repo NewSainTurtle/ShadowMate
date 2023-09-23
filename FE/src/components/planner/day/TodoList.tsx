@@ -25,7 +25,7 @@ const TodoItemDefalut: TodoType = {
 };
 
 const TodoItem = ({ item, saveText }: TodoItemType) => {
-  const { id, category, context, checked: check, isPossible } = item;
+  const { id, category, context, checked, isPossible } = item;
   const checkedArr = [" ", "O", "X"];
   const [text, setText] = useState(context);
   const modifyText = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +39,7 @@ const TodoItem = ({ item, saveText }: TodoItemType) => {
         {isPossible ? <input value={text} onChange={modifyText} onBlur={saveText} /> : <Add />}
       </div>
       <div className={styles["todo-item__checked"]}>
-        <Text types="semi-medium"> {checkedArr[check]}</Text>
+        <Text types="semi-medium"> {checkedArr[checked]}</Text>
       </div>
     </div>
   );
@@ -47,7 +47,7 @@ const TodoItem = ({ item, saveText }: TodoItemType) => {
 
 TodoItem.defaultProps = TodoItemDefalut;
 
-const TodoTable = () => {
+const TodoList = () => {
   const data: TodoType[] = [
     {
       id: 0,
@@ -85,4 +85,4 @@ const TodoTable = () => {
   );
 };
 
-export default TodoTable;
+export default TodoList;

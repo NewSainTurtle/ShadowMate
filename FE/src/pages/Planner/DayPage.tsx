@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
 import Ment from "@components/planner/day/Ment";
-import TodoTable from "@components/planner/day/TodoTable";
+import TodoList from "@components/planner/day/TodoList";
 
 const DayPage = () => {
   const [ment, setMent] = useState({
@@ -27,7 +27,7 @@ const DayPage = () => {
       <Ment title={"오늘의 다짐"} name="todayGoals" value={todayGoals} onChange={handleInput} rows={1} maxLength={50} />
 
       <div className={styles["item__todo-list"]}>
-        <TodoTable />
+        <TodoList />
       </div>
 
       <Ment
