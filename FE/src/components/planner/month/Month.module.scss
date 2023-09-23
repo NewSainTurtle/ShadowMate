@@ -1,0 +1,70 @@
+$color-text: var(--color-text);
+
+.month {
+  &_container {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr 9fr;
+    gap: 1em;
+    padding: 1em;
+    box-sizing: border-box;
+  }
+  &_title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 2em;
+    > div {
+      margin: 0 0 0.2em 1em;
+      > svg {
+        margin-right: 1em;
+        fill: $color-text;
+        cursor: pointer;
+      }
+    }
+  }
+  &_calendar {
+    display: grid;
+    grid-template-columns: 6fr 4fr;
+    gap: 1em;
+  }
+}
+
+.monthCalendar {
+  &_container {
+    position: relative;
+  }
+
+  &_overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background-color: rgba(213, 215, 216, 0.8);
+    > svg {
+      margin-bottom: 1em;
+      fill: $color-text;
+    }
+  }
+}
+
+.monthFriends {
+  &_container {
+    > div {
+      margin: 1em 0;
+    }
+  }
+
+  &_friendsList {
+    height: 30em;
+    overflow-y: scroll;
+    > div {
+      margin-bottom: 1em;
+    }
+  }
+}
