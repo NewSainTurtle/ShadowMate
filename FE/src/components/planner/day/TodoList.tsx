@@ -50,7 +50,7 @@ TodoItem.defaultProps = TodoItemDefalut;
 
 const TodoList = () => {
   const [todos, setTodos] = useState<todoListType[]>(() => {
-    for (let idx = data.length; idx < 13; idx++) {
+    for (let idx = data.length; idx < 14; idx++) {
       data.push({ ...TodoItemDefalut, todoId: idx });
     }
     return data;

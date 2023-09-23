@@ -4,6 +4,12 @@ interface todoListType extends todoType {
   isPossible?: boolean;
 }
 
+export const todoData_friend = {
+  nickname: "토롱이",
+  message: "인생은 생각하는대로 흘러간다.",
+  src: "https://avatars.githubusercontent.com/u/85155789?v=4",
+};
+
 export const todoData_category: categoryType[] = [
   {
     categoryId: 0,
