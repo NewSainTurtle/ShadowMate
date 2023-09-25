@@ -89,7 +89,7 @@ const MyHeader = ({ heart }: { heart: number }) => {
 
 const Header = ({ date }: HeaderDateType) => {
   const heartNum = 50; // 임시 좋아요 수
-  const isFriend = true;
+  const isFriend = false;
 
   return (
     <div className={styles["planner-header"]}>

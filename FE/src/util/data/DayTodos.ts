@@ -47,7 +47,7 @@ export const todoData_list: todoListType[] = [
     isPossible: true,
   },
   {
-    todoId: 2,
+    todoId: 1,
     categoryName: "국어",
     categoryColorCode: "FFCBE1",
     todoContent: "초고난도 독서 02 (사회·경제)",

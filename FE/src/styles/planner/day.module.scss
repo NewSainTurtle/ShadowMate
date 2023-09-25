@@ -25,7 +25,7 @@ $color-background: var(--color-background);
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 2fr max-content 1fr;
-  grid-template-rows: 5em 5em auto max-content;
+  grid-template-rows: 1fr 1fr 5fr 2fr;
 
   > .planner-header {
     grid-column: 1 / span 3;
@@ -41,6 +41,7 @@ $color-background: var(--color-background);
 
   > .item__todo-list,
   > .item__timetable {
+    overflow-y: auto;
     border: {
       top: 1px solid $color-gray_4;
       bottom: 1px solid $color-gray_4;
@@ -62,8 +63,7 @@ $color-background: var(--color-background);
 .planner-header {
   @extend %item-container;
   display: grid;
-  grid-template-columns: repeat(2, auto);
-  justify-content: space-between;
+  grid-template-columns: max-content auto;
   align-items: end;
   border-bottom: solid 1px $color-gray_4;
 
@@ -74,7 +74,6 @@ $color-background: var(--color-background);
     > div:nth-child(2) {
       display: flex;
       align-items: end;
-      margin-left: 0.5em;
 
       svg {
         @extend .text-semi-large;
@@ -84,8 +83,9 @@ $color-background: var(--color-background);
 
   &__default {
     display: flex;
-    gap: 10px;
+    justify-content: flex-end;
     padding-right: 0.2em;
+    gap: 10px;
 
     > div {
       width: 5.5em;
@@ -108,13 +108,16 @@ $color-background: var(--color-background);
   &__friend {
     height: 100%;
     display: flex;
+    justify-items: end;
+    justify-content: flex-end;
+    align-items: flex-end;
     gap: 0.5em;
 
     > div:nth-child(1) {
       height: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: space-around;
+      justify-content: space-evenly;
 
       > div {
         width: 5.5em;
@@ -122,7 +125,8 @@ $color-background: var(--color-background);
     }
 
     > div:nth-child(2) {
-      width: 28em;
+      width: 100%;
+      max-width: 28em;
     }
   }
 }
@@ -134,6 +138,7 @@ $color-background: var(--color-background);
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 1fr min-content;
+  align-items: center;
 
   > .ment-content__box {
     height: 100%;
@@ -164,7 +169,7 @@ $color-background: var(--color-background);
 
 .ment-preview__box {
   width: 10em;
-  height: 9em;
+  height: 100%;
   background: $color-gray_1;
   margin-left: 0.5em;
   border-radius: 0.625rem;
@@ -210,8 +215,11 @@ $color-background: var(--color-background);
 }
 
 .todo-list {
-  display: grid;
   width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: start;
+  scroll-behavior: smooth;
 }
 
 .todo-item {
@@ -239,7 +247,8 @@ $color-background: var(--color-background);
 
   &__category,
   &__context {
-    > svg {
+    svg {
+      cursor: pointer;
       display: none;
     }
 
@@ -253,9 +262,23 @@ $color-background: var(--color-background);
   &__context {
     padding: 0 1em;
     box-sizing: border-box;
-    > input {
+
+    input {
       @extend %set-input;
       @extend .text-default;
+    }
+
+    &__possiable {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &:hover svg {
+        @extend .text-default;
+        display: block;
+        color: $color-gray_4;
+      }
     }
   }
 }
