@@ -41,13 +41,15 @@ const TodoList = () => {
     nextId.current += 1; // id 값 1씩 증가
   };
 
-  const updateTodo = ({ todoId, todoContent }: todoListType) => {
+  const updateTodo = (props: todoListType) => {
+    const { todoId, todoContent, todoStatus } = props;
     setTodos(
       todos.map((todo) => {
         if (todo.todoId === todoId) {
           return {
             ...todo,
             todoContent: todoContent,
+            todoStatus: todoStatus,
           };
         }
         return todo;

@@ -252,6 +252,11 @@ $color-background: var(--color-background);
 
   &__category,
   &__context {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     svg {
       cursor: pointer;
       display: none;

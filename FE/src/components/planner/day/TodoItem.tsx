@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
@@ -13,15 +13,18 @@ interface Props {
 }
 
 const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
-  const inputRef = useRef<HTMLInputElement>(null);
   const { todoId, categoryName, todoContent, todoStatus, isPossible } = item;
   const [text, setText] = useState(todoContent);
   const [state, setState] = useState(todoStatus);
   const stateString = useMemo(() => {
     return [" ", "O", "X"][state];
   }, [state]);
+  const maxLenght = 55;
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value.length > maxLenght) {
+      e.target.value = e.target.value.slice(0, maxLenght);
+    }
     setText(e.target.value);
   };
 
@@ -67,7 +70,14 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
       <div className={styles["todo-item__context"]}>
         {isPossible ? (
           <div className={styles["todo-item__context__possiable"]}>
-            <input ref={inputRef} value={text} onChange={editText} onBlur={handleOnBlur} onKeyDown={handleOnKeyPress} />
+            <input
+              value={text}
+              minLength={2}
+              maxLength={maxLenght}
+              onChange={editText}
+              onBlur={handleOnBlur}
+              onKeyDown={handleOnKeyPress}
+            />
             <div onClick={removeTodo}>
               <DeleteOutlined />
             </div>
