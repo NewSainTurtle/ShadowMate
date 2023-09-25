@@ -262,10 +262,16 @@ $color-background: var(--color-background);
       display: none;
     }
 
-    &:hover > svg {
+    &:hover svg {
       @extend .text-small;
       display: block;
       color: $color-gray_4;
+    }
+  }
+
+  &__category {
+    &-box {
+      padding: 0 2rem;
     }
   }
 

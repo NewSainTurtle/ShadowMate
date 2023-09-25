@@ -13,7 +13,7 @@ interface Props {
 }
 
 const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
-  const { todoId, categoryName, todoContent, todoStatus, isPossible } = item;
+  const { todoId, categoryName, categoryColorCode, todoContent, todoStatus, isPossible } = item;
   const [text, setText] = useState(todoContent);
   const [state, setState] = useState(todoStatus);
   const stateString = useMemo(() => {
@@ -61,13 +61,30 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
     updateTodo(todo);
   };
 
+  const getTextColorByBackgroundColor = (hexColor: string) => {
+    const rgb = parseInt(hexColor, 16); // rrggbb를 10진수로 변환
+    const r = (rgb >> 16) & 0xff;
+    const g = (rgb >> 8) & 0xff;
+    const b = (rgb >> 0) & 0xff;
+    const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+    // 글자 색상 선택
+    return luma < 127.5 ? "white" : "black";
+  };
+
+  const categoryStyle: React.CSSProperties = {
+    backgroundColor: `${categoryColorCode}`,
+    color: `${getTextColorByBackgroundColor(categoryColorCode)}`,
+  };
+
   return (
-    <div
-      className={`${styles["todo-item"]} ${!isPossible && styles["todo-item--disable"]}`}
-      onClick={() => addTodo(isPossible)}
-    >
-      <div className={styles["todo-item__category"]}>{isPossible ? <Text>{categoryName}</Text> : <AddOutlined />}</div>
-      <div className={styles["todo-item__context"]}>
+    <div className={`${styles["todo-item"]} ${!isPossible && styles["todo-item--disable"]}`}>
+      <div className={styles["todo-item__category"]}>
+        <div className={styles["todo-item__category-box"]} style={categoryStyle}>
+          {isPossible ? <Text>{categoryName}</Text> : <AddOutlined />}
+        </div>
+      </div>
+      <div className={styles["todo-item__context"]} onClick={() => addTodo(isPossible)}>
         {isPossible ? (
           <div className={styles["todo-item__context__possiable"]}>
             <input
