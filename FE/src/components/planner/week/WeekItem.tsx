@@ -41,7 +41,7 @@ const WeekItem = ({ date }: Props) => {
     <div className={styles.weekItem_container}>
       <div className={styles.weekItem_title}>
         <Text>{date}</Text>
-        <Dday>-304</Dday>
+        {/* <Dday comparedDate={date} /> */}
       </div>
       <div className={styles.weekItem_todoList} style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, 20%` }}>
         {todoItems.map((item: TodoItemConfig, key: number) => (
