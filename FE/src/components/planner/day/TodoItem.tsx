@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
-import { AddCircleOutline, DeleteOutlined } from "@mui/icons-material";
+import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { todoListType, categoryType } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
 
@@ -63,9 +63,7 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
       className={`${styles["todo-item"]} ${!isPossible && styles["todo-item--disable"]}`}
       onClick={() => addTodo(isPossible)}
     >
-      <div className={styles["todo-item__category"]}>
-        {isPossible ? <Text>{categoryName}</Text> : <AddCircleOutline />}
-      </div>
+      <div className={styles["todo-item__category"]}>{isPossible ? <Text>{categoryName}</Text> : <AddOutlined />}</div>
       <div className={styles["todo-item__context"]}>
         {isPossible ? (
           <div className={styles["todo-item__context__possiable"]}>
@@ -75,7 +73,7 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
             </div>
           </div>
         ) : (
-          <AddCircleOutline />
+          <AddOutlined />
         )}
       </div>
       <div className={styles["todo-item__checked"]} onClick={editState}>

@@ -11,7 +11,7 @@ interface Props {
   name: string;
   value: string;
   rows?: number;
-  onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+  onChange: React.ChangeEventHandler;
 }
 
 const FileImg = () => {
@@ -20,11 +20,13 @@ const FileImg = () => {
   const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files;
     if (!file) return;
+    console.log(file);
 
     const reader = new FileReader();
     reader.readAsDataURL(file[0]);
     reader.onloadend = () => {
       setImgURL(reader.result as string);
+      e.target.value = "";
     };
   };
 
@@ -53,7 +55,7 @@ const FileImg = () => {
   );
 };
 
-const Ment = ({ title, fileImg, ...rest }: Props) => {
+const Ment = ({ title, fileImg, rows, ...rest }: Props) => {
   const { value, maxLength } = rest;
   const [inputCount, setInputCount] = useState(0);
 
@@ -67,7 +69,7 @@ const Ment = ({ title, fileImg, ...rest }: Props) => {
         <Text types="medium" bold>
           {title}
         </Text>
-        <textarea {...rest} />
+        {rows == 1 ? <input {...rest} /> : <textarea rows={rows} {...rest} />}
         <Text types="small">
           ({inputCount}/{maxLength}자)
         </Text>
