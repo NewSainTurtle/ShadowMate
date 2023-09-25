@@ -3,8 +3,7 @@ package com.newsainturtle.shadowmate.planner_setting.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.planner_setting.dto.AddCategoryRequest;
-import com.newsainturtle.shadowmate.planner_setting.dto.SetAccessScopeRequest;
+import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +27,16 @@ public class PlannerSettingController {
                                                     @PathVariable("userId") final Long userId,
                                                     @RequestBody @Valid final AddCategoryRequest addCategoryRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY, plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest)));
+    }
+
+    @PutMapping("/{userId}/categories")
+    public ResponseEntity<BaseResponse> updateCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final UpdateCategoryRequest updateCategoryRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.updateCategory(principalDetails.getUser(), updateCategoryRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_CATEGORY));
     }
 
     @GetMapping("/{userId}/categories")
@@ -53,5 +60,38 @@ public class PlannerSettingController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.setAccessScope(principalDetails.getUser(), setAccessScopeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SET_PLANNER_ACCESS_SCOPE));
+    }
+
+    @PostMapping("/{userId}/d-days")
+    public ResponseEntity<BaseResponse> addDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                @PathVariable("userId") final Long userId,
+                                                @RequestBody @Valid final AddDdayRequest addDdayRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DDAY, plannerSettingServiceImpl.addDday(principalDetails.getUser(), addDdayRequest)));
+    }
+
+    @GetMapping("/{userId}/d-days")
+    public ResponseEntity<BaseResponse> getDdayList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                    @PathVariable("userId") final Long userId) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_DDAY_LIST, plannerSettingServiceImpl.getDdayList(principalDetails.getUser())));
+    }
+
+    @DeleteMapping("/{userId}/d-days")
+    public ResponseEntity<BaseResponse> removeDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                   @PathVariable("userId") final Long userId,
+                                                   @RequestBody @Valid final RemoveDdayRequest removeDdayRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.removeDday(principalDetails.getUser(), removeDdayRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DDAY));
+    }
+
+    @PutMapping("/{userId}/d-days")
+    public ResponseEntity<BaseResponse> updateDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                   @PathVariable("userId") final Long userId,
+                                                   @RequestBody @Valid final UpdateDdayRequest updateDdayRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.updateDday(principalDetails.getUser(), updateDdayRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_DDAY));
     }
 }

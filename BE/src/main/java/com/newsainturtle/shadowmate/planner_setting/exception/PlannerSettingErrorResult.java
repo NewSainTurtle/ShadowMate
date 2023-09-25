@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum PlannerSettingErrorResult implements BaseErrorResult {
     INVALID_CATEGORY_COLOR(HttpStatus.BAD_REQUEST, "카테고리 색상 ID가 유효하지 않습니다."),
     INVALID_PLANNER_ACCESS_SCOPE(HttpStatus.BAD_REQUEST, "플래너 공개 범위 입력값이 유효하지 않습니다."),
+    INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리 ID가 유효하지 않습니다."),
+    INVALID_DDAY(HttpStatus.BAD_REQUEST, "디데이 ID가 유효하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -14,8 +14,8 @@ const values = [
 const Menu = () => {
   return (
     <div className={styles.menu_container}>
-      {values.map((item) => (
-        <NavLink className={styles.menu_item} to={item.link} key={item.link}>
+      {values.map((item, idx) => (
+        <NavLink className={styles.menu_item} to={item.link} key={idx}>
           {item.icon}
           <Text types="small">{item.message}</Text>
         </NavLink>

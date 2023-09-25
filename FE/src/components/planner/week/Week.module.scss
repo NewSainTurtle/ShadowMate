@@ -1,0 +1,227 @@
+$color-text: var(--color-text);
+$color-white: var(--color-white);
+$color-black: var(--color-black);
+$color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
+$border: 1px;
+
+.top_border {
+  border-top: $border solid $color-text;
+}
+
+.under_boder {
+  border-bottom: $border solid $color-text;
+}
+
+.flex_row {
+  display: flex;
+  flex-direction: row;
+}
+
+.week {
+  // 타이틀 전체 영역
+  &_title {
+    @extend .under_boder, .flex_row;
+    height: 4.5em;
+    justify-content: space-between;
+    align-items: center;
+
+    // 타이틀 + 좌우 버튼
+    > div:nth-child(1) {
+      @extend .flex_row;
+      align-items: center;
+      margin-left: 1em;
+
+      // 좌우 버튼
+      > div:nth-child(2) {
+        margin-left: 1em;
+        > svg {
+          margin-right: 1em;
+          fill: $color-text;
+          cursor: pointer;
+        }
+      }
+    }
+
+    // 친구 프로필 영역
+    > div:nth-child(2) {
+      width: 20em;
+      margin: 0.5em;
+    }
+  }
+  // 위클리 영역
+  &_weekList {
+    @extend .flex_row;
+    flex-wrap: wrap;
+    height: calc(100% - 4.5em - $border); // ( 전체높이 - 타이틀 높이 - border 높이 )
+  }
+}
+
+// Todo 영역
+.weekTodo {
+  &_container {
+    @extend .under_boder;
+    display: grid;
+    grid-template-rows: 1fr 7fr;
+    height: calc(100% / 2 - $border);
+    width: calc(100% / 4 - $border);
+    border-right: $border solid $color-text;
+  }
+
+  &_todoItem {
+    @extend .flex_row;
+    gap: $border;
+    padding: 0 $border;
+    align-items: center;
+  }
+
+  &_checkbox {
+    display: grid;
+    grid-template-columns: 1fr 9fr;
+    align-items: center;
+    width: 100%;
+    margin-right: 1em;
+    > input[type="checkbox"] {
+      appearance: none;
+      width: 1em;
+      height: 1em;
+      margin: 0 0.5em 0 1em;
+      border-radius: 4px;
+      border: $border solid $color-text;
+      cursor: pointer;
+      &:checked {
+        border-color: transparent;
+        background: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
+        background-size: 100% 100%;
+        background-position: 50%;
+        background-repeat: no-repeat;
+        background-color: $color-gray-4;
+        + label {
+          color: $color-gray-4;
+          text-decoration: line-through;
+        }
+      }
+    }
+    > label:nth-child(2) {
+      cursor: pointer;
+    }
+    > input[type="text"] {
+      width: 100%;
+      background: transparent;
+      padding: 0.5em 0;
+      border: none;
+      font-size: 0.875rem;
+      border-bottom: $border solid $color-gray-4;
+      &:focus {
+        outline: none;
+        color: $color-text;
+      }
+      &::placeholder {
+        color: $color-gray-5;
+      }
+    }
+  }
+}
+
+// 주간 영역
+.weekItem {
+  &_container {
+    @extend .under_boder;
+    display: grid;
+    grid-template-rows: 1fr 5fr 2fr;
+    height: calc(100% / 2 - $border);
+    width: calc(100% / 4 - $border);
+    border-right: $border solid $color-text;
+  }
+  // 날짜
+  &_title {
+    @extend .under_boder;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > span {
+      // DDay
+      &:nth-child(2) {
+        position: absolute;
+        right: 5;
+      }
+    }
+  }
+
+  &_todoList {
+    // 이걸 없앨까 말까...
+    // @extend .under_boder;
+    display: grid;
+    overflow-y: auto;
+  }
+
+  &_todoItem {
+    @extend .under_boder;
+    display: grid;
+    grid-template-columns: 1.5fr 7fr 1.5fr;
+    align-items: center;
+    gap: $border;
+    padding: 0 $border;
+
+    > div {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    // 카테고리 (이모지)
+    > div:nth-child(1) {
+      border-right: $border solid $color-text;
+      cursor: pointer;
+    }
+
+    // 할 일 내용
+    > span:nth-child(2) {
+      margin: 0 1em;
+    }
+
+    // 완료 여부
+    > div:nth-child(3) {
+      border-left: $border solid $color-text;
+      cursor: pointer;
+    }
+
+    // 새 할 일 입력창
+    > input {
+      background: transparent;
+      margin-left: 1em;
+      border: none;
+      font-size: 0.875rem;
+      color: $color-text;
+      // caret-color: auto;
+      &:focus {
+        outline: none;
+      }
+      &::placeholder {
+        color: $color-gray-4;
+      }
+    }
+  }
+
+  // 메모칸
+  &_memo {
+    > textarea {
+      background: transparent;
+      height: 100%;
+      width: 100%;
+      resize: none;
+      border: none;
+      padding: 1em;
+      box-sizing: border-box;
+      color: $color-text;
+      &:focus {
+        outline: none;
+      }
+      &::placeholder {
+        color: $color-gray-4;
+      }
+    }
+  }
+}
