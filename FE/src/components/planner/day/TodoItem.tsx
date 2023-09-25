@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { AddCircleOutline, DeleteOutlined } from "@mui/icons-material";
@@ -15,10 +15,19 @@ interface Props {
 const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { todoId, categoryName, todoContent, todoStatus, isPossible } = item;
-  const checkedArr = [" ", "O", "X"];
   const [text, setText] = useState(todoContent);
-  const modifyText = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [state, setState] = useState(todoStatus);
+  const stateString = useMemo(() => {
+    return [" ", "O", "X"][state];
+  }, [state]);
+
+  const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
+  };
+
+  const editState = () => {
+    setState(state == 0 ? 1 : state == 1 ? 2 : 0);
+    saveTodo();
   };
 
   const handleOnBlur = () => {
@@ -41,7 +50,12 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
   };
 
   const saveTodo = () => {
-    updateTodo({ ...item, todoContent: text });
+    let todo = {
+      ...item,
+      todoContent: text,
+      todoStatus: state,
+    };
+    updateTodo(todo);
   };
 
   return (
@@ -55,13 +69,7 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
       <div className={styles["todo-item__context"]}>
         {isPossible ? (
           <div className={styles["todo-item__context__possiable"]}>
-            <input
-              ref={inputRef}
-              value={text}
-              onChange={modifyText}
-              onBlur={handleOnBlur}
-              onKeyDown={handleOnKeyPress}
-            />
+            <input ref={inputRef} value={text} onChange={editText} onBlur={handleOnBlur} onKeyDown={handleOnKeyPress} />
             <div onClick={removeTodo}>
               <DeleteOutlined />
             </div>
@@ -70,8 +78,8 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
           <AddCircleOutline />
         )}
       </div>
-      <div className={styles["todo-item__checked"]}>
-        <Text types="semi-medium"> {checkedArr[todoStatus]}</Text>
+      <div className={styles["todo-item__checked"]} onClick={editState}>
+        <Text types="semi-medium"> {stateString}</Text>
       </div>
     </div>
   );
