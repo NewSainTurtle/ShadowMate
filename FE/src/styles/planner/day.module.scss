@@ -77,6 +77,7 @@ $color-background: var(--color-background);
 
       svg {
         @extend .text-semi-large;
+        cursor: pointer;
       }
     }
   }
@@ -251,14 +252,17 @@ $color-background: var(--color-background);
   }
 
   &__category,
-  &__context {
+  &__content {
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 
-    svg {
+    &-add {
       cursor: pointer;
+    }
+
+    svg {
       display: none;
     }
 
@@ -275,7 +279,7 @@ $color-background: var(--color-background);
     }
   }
 
-  &__context {
+  &__content {
     padding: 0 1em;
     box-sizing: border-box;
 

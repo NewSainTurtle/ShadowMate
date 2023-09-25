@@ -13,25 +13,25 @@ export const todoData_friend = {
 export const todoData_category: categoryType[] = [
   {
     categoryId: 0,
-    categoryName: "",
+    categoryTitle: "",
     categoryColorCode: "E9E9EB",
     categoryEmoticon: "",
   },
   {
     categoryId: 1,
-    categoryName: "국어",
+    categoryTitle: "국어",
     categoryColorCode: "FFCBE1",
     categoryEmoticon: "🌈",
   },
   {
     categoryId: 2,
-    categoryName: "수학",
+    categoryTitle: "수학",
     categoryColorCode: "B6F7E1",
     categoryEmoticon: "🎠",
   },
   {
     categoryId: 3,
-    categoryName: "과학 뿌셔뿌셔 대항전",
+    categoryTitle: "과학 뿌셔뿌셔 대항전",
     categoryColorCode: "B6DEF7",
     categoryEmoticon: "🧤",
   },
@@ -40,7 +40,7 @@ export const todoData_category: categoryType[] = [
 export const todoData_list: todoListType[] = [
   {
     todoId: 0,
-    categoryName: "수학",
+    categoryTitle: "수학",
     categoryColorCode: "B6F7E1",
     todoContent: "수능완성 수학 과목별 10문제",
     todoStatus: 2,
@@ -48,7 +48,7 @@ export const todoData_list: todoListType[] = [
   },
   {
     todoId: 1,
-    categoryName: "국어",
+    categoryTitle: "국어",
     categoryColorCode: "FFCBE1",
     todoContent: "초고난도 독서 02 (사회·경제)",
     todoStatus: 1,

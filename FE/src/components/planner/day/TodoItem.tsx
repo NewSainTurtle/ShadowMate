@@ -7,19 +7,20 @@ import { todoData_category } from "@util/data/DayTodos";
 
 interface Props {
   item: todoListType;
+  addIndex: boolean;
   insertTodo: () => void;
   updateTodo: (todo: todoListType) => void;
   deleteTodo: (id: number) => void;
 }
 
-const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
-  const { todoId, categoryName, categoryColorCode, todoContent, todoStatus, isPossible } = item;
+const TodoItem = ({ item, addIndex, insertTodo, updateTodo, deleteTodo }: Props) => {
+  const { todoId, categoryTitle, categoryColorCode, todoContent, todoStatus, isPossible } = item;
   const [text, setText] = useState(todoContent);
   const [state, setState] = useState(todoStatus);
   const stateString = useMemo(() => {
     return [" ", "O", "X"][state];
   }, [state]);
-  const maxLenght = 55;
+  const maxLenght = 50;
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > maxLenght) {
@@ -29,8 +30,10 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
   };
 
   const editState = () => {
-    setState(state == 0 ? 1 : state == 1 ? 2 : 0);
-    saveTodo();
+    if (isPossible) {
+      setState(state == 0 ? 1 : state == 1 ? 2 : 0);
+      saveTodo();
+    }
   };
 
   const handleOnBlur = () => {
@@ -50,6 +53,7 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
   const removeTodo = () => {
     deleteTodo(todoId);
     setText("");
+    setState(0);
   };
 
   const saveTodo = () => {
@@ -62,13 +66,12 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
   };
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
-    const rgb = parseInt(hexColor, 16); // rrggbb를 10진수로 변환
+    const rgb = parseInt(hexColor, 16);
     const r = (rgb >> 16) & 0xff;
     const g = (rgb >> 8) & 0xff;
     const b = (rgb >> 0) & 0xff;
     const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
-    // 글자 색상 선택
     return luma < 127.5 ? "white" : "black";
   };
 
@@ -79,14 +82,17 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
 
   return (
     <div className={`${styles["todo-item"]} ${!isPossible && styles["todo-item--disable"]}`}>
-      <div className={styles["todo-item__category"]}>
+      <div className={`${styles["todo-item__category"]} ${addIndex && styles["todo-item__content-add"]}`}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle}>
-          {isPossible ? <Text>{categoryName}</Text> : <AddOutlined />}
+          {isPossible ? <Text>{categoryTitle}</Text> : addIndex && <AddOutlined />}
         </div>
       </div>
-      <div className={styles["todo-item__context"]} onClick={() => addTodo(isPossible)}>
+      <div
+        className={`${styles["todo-item__content"]} ${addIndex && styles["todo-item__content-add"]}`}
+        onClick={() => addTodo(isPossible)}
+      >
         {isPossible ? (
-          <div className={styles["todo-item__context__possiable"]}>
+          <div className={styles["todo-item__content__possiable"]}>
             <input
               value={text}
               minLength={2}
@@ -100,11 +106,11 @@ const TodoItem = ({ item, insertTodo, updateTodo, deleteTodo }: Props) => {
             </div>
           </div>
         ) : (
-          <AddOutlined />
+          addIndex && <AddOutlined />
         )}
       </div>
       <div className={styles["todo-item__checked"]} onClick={editState}>
-        <Text types="semi-medium"> {stateString}</Text>
+        <Text types="semi-medium">{stateString}</Text>
       </div>
     </div>
   );

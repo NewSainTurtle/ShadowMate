@@ -39,7 +39,7 @@ const HeaderDate = ({ date }: HeaderDateType) => {
 const FriendHeader = ({ heart }: { heart: number }) => {
   const navigate = useNavigate();
   const [isHeartClick, setIsHeartClick] = useState(false);
-  const [heartNum, setHeartNum] = useState(heart); // 임시 좋아요 수
+  const [heartNum, setHeartNum] = useState(heart);
 
   function heartClick() {
     setIsHeartClick(!isHeartClick);

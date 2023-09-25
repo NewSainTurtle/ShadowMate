@@ -6,7 +6,7 @@ import { todoData_list as data } from "@util/data/DayTodos";
 
 const TodoDataDefalut: todoListType = {
   todoId: -1,
-  categoryName: "",
+  categoryTitle: "",
   categoryColorCode: "",
   todoContent: "",
   todoStatus: 0,
@@ -31,7 +31,7 @@ const TodoList = () => {
   const insertTodo = () => {
     const nextTodoList = todos.concat({
       todoId: nextId.current,
-      categoryName: "",
+      categoryTitle: "",
       categoryColorCode: "",
       todoContent: "",
       todoStatus: 0,
@@ -61,14 +61,17 @@ const TodoList = () => {
     setTodos(todos.filter((todo) => todo.todoId !== id));
   };
 
-  useEffect(() => {
-    console.log(todos);
-  }, [todos]);
-
   return (
     <div className={styles["todo-list"]}>
       {todolistView.map((todo, idx) => (
-        <TodoItem key={idx} item={todo} insertTodo={insertTodo} updateTodo={updateTodo} deleteTodo={deleteTodo} />
+        <TodoItem
+          key={idx}
+          item={todo}
+          addIndex={idx == data.length}
+          insertTodo={insertTodo}
+          updateTodo={updateTodo}
+          deleteTodo={deleteTodo}
+        />
       ))}
     </div>
   );

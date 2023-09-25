@@ -20,7 +20,6 @@ const FileImg = () => {
   const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files;
     if (!file) return;
-    console.log(file);
 
     const reader = new FileReader();
     reader.readAsDataURL(file[0]);
