@@ -9,7 +9,7 @@ import WeekPage from "@pages/Planner/WeekPage";
 import SocialPage from "@pages/SocialPage";
 import CommonPage from "@pages/commonPage";
 import NotFoundPage from "@pages/NotFoundPage";
-import MyPage from "@pages/Mypage";
+import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
 import LandingPage from "@pages/LandingPage";
 
