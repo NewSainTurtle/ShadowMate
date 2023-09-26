@@ -132,5 +132,38 @@ public class DailyPlannerRepositoryTest {
             assertThat(findDailyPlanner.getRetrospection()).isNull();
             assertThat(findDailyPlanner.getCreateTime()).isNotEqualTo(findDailyPlanner.getUpdateTime());
         }
+
+        @Test
+        public void 내일의다짐편집() {
+            //given
+            dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                    .user(user)
+                    .build());
+            //when
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf("2023-09-25"));
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal("이제는 더이상 물러나 곳이 없다.")
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(dailyPlanner.getRetrospectionImage())
+                    .build();
+            dailyPlannerRepository.save(changeDailyPlanner);
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf("2023-09-25"));
+
+            //then
+            assertThat(findDailyPlanner).isNotNull();
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(Date.valueOf("2023-09-25"));
+            assertThat(findDailyPlanner.getUser()).isEqualTo(user);
+            assertThat(findDailyPlanner.getTodayGoal()).isNull();
+            assertThat(findDailyPlanner.getTomorrowGoal()).isEqualTo("이제는 더이상 물러나 곳이 없다.");
+            assertThat(findDailyPlanner.getRetrospectionImage()).isNull();
+            assertThat(findDailyPlanner.getRetrospection()).isNull();
+            assertThat(findDailyPlanner.getCreateTime()).isNotEqualTo(findDailyPlanner.getUpdateTime());
+        }
     }
 }
