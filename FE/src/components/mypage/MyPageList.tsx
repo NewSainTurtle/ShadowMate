@@ -1,0 +1,30 @@
+import React, { ReactNode } from "react";
+import styles from "./MyPage.module.scss";
+import Text from "@components/common/Text";
+import AddIcon from "@mui/icons-material/Add";
+
+interface Props {
+  children: ReactNode;
+  title: string;
+}
+
+/**
+ * MyPage - 다이어리, 디데이 설정 중 왼쪽 사이드
+ */
+
+const MyPageList = ({ children, title }: Props) => {
+  return (
+    <div className={styles["frame__container"]}>
+      <div className={styles["frame__title"]}>
+        <Text>{title} 목록</Text>
+      </div>
+      {children}
+      <div className={styles["frame__button"]}>
+        <AddIcon />
+        <Text>새 {title}</Text>
+      </div>
+    </div>
+  );
+};
+
+export default MyPageList;
