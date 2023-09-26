@@ -84,7 +84,7 @@ public class DailyPlannerLikeRepositoryTest {
                 .build());
 
         //when
-        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserIdAndDailyPlanner(user2.getId(), saveDailyPlanner);
+        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
 
         //then
         assertThat(dailyPlannerLike).isNull();
@@ -103,7 +103,7 @@ public class DailyPlannerLikeRepositoryTest {
                 .build());
 
         //when
-        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserIdAndDailyPlanner(user2.getId(), saveDailyPlanner);
+        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
 
         //then
         assertThat(dailyPlannerLike).isNotNull();
