@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.yn.planner;
 
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
@@ -53,14 +54,14 @@ public class DailyPlannerServiceTest {
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .withdrawal(false)
             .build();
+    final DailyPlanner dailyPlanner = DailyPlanner.builder()
+            .id(1L)
+            .dailyPlannerDay(Date.valueOf("2023-09-25"))
+            .user(user)
+            .build();
 
     @Nested
     class 일일플래너할일등록 {
-
-        final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-25"))
-                .user(user)
-                .build();
 
         @Test
         public void 실패_유효하지않은카테고리ID() {
@@ -152,4 +153,37 @@ public class DailyPlannerServiceTest {
 
     }
 
+    @Nested
+    class 일일플래너수정 {
+        @Test
+        public void 오늘의다짐편집() {
+            //given
+            final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
+                    .date("2023-09-26")
+                    .todayGoal("🎧 Dreams Come True - NCT127")
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(dailyPlanner.getRetrospectionImage())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .todayGoal(updateTodayGoalRequest.getTodayGoal())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateTodayGoal(user, updateTodayGoalRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
+    }
 }
