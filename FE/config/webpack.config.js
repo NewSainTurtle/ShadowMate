@@ -6,7 +6,7 @@ const DotenvWebpack = require("dotenv-webpack");
 const tsConfigPath = path.resolve(__dirname, "../tsconfig.json");
 
 module.exports = {
-  entry: "./src/index.tsx",
+  entry: `${path.resolve(__dirname, "../src")}/index.tsx`,
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     plugins: [new TsconfigPathsPlugin({ configFile: tsConfigPath })],
@@ -44,9 +44,9 @@ module.exports = {
     ],
   },
   output: {
-    path: path.join(__dirname, "build"),
+    path: path.resolve(__dirname, "../build"),
     publicPath: "/",
-    filename: "bundle.js",
+    filename: "[contenthash].bundle.js",
   },
   plugins: [
     new CleanWebpackPlugin(),
