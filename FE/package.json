@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --watchAll",
     "build": "webpack --config webpack.prod.js",
-    "start": "webpack-dev-server --config config/webpack.dev.js",
+    "start": "webpack-dev-server --watch --progress --config config/webpack.dev.js",
     "format": "prettier --cache --write .",
     "cypress": "cypress open"
   },
