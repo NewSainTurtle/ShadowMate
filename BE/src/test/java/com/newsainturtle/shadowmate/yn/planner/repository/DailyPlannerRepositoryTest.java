@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DailyPlannerRepositoryTest {
 
     @Autowired
-    DailyPlannerRepository dailyPlannerRepository;
+    private DailyPlannerRepository dailyPlannerRepository;
 
     @Autowired
     private UserRepository userRepository;
