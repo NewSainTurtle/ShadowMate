@@ -22,10 +22,12 @@ export interface todoListType extends todoType {
 export interface WeekTodoItemConfig {
   weeklyTodoContent: string;
   weeklyTodoStatus: boolean;
+  weeklyTodoUpdate: boolean;
 }
 
 export interface TodoItemConfig {
   todoContents: string;
   todoStatus: boolean;
   categoryEmoticon?: string;
+  todoUpdate: boolean;
 }

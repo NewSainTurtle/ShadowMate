@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, FocusEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import styles from "../week/Week.module.scss";
 import Text from "@components/common/Text";
 import { WeekTodoItemConfig } from "@util/planner.interface";
@@ -11,11 +11,41 @@ const WeekTodo = () => {
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (newTodo === "") return;
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
       if (e.nativeEvent.isComposing) return;
-      setTodoItems([...todoItems, { weeklyTodoContent: newTodo, weeklyTodoStatus: false }]);
+      setTodoItems([...todoItems, { weeklyTodoContent: newTodo, weeklyTodoStatus: false, weeklyTodoUpdate: false }]);
       setNewTodo("");
     }
+  };
+
+  const handleEditState = (idx: number) => {
+    console.log(idx);
+    setTodoItems(
+      todoItems.map((item, key) => {
+        if (key === idx) {
+          return { ...item, weeklyTodoUpdate: !item.weeklyTodoUpdate };
+        }
+        return item;
+      }),
+    );
+  };
+
+  const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (e.nativeEvent.isComposing) return;
+      (document.activeElement as HTMLElement).blur();
+    }
+  };
+
+  const EditSave = (idx: number, e: ChangeEvent<HTMLInputElement>) => {
+    setTodoItems(
+      todoItems.map((item, key) => {
+        if (key === idx) {
+          return { ...item, weeklyTodoContent: e.target.value, weeklyTodoUpdate: !item.weeklyTodoUpdate };
+        }
+        return item;
+      }),
+    );
   };
 
   useEffect(() => {
@@ -31,23 +61,36 @@ const WeekTodo = () => {
         className={styles["item__todo-list"]}
         style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, calc(100% / 7)` }}
       >
-        {todoItems.map((item: WeekTodoItemConfig, key: number) => (
-          <div className={styles["todo__item"]} key={key}>
-            <div className={styles["todo__checkbox"]}>
-              <input type="checkbox" id={key.toString()} defaultChecked={item.weeklyTodoStatus} />
-              <label htmlFor={key.toString()}>
-                <Text types="small">{item.weeklyTodoContent}</Text>
-              </label>
+        {todoItems.map((item: WeekTodoItemConfig, idx: number) => {
+          return (
+            <div className={styles["todo__item"]} key={idx}>
+              <div className={styles["todo__checkbox"]}>
+                <input type="checkbox" id={idx.toString()} defaultChecked={item.weeklyTodoStatus} />
+                {item.weeklyTodoUpdate ? (
+                  <input
+                    autoFocus
+                    type="text"
+                    defaultValue={item.weeklyTodoContent}
+                    onKeyDown={(e) => handleEnter(e)}
+                    onBlur={(e) => EditSave(idx, e)}
+                  />
+                ) : (
+                  <div className={styles["todo__name"]} onClick={() => handleEditState(idx)}>
+                    <Text types="small">{item.weeklyTodoContent}</Text>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={todoEndRef} className={styles["todo__item"]}>
           <div className={styles["todo__checkbox"]}>
             <input type="checkbox" style={{ cursor: "auto" }} disabled />
             <input
+              autoFocus
               type="text"
               width={"100%"}
-              value={newTodo}
+              defaultValue={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
               onKeyDown={(e) => handleOnKeyPress(e)}
               placeholder="이번 주에 해야할 일을 입력하세요."

@@ -95,14 +95,11 @@ $border: 1px;
         background-position: 50%;
         background-repeat: no-repeat;
         background-color: $color-gray-4;
-        + label {
+        + .todo__name {
           color: $color-gray-4;
           text-decoration: line-through;
         }
       }
-    }
-    > label:nth-child(2) {
-      cursor: pointer;
     }
     > input[type="text"] {
       width: 100%;
@@ -111,6 +108,10 @@ $border: 1px;
       border: none;
       font-size: 0.875rem;
       border-bottom: $border solid $color-gray-4;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
       &:focus {
         outline: none;
         color: $color-text;
@@ -119,6 +120,10 @@ $border: 1px;
         color: $color-gray-5;
       }
     }
+  }
+
+  &__name {
+    cursor: pointer;
   }
 }
 
@@ -170,8 +175,15 @@ $border: 1px;
         border-right: $border solid $color-text;
         cursor: pointer;
       }
-      // 할 일 내용
+      // 할 일 내용: 2줄 이상 시 줄임
       > span:nth-child(2) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+
+        display: -webkit-box;
+        -webkit-line-clamp: 2; // 원하는 라인수
+        -webkit-box-orient: vertical;
         margin: 0 1em;
       }
       // 완료 여부
