@@ -97,4 +97,37 @@ public class DailyPlannerRepositoryTest {
             assertThat(findDailyPlanner.getTomorrowGoal()).isNull();
         }
     }
+
+    @Nested
+    class 일일플래너수정 {
+        @Test
+        public void 오늘의다짐편집() {
+            //given
+            dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                    .user(user)
+                    .build());
+            //when
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf("2023-09-25"));
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .todayGoal("오늘의 다짐!!!")
+                    .build();
+            dailyPlannerRepository.save(changeDailyPlanner);
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf("2023-09-25"));
+
+            //then
+            assertThat(findDailyPlanner).isNotNull();
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(Date.valueOf("2023-09-25"));
+            assertThat(findDailyPlanner.getUser()).isEqualTo(user);
+            assertThat(findDailyPlanner.getTodayGoal()).isEqualTo("오늘의 다짐!!!");
+            assertThat(findDailyPlanner.getTomorrowGoal()).isNull();
+            assertThat(findDailyPlanner.getRetrospectionImage()).isNull();
+            assertThat(findDailyPlanner.getRetrospection()).isNull();
+            assertThat(findDailyPlanner.getCreateTime()).isNotEqualTo(findDailyPlanner.getUpdateTime());
+        }
+    }
 }
