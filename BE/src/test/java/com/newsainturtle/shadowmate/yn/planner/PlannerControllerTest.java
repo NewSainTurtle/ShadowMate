@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner.controller.PlannerController;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
@@ -213,6 +214,129 @@ public class PlannerControllerTest {
                 final ResultActions resultActions = mockMvc.perform(
                         MockMvcRequestBuilders.post(url, userId)
                                 .content(gson.toJson(addDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
+    }
+
+    @Nested
+    class 일일플래너수정 {
+        @Nested
+        class 오늘의다짐편집 {
+            final String url = "/api/planners/{userId}/daily/today-goals";
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
+                        .date("2023-09-26")
+                        .todayGoal("🎧 Dreams Come True - NCT127")
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateTodayGoalRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식() throws Exception {
+                //given
+                final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
+                        .date("2023.09.26")
+                        .todayGoal("🎧 Dreams Come True - NCT127")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateTodayGoalRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_오늘의다짐_길이초과() throws Exception {
+                //given
+                final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
+                        .date("2023-09-26")
+                        .todayGoal("0123456789012345678901234567890123456789012345678901")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateTodayGoalRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_날짜Null() throws Exception {
+                //given
+                final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
+                        .date(null)
+                        .todayGoal("🎧 Dreams Come True - NCT127")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateTodayGoalRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_오늘의다짐Null() throws Exception {
+                //given
+                final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
+                        .date("2023-09-26")
+                        .todayGoal(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateTodayGoalRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
+                        .date("2023-09-26")
+                        .todayGoal("🎧 Dreams Come True - NCT127")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateTodayGoalRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                 );
 
