@@ -34,7 +34,7 @@ const WeekTodo = () => {
         {todoItems.map((item: WeekTodoItemConfig, key: number) => (
           <div className={styles["todo__item"]} key={key}>
             <div className={styles["todo__checkbox"]}>
-              <input type="checkbox" id={key.toString()} checked={item.weeklyTodoStatus} />
+              <input type="checkbox" id={key.toString()} defaultChecked={item.weeklyTodoStatus} />
               <label htmlFor={key.toString()}>
                 <Text types="small">{item.weeklyTodoContent}</Text>
               </label>
