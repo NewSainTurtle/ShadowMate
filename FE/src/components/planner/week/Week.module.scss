@@ -72,6 +72,18 @@ $border: 1px;
     gap: $border;
     padding: 0 $border;
     align-items: center;
+    &:hover {
+      &.todo__item > svg {
+        visibility: visible;
+      }
+    }
+    > svg {
+      visibility: hidden;
+      color: $color-gray-4;
+      font-size: medium;
+      margin-right: 1em;
+      cursor: pointer;
+    }
   }
 
   &__checkbox {
@@ -108,9 +120,6 @@ $border: 1px;
       border: none;
       font-size: 0.875rem;
       border-bottom: $border solid $color-gray-4;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
 
       &:focus {
         outline: none;
@@ -123,6 +132,9 @@ $border: 1px;
   }
 
   &__name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     cursor: pointer;
   }
 }

@@ -3,6 +3,7 @@ import styles from "../week/Week.module.scss";
 import Text from "@components/common/Text";
 import { WeekTodoItemConfig } from "@util/planner.interface";
 import { WEEK_TODO_ITEMS } from "@util/data/WeekTodos";
+import { DeleteOutlined } from "@mui/icons-material";
 
 const WeekTodo = () => {
   const [todoItems, setTodoItems] = useState<WeekTodoItemConfig[]>(WEEK_TODO_ITEMS);
@@ -19,7 +20,6 @@ const WeekTodo = () => {
   };
 
   const handleEditState = (idx: number) => {
-    console.log(idx);
     setTodoItems(
       todoItems.map((item, key) => {
         if (key === idx) {
@@ -37,7 +37,7 @@ const WeekTodo = () => {
     }
   };
 
-  const EditSave = (idx: number, e: ChangeEvent<HTMLInputElement>) => {
+  const handleEditSave = (idx: number, e: ChangeEvent<HTMLInputElement>) => {
     setTodoItems(
       todoItems.map((item, key) => {
         if (key === idx) {
@@ -46,6 +46,10 @@ const WeekTodo = () => {
         return item;
       }),
     );
+  };
+
+  const handleDelete = (idx: number) => {
+    setTodoItems(todoItems.filter((item, key) => idx !== key));
   };
 
   useEffect(() => {
@@ -72,7 +76,7 @@ const WeekTodo = () => {
                     type="text"
                     defaultValue={item.weeklyTodoContent}
                     onKeyDown={(e) => handleEnter(e)}
-                    onBlur={(e) => EditSave(idx, e)}
+                    onBlur={(e) => handleEditSave(idx, e)}
                   />
                 ) : (
                   <div className={styles["todo__name"]} onClick={() => handleEditState(idx)}>
@@ -80,6 +84,7 @@ const WeekTodo = () => {
                   </div>
                 )}
               </div>
+              <DeleteOutlined onClick={() => handleDelete(idx)} />
             </div>
           );
         })}
@@ -90,7 +95,7 @@ const WeekTodo = () => {
               autoFocus
               type="text"
               width={"100%"}
-              defaultValue={newTodo}
+              value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
               onKeyDown={(e) => handleOnKeyPress(e)}
               placeholder="이번 주에 해야할 일을 입력하세요."
