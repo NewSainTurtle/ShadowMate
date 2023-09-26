@@ -75,4 +75,41 @@ public class DailyPlannerLikeRepositoryTest {
         assertThat(saveDailyPlannerLike.getUser()).isEqualTo(user2);
     }
 
+    @Test
+    public void 좋아요조회_이전에좋아요안누름() {
+        //given
+        final DailyPlanner saveDailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+                .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                .user(user1)
+                .build());
+
+        //when
+        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
+
+        //then
+        assertThat(dailyPlannerLike).isNull();
+    }
+
+    @Test
+    public void 좋아요조회_이전에좋아요누름() {
+        //given
+        final DailyPlanner saveDailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+                .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                .user(user1)
+                .build());
+        dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                .dailyPlanner(saveDailyPlanner)
+                .user(user2)
+                .build());
+
+        //when
+        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
+
+        //then
+        assertThat(dailyPlannerLike).isNotNull();
+        assertThat(dailyPlannerLike.getDailyPlanner()).isEqualTo(saveDailyPlanner);
+        assertThat(dailyPlannerLike.getUser()).isEqualTo(user2);
+
+    }
+
 }
