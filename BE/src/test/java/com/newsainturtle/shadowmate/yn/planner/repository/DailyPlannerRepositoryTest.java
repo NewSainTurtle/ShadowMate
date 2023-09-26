@@ -115,6 +115,9 @@ public class DailyPlannerRepositoryTest {
                     .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
                     .user(dailyPlanner.getUser())
                     .todayGoal("오늘의 다짐!!!")
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(dailyPlanner.getRetrospectionImage())
                     .build();
             dailyPlannerRepository.save(changeDailyPlanner);
             final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf("2023-09-25"));
