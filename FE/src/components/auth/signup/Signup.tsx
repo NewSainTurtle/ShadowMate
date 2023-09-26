@@ -5,7 +5,7 @@ import AuthButton from "@components/auth/AuthButton";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import Button from "@components/common/Button";
-import { authApi } from "@api/Apis";
+import { authApi } from "@api/Api";
 
 const Signup = () => {
   const [userData, setUserData] = useState({
