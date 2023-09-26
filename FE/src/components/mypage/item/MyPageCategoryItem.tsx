@@ -12,7 +12,7 @@ interface Props {
 const MyPageCategoryItem = ({ item, index, click, setClick }: Props) => {
   return (
     <div
-      className={click === index ? styles["category__item--clicked"] : styles["category__item"]}
+      className={click === index ? styles["category-item--clicked"] : styles["category-item"]}
       onClick={() => setClick(index)}
     >
       <div>{item.emoticon}</div>

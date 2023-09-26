@@ -11,8 +11,8 @@ const Week = () => {
   const thisWeek = getThisWeek();
   const [isMine, setIsMine] = useState<boolean>(true);
   return (
-    <div className={styles.week_container}>
-      <div className={styles.week_title}>
+    <div className={styles["week"]}>
+      <div className={styles["week__title"]}>
         <div>
           <Text types="semi-large" bold>
             2023년 7월 2주차
@@ -32,7 +32,7 @@ const Week = () => {
           </div>
         )}
       </div>
-      <div className={styles.week_weekList}>
+      <div className={styles["week__list"]}>
         <WeekTodo />
         {thisWeek.map((today, key) => (
           <WeekItem date={today} key={key} />

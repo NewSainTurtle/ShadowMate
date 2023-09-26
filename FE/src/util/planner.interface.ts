@@ -16,3 +16,16 @@ export interface todoType {
 export interface todoListType extends todoType {
   isPossible?: boolean;
 }
+
+/* --- Week Interfaces --- */
+
+export interface WeekTodoItemConfig {
+  weeklyTodoContent: string;
+  weeklyTodoStatus: boolean;
+}
+
+export interface TodoItemConfig {
+  todoContents: string;
+  todoStatus: boolean;
+  categoryEmoticon?: string;
+}

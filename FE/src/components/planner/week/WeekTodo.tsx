@@ -1,18 +1,11 @@
 import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 import styles from "../week/Week.module.scss";
 import Text from "@components/common/Text";
-
-interface WeekTodoItemConfig {
-  weeklyTodoContent: string;
-  weeklyTodoStatus: boolean;
-}
+import { WeekTodoItemConfig } from "@util/planner.interface";
+import { WEEK_TODO_ITEMS } from "@util/data/WeekTodos";
 
 const WeekTodo = () => {
-  const [todoItems, setTodoItems] = useState<WeekTodoItemConfig[]>([
-    { weeklyTodoContent: "국어 졸라게 열심히 풀기", weeklyTodoStatus: true },
-    { weeklyTodoContent: "수학 갈아버리기", weeklyTodoStatus: false },
-    { weeklyTodoContent: "영어 처참하게 눌러버리기", weeklyTodoStatus: false },
-  ]);
+  const [todoItems, setTodoItems] = useState<WeekTodoItemConfig[]>(WEEK_TODO_ITEMS);
   const [newTodo, setNewTodo] = useState<string>("");
   const todoEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,17 +23,17 @@ const WeekTodo = () => {
   }, [newTodo]);
 
   return (
-    <div className={styles.weekTodo_container}>
-      <div className={styles.weekItem_title}>
+    <div className={styles["todo"]}>
+      <div className={styles["item__title"]}>
         <Text>주차별 할 일</Text>
       </div>
       <div
-        className={styles.weekItem_todoList}
+        className={styles["item__todo-list"]}
         style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, calc(100% / 7)` }}
       >
         {todoItems.map((item: WeekTodoItemConfig, key: number) => (
-          <div className={styles.weekTodo_todoItem} key={key}>
-            <div className={styles.weekTodo_checkbox}>
+          <div className={styles["todo__item"]} key={key}>
+            <div className={styles["todo__checkbox"]}>
               <input type="checkbox" id={key.toString()} checked={item.weeklyTodoStatus} />
               <label htmlFor={key.toString()}>
                 <Text types="small">{item.weeklyTodoContent}</Text>
@@ -48,8 +41,8 @@ const WeekTodo = () => {
             </div>
           </div>
         ))}
-        <div ref={todoEndRef} className={styles.weekTodo_todoItem}>
-          <div className={styles.weekTodo_checkbox}>
+        <div ref={todoEndRef} className={styles["todo__item"]}>
+          <div className={styles["todo__checkbox"]}>
             <input type="checkbox" style={{ cursor: "auto" }} disabled />
             <input
               type="text"
