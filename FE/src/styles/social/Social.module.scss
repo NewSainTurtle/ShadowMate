@@ -1,7 +1,7 @@
 @use "@styles/common/Profile.module.scss";
+$color-background: var(--color-background);
 $color-text: var(--color-text);
 $color-gray_4: var(--color-gray-4);
-$color-gray_2: var(--color-gray-2);
 
 .page-container {
   height: 100vh;
@@ -99,8 +99,8 @@ $color-gray_2: var(--color-gray-2);
   &__img {
     @extend .profile_img;
     > :nth-child(1) {
-      width: 45px;
-      height: 45px;
+      width: 42px;
+      height: 42px;
     }
   }
 
@@ -111,10 +111,7 @@ $color-gray_2: var(--color-gray-2);
   &__button {
     @extend .fprofile_button;
     > div {
-      background-color: $color-gray_2;
-    }
-    > svg {
-      color: $color-text;
+      background-color: $color-background;
     }
   }
 }
