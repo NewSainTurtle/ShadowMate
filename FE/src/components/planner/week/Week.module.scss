@@ -172,7 +172,7 @@ $border: 1px;
     &-item {
       @extend %under_boder;
       display: grid;
-      grid-template-columns: 1.5fr 7fr 1.5fr;
+      grid-template-columns: 1.5fr 6.5fr 0.5fr 1.5fr;
       align-items: center;
       gap: $border;
       padding: 0 $border;
@@ -184,11 +184,13 @@ $border: 1px;
       }
       // 카테고리 (이모지)
       > div:nth-child(1) {
+        width: 100%;
         border-right: $border solid $color-text;
         cursor: pointer;
       }
-      // 할 일 내용: 2줄 이상 시 줄임
-      > span:nth-child(2) {
+      // 할 일 내용
+      > span {
+        justify-content: start;
         overflow: hidden;
         text-overflow: ellipsis;
         word-break: break-word;
@@ -197,16 +199,26 @@ $border: 1px;
         -webkit-line-clamp: 2; // 원하는 라인수
         -webkit-box-orient: vertical;
         margin: 0 1em;
+        cursor: pointer;
+      }
+      // 삭제 아이콘
+      > svg:nth-child(3) {
+        width: 100%;
+        visibility: hidden;
+        font-size: medium;
+        color: $color-gray-4;
+        cursor: pointer;
       }
       // 완료 여부
-      > div:nth-child(3) {
+      > div:nth-child(4) {
         border-left: $border solid $color-text;
         cursor: pointer;
       }
-      // 새 할 일 입력창
+
       > input {
+        width: 100%;
+        margin-left: 1em;
         background: transparent;
-        margin-left: calc(1em - 2px);
         border: none;
         font-size: 0.875rem;
         color: $color-text;
@@ -215,6 +227,12 @@ $border: 1px;
         }
         &::placeholder {
           color: $color-gray-4;
+        }
+      }
+
+      &:hover {
+        &.item__todo-item > svg {
+          visibility: visible;
         }
       }
     }
