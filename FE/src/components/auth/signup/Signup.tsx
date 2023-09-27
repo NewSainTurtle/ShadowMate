@@ -5,6 +5,7 @@ import AuthButton from "@components/auth/AuthButton";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import Button from "@components/common/Button";
+import { authApi } from "@api/Api";
 
 const Signup = () => {
   const [userData, setUserData] = useState({
@@ -19,6 +20,15 @@ const Signup = () => {
       ...userData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const onClickJoin = () => {
+    let data = {
+      email: "test1234@naver.com",
+      password: "test1234",
+      nickname: "회원이다",
+    };
+    authApi.join(data);
   };
 
   const { email, password, passwordCheck, name } = userData;
@@ -52,7 +62,9 @@ const Signup = () => {
           <div className={styles.signup_warning} style={{ visibility: !isSame ? "visible" : "hidden" }}>
             <Text types="small">{"비밀번호가 다릅니다."}</Text>
           </div>
-          <AuthButton>Sign up</AuthButton>
+          <div onClick={onClickJoin}>
+            <AuthButton>Sign up</AuthButton>
+          </div>
         </div>
 
         <div className={styles.signup_context}>

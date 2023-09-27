@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const DotenvWebpack = require("dotenv-webpack");
 const tsConfigPath = path.resolve(__dirname, "../tsconfig.json");
 
 module.exports = {
@@ -52,6 +53,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
+    new DotenvWebpack(),
   ],
   stats: {
     loggingDebug: ["sass-loader"],

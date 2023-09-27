@@ -4,7 +4,7 @@ import { WbSunny, NightlightRound } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { Stack, Switch } from "@mui/material";
 
-const SwitchButton = styled(Switch)(({ theme }) => ({
+export const SwitchButton = styled(Switch)(({ theme }) => ({
   width: 28,
   height: 14,
   padding: 0,
