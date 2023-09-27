@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.planner.service;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
@@ -76,6 +77,23 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .retrospectionImage(dailyPlanner.getRetrospectionImage())
                 .tomorrowGoal(dailyPlanner.getTomorrowGoal())
                 .todayGoal(updateTodayGoalRequest.getTodayGoal())
+                .build();
+        dailyPlannerRepository.save(changeDailyPlanner);
+    }
+
+    @Override
+    @Transactional
+    public void updateTomorrowGoal(final User user, final UpdateTomorrowGoalRequest updateTomorrowGoalRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, updateTomorrowGoalRequest.getDate());
+        final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                .id(dailyPlanner.getId())
+                .createTime(dailyPlanner.getCreateTime())
+                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                .user(dailyPlanner.getUser())
+                .retrospection(dailyPlanner.getRetrospection())
+                .retrospectionImage(dailyPlanner.getRetrospectionImage())
+                .todayGoal(dailyPlanner.getTodayGoal())
+                .tomorrowGoal(updateTomorrowGoalRequest.getTomorrowGoal())
                 .build();
         dailyPlannerRepository.save(changeDailyPlanner);
     }

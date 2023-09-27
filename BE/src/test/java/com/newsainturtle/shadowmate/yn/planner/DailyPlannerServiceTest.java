@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.yn.planner;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
@@ -177,6 +178,36 @@ public class DailyPlannerServiceTest {
 
             //when
             dailyPlannerServiceImpl.updateTodayGoal(user, updateTodayGoalRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
+        @Test
+        public void 내일의다짐편집() {
+            //given
+            final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
+                    .date("2023-09-26")
+                    .tomorrowGoal("이제는 더이상 물러나 곳이 없다.")
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(dailyPlanner.getRetrospectionImage())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal(updateTomorrowGoalRequest.getTomorrowGoal())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateTomorrowGoal(user, updateTomorrowGoalRequest);
 
             //then
 
