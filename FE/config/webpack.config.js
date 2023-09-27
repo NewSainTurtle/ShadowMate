@@ -4,6 +4,8 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const DotenvWebpack = require("dotenv-webpack");
 const tsConfigPath = path.resolve(__dirname, "../tsconfig.json");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
   entry: `${path.resolve(__dirname, "../src")}/index.tsx`,
@@ -24,9 +26,7 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          {
-            loader: "style-loader",
-          },
+          devMode ? "style-loader" : MiniCssExtractPlugin.loader,
           {
             loader: "css-loader",
             options: {
@@ -36,9 +36,7 @@ module.exports = {
               },
             },
           },
-          {
-            loader: "sass-loader",
-          },
+          "sass-loader",
         ],
       },
     ],
@@ -54,7 +52,7 @@ module.exports = {
       template: "./public/index.html",
     }),
     new DotenvWebpack(),
-  ],
+  ].concat(devMode ? [] : [new MiniCssExtractPlugin()]),
   stats: {
     loggingDebug: ["sass-loader"],
   },

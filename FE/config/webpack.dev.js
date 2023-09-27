@@ -12,7 +12,8 @@ module.exports = merge(common, {
     port: 3000,
   },
   watchOptions: {
-    poll: 1000,
-    ignored: "/node_modules/",
+    poll: true,
+    aggregateTimeout: 600,
+    ignored: "**/node_modules",
   },
 });
