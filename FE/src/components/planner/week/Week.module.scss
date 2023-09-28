@@ -32,14 +32,15 @@ $border: 1px;
       align-items: center;
       margin-left: 1em;
 
+      > span:nth-child(1) {
+        min-width: 8em;
+      }
+
       // 좌우 버튼
       > div:nth-child(2) {
+        @extend %flex_row;
+        align-items: center;
         margin-left: 1em;
-        > svg {
-          margin-right: 1em;
-          fill: $color-text;
-          cursor: pointer;
-        }
       }
     }
 
@@ -48,6 +49,13 @@ $border: 1px;
       width: 20em;
       margin: 0.5em;
     }
+  }
+
+  &__button,
+  &__today {
+    margin-right: 1em;
+    fill: $color-text;
+    cursor: pointer;
   }
 
   // 위클리 영역
