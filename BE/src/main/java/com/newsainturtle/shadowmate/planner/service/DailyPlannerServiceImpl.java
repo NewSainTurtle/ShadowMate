@@ -1,19 +1,19 @@
 package com.newsainturtle.shadowmate.planner.service;
 
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoResponse;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
+import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepository;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +28,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final DailyPlannerRepository dailyPlannerRepository;
     private final TodoRepository todoRepository;
     private final CategoryRepository categoryRepository;
+    private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
 
     private DailyPlanner getDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
@@ -96,5 +97,32 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .tomorrowGoal(updateTomorrowGoalRequest.getTomorrowGoal())
                 .build();
         dailyPlannerRepository.save(changeDailyPlanner);
+    }
+
+    private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long anotherUserId, final String date) {
+        if (user.getId().equals(anotherUserId)) {
+            throw new PlannerException(PlannerErrorResult.UNABLE_TO_ADD_LIKES_YOUR_OWN_PLANNER);
+        }
+        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserIdAndDailyPlannerDay(anotherUserId, Date.valueOf(date));
+        if (dailyPlanner == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+        return dailyPlanner;
+    }
+
+    @Override
+    @Transactional
+    public void addDailyLike(final User user, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
+        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, addDailyPlannerLikeRequest.getAnotherUserId(),
+                addDailyPlannerLikeRequest.getDate());
+        DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner);
+        if (dailyPlannerLike != null) {
+            throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE);
+        }
+        dailyPlannerLike = DailyPlannerLike.builder()
+                .dailyPlanner(dailyPlanner)
+                .user(user)
+                .build();
+        dailyPlannerLikeRepository.save(dailyPlannerLike);
     }
 }
