@@ -220,6 +220,125 @@ public class PlannerControllerTest {
                 resultActions.andExpect(status().isOk());
             }
         }
+
+        @Nested
+        class 할일삭제 {
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                        .todoId(1L)
+                        .date("2023-09-25")
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식() throws Exception {
+                //given
+                final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                        .todoId(1L)
+                        .date("2023.09.25")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_날짜Null() throws Exception {
+                //given
+                final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                        .todoId(1L)
+                        .date(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_할일ID_Null() throws Exception {
+                //given
+                final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                        .todoId(null)
+                        .date("2023-09-25")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() throws Exception {
+                //given
+                final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                        .todoId(1L)
+                        .date("2023-09-25")
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeDailyTodo(any(), any(RemoveDailyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                        .todoId(1L)
+                        .date("2023-09-25")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
     }
 
     @Nested
