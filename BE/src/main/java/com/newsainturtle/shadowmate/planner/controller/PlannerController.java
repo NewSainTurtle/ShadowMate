@@ -30,6 +30,15 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DAILY_TODO, dailyPlannerServiceImpl.addDailyTodo(principalDetails.getUser(), addDailyTodoRequest)));
     }
 
+    @DeleteMapping("/{userId}/daily/todos")
+    public ResponseEntity<BaseResponse> removeDailyTodo(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                        @PathVariable("userId") final Long userId,
+                                                        @RequestBody @Valid final RemoveDailyTodoRequest removeDailyTodoRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.removeDailyTodo(principalDetails.getUser(), removeDailyTodoRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_TODO));
+    }
+
     @PutMapping("/{userId}/daily/today-goals")
     public ResponseEntity<BaseResponse> updateTodayGoal(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                         @PathVariable("userId") final Long userId,
@@ -59,8 +68,8 @@ public class PlannerController {
 
     @DeleteMapping("/{userId}/daily/likes")
     public ResponseEntity<BaseResponse> removeDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                     @PathVariable("userId") final Long userId,
-                                                     @RequestBody @Valid final RemoveDailyLikeRequest removeDailyLikeRequest) {
+                                                        @PathVariable("userId") final Long userId,
+                                                        @RequestBody @Valid final RemoveDailyLikeRequest removeDailyLikeRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         dailyPlannerServiceImpl.removeDailyLike(principalDetails.getUser(), removeDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_LIKE));
