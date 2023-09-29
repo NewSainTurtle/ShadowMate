@@ -125,4 +125,12 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .build();
         dailyPlannerLikeRepository.save(dailyPlannerLike);
     }
+
+    @Override
+    @Transactional
+    public void removeDailyLike(final User user, final RemoveDailyLikeRequest removeDailyLikeRequest) {
+        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, removeDailyLikeRequest.getAnotherUserId(),
+                removeDailyLikeRequest.getDate());
+        dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user, dailyPlanner);
+    }
 }
