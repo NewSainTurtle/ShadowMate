@@ -112,4 +112,24 @@ public class DailyPlannerLikeRepositoryTest {
 
     }
 
+    @Test
+    public void 좋아요취소() {
+        //given
+        final DailyPlanner saveDailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+                .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                .user(user1)
+                .build());
+        dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                .dailyPlanner(saveDailyPlanner)
+                .user(user2)
+                .build());
+
+        //when
+        dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user2, saveDailyPlanner);
+        final DailyPlannerLike findDailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
+
+        //then
+        assertThat(findDailyPlannerLike).isNull();
+    }
+
 }
