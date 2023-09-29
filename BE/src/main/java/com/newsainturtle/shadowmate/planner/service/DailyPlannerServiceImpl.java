@@ -67,6 +67,16 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
     @Override
     @Transactional
+    public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(removeDailyTodoRequest.getDate()));
+        if (dailyPlanner == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+        todoRepository.deleteByIdAndAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+    }
+
+    @Override
+    @Transactional
     public void updateTodayGoal(final User user, final UpdateTodayGoalRequest updateTodayGoalRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, updateTodayGoalRequest.getDate());
         final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
