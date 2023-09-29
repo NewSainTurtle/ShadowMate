@@ -101,7 +101,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
     private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long anotherUserId, final String date) {
         if (user.getId().equals(anotherUserId)) {
-            throw new PlannerException(PlannerErrorResult.UNABLE_TO_ADD_LIKES_YOUR_OWN_PLANNER);
+            throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
         }
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserIdAndDailyPlannerDay(anotherUserId, Date.valueOf(date));
         if (dailyPlanner == null) {

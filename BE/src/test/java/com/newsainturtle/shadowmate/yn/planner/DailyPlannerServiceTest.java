@@ -247,7 +247,7 @@ public class DailyPlannerServiceTest {
                 final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user, addDailyLikeRequest));
 
                 //then
-                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_ADD_LIKES_YOUR_OWN_PLANNER);
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
             }
 
             @Test
@@ -298,5 +298,6 @@ public class DailyPlannerServiceTest {
 
             }
         }
+
     }
 }

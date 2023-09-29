@@ -559,7 +559,7 @@ public class PlannerControllerTest {
                         .anotherUserId(1L)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_ADD_LIKES_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
