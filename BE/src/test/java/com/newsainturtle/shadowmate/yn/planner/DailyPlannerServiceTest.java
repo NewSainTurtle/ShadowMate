@@ -222,6 +222,46 @@ public class DailyPlannerServiceTest {
     }
 
     @Nested
+    class 일일플래너할일삭제 {
+
+        @Test
+        public void 실패_유효하지않은일일플래너() {
+            //given
+            final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
+                    .date("2023-09-25")
+                    .todoId(1L)
+                    .build();
+            doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+
+        @Test
+        public void 성공() {
+            //given
+            final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
+                    .date("2023-09-25")
+                    .todoId(1L)
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+            //when
+            dailyPlannerServiceImpl.removeDailyTodo(user, request);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(todoRepository, times(1)).deleteByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+        }
+
+    }
+
+    @Nested
     class 좋아요 {
         @Nested
         class 좋아요등록 {
