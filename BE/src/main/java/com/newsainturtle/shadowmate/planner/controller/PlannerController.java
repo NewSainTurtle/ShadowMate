@@ -3,10 +3,7 @@ package com.newsainturtle.shadowmate.planner.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.planner.dto.AddDailyLikeRequest;
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +55,15 @@ public class PlannerController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         dailyPlannerServiceImpl.addDailyLike(principalDetails.getUser(), addDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DAILY_LIKE));
+    }
+
+    @DeleteMapping("/{userId}/daily/likes")
+    public ResponseEntity<BaseResponse> removeDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                     @PathVariable("userId") final Long userId,
+                                                     @RequestBody @Valid final RemoveDailyLikeRequest removeDailyLikeRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.removeDailyLike(principalDetails.getUser(), removeDailyLikeRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_LIKE));
     }
 
 }
