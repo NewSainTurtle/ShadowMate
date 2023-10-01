@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./MyPage.module.scss";
+import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageCategoryItem from "./item/MyPageCategoryItem";
 import MyPageDetail from "./MyPageDetail";

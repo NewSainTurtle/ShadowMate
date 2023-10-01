@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "../MyPage.module.scss";
+import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import { DdayConfig } from "../MyPageFrame";

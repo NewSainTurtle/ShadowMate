@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import styles from "./MyPage.module.scss";
+import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 
 interface MyPageTabProps {
