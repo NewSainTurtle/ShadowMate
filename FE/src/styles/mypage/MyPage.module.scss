@@ -76,6 +76,9 @@ $color-blue: var(--color-btn-blue);
     grid-template-columns: 2fr 8fr;
     align-items: center;
     margin-bottom: 2em;
+    &:nth-child(3) {
+      align-items: start;
+    }
   }
 }
 
@@ -115,6 +118,31 @@ $color-blue: var(--color-btn-blue);
     &--clicked {
       @extend .category__item;
       background-color: $color-gray-1;
+    }
+  }
+}
+
+.color {
+  &__container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    justify-items: center;
+    gap: 1em;
+  }
+
+  &__item {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    padding: 1px;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &--clicked {
+      @extend .color__item;
+      outline: 1px solid $color-text;
+      outline-offset: 2px;
     }
   }
 }

@@ -3,6 +3,7 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import { CategoryConfig } from "../MyPageFrame";
+import CategoryColorList from "../item/CategoryColorList";
 
 interface Props {
   click: number;
@@ -26,6 +27,7 @@ const MyPageCategory = ({ click, categoryList }: Props) => {
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 색상</Text>
+        <CategoryColorList />
       </div>
     </div>
   );
