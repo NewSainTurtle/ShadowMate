@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import COLORS from "@util/data/CategoryColors";
 import CategoryColorItem from "./CategoryColorItem";
 
-const CategoryColorList = () => {
-  const [click, setClick] = useState<number>(0);
+interface Props {
+  click: number;
+  setClick: Dispatch<SetStateAction<number>>;
+}
+
+const CategoryColorList = ({ click, setClick }: Props) => {
+  useEffect(() => {
+    setClick(click);
+  }, [click]);
 
   return (
     <div className={styles["color__container"]}>

@@ -1,9 +1,10 @@
 import React, { Dispatch, SetStateAction } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import { CategoryConfig } from "../MyPageFrame";
+import { categoryType } from "@util/planner.interface";
+import COLORS from "@util/data/CategoryColors";
 
 interface Props {
-  item: CategoryConfig;
+  item: categoryType;
   index: number;
   click: number;
   setClick: Dispatch<SetStateAction<number>>;
@@ -15,9 +16,9 @@ const MyPageCategoryItem = ({ item, index, click, setClick }: Props) => {
       className={click === index ? styles["category__item--clicked"] : styles["category__item"]}
       onClick={() => setClick(index)}
     >
-      <div>{item.emoticon}</div>
-      <div>{item.title}</div>
-      <div style={{ backgroundColor: item.colorCode }}></div>
+      <div>{item.categoryEmoticon}</div>
+      <div>{item.categoryTitle}</div>
+      <div style={{ backgroundColor: COLORS[item.categoryColorCode] }}></div>
     </div>
   );
 };

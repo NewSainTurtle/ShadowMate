@@ -14,25 +14,25 @@ export const todoData_category: categoryType[] = [
   {
     categoryId: 0,
     categoryTitle: "",
-    categoryColorCode: "E9E9EB",
+    categoryColorCode: 15,
     categoryEmoticon: "",
   },
   {
     categoryId: 1,
     categoryTitle: "국어",
-    categoryColorCode: "FFCBE1",
+    categoryColorCode: 1,
     categoryEmoticon: "🌈",
   },
   {
     categoryId: 2,
     categoryTitle: "수학",
-    categoryColorCode: "B6F7E1",
+    categoryColorCode: 6,
     categoryEmoticon: "🎠",
   },
   {
     categoryId: 3,
     categoryTitle: "과학 뿌셔뿌셔 대항전",
-    categoryColorCode: "B6DEF7",
+    categoryColorCode: 12,
     categoryEmoticon: "🧤",
   },
 ];

@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import COLORS from "@util/data/CategoryColors";
 
 interface Props {
   item: string;
