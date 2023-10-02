@@ -1,5 +1,5 @@
 import Axios from "@api/JsonAxios";
-import api from "@api/Baseurl";
+import api from "@api/BaseUrl";
 
 export const authApi = {
   login: (props: { email: string; password: string }) => Axios.post(api.auth.login(), props),
