@@ -14,6 +14,7 @@ interface Props {
 const WeekItem = ({ date }: Props) => {
   const todoEndRef = useRef<HTMLDivElement | null>(null);
   const [newTodo, setNewTodo] = useState<string>("");
+  const [oldTodo, setOldTodo] = useState<string>("");
   const [todoItems, setTodoItems] = useState<TodoItemConfig[]>(TODO_ITEMS);
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -29,6 +30,7 @@ const WeekItem = ({ date }: Props) => {
     setTodoItems(
       todoItems.map((item, key) => {
         if (key === idx) {
+          setOldTodo(item.todoContents);
           return { ...item, todoUpdate: !item.todoUpdate };
         }
         return item;
@@ -44,6 +46,7 @@ const WeekItem = ({ date }: Props) => {
   };
 
   const handleEditSave = (idx: number, e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === "") e.target.value = oldTodo;
     setTodoItems(
       todoItems.map((item, key) => {
         if (key === idx) {
@@ -76,6 +79,7 @@ const WeekItem = ({ date }: Props) => {
             <div>💻</div>
             {item.todoUpdate ? (
               <input
+                className={styles["item__edit-input"]}
                 autoFocus
                 type="text"
                 defaultValue={item.todoContents}
@@ -83,9 +87,9 @@ const WeekItem = ({ date }: Props) => {
                 onBlur={(e) => handleEditSave(key, e)}
               />
             ) : (
-              <span onClick={() => handleEditState(key)}>
+              <div onClick={() => handleEditState(key)}>
                 <Text types="small">{item.todoContents}</Text>
-              </span>
+              </div>
             )}
             <DeleteOutlined onClick={() => handleDelete(key)} />
             <div>{item.todoStatus ? "O" : "X"}</div>
@@ -102,7 +106,7 @@ const WeekItem = ({ date }: Props) => {
             onKeyDown={(e) => handleOnKeyPress(e)}
             placeholder="💡 할 일을 입력하세요."
           />
-          <svg style={{ cursor: "auto" }} />
+          <svg style={{ cursor: "auto", height: "0" }} />
         </div>
       </div>
       <div className={`${styles["item__memo"]} ${todoItems.length < 4 && styles["top_border"]}`}>
