@@ -197,17 +197,20 @@ $border: 1px;
         cursor: pointer;
       }
       // 할 일 내용
-      > span {
+      > div:nth-child(2) {
+        width: 100%;
         justify-content: start;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        word-break: break-word;
+        > span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          word-break: break-word;
 
-        display: -webkit-box;
-        -webkit-line-clamp: 2; // 원하는 라인수
-        -webkit-box-orient: vertical;
-        margin: 0 1em;
-        cursor: pointer;
+          display: -webkit-box;
+          -webkit-line-clamp: 2; // 원하는 라인수
+          -webkit-box-orient: vertical;
+          margin: 0 1em;
+          cursor: pointer;
+        }
       }
       // 삭제 아이콘
       > svg:nth-child(3) {
@@ -225,7 +228,7 @@ $border: 1px;
 
       > input {
         width: 100%;
-        margin-left: 1em;
+        margin-left: calc(1em - 2px);
         background: transparent;
         border: none;
         font-size: 0.875rem;
@@ -244,6 +247,11 @@ $border: 1px;
         }
       }
     }
+  }
+
+  &__edit-input {
+    padding-right: 1em;
+    box-sizing: border-box;
   }
 
   &__memo {

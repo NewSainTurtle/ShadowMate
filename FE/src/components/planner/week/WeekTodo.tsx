@@ -8,6 +8,7 @@ import { DeleteOutlined } from "@mui/icons-material";
 const WeekTodo = () => {
   const [todoItems, setTodoItems] = useState<WeekTodoItemConfig[]>(WEEK_TODO_ITEMS);
   const [newTodo, setNewTodo] = useState<string>("");
+  const [oldTodo, setOldTodo] = useState<string>("");
   const todoEndRef = useRef<HTMLDivElement | null>(null);
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -23,6 +24,7 @@ const WeekTodo = () => {
     setTodoItems(
       todoItems.map((item, key) => {
         if (key === idx) {
+          setOldTodo(item.weeklyTodoContent);
           return { ...item, weeklyTodoUpdate: !item.weeklyTodoUpdate };
         }
         return item;
@@ -38,6 +40,7 @@ const WeekTodo = () => {
   };
 
   const handleEditSave = (idx: number, e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === "") e.target.value = oldTodo;
     setTodoItems(
       todoItems.map((item, key) => {
         if (key === idx) {
