@@ -6,15 +6,10 @@ import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/MyPageCategory";
 import MyPageDday from "./details/MyPageDday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
+import { categoryType } from "@util/planner.interface";
 
 interface Props {
   title: string;
-}
-
-export interface CategoryConfig {
-  title: string;
-  emoticon?: string;
-  colorCode?: string;
 }
 
 export interface DdayConfig {
@@ -24,16 +19,16 @@ export interface DdayConfig {
 
 export interface EditInfoConfig {
   type: string;
-  info: CategoryConfig | DdayConfig | null;
+  info: categoryType | DdayConfig | null;
   clicked: number;
 }
 
 const MyPageFrame = ({ title }: Props) => {
-  const [categoryList, setCategoryList] = useState<CategoryConfig[]>([
-    { title: "국어", emoticon: "📕", colorCode: "#F1607D" },
-    { title: "수학", emoticon: "📗", colorCode: "#637F69" },
-    { title: "영어", emoticon: "📒", colorCode: "#F1FCAD" },
-    { title: "생물", emoticon: "", colorCode: "#B6DEF7" },
+  const [categoryList, setCategoryList] = useState<categoryType[]>([
+    { categoryId: 0, categoryTitle: "국어", categoryEmoticon: "📕", categoryColorCode: 3 },
+    { categoryId: 1, categoryTitle: "수학", categoryEmoticon: "📗", categoryColorCode: 7 },
+    { categoryId: 2, categoryTitle: "영어", categoryEmoticon: "📒", categoryColorCode: 4 },
+    { categoryId: 3, categoryTitle: "생물", categoryEmoticon: "", categoryColorCode: 12 },
   ]);
   const [ddayList, setDdayList] = useState<DdayConfig[]>([
     { title: "목표일이 남았을 때", date: "2023.07.22(토)" },
@@ -42,6 +37,31 @@ const MyPageFrame = ({ title }: Props) => {
   ]);
   const [categoryClick, setCategoryClick] = useState<number>(0);
   const [ddayClick, setDdayClick] = useState<number>(0);
+
+  const [categoryInput, setCategoryInput] = useState<categoryType>({
+    categoryId: 0,
+    categoryTitle: categoryList[0].categoryTitle,
+    categoryEmoticon: categoryList[0].categoryEmoticon,
+    categoryColorCode: categoryList[0].categoryColorCode,
+  });
+  const [colorClick, setColorClick] = useState<number>(categoryInput.categoryColorCode);
+
+  const saveEditInfo = () => {
+    setCategoryList(
+      categoryList.map((item, idx) => {
+        if (categoryInput.categoryId == idx) {
+          return {
+            ...item,
+            categoryId: categoryInput.categoryId,
+            categoryTitle: categoryInput.categoryTitle,
+            categoryEmoticon: categoryInput.categoryEmoticon,
+            categoryColorCode: colorClick,
+          };
+        }
+        return item;
+      }),
+    );
+  };
 
   return (
     <div className={styles["frame"]}>
@@ -71,10 +91,19 @@ const MyPageFrame = ({ title }: Props) => {
           }[title]
         }
       </MyPageList>
-      <MyPageDetail>
+      <MyPageDetail saveEditInfo={saveEditInfo}>
         {
           {
-            카테고리: <MyPageCategory click={categoryClick} categoryList={categoryList} />,
+            카테고리: (
+              <MyPageCategory
+                click={categoryClick}
+                categoryList={categoryList}
+                input={categoryInput}
+                setInput={setCategoryInput}
+                colorClick={colorClick}
+                setColorClick={setColorClick}
+              />
+            ),
             디데이: <MyPageDday click={ddayClick} ddayList={ddayList} />,
           }[title]
         }
