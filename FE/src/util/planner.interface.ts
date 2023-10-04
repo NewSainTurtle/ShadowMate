@@ -16,3 +16,9 @@ export interface todoType {
 export interface todoListType extends todoType {
   isPossible?: boolean;
 }
+
+export interface ddayType {
+  ddayId: number;
+  ddayDate: Date | string;
+  ddayTitle: string;
+}

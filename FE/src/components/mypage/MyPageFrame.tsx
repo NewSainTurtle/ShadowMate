@@ -6,7 +6,7 @@ import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/MyPageCategory";
 import MyPageDday from "./details/MyPageDday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
-import { categoryType } from "@util/planner.interface";
+import { categoryType, ddayType } from "@util/planner.interface";
 import { CATEGORY_LIST } from "@util/data/CategoryData";
 import { DDAY_LIST } from "@util/data/DdayData";
 
@@ -14,14 +14,9 @@ interface Props {
   title: string;
 }
 
-export interface DdayConfig {
-  title: string;
-  date?: string;
-}
-
 export interface EditInfoConfig {
   type: string;
-  info: categoryType | DdayConfig | null;
+  info: categoryType | ddayType | null;
   clicked: number;
 }
 
@@ -37,7 +32,7 @@ const MyPageFrame = ({ title }: Props) => {
   const [colorClick, setColorClick] = useState<number>(categoryInput.categoryColorCode);
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  const [ddayList, setDdayList] = useState<DdayConfig[]>(DDAY_LIST);
+  const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
 
   const handleSave = () => {

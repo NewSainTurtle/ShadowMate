@@ -1,10 +1,10 @@
 import React, { Dispatch, SetStateAction } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
-import { DdayConfig } from "../MyPageFrame";
+import { ddayType } from "@util/planner.interface";
 
 interface Props {
-  item: DdayConfig;
+  item: ddayType;
   index: number;
   click: number;
   setClick: Dispatch<SetStateAction<number>>;
@@ -17,8 +17,8 @@ const MyPageDdayItem = ({ item, index, click, setClick }: Props) => {
       onClick={() => setClick(index)}
     >
       <div className={styles["dday__item__title"]}>
-        <Text>{item.title}</Text>
-        <Text types="small">{item.date}</Text>
+        <Text>{item.ddayTitle}</Text>
+        <Text types="small">{item.ddayDate.toString()}</Text>
       </div>
       <Text types="semi-medium" bold>
         D-234
