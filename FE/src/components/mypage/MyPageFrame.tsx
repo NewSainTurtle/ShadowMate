@@ -7,6 +7,7 @@ import MyPageCategory from "./details/MyPageCategory";
 import MyPageDday from "./details/MyPageDday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
 import { categoryType } from "@util/planner.interface";
+import { CATEGORY_LIST } from "@util/data/CategoryData";
 
 interface Props {
   title: string;
@@ -24,12 +25,7 @@ export interface EditInfoConfig {
 }
 
 const MyPageFrame = ({ title }: Props) => {
-  const [categoryList, setCategoryList] = useState<categoryType[]>([
-    { categoryId: 0, categoryTitle: "국어", categoryEmoticon: "📕", categoryColorCode: 3 },
-    { categoryId: 1, categoryTitle: "수학", categoryEmoticon: "📗", categoryColorCode: 7 },
-    { categoryId: 2, categoryTitle: "영어", categoryEmoticon: "📒", categoryColorCode: 4 },
-    { categoryId: 3, categoryTitle: "생물", categoryEmoticon: "", categoryColorCode: 12 },
-  ]);
+  const [categoryList, setCategoryList] = useState<categoryType[]>(CATEGORY_LIST);
   const [categoryInput, setCategoryInput] = useState<categoryType>({
     categoryId: 0,
     categoryTitle: categoryList[0].categoryTitle,

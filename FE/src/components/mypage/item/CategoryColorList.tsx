@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import COLORS from "@util/data/CategoryColors";
+import { COLORS } from "@util/data/CategoryData";
 import CategoryColorItem from "./CategoryColorItem";
 
 interface Props {
