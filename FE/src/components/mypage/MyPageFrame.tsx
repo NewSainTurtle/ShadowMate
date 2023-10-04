@@ -8,6 +8,7 @@ import MyPageDday from "./details/MyPageDday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
 import { categoryType } from "@util/planner.interface";
 import { CATEGORY_LIST } from "@util/data/CategoryData";
+import { DDAY_LIST } from "@util/data/DdayData";
 
 interface Props {
   title: string;
@@ -35,11 +36,8 @@ const MyPageFrame = ({ title }: Props) => {
   const [categoryClick, setCategoryClick] = useState<number>(0);
   const [colorClick, setColorClick] = useState<number>(categoryInput.categoryColorCode);
   const [isDisable, setIsDisable] = useState<boolean>(false);
-  const [ddayList, setDdayList] = useState<DdayConfig[]>([
-    { title: "목표일이 남았을 때", date: "2023.07.22(토)" },
-    { title: "목표일이 당일일 때", date: "2023.07.20(목)" },
-    { title: "목표일이 지났을 때", date: "2023.07.17(월)" },
-  ]);
+
+  const [ddayList, setDdayList] = useState<DdayConfig[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
 
   const handleSave = () => {
