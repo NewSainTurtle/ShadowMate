@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageCategoryItem from "./item/MyPageCategoryItem";
@@ -30,26 +30,26 @@ const MyPageFrame = ({ title }: Props) => {
     { categoryId: 2, categoryTitle: "영어", categoryEmoticon: "📒", categoryColorCode: 4 },
     { categoryId: 3, categoryTitle: "생물", categoryEmoticon: "", categoryColorCode: 12 },
   ]);
-  const [ddayList, setDdayList] = useState<DdayConfig[]>([
-    { title: "목표일이 남았을 때", date: "2023.07.22(토)" },
-    { title: "목표일이 당일일 때", date: "2023.07.20(목)" },
-    { title: "목표일이 지났을 때", date: "2023.07.17(월)" },
-  ]);
-  const [categoryClick, setCategoryClick] = useState<number>(0);
-  const [ddayClick, setDdayClick] = useState<number>(0);
-
   const [categoryInput, setCategoryInput] = useState<categoryType>({
     categoryId: 0,
     categoryTitle: categoryList[0].categoryTitle,
     categoryEmoticon: categoryList[0].categoryEmoticon,
     categoryColorCode: categoryList[0].categoryColorCode,
   });
+  const [categoryClick, setCategoryClick] = useState<number>(0);
   const [colorClick, setColorClick] = useState<number>(categoryInput.categoryColorCode);
+  const [isDisable, setIsDisable] = useState<boolean>(false);
+  const [ddayList, setDdayList] = useState<DdayConfig[]>([
+    { title: "목표일이 남았을 때", date: "2023.07.22(토)" },
+    { title: "목표일이 당일일 때", date: "2023.07.20(목)" },
+    { title: "목표일이 지났을 때", date: "2023.07.17(월)" },
+  ]);
+  const [ddayClick, setDdayClick] = useState<number>(0);
 
-  const saveEditInfo = () => {
+  const handleSave = () => {
     setCategoryList(
       categoryList.map((item, idx) => {
-        if (categoryInput.categoryId == idx) {
+        if (categoryInput.categoryId == item.categoryId) {
           return {
             ...item,
             categoryId: categoryInput.categoryId,
@@ -63,6 +63,23 @@ const MyPageFrame = ({ title }: Props) => {
     );
   };
 
+  const handleDelete = () => {
+    if (isDisable) return;
+    setCategoryList(
+      categoryList.filter((item, idx) => {
+        return idx !== categoryClick;
+      }),
+    );
+    // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
+    setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
+  };
+
+  useEffect(() => {
+    // 카테고리 항목이 1개 남은 경우, 삭제 불가
+    if (categoryList.length <= 1) setIsDisable(true);
+    else setIsDisable(false);
+  }, [categoryList]);
+
   return (
     <div className={styles["frame"]}>
       <MyPageList title={title}>
@@ -70,11 +87,11 @@ const MyPageFrame = ({ title }: Props) => {
           {
             카테고리: (
               <>
-                {categoryList.map((item, key) => (
+                {categoryList.map((item, idx) => (
                   <MyPageCategoryItem
-                    key={key}
+                    key={item.categoryId}
+                    index={idx}
                     item={item}
-                    index={key}
                     click={categoryClick}
                     setClick={setCategoryClick}
                   />
@@ -91,7 +108,7 @@ const MyPageFrame = ({ title }: Props) => {
           }[title]
         }
       </MyPageList>
-      <MyPageDetail saveEditInfo={saveEditInfo}>
+      <MyPageDetail isDisable={isDisable} handleSave={handleSave} handleDelete={handleDelete}>
         {
           {
             카테고리: (

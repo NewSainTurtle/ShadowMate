@@ -20,8 +20,10 @@ const MyPageList = ({ children, title }: Props) => {
       </div>
       {children}
       <div className={styles["frame__button"]}>
-        <AddIcon />
-        <Text>새 {title}</Text>
+        <div className={styles["frame__button--add"]}>
+          <AddIcon />
+          <Text>새 {title}</Text>
+        </div>
       </div>
     </div>
   );

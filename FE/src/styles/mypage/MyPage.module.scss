@@ -4,6 +4,7 @@ $color-gray-1: var(--color-gray-1);
 $color-gray-2: var(--color-gray-2);
 $color-gray-4: var(--color-gray-4);
 $color-blue: var(--color-btn-blue);
+$color-warning: var(--color-warning);
 
 .mypage {
   &__container {
@@ -48,21 +49,33 @@ $color-blue: var(--color-btn-blue);
     position: absolute;
     bottom: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-evenly;
     width: 100%;
     padding: 1em 0;
     border-top: 1px solid $color-text;
-    cursor: pointer;
-    > svg {
-      font-size: medium;
-      padding: 0.5em;
+    > div {
+      display: flex;
+      align-items: center;
+
+      > svg {
+        font-size: medium;
+        padding: 0.5em;
+      }
     }
 
-    &--disable {
-      @extend .frame__button;
-      color: $color-gray-4;
-      cursor: auto;
+    &--add,
+    &--save,
+    &--delete {
+      cursor: pointer;
+    }
+
+    &--delete {
+      color: $color-warning;
+      &--disable {
+        @extend .frame__button--delete;
+        color: $color-gray-4;
+        cursor: not-allowed;
+      }
     }
   }
 

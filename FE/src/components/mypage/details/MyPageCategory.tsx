@@ -16,7 +16,6 @@ interface Props {
 
 const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setColorClick }: Props) => {
   const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = input;
-
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setInput({ ...input, [name]: value });
@@ -24,8 +23,8 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
 
   useEffect(() => {
     setColorClick(categoryList[click].categoryColorCode);
-    setInput({ ...categoryList[click] });
-  }, [click]);
+    setInput(categoryList[click]);
+  }, [click, categoryList]);
 
   return (
     <div className={styles["frame__contents"]}>
