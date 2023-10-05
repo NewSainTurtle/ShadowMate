@@ -80,6 +80,17 @@ $color-background: var(--color-background);
         cursor: pointer;
       }
     }
+
+    .date-move {
+      margin-left: 0.5em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+
+      > div:nth-child(2) > svg {
+        font-size: 0.5rem;
+      }
+    }
   }
 
   &__default {
