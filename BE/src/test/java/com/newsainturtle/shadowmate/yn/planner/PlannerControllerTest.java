@@ -11,7 +11,6 @@ import com.newsainturtle.shadowmate.planner.dto.UpdateRetrospectionRequest;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.*;
-import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;

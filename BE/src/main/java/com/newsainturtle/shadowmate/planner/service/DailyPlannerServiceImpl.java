@@ -11,11 +11,8 @@ import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepositor
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
-import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
-import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
-import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

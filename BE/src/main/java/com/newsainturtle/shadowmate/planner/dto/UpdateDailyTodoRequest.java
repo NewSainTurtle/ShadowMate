@@ -1,7 +1,5 @@
 package com.newsainturtle.shadowmate.planner.dto;
 
-
-import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
