@@ -9,6 +9,8 @@ public interface PlannerSettingService {
 
     void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest);
 
+    void removeCategory(final User user, final RemoveCategoryRequest removeCategoryRequest);
+
     GetCategoryColorListResponse getCategoryColorList();
 
     GetCategoryListResponse getCategoryList(final User user);
