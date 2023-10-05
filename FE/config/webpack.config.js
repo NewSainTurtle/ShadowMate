@@ -2,10 +2,13 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const DotenvWebpack = require("dotenv-webpack");
 const tsConfigPath = path.resolve(__dirname, "../tsconfig.json");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
-  entry: "./src/index.tsx",
+  entry: `${path.resolve(__dirname, "../src")}/index.tsx`,
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     plugins: [new TsconfigPathsPlugin({ configFile: tsConfigPath })],
@@ -23,9 +26,7 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          {
-            loader: "style-loader",
-          },
+          devMode ? "style-loader" : MiniCssExtractPlugin.loader,
           {
             loader: "css-loader",
             options: {
@@ -35,23 +36,24 @@ module.exports = {
               },
             },
           },
-          {
-            loader: "sass-loader",
-          },
+          "sass-loader",
         ],
       },
     ],
   },
-
   output: {
-    path: path.join(__dirname, "build"),
+    path: path.resolve(__dirname, "../build"),
     publicPath: "/",
-    filename: "bundle.js",
+    filename: "[contenthash].bundle.js",
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
-  ],
+    new DotenvWebpack(),
+  ].concat(devMode ? [] : [new MiniCssExtractPlugin()]),
+  stats: {
+    loggingDebug: ["sass-loader"],
+  },
 };

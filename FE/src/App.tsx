@@ -3,15 +3,15 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "./App.scss";
 import Header from "@components/common/Header";
-import MainPage from "@pages/MainPage";
 import DayPage from "@pages/Planner/DayPage";
 import MonthPage from "@pages/Planner/MonthPage";
 import WeekPage from "@pages/Planner/WeekPage";
 import SocialPage from "@pages/SocialPage";
 import CommonPage from "@pages/commonPage";
 import NotFoundPage from "@pages/NotFoundPage";
-import MyPage from "@pages/Mypage";
+import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
+import LandingPage from "@pages/LandingPage";
 
 const theme = createTheme({
   typography: {
@@ -36,7 +36,7 @@ const App = () => {
       {!pathName && <Header />}
       <div id="App" style={pathName ? {} : { marginLeft: "10em" }}>
         <Routes>
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/common" element={<CommonPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/signup" element={<AuthPage />} />
