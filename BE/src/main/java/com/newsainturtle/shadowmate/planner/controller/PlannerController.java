@@ -3,6 +3,10 @@ package com.newsainturtle.shadowmate.planner.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
+import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateRetrospectionRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +61,14 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_TOMORROW_GOAL));
     }
 
+    @PutMapping("/{userId}/daily/retrospections")
+    public ResponseEntity<BaseResponse> updateRetrospection(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                            @PathVariable("userId") final Long userId,
+                                                            @RequestBody @Valid final UpdateRetrospectionRequest updateRetrospectionRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.updateRetrospection(principalDetails.getUser(), updateRetrospectionRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_RETROSPECTION));
+
     @PostMapping("/{userId}/daily/likes")
     public ResponseEntity<BaseResponse> addDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                      @PathVariable("userId") final Long userId,
@@ -73,6 +85,7 @@ public class PlannerController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         dailyPlannerServiceImpl.removeDailyLike(principalDetails.getUser(), removeDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_LIKE));
+
     }
 
 }

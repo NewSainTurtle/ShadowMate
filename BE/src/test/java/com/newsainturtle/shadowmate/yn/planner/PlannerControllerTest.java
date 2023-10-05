@@ -6,6 +6,10 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner.controller.PlannerController;
+import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateRetrospectionRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
@@ -574,6 +578,125 @@ public class PlannerControllerTest {
                 final ResultActions resultActions = mockMvc.perform(
                         MockMvcRequestBuilders.put(url, userId)
                                 .content(gson.toJson(updateTomorrowGoalRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
+
+        @Nested
+        class 오늘의회고편집 {
+            final String url = "/api/planners/{userId}/daily/retrospections";
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                        .date("2023-09-26")
+                        .retrospection("오늘 계획했던 일을 모두 끝냈다!!! 신남~~")
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식() throws Exception {
+                //given
+                final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                        .date("2023.09.26")
+                        .retrospection("오늘 계획했던 일을 모두 끝냈다!!! 신남~~")
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_오늘의회고_길이초과() throws Exception {
+                //given
+                final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                        .date("2023-09-26")
+                        .retrospection("01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_날짜Null() throws Exception {
+                //given
+                final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                        .date(null)
+                        .retrospection("오늘 계획했던 일을 모두 끝냈다!!! 신남~~")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_오늘의회고Null() throws Exception {
+                //given
+                final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                        .date("2023-09-26")
+                        .retrospection(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                        .date("2023-09-26")
+                        .retrospection("오늘 계획했던 일을 모두 끝냈다!!! 신남~~")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                 );
 
