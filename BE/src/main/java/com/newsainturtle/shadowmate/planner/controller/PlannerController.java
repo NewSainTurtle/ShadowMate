@@ -71,6 +71,16 @@ public class PlannerController {
 
     }
 
+    @PutMapping("/{userId}/daily/retrospection-images")
+    public ResponseEntity<BaseResponse> updateRetrospectionImage(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                                 @PathVariable("userId") final Long userId,
+                                                                 @RequestBody @Valid final UpdateRetrospectionImageRequest updateRetrospectionImageRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.updateRetrospectionImage(principalDetails.getUser(), updateRetrospectionImageRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_RETROSPECTION_IMAGE));
+
+    }
+
     @PostMapping("/{userId}/daily/likes")
     public ResponseEntity<BaseResponse> addDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                      @PathVariable("userId") final Long userId,
