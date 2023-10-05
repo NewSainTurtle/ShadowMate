@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.yn.planner_setting;
 
+import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
@@ -48,6 +49,9 @@ class PlannerSettingServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private TodoRepository todoRepository;
 
     final User user = User.builder()
             .email("test@test.com")
@@ -238,6 +242,70 @@ class PlannerSettingServiceTest {
                 //then
                 assertThat(result.getCategoryList()).isNotNull();
                 assertThat(result.getCategoryList().size()).isEqualTo(1);
+            }
+        }
+
+        @Nested
+        class 카테고리삭제 {
+            final CategoryColor categoryColor = CategoryColor.builder()
+                    .categoryColorCode("D9B5D9")
+                    .build();
+            final Category category = Category.builder()
+                    .categoryTitle("수학")
+                    .categoryEmoticon("🌀")
+                    .categoryRemove(false)
+                    .categoryColor(categoryColor)
+                    .user(user)
+                    .build();
+            final RemoveCategoryRequest request = RemoveCategoryRequest.builder()
+                    .categoryId(1L)
+                    .build();
+
+            @Test
+            public void 실패_없는카테고리() {
+                //given
+                doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.removeCategory(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY);
+            }
+
+
+            @Test
+            public void 성공_카테고리_할일에없음() {
+                //given
+                doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(0L).when(todoRepository).countByCategory(category);
+
+                //when
+                plannerSettingService.removeCategory(user, request);
+
+                //then
+
+                //verify
+                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
+                verify(todoRepository, times(1)).countByCategory(any(Category.class));
+                verify(categoryRepository, times(1)).deleteByUserAndId(any(), any(Long.class));
+            }
+
+            @Test
+            public void 성공_카테고리_할일에있음() {
+                //given
+                doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(1L).when(todoRepository).countByCategory(category);
+
+                //when
+                plannerSettingService.removeCategory(user, request);
+
+                //then
+
+                //verify
+                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
+                verify(todoRepository, times(1)).countByCategory(any(Category.class));
+                verify(categoryRepository, times(1)).save(any(Category.class));
             }
         }
     }
