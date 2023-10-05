@@ -25,7 +25,7 @@ $color-background: var(--color-background);
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 2fr max-content 1fr;
-  grid-template-rows: 1fr 1fr 5fr 2fr;
+  grid-template-rows: 1fr 1fr max-content 2fr;
 
   > .planner-header {
     grid-column: 1 / span 3;
@@ -277,7 +277,7 @@ $color-background: var(--color-background);
       display: none;
     }
 
-    &:hover svg {
+    &:hover > svg {
       @extend .text-small;
       display: block;
       color: $color-gray_4;
@@ -297,6 +297,14 @@ $color-background: var(--color-background);
     input {
       @extend %set-input;
       @extend .text-default;
+
+      &::placeholder {
+        @extend .text-small;
+      }
+
+      &:focus::placeholder {
+        color: transparent;
+      }
     }
 
     &__possiable {
@@ -309,6 +317,7 @@ $color-background: var(--color-background);
         @extend .text-default;
         display: block;
         color: $color-gray_4;
+        cursor: pointer;
       }
     }
   }

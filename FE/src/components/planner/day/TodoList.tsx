@@ -28,7 +28,14 @@ const TodoList = () => {
   }, [todos]);
   const nextId = useRef(data.length);
 
+  useEffect(() => {
+    insertTodo();
+  }, [todos]);
+
   const insertTodo = () => {
+    const lastTodo = todos[todos.length - 1];
+    if (lastTodo.todoContent === "") return;
+
     const nextTodoList = todos.concat({
       todoId: nextId.current,
       categoryTitle: "",
@@ -62,12 +69,12 @@ const TodoList = () => {
   };
 
   return (
-    <div className={styles["todo-list"]}>
+    <div className={styles["todo-list"]} style={{ gridTemplateRows: `repeat(${todolistView.length + 1}` }}>
       {todolistView.map((todo, idx) => (
         <TodoItem
           key={idx}
           item={todo}
-          addIndex={idx == data.length}
+          addTodo={idx == todos.length}
           insertTodo={insertTodo}
           updateTodo={updateTodo}
           deleteTodo={deleteTodo}

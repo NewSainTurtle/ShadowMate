@@ -7,13 +7,13 @@ import { todoData_category } from "@util/data/DayTodos";
 
 interface Props {
   item: todoListType;
-  addIndex: boolean;
+  addTodo: boolean;
   insertTodo: () => void;
   updateTodo: (todo: todoListType) => void;
   deleteTodo: (id: number) => void;
 }
 
-const TodoItem = ({ item, addIndex, insertTodo, updateTodo, deleteTodo }: Props) => {
+const TodoItem = ({ item, addTodo, insertTodo, updateTodo, deleteTodo }: Props) => {
   const { todoId, categoryTitle, categoryColorCode, todoContent, todoStatus, isPossible } = item;
   const [text, setText] = useState(todoContent);
   const [state, setState] = useState(todoStatus);
@@ -32,37 +32,36 @@ const TodoItem = ({ item, addIndex, insertTodo, updateTodo, deleteTodo }: Props)
   const editState = () => {
     if (isPossible) {
       setState(state == 0 ? 1 : state == 1 ? 2 : 0);
-      saveTodo();
+      (document.activeElement as HTMLElement).blur();
     }
-  };
-
-  const handleOnBlur = () => {
-    saveTodo();
   };
 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      saveTodo();
+      if (e.nativeEvent.isComposing) return;
+      (document.activeElement as HTMLElement).blur();
     }
   };
 
-  const addTodo = (possible: boolean | undefined) => {
-    if (possible != undefined && !possible) insertTodo();
+  const handleOnAddTodo = (addTodo: boolean, possible: boolean | undefined) => {
+    if (addTodo && !possible) insertTodo();
   };
 
-  const removeTodo = () => {
-    deleteTodo(todoId);
-    setText("");
-    setState(0);
-  };
-
-  const saveTodo = () => {
+  const handleSaveTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === "") return;
     let todo = {
       ...item,
-      todoContent: text,
+      todoContent: e.target.value,
       todoStatus: state,
     };
     updateTodo(todo);
+  };
+
+  const removeTodo = () => {
+    if (text == "") return;
+    deleteTodo(todoId);
+    setText("");
+    setState(0);
   };
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
@@ -82,23 +81,24 @@ const TodoItem = ({ item, addIndex, insertTodo, updateTodo, deleteTodo }: Props)
 
   return (
     <div className={`${styles["todo-item"]} ${!isPossible && styles["todo-item--disable"]}`}>
-      <div className={`${styles["todo-item__category"]} ${addIndex && styles["todo-item__content-add"]}`}>
+      <div className={`${styles["todo-item__category"]} ${addTodo && styles["todo-item__content-add"]}`}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle}>
-          {isPossible ? <Text>{categoryTitle}</Text> : addIndex && <AddOutlined />}
+          {isPossible ? <Text>{categoryTitle}</Text> : addTodo && <AddOutlined />}
         </div>
       </div>
       <div
-        className={`${styles["todo-item__content"]} ${addIndex && styles["todo-item__content-add"]}`}
-        onClick={() => addTodo(isPossible)}
+        className={`${styles["todo-item__content"]} ${addTodo && styles["todo-item__content-add"]}`}
+        onClick={() => handleOnAddTodo(addTodo, isPossible)}
       >
         {isPossible ? (
           <div className={styles["todo-item__content__possiable"]}>
             <input
-              value={text}
+              defaultValue={todoContent}
+              placeholder={"할 일을 입력하세요"}
               minLength={2}
               maxLength={maxLenght}
-              onChange={editText}
-              onBlur={handleOnBlur}
+              // onChange={editText}
+              onBlur={handleSaveTodo}
               onKeyDown={handleOnKeyPress}
             />
             <div onClick={removeTodo}>
@@ -106,7 +106,7 @@ const TodoItem = ({ item, addIndex, insertTodo, updateTodo, deleteTodo }: Props)
             </div>
           </div>
         ) : (
-          addIndex && <AddOutlined />
+          addTodo && <AddOutlined />
         )}
       </div>
       <div className={styles["todo-item__checked"]} onClick={editState}>
