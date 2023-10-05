@@ -125,7 +125,24 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .build();
         dailyPlannerRepository.save(changeDailyPlanner);
     }
-    
+
+    @Override
+    @Transactional
+    public void updateRetrospectionImage(final User user, final UpdateRetrospectionImageRequest updateRetrospectionImageRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, updateRetrospectionImageRequest.getDate());
+        final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                .id(dailyPlanner.getId())
+                .createTime(dailyPlanner.getCreateTime())
+                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                .user(dailyPlanner.getUser())
+                .todayGoal(dailyPlanner.getTodayGoal())
+                .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                .retrospection(dailyPlanner.getRetrospection())
+                .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
+                .build();
+        dailyPlannerRepository.save(changeDailyPlanner);
+    }
+
     private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long anotherUserId, final String date) {
         if (user.getId().equals(anotherUserId)) {
             throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
