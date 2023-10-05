@@ -247,7 +247,7 @@ public class DailyPlannerServiceTest {
                 final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user, addDailyLikeRequest));
 
                 //then
-                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_ADD_LIKES_YOUR_OWN_PLANNER);
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
             }
 
             @Test
@@ -296,6 +296,61 @@ public class DailyPlannerServiceTest {
                 verify(dailyPlannerLikeRepository, times(1)).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
                 verify(dailyPlannerLikeRepository, times(1)).save(any(DailyPlannerLike.class));
 
+            }
+        }
+
+        @Nested
+        class 좋아요취소 {
+            final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
+                    .date("2023-09-28")
+                    .anotherUserId(1L)
+                    .build();
+            final User user2 = User.builder()
+                    .id(2L)
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+
+            @Test
+            public void 실패_자신플래너에좋아요취소() {
+                //given
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user, removeDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() {
+                //given
+                doReturn(null).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user2, removeDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            public void 성공() {
+                //given
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+
+                //when
+                dailyPlannerServiceImpl.removeDailyLike(user2, removeDailyLikeRequest);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                verify(dailyPlannerLikeRepository, times(1)).deleteByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             }
         }
     }
