@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageCategoryItem from "./item/MyPageCategoryItem";
@@ -34,6 +34,21 @@ const MyPageFrame = ({ title }: Props) => {
 
   const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
+
+  const nextId = useRef(categoryList.length);
+
+  const handleAdd = () => {
+    const newCategory: categoryType = {
+      categoryId: nextId.current,
+      categoryTitle: "새 카테고리",
+      categoryEmoticon: "",
+      categoryColorCode: 12,
+    };
+    setCategoryList([...categoryList, newCategory]);
+    setCategoryInput(newCategory);
+    setCategoryClick(categoryList.length);
+    nextId.current += 1;
+  };
 
   const handleSave = () => {
     setCategoryList(
@@ -71,7 +86,7 @@ const MyPageFrame = ({ title }: Props) => {
 
   return (
     <div className={styles["frame"]}>
-      <MyPageList title={title}>
+      <MyPageList handleAdd={handleAdd} title={title}>
         {
           {
             카테고리: (
