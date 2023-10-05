@@ -110,7 +110,7 @@ $color-warning: var(--color-warning);
 }
 
 .category {
-  &__item {
+  &-item {
     display: grid;
     grid-template-columns: 1fr 8fr 1fr;
     align-items: center;
@@ -129,7 +129,7 @@ $color-warning: var(--color-warning);
     }
 
     &--clicked {
-      @extend .category__item;
+      @extend .category-item;
       background-color: $color-gray-1;
     }
   }
@@ -168,7 +168,7 @@ $color-warning: var(--color-warning);
 }
 
 .dday {
-  &__item {
+  &-item {
     display: grid;
     grid-template-columns: 7fr 3fr;
     align-items: center;
@@ -190,7 +190,7 @@ $color-warning: var(--color-warning);
     }
 
     &--clicked {
-      @extend .dday__item;
+      @extend .dday-item;
       background-color: $color-gray-1;
     }
   }

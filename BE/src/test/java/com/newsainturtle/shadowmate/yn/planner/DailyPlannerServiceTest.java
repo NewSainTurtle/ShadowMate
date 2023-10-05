@@ -1,14 +1,13 @@
 package com.newsainturtle.shadowmate.yn.planner;
 
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoResponse;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
+import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepository;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
@@ -47,7 +46,11 @@ public class DailyPlannerServiceTest {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock
+    private DailyPlannerLikeRepository dailyPlannerLikeRepository;
+
     final User user = User.builder()
+            .id(1L)
             .email("test@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
@@ -216,5 +219,269 @@ public class DailyPlannerServiceTest {
             verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
         }
 
+        @Test
+        public void 오늘의회고편집() {
+            //given
+            final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                    .date("2023-09-26")
+                    .retrospection("오늘 계획했던 일을 모두 끝냈다!!! 신남~~")
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .retrospectionImage(dailyPlanner.getRetrospectionImage())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .retrospection(updateRetrospectionRequest.getRetrospection())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateRetrospection(user, updateRetrospectionRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
+        @Test
+        public void 오늘의회고사진업로드_null() {
+            //given
+            final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                    .date("2023-09-26")
+                    .retrospectionImage(null)
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateRetrospectionImage(user, updateRetrospectionImageRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
+        @Test
+        public void 오늘의회고사진업로드() {
+            //given
+            final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                    .date("2023-09-26")
+                    .retrospectionImage("https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg")
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateRetrospectionImage(user, updateRetrospectionImageRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
+    }
+
+    @Nested
+    class 일일플래너할일삭제 {
+
+        @Test
+        public void 실패_유효하지않은일일플래너() {
+            //given
+            final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
+                    .date("2023-09-25")
+                    .todoId(1L)
+                    .build();
+            doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+
+        @Test
+        public void 성공() {
+            //given
+            final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
+                    .date("2023-09-25")
+                    .todoId(1L)
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+            //when
+            dailyPlannerServiceImpl.removeDailyTodo(user, request);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(todoRepository, times(1)).deleteByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+        }
+
+    }
+
+    @Nested
+    class 좋아요 {
+        @Nested
+        class 좋아요등록 {
+            final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                    .date("2023-09-28")
+                    .anotherUserId(1L)
+                    .build();
+            final User user2 = User.builder()
+                    .id(2L)
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+
+            @Test
+            public void 실패_자신플래너에좋아요() {
+                //given
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user, addDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() {
+                //given
+                doReturn(null).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, addDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            public void 실패_이전에좋아요를이미누름() {
+                //given
+                final DailyPlannerLike dailyPlannerLike = DailyPlannerLike.builder()
+                        .id(1L)
+                        .dailyPlanner(dailyPlanner)
+                        .user(user2)
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                doReturn(dailyPlannerLike).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, addDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.ALREADY_ADDED_LIKE);
+            }
+
+            @Test
+            public void 성공() {
+                //given
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+
+                //when
+                dailyPlannerServiceImpl.addDailyLike(user2, addDailyLikeRequest);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                verify(dailyPlannerLikeRepository, times(1)).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+                verify(dailyPlannerLikeRepository, times(1)).save(any(DailyPlannerLike.class));
+
+            }
+        }
+
+        @Nested
+        class 좋아요취소 {
+            final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
+                    .date("2023-09-28")
+                    .anotherUserId(1L)
+                    .build();
+            final User user2 = User.builder()
+                    .id(2L)
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+
+            @Test
+            public void 실패_자신플래너에좋아요취소() {
+                //given
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user, removeDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() {
+                //given
+                doReturn(null).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user2, removeDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            public void 성공() {
+                //given
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+
+                //when
+                dailyPlannerServiceImpl.removeDailyLike(user2, removeDailyLikeRequest);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                verify(dailyPlannerLikeRepository, times(1)).deleteByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+            }
+        }
     }
 }

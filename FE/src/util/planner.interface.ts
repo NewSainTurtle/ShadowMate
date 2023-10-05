@@ -17,6 +17,21 @@ export interface todoListType extends todoType {
   isPossible?: boolean;
 }
 
+/* --- Week Interfaces --- */
+
+export interface WeekTodoItemConfig {
+  weeklyTodoContent: string;
+  weeklyTodoStatus: boolean;
+  weeklyTodoUpdate: boolean;
+}
+
+export interface TodoItemConfig {
+  todoContents: string;
+  todoStatus: boolean;
+  categoryEmoticon?: string;
+  todoUpdate: boolean;
+}
+
 export interface ddayType {
   ddayId: number;
   ddayDate: Date | string;

@@ -13,7 +13,7 @@ interface Props {
 const MyPageDdayItem = ({ item, index, click, setClick }: Props) => {
   return (
     <div
-      className={click === index ? styles["dday__item--clicked"] : styles["dday__item"]}
+      className={click === index ? styles["dday-item--clicked"] : styles["dday-item"]}
       onClick={() => setClick(index)}
     >
       <div className={styles["dday__item__title"]}>
