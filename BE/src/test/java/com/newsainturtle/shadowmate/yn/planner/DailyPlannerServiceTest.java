@@ -249,6 +249,66 @@ public class DailyPlannerServiceTest {
             verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
         }
 
+        @Test
+        public void 오늘의회고사진업로드_null() {
+            //given
+            final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                    .date("2023-09-26")
+                    .retrospectionImage(null)
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateRetrospectionImage(user, updateRetrospectionImageRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
+        @Test
+        public void 오늘의회고사진업로드() {
+            //given
+            final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                    .date("2023-09-26")
+                    .retrospectionImage("https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg")
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateRetrospectionImage(user, updateRetrospectionImageRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
     }
 
     @Nested

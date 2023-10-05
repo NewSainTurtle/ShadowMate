@@ -704,6 +704,107 @@ public class PlannerControllerTest {
                 resultActions.andExpect(status().isOk());
             }
         }
+
+        @Nested
+        class 오늘의회고사진업로드 {
+            final String url = "/api/planners/{userId}/daily/retrospection-images";
+            final String imageUrl = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                        .date("2023-09-26")
+                        .retrospectionImage(imageUrl)
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionImageRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식() throws Exception {
+                //given
+                final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                        .date("2023.09.26")
+                        .retrospectionImage(imageUrl)
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionImageRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_날짜Null() throws Exception {
+                //given
+                final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                        .date(null)
+                        .retrospectionImage(imageUrl)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionImageRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공_오늘의회고사진Null() throws Exception {
+                //given
+                final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                        .date("2023-09-26")
+                        .retrospectionImage(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionImageRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
+                        .date("2023-09-26")
+                        .retrospectionImage(imageUrl)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRetrospectionImageRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
     }
 
     @Nested

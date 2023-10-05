@@ -9,6 +9,7 @@ public interface DailyPlannerService {
     void updateTodayGoal(final User user, final UpdateTodayGoalRequest updateTodayGoalRequest);
     void updateTomorrowGoal(final User user, final UpdateTomorrowGoalRequest updateTomorrowGoalRequest);
     void updateRetrospection(final User user, final UpdateRetrospectionRequest updateRetrospectionRequest);
+    void updateRetrospectionImage(final User user, final UpdateRetrospectionImageRequest updateRetrospectionImageRequest);
     void addDailyLike(final User user, final AddDailyLikeRequest addDailyPlannerLikeRequest);
     void removeDailyLike(final User user, final RemoveDailyLikeRequest removeDailyLikeRequest);
 }
