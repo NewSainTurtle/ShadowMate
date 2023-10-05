@@ -160,6 +160,13 @@ $color-warning: var(--color-warning);
   }
 }
 
+.emoji {
+  position: absolute;
+  bottom: 90;
+  height: 22em;
+  z-index: 100;
+}
+
 .dday {
   &__item {
     display: grid;

@@ -4,6 +4,8 @@ import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CategoryColorList from "../item/CategoryColorList";
 import { categoryType } from "@util/planner.interface";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { ClickAwayListener } from "@mui/material";
 
 interface Props {
   click: number;
@@ -15,7 +17,13 @@ interface Props {
 }
 
 const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setColorClick }: Props) => {
+  const [openEmoji, setOpenEmoji] = useState<boolean>(false);
   const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = input;
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    setInput({ ...input, categoryEmoticon: emojiData.emoji });
+  };
+
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setInput({ ...input, [name]: value });
@@ -39,12 +47,25 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 이모지</Text>
-        <Input
-          name="categoryEmoticon"
-          value={categoryEmoticon}
-          placeholder="카테고리 이모지(맥, 윈도우 단축키  설명 넣기)"
-          onChange={onChangeInput}
-        />
+        <div onClick={() => setOpenEmoji(true)}>
+          <Input
+            name="categoryEmoticon"
+            value={categoryEmoticon}
+            placeholder="카테고리 이모지"
+            onChange={onChangeInput}
+          />
+          {openEmoji && (
+            <ClickAwayListener
+              onClickAway={() => {
+                setOpenEmoji(false);
+              }}
+            >
+              <div className={styles["emoji"]}>
+                <EmojiPicker onEmojiClick={onEmojiClick} searchDisabled />
+              </div>
+            </ClickAwayListener>
+          )}
+        </div>
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 색상</Text>
