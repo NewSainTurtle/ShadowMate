@@ -1,9 +1,6 @@
 package com.newsainturtle.shadowmate.yn.planner;
 
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoResponse;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
@@ -208,6 +205,36 @@ public class DailyPlannerServiceTest {
 
             //when
             dailyPlannerServiceImpl.updateTomorrowGoal(user, updateTomorrowGoalRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
+        }
+
+        @Test
+        public void 오늘의회고편집() {
+            //given
+            final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
+                    .date("2023-09-26")
+                    .retrospection("오늘 계획했던 일을 모두 끝냈다!!! 신남~~")
+                    .build();
+            final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
+                    .id(dailyPlanner.getId())
+                    .createTime(dailyPlanner.getCreateTime())
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .user(dailyPlanner.getUser())
+                    .retrospectionImage(dailyPlanner.getRetrospectionImage())
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .retrospection(updateRetrospectionRequest.getRetrospection())
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
+
+            //when
+            dailyPlannerServiceImpl.updateRetrospection(user, updateRetrospectionRequest);
 
             //then
 
