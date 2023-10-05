@@ -2,15 +2,18 @@ package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
+import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepository;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final DailyPlannerRepository dailyPlannerRepository;
     private final TodoRepository todoRepository;
     private final CategoryRepository categoryRepository;
+    private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
 
     private DailyPlanner getDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
@@ -59,6 +63,16 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
         return AddDailyTodoResponse.builder().todoId(saveTodo.getId()).build();
+    }
+
+    @Override
+    @Transactional
+    public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(removeDailyTodoRequest.getDate()));
+        if (dailyPlanner == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+        todoRepository.deleteByIdAndAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
     }
 
     @Override
@@ -110,5 +124,39 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .retrospection(updateRetrospectionRequest.getRetrospection())
                 .build();
         dailyPlannerRepository.save(changeDailyPlanner);
+
+    private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long anotherUserId, final String date) {
+        if (user.getId().equals(anotherUserId)) {
+            throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
+        }
+        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserIdAndDailyPlannerDay(anotherUserId, Date.valueOf(date));
+        if (dailyPlanner == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+        return dailyPlanner;
+    }
+
+    @Override
+    @Transactional
+    public void addDailyLike(final User user, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
+        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, addDailyPlannerLikeRequest.getAnotherUserId(),
+                addDailyPlannerLikeRequest.getDate());
+        DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner);
+        if (dailyPlannerLike != null) {
+            throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE);
+        }
+        dailyPlannerLike = DailyPlannerLike.builder()
+                .dailyPlanner(dailyPlanner)
+                .user(user)
+                .build();
+        dailyPlannerLikeRepository.save(dailyPlannerLike);
+    }
+
+    @Override
+    @Transactional
+    public void removeDailyLike(final User user, final RemoveDailyLikeRequest removeDailyLikeRequest) {
+        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, removeDailyLikeRequest.getAnotherUserId(),
+                removeDailyLikeRequest.getDate());
+        dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user, dailyPlanner);
     }
 }
