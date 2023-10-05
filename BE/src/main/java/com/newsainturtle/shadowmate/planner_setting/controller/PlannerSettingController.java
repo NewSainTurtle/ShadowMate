@@ -30,6 +30,15 @@ public class PlannerSettingController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY, plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest)));
     }
 
+    @DeleteMapping("/{userId}/categories")
+    public ResponseEntity<BaseResponse> removeCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final RemoveCategoryRequest removeCategoryRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.removeCategory(principalDetails.getUser(), removeCategoryRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_CATEGORY));
+    }
+
     @PutMapping("/{userId}/categories")
     public ResponseEntity<BaseResponse> updateCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId,
