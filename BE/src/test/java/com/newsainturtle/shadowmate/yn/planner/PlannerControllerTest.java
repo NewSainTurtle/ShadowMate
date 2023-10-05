@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner.controller.PlannerController;
+import com.newsainturtle.shadowmate.planner.dto.AddDailyLikeRequest;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
@@ -463,6 +464,175 @@ public class PlannerControllerTest {
                 //then
                 resultActions.andExpect(status().isOk());
             }
+        }
+    }
+
+    @Nested
+    class 좋아요 {
+        @Nested
+        class 좋아요등록 {
+            final String url = "/api/planners/{userId}/daily/likes";
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .anotherUserId(1L)
+                        .build();
+
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023.09.28")
+                        .anotherUserId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_날짜Null() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date(null)
+                        .anotherUserId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_ID_Null() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .anotherUserId(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_자신플래너에좋아요() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .anotherUserId(1L)
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_ADD_LIKES_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .anotherUserId(1L)
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_이전에좋아요를이미누름() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .anotherUserId(1L)
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .anotherUserId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
         }
     }
 }

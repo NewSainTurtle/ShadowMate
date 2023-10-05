@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TodoRepositoryTest {
 
     @Autowired
-    TodoRepository todoRepository;
+    private TodoRepository todoRepository;
 
     @Autowired
     private UserRepository userRepository;

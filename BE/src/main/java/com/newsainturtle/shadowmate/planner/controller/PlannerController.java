@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.planner.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
+import com.newsainturtle.shadowmate.planner.dto.AddDailyLikeRequest;
 import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
@@ -48,6 +49,15 @@ public class PlannerController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         dailyPlannerServiceImpl.updateTomorrowGoal(principalDetails.getUser(), updateTomorrowGoalRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_TOMORROW_GOAL));
+    }
+
+    @PostMapping("/{userId}/daily/likes")
+    public ResponseEntity<BaseResponse> addDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                     @PathVariable("userId") final Long userId,
+                                                     @RequestBody @Valid final AddDailyLikeRequest addDailyLikeRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.addDailyLike(principalDetails.getUser(), addDailyLikeRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DAILY_LIKE));
     }
 
 }
