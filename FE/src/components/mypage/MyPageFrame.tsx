@@ -7,7 +7,7 @@ import MyPageCategory from "./details/MyPageCategory";
 import MyPageDday from "./details/MyPageDday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
 import { categoryType, ddayType } from "@util/planner.interface";
-import { CATEGORY_LIST } from "@util/data/CategoryData";
+import { CATEGORY_LIST, COLORS } from "@util/data/CategoryData";
 import { DDAY_LIST } from "@util/data/DdayData";
 
 interface Props {
@@ -29,7 +29,7 @@ const MyPageFrame = ({ title }: Props) => {
     categoryColorCode: categoryList[0].categoryColorCode,
   });
   const [categoryClick, setCategoryClick] = useState<number>(0);
-  const [colorClick, setColorClick] = useState<number>(categoryInput.categoryColorCode);
+  const [colorClick, setColorClick] = useState<number>(0);
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
   const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
@@ -42,7 +42,7 @@ const MyPageFrame = ({ title }: Props) => {
       categoryId: nextId.current,
       categoryTitle: "새 카테고리",
       categoryEmoticon: "",
-      categoryColorCode: 12,
+      categoryColorCode: "#B6DEF7",
     };
     setCategoryList([...categoryList, newCategory]);
     setCategoryInput(newCategory);
@@ -59,7 +59,7 @@ const MyPageFrame = ({ title }: Props) => {
             categoryId: categoryInput.categoryId,
             categoryTitle: categoryInput.categoryTitle,
             categoryEmoticon: categoryInput.categoryEmoticon,
-            categoryColorCode: colorClick,
+            categoryColorCode: COLORS[colorClick],
           };
         }
         return item;

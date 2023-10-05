@@ -20,8 +20,8 @@ export const COLORS: string[] = [
 ];
 
 export const CATEGORY_LIST: categoryType[] = [
-  { categoryId: 0, categoryTitle: "국어", categoryEmoticon: "📕", categoryColorCode: 3 },
-  { categoryId: 1, categoryTitle: "수학", categoryEmoticon: "📗", categoryColorCode: 7 },
-  { categoryId: 2, categoryTitle: "영어", categoryEmoticon: "📒", categoryColorCode: 4 },
-  { categoryId: 3, categoryTitle: "생물", categoryEmoticon: "", categoryColorCode: 12 },
+  { categoryId: 0, categoryTitle: "국어", categoryEmoticon: "📕", categoryColorCode: "#F1607D" },
+  { categoryId: 1, categoryTitle: "수학", categoryEmoticon: "📗", categoryColorCode: "#637F69" },
+  { categoryId: 2, categoryTitle: "영어", categoryEmoticon: "📒", categoryColorCode: "#F1FCAD" },
+  { categoryId: 3, categoryTitle: "생물", categoryEmoticon: "", categoryColorCode: "#B6DEF7" },
 ];

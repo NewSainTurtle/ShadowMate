@@ -17,7 +17,7 @@ const MyPageCategoryItem = ({ item, index, click, setClick }: Props) => {
     <div className={styles[`category__item${clicked}`]} onClick={() => setClick(index)}>
       <div>{item.categoryEmoticon}</div>
       <div>{item.categoryTitle}</div>
-      <div style={{ backgroundColor: COLORS[item.categoryColorCode] }}></div>
+      <div style={{ backgroundColor: item.categoryColorCode }}></div>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import CategoryColorList from "../item/CategoryColorList";
 import { categoryType } from "@util/planner.interface";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { ClickAwayListener } from "@mui/material";
+import { COLORS } from "@util/data/CategoryData";
 
 interface Props {
   click: number;
@@ -30,7 +31,11 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
   };
 
   useEffect(() => {
-    setColorClick(categoryList[click].categoryColorCode);
+    let currentColor: number = 0;
+    COLORS.map((item, idx) => {
+      if (item === categoryList[click].categoryColorCode) currentColor = idx;
+    });
+    setColorClick(currentColor);
     setInput(categoryList[click]);
   }, [click, categoryList]);
 

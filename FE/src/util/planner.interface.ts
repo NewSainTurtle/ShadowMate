@@ -1,6 +1,6 @@
 export interface categoryType {
   categoryId: number;
-  categoryColorCode: number;
+  categoryColorCode: string;
   categoryTitle: string;
   categoryEmoticon: string;
 }
