@@ -117,7 +117,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     public GetCategoryListResponse getCategoryList(final User user) {
-        final List<Category> result = categoryRepository.findByUser(user);
+        final List<Category> result = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
         List<GetCategoryResponse> categoryList = new ArrayList<>();
 
         for (Category category : result) {

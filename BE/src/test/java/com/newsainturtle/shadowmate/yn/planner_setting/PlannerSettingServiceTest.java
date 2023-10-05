@@ -234,7 +234,7 @@ class PlannerSettingServiceTest {
                 //given
                 final List<Category> list = new ArrayList<>();
                 list.add(category);
-                doReturn(list).when(categoryRepository).findByUser(user);
+                doReturn(list).when(categoryRepository).findByUserAndAndCategoryRemoveIsFalse(user);
 
                 //when
                 final GetCategoryListResponse result = plannerSettingService.getCategoryList(user);
