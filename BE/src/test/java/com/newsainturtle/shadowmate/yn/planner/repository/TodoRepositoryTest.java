@@ -62,7 +62,7 @@ public class TodoRepositoryTest {
     }
 
     @Nested
-    class 일일플래너등록 {
+    class 일일플래너_할일등록 {
 
         @Test
         public void 카테고리Null() {
@@ -112,5 +112,30 @@ public class TodoRepositoryTest {
         }
     }
 
+    @Test
+    public void 일일플래너_할일삭제() {
+        //given
+        final Category category = categoryRepository.save(Category.builder()
+                .categoryColor(categoryColorRepository.findById(1L).orElse(null))
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build());
+        final Todo todo = Todo.builder()
+                .category(category)
+                .todoContent("수능완성 수학 과목별 10문제")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build();
+        final Todo saveTodo = todoRepository.save(todo);
+
+        //when
+        todoRepository.deleteByIdAndAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
+
+        //then
+        assertThat(findTodo).isNull();
+    }
 
 }
