@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,7 +96,7 @@ public class CategoryRepositoryTest {
     }
 
     @Nested
-    class 카테고리수정{
+    class 카테고리수정 {
         final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
         final User user = userRepository.findByEmail("test1234@naver.com");
 
@@ -108,7 +109,7 @@ public class CategoryRepositoryTest {
                 .build();
 
         @Test
-        public void 카테고리_이름수정(){
+        public void 카테고리_이름수정() {
             //given
             final String changeTitle = "수학";
             final Category saveCategory = categoryRepository.save(category);
@@ -133,7 +134,7 @@ public class CategoryRepositoryTest {
         }
 
         @Test
-        public void 카테고리_색상수정(){
+        public void 카테고리_색상수정() {
             //given
             final Optional<CategoryColor> changeCategoryColor = categoryColorRepository.findById(2L);
             final Category saveCategory = categoryRepository.save(category);
@@ -158,7 +159,7 @@ public class CategoryRepositoryTest {
         }
 
         @Test
-        public void 카테고리_이모티콘수정(){
+        public void 카테고리_이모티콘수정() {
             //given
             final String changeEmoticon = "☘️";
             final Category saveCategory = categoryRepository.save(category);
@@ -181,6 +182,58 @@ public class CategoryRepositoryTest {
             assertThat(result.getCategoryEmoticon()).isNotEqualTo("🍅");
             assertThat(result.getCategoryColor()).isEqualTo(categoryColor.get());
         }
+    }
+
+    @Nested
+    class 카테고리삭제 {
+        final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
+        final User user = userRepository.findByEmail("test1234@naver.com");
+
+        final Category category = categoryRepository.save(Category.builder()
+                .categoryColor(categoryColor.get())
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build());
+
+        @Test
+        public void 카테고리_삭제필드변경() {
+            //given
+            final String changeTitle = "수학";
+            final Category findCategory = categoryRepository.findById(category.getId()).orElse(null);
+            final Category changCategory = Category.builder()
+                    .id(findCategory.getId())
+                    .createTime(findCategory.getCreateTime())
+                    .deleteTime(LocalDateTime.now())
+                    .categoryColor(findCategory.getCategoryColor())
+                    .user(findCategory.getUser())
+                    .categoryTitle(changeTitle)
+                    .categoryRemove(true)
+                    .categoryEmoticon(findCategory.getCategoryEmoticon())
+                    .build();
+
+            //when
+            final Category result = categoryRepository.save(changCategory);
+
+            //then
+            assertThat(result).isNotNull();
+            assertThat(result.getCategoryRemove()).isTrue();
+            assertThat(result.getDeleteTime()).isNotNull();
+        }
+
+        @Test
+        public void 카테고리_DB삭제() {
+            //given
+
+            //when
+            categoryRepository.deleteByUserAndId(user, category.getId());
+            final Category findCategory = categoryRepository.findById(category.getId()).orElse(null);
+
+            //then
+            assertThat(findCategory).isNull();
+        }
+
     }
 
 }
