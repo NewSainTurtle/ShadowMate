@@ -35,9 +35,11 @@ public class CategoryRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    private User user;
+
     @BeforeEach
     public void init() {
-        userRepository.save(User.builder()
+        user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
                 .socialLogin(SocialType.BASIC)
@@ -51,7 +53,6 @@ public class CategoryRepositoryTest {
     public void 카테고리등록() {
         //given
         final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-        final User user = userRepository.findByEmail("test1234@naver.com");
 
         final Category category = Category.builder()
                 .categoryColor(categoryColor.get())
@@ -72,34 +73,71 @@ public class CategoryRepositoryTest {
         assertThat(saveCategory.getCategoryEmoticon()).isEqualTo("🍅");
     }
 
-    @Test
-    public void 카테고리조회() {
-        //given
-        final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-        final User user = userRepository.findByEmail("test1234@naver.com");
+    @Nested
+    class 카테고리조회 {
+        @Test
+        public void 카테고리0개() {
+            //given
 
-        final Category category = Category.builder()
-                .categoryColor(categoryColor.get())
-                .user(user)
-                .categoryTitle("국어")
-                .categoryRemove(false)
-                .categoryEmoticon("🍅")
-                .build();
-        categoryRepository.save(category);
+            //when
+            final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
 
-        //when
-        final List<Category> categoryList = categoryRepository.findByUser(user);
+            //then
+            assertThat(categoryList).isNotNull();
+            assertThat(categoryList.size()).isEqualTo(0);
+        }
 
-        //then
-        assertThat(categoryList).isNotNull();
-        assertThat(categoryList.size()).isEqualTo(1);
+        @Test
+        public void 카테고리1개() {
+            //given
+            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
+            categoryRepository.save(Category.builder()
+                    .categoryColor(categoryColor.get())
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build());
+
+            //when
+            final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
+
+            //then
+            assertThat(categoryList).isNotNull();
+            assertThat(categoryList.size()).isEqualTo(1);
+        }
+
+        @Test
+        public void 카테고리1개_삭제된카테고리1개() {
+            //given
+            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
+            categoryRepository.save(Category.builder()
+                    .categoryColor(categoryColor.get())
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build());
+            categoryRepository.save(Category.builder()
+                    .categoryColor(categoryColor.get())
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(true)
+                    .categoryEmoticon("🍅")
+                    .build());
+
+            //when
+            final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
+
+            //then
+            assertThat(categoryList).isNotNull();
+            assertThat(categoryList.size()).isEqualTo(1);
+        }
     }
 
     @Nested
     class 카테고리수정 {
         final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-        final User user = userRepository.findByEmail("test1234@naver.com");
-
         final Category category = Category.builder()
                 .categoryColor(categoryColor.get())
                 .user(user)
@@ -186,20 +224,18 @@ public class CategoryRepositoryTest {
 
     @Nested
     class 카테고리삭제 {
-        final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-        final User user = userRepository.findByEmail("test1234@naver.com");
-
-        final Category category = categoryRepository.save(Category.builder()
-                .categoryColor(categoryColor.get())
-                .user(user)
-                .categoryTitle("국어")
-                .categoryRemove(false)
-                .categoryEmoticon("🍅")
-                .build());
 
         @Test
         public void 카테고리_삭제필드변경() {
             //given
+            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
+            final Category category = categoryRepository.save(Category.builder()
+                    .categoryColor(categoryColor.get())
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build());
             final String changeTitle = "수학";
             final Category findCategory = categoryRepository.findById(category.getId()).orElse(null);
             final Category changCategory = Category.builder()
@@ -225,6 +261,14 @@ public class CategoryRepositoryTest {
         @Test
         public void 카테고리_DB삭제() {
             //given
+            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
+            final Category category = categoryRepository.save(Category.builder()
+                    .categoryColor(categoryColor.get())
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build());
 
             //when
             categoryRepository.deleteByUserAndId(user, category.getId());
