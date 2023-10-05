@@ -69,6 +69,8 @@ public class PlannerController {
         dailyPlannerServiceImpl.updateRetrospection(principalDetails.getUser(), updateRetrospectionRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_RETROSPECTION));
 
+    }
+
     @PostMapping("/{userId}/daily/likes")
     public ResponseEntity<BaseResponse> addDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                      @PathVariable("userId") final Long userId,

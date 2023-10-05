@@ -124,7 +124,8 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .retrospection(updateRetrospectionRequest.getRetrospection())
                 .build();
         dailyPlannerRepository.save(changeDailyPlanner);
-
+    }
+    
     private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long anotherUserId, final String date) {
         if (user.getId().equals(anotherUserId)) {
             throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
