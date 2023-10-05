@@ -11,4 +11,5 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByUser(final User user);
     Category findByUserAndId(final User user, final Long id);
+    void deleteByUserAndId(final User user, final Long id);
 }
