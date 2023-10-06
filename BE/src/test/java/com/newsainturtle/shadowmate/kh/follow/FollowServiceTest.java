@@ -56,13 +56,14 @@ public class FollowServiceTest {
         @Test
         public void 실패_팔로잉조회Null() {
             //given
-            doReturn(null).when(followRepository).findAllByFollowerId(user1);
+            List<FollowingResponse> followingResponses = new ArrayList<>();
+            doReturn(followingResponses).when(followRepository).findAllByFollowerId(user1);
 
             //when
-            final FollowException result = assertThrows(FollowException.class, () -> followService.getFollowing(user1));
+            final List<FollowingResponse> result = followService.getFollowing(user1);
 
             //then
-            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOWING);
+            assertThat(result).isEmpty();
 
         }
 

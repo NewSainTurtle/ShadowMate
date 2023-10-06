@@ -1,7 +1,10 @@
 package com.newsainturtle.shadowmate.kh.follow;
 
 import com.google.gson.Gson;
+import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
+import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
+import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
@@ -29,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +43,9 @@ public class FollowControllerTest {
 
     @Mock
     private FollowServiceImpl followService;
+
+    @Mock
+    private AuthServiceImpl authService;
 
     private MockMvc mockMvc;
 
@@ -80,9 +87,9 @@ public class FollowControllerTest {
             final Long userId = 1L;
 
             @Test
-            public void 실패_팔로잉조회Null() throws Exception {
+            public void 실패_유저정보다름() throws Exception {
                 //given
-                doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING)).when(followService).getFollowing(any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -90,7 +97,25 @@ public class FollowControllerTest {
                 );
 
                 //then
-                resultActions.andExpect(status().isNotFound());
+                resultActions.andExpect(status().isForbidden());
+            }
+
+
+            @Test
+            public void 실패_팔로잉조회Null() throws Exception {
+                //given
+                final List<FollowingResponse> followingResponses = new ArrayList<>();
+                doReturn(followingResponses).when(followService).getFollowing(any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.get(url, userId)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.data").isEmpty());
+
             }
 
 
