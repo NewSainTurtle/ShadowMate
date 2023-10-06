@@ -14,4 +14,5 @@ public class PlannerConstant {
     public static final String SUCCESS_UPDATE_RETROSPECTION_IMAGE = "오늘의 회고 사진 업로드가 완료되었습니다.";
     public static final String SUCCESS_ADD_DAILY_LIKE = "좋아요 등록이 완료되었습니다.";
     public static final String SUCCESS_REMOVE_DAILY_LIKE = "좋아요 취소가 완료되었습니다.";
+    public static final String SUCCESS_ADD_TIME_TABLE = "타임테이블 등록이 완료되었습니다.";
 }

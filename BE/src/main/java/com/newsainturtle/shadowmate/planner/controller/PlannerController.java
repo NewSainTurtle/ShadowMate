@@ -106,7 +106,14 @@ public class PlannerController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         dailyPlannerServiceImpl.removeDailyLike(principalDetails.getUser(), removeDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_LIKE));
+    }
 
+    @PostMapping("/{userId}/daily/timetables")
+    public ResponseEntity<BaseResponse> addTimeTable(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                     @PathVariable("userId") final Long userId,
+                                                     @RequestBody @Valid final AddTimeTableRequest addTimeTableRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE, dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest)));
     }
 
 }
