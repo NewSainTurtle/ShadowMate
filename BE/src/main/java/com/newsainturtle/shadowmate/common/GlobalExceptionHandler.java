@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.common;
 
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
+import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.user.exception.UserException;
@@ -64,6 +65,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({PlannerException.class})
     public ResponseEntity<ErrorResponse> handlePlannerException(final PlannerException exception) {
+        log.warn("PlannerException occur: ", exception);
+        return this.makeErrorResponseEntity(exception.getErrorResult());
+    }
+
+    @ExceptionHandler({FollowException.class})
+    public ResponseEntity<ErrorResponse> handlePlannerException(final FollowException exception) {
         log.warn("PlannerException occur: ", exception);
         return this.makeErrorResponseEntity(exception.getErrorResult());
     }
