@@ -16,6 +16,7 @@ public enum PlannerErrorResult implements BaseErrorResult {
     UNABLE_TO_LIKE_YOUR_OWN_PLANNER(HttpStatus.BAD_REQUEST, "본인 플래너에 좋아요를 누를 수 없습니다."),
     INVALID_TIME(HttpStatus.BAD_REQUEST, "타임테이블 시간값이 유효하지 않습니다."),
     ALREADY_ADDED_TIME_TABLE(HttpStatus.BAD_REQUEST, "해당 할일에 대한 타임테이블 데이터가 이미 존재합니다."),
+    INVALID_DATE(HttpStatus.BAD_REQUEST, "일주일 시작 날짜, 끝 날짜가 올바르지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;

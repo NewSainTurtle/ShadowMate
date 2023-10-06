@@ -9,6 +9,7 @@ import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
+import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,7 @@ import static com.newsainturtle.shadowmate.planner.constant.PlannerConstant.*;
 public class PlannerController {
 
     private final DailyPlannerService dailyPlannerServiceImpl;
+    private final WeeklyPlannerService weeklyPlannerServiceImpl;
     private final AuthService authServiceImpl;
 
     @PostMapping("/{userId}/daily/todos")
@@ -114,6 +116,14 @@ public class PlannerController {
                                                      @RequestBody @Valid final AddTimeTableRequest addTimeTableRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE, dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest)));
+    }
+
+    @PostMapping("/{userId}/weekly/todos")
+    public ResponseEntity<BaseResponse> addWeeklyTodo(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                      @PathVariable("userId") final Long userId,
+                                                      @RequestBody @Valid final AddWeeklyTodoRequest addWeeklyTodoRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_WEEKLY_TODO, weeklyPlannerServiceImpl.addWeeklyTodo(principalDetails.getUser(), addWeeklyTodoRequest)));
     }
 
 }
