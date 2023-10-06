@@ -398,6 +398,86 @@ public class PlannerSettingControllerTest {
         }
 
         @Nested
+        class 카테고리삭제 {
+            final String url = "/api/planner-settings/{userId}/categories";
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
+                        .categoryId(1L)
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeCategoryRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_없는카테고리() throws Exception {
+                //given
+                final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
+                        .categoryId(1L)
+                        .build();
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerSettingServiceImpl).removeCategory(any(), any(RemoveCategoryRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeCategoryRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_카테고리번호Null() throws Exception {
+                //given
+                final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
+                        .categoryId(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeCategoryRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
+                        .categoryId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeCategoryRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
+
+        @Nested
         class 플래너설정_조회 {
             @Test
             public void 성공_카테고리색상목록조회() throws Exception {
