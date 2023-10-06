@@ -9,9 +9,10 @@ interface Props {
 }
 
 const CategoryColorItem = ({ item, click, index, setClick }: Props) => {
+  const clicked = click === index ? "--clicked" : "";
   return (
     <div
-      className={styles[click === index ? "color__item--clicked" : "color__item"]}
+      className={styles[`color__item${clicked}`]}
       style={{ backgroundColor: item }}
       onClick={() => {
         setClick(index);
