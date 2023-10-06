@@ -60,4 +60,23 @@ public class WeeklyRepositoryTest {
         assertThat(weekly.getEndDay()).isEqualTo(endDay);
     }
 
+    @Test
+    public void 주차별플래너조회() {
+        //given
+        weeklyRepository.save(Weekly.builder()
+                .startDay(startDay)
+                .endDay(endDay)
+                .user(user)
+                .build());
+
+        //when
+        final Weekly findWeekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDay, endDay);
+
+        //then
+        assertThat(findWeekly).isNotNull();
+        assertThat(findWeekly.getUser()).isEqualTo(user);
+        assertThat(findWeekly.getStartDay()).isEqualTo(startDay);
+        assertThat(findWeekly.getEndDay()).isEqualTo(endDay);
+    }
+    
 }
