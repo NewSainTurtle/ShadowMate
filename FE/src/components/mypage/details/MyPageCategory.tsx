@@ -18,15 +18,16 @@ interface Props {
 }
 
 const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setColorClick }: Props) => {
-  const [openEmoji, setOpenEmoji] = useState<boolean>(false);
   const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = input;
-
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    setInput({ ...input, categoryEmoticon: emojiData.emoji });
-  };
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
+    if (name === "categoryEmoticon") {
+      if (value.length > 2) return;
+      if (value !== "" && !value.match("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+")) {
+        return;
+      }
+    }
     setInput({ ...input, [name]: value });
   };
 
@@ -52,25 +53,19 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 이모지</Text>
-        <div onClick={() => setOpenEmoji(true)}>
-          <Input
-            name="categoryEmoticon"
-            value={categoryEmoticon}
-            placeholder="카테고리 이모지"
-            onChange={onChangeInput}
-          />
-          {openEmoji && (
-            <ClickAwayListener
-              onClickAway={() => {
-                setOpenEmoji(false);
-              }}
-            >
-              <div className={styles["emoji"]}>
-                <EmojiPicker onEmojiClick={onEmojiClick} searchDisabled />
-              </div>
-            </ClickAwayListener>
-          )}
-        </div>
+        <Input
+          name="categoryEmoticon"
+          value={categoryEmoticon}
+          placeholder="카테고리 이모지"
+          onChange={onChangeInput}
+          helperText={
+            // <>
+            //   윈도우 사용 시 윈도우키 + . 를 눌러보세요.
+            //   <br /> 맥 사용 시 Fn + E 를 눌러보세요.
+            // </>
+            <>이모지 외 사용이 불가능합니다.</>
+          }
+        />
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 색상</Text>
