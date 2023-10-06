@@ -86,4 +86,24 @@ public class TimeTableRepositoryTest {
         assertThat(saveTimeTable.getTodo()).isEqualTo(todo);
     }
 
+    @Test
+    public void 타임테이블조회(){
+        //given
+        final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
+        final LocalDateTime endTime = LocalDateTime.parse("2023-10-06 18:30", formatter);
+        timeTableRepository.save(TimeTable.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .todo(todo)
+                .build());
+        //when
+        final TimeTable findTimeTable = timeTableRepository.findByTodo(todo);
+
+        //then
+        assertThat(findTimeTable).isNotNull();
+        assertThat(findTimeTable.getStartTime()).isEqualTo(startTime);
+        assertThat(findTimeTable.getEndTime()).isEqualTo(endTime);
+        assertThat(findTimeTable.getTodo()).isEqualTo(todo);
+    }
+
 }
