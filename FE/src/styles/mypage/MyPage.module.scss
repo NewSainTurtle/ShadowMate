@@ -110,7 +110,7 @@ $color-warning: var(--color-warning);
 }
 
 .category {
-  &-item {
+  &__item {
     display: grid;
     grid-template-columns: 1fr 8fr 1fr;
     align-items: center;
@@ -129,7 +129,7 @@ $color-warning: var(--color-warning);
     }
 
     &--clicked {
-      @extend .category-item;
+      @extend .category__item;
       background-color: $color-gray-1;
     }
   }
