@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import { categoryType } from "@util/planner.interface";
-import { COLORS } from "@util/data/CategoryData";
+import { CATEGORY_COLORS } from "@util/data/CategoryData";
 
 interface Props {
   item: categoryType;

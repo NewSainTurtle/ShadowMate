@@ -7,7 +7,7 @@ import MyPageCategory from "./details/MyPageCategory";
 import MyPageDday from "./details/MyPageDday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
 import { categoryType, ddayType } from "@util/planner.interface";
-import { CATEGORY_LIST, COLORS } from "@util/data/CategoryData";
+import { CATEGORY_LIST, CATEGORY_COLORS } from "@util/data/CategoryData";
 import { DDAY_LIST } from "@util/data/DdayData";
 
 interface Props {
@@ -59,7 +59,7 @@ const MyPageFrame = ({ title }: Props) => {
             categoryId: categoryInput.categoryId,
             categoryTitle: categoryInput.categoryTitle,
             categoryEmoticon: categoryInput.categoryEmoticon,
-            categoryColorCode: COLORS[colorClick],
+            categoryColorCode: CATEGORY_COLORS[colorClick],
           };
         }
         return item;

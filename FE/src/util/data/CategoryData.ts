@@ -1,6 +1,6 @@
 import { categoryType } from "@util/planner.interface";
 
-export const COLORS: string[] = [
+export const CATEGORY_COLORS: string[] = [
   "#D9B5D9",
   "#FFCBE1",
   "#FF8FAD",
