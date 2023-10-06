@@ -36,8 +36,8 @@ public class UserRepositoryTest {
 
         @Test
         void 실패_프로필조회() {
-            final Long userId = 1L;
             // given
+            final Long userId = 1L;
 
             // when
             final Optional<User> userEntity = userRepository.findById(userId);
