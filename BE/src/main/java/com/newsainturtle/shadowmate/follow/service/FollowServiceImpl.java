@@ -24,9 +24,6 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public List<FollowingResponse> getFollowing(final User user) {
         List<Follow> followingList = followRepository.findAllByFollowerId(user);
-        if(followingList==null) {
-            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING);
-        }
         return followingList.stream()
                 .map(follow -> FollowingResponse.builder()
                         .followingId(follow.getFollowingId())
