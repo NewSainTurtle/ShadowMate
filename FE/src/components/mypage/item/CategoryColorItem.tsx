@@ -16,9 +16,7 @@ const CategoryColorItem = ({ item, click, index, setClick }: Props) => {
       onClick={() => {
         setClick(index);
       }}
-    >
-      <div></div>
-    </div>
+    ></div>
   );
 };
 
