@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface DailyPlannerService {
     AddDailyTodoResponse addDailyTodo(final User user, final AddDailyTodoRequest addDailyTodoRequest);
+    void updateDailyTodo(final User user, final UpdateDailyTodoRequest updateDailyTodoRequest);
     void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest);
     void updateTodayGoal(final User user, final UpdateTodayGoalRequest updateTodayGoalRequest);
     void updateTomorrowGoal(final User user, final UpdateTomorrowGoalRequest updateTomorrowGoalRequest);

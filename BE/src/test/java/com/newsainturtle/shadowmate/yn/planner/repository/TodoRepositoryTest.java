@@ -138,4 +138,50 @@ public class TodoRepositoryTest {
         assertThat(findTodo).isNull();
     }
 
+    @Test
+    public void 일일플래너_할일수정() {
+        //given
+        final Category category1 = categoryRepository.save(Category.builder()
+                .categoryColor(categoryColorRepository.findById(1L).orElse(null))
+                .user(user)
+                .categoryTitle("수학")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build());
+        final Category category2 = categoryRepository.save(Category.builder()
+                .categoryColor(categoryColorRepository.findById(1L).orElse(null))
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🌀")
+                .build());
+        final Todo todo = Todo.builder()
+                .category(category1)
+                .todoContent("수능완성 수학 과목별 10문제")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build();
+        final Todo saveTodo = todoRepository.save(todo);
+
+        //when
+        final Todo findTodo = todoRepository.findByIdAndAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        final Todo changeTodo = todoRepository.save(Todo.builder()
+                .id(findTodo.getId())
+                .createTime(findTodo.getCreateTime())
+                .todoContent("비문학 2문제 풀기")
+                .category(category2)
+                .todoStatus(TodoStatus.COMPLETE)
+                .dailyPlanner(findTodo.getDailyPlanner())
+                .build());
+
+        //then
+        assertThat(changeTodo).isNotNull();
+        assertThat(changeTodo.getId()).isEqualTo(findTodo.getId());
+        assertThat(changeTodo.getTodoContent()).isEqualTo("비문학 2문제 풀기");
+        assertThat(changeTodo.getCategory()).isEqualTo(category2);
+        assertThat(changeTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
+        assertThat(changeTodo.getDailyPlanner()).isEqualTo(dailyPlanner);
+        assertThat(changeTodo.getCreateTime()).isNotEqualTo(changeTodo.getUpdateTime());
+    }
+
 }

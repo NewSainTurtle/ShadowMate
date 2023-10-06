@@ -13,7 +13,6 @@ import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
-import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +29,21 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final CategoryRepository categoryRepository;
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
 
-    private DailyPlanner getDailyPlanner(final User user, final String date) {
+    private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
         if (dailyPlanner == null) {
             dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf(date))
                     .user(user)
                     .build());
+        }
+        return dailyPlanner;
+    }
+
+    private DailyPlanner getDailyPlanner(final User user, final String date) {
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
+        if (dailyPlanner == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
         }
         return dailyPlanner;
     }
@@ -53,7 +60,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Override
     @Transactional
     public AddDailyTodoResponse addDailyTodo(final User user, final AddDailyTodoRequest addDailyTodoRequest) {
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, addDailyTodoRequest.getDate());
+        final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, addDailyTodoRequest.getDate());
         final Category category = getCategory(user, addDailyTodoRequest.getCategoryId());
         final Todo todo = Todo.builder()
                 .category(category)
@@ -67,18 +74,40 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
     @Override
     @Transactional
-    public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(removeDailyTodoRequest.getDate()));
-        if (dailyPlanner == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
+    public void updateDailyTodo(final User user, final UpdateDailyTodoRequest updateDailyTodoRequest) {
+        final TodoStatus status = TodoStatus.parsing(updateDailyTodoRequest.getTodoStatus());
+        if (status == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TODO_STATUS);
         }
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, updateDailyTodoRequest.getDate());
+        final Category category = getCategory(user, updateDailyTodoRequest.getCategoryId());
+        final Todo todo = todoRepository.findByIdAndAndDailyPlanner(updateDailyTodoRequest.getTodoId(), dailyPlanner);
+        if (todo == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TODO);
+        }
+
+        final Todo changeTodo = Todo.builder()
+                .id(todo.getId())
+                .createTime(todo.getCreateTime())
+                .todoContent(updateDailyTodoRequest.getTodoContent())
+                .category(category)
+                .todoStatus(status)
+                .dailyPlanner(todo.getDailyPlanner())
+                .build();
+        todoRepository.save(changeTodo);
+    }
+
+    @Override
+    @Transactional
+    public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
         todoRepository.deleteByIdAndAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
     }
 
     @Override
     @Transactional
     public void updateTodayGoal(final User user, final UpdateTodayGoalRequest updateTodayGoalRequest) {
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, updateTodayGoalRequest.getDate());
+        final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateTodayGoalRequest.getDate());
         final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                 .id(dailyPlanner.getId())
                 .createTime(dailyPlanner.getCreateTime())
@@ -95,7 +124,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Override
     @Transactional
     public void updateTomorrowGoal(final User user, final UpdateTomorrowGoalRequest updateTomorrowGoalRequest) {
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, updateTomorrowGoalRequest.getDate());
+        final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateTomorrowGoalRequest.getDate());
         final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                 .id(dailyPlanner.getId())
                 .createTime(dailyPlanner.getCreateTime())
@@ -112,7 +141,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Override
     @Transactional
     public void updateRetrospection(final User user, final UpdateRetrospectionRequest updateRetrospectionRequest) {
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, updateRetrospectionRequest.getDate());
+        final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateRetrospectionRequest.getDate());
         final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                 .id(dailyPlanner.getId())
                 .createTime(dailyPlanner.getCreateTime())
@@ -129,7 +158,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Override
     @Transactional
     public void updateRetrospectionImage(final User user, final UpdateRetrospectionImageRequest updateRetrospectionImageRequest) {
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, updateRetrospectionImageRequest.getDate());
+        final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateRetrospectionImageRequest.getDate());
         final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                 .id(dailyPlanner.getId())
                 .createTime(dailyPlanner.getCreateTime())

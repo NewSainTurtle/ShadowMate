@@ -65,96 +65,268 @@ public class DailyPlannerServiceTest {
             .build();
 
     @Nested
-    class 일일플래너할일등록 {
+    class 일일플래너할일 {
 
-        @Test
-        public void 실패_유효하지않은카테고리ID() {
-            //given
-            final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
-                    .date("2023-09-25")
-                    .categoryId(1L)
-                    .todoContent("수능완성 수학 과목별 10문제")
-                    .build();
-            doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+        @Nested
+        class 일일플래너할일등록 {
 
-            //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyTodo(user, request));
+            @Test
+            public void 실패_유효하지않은카테고리ID() {
+                //given
+                final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .categoryId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .build();
+                doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
 
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_CATEGORY);
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyTodo(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_CATEGORY);
+            }
+
+            @Test
+            public void 성공_카테고리Null() {
+                //given
+                final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .categoryId(0L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .build();
+                final Todo todo = Todo.builder()
+                        .id(1L)
+                        .category(null)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner)
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+                doReturn(todo).when(todoRepository).save(any(Todo.class));
+
+                //when
+                final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, request);
+
+                //then
+                assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+                verify(todoRepository, times(1)).save(any(Todo.class));
+            }
+
+            @Test
+            public void 성공() {
+                //given
+                final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .categoryId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .build();
+                final CategoryColor categoryColor = CategoryColor.builder()
+                        .categoryColorCode("D9B5D9")
+                        .build();
+                final Category category = Category.builder()
+                        .id(1L)
+                        .categoryColor(categoryColor)
+                        .user(user)
+                        .categoryTitle("국어")
+                        .categoryRemove(false)
+                        .categoryEmoticon("🍅")
+                        .build();
+                final Todo todo = Todo.builder()
+                        .id(1L)
+                        .category(category)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner)
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+                doReturn(category).when(categoryRepository).findByUserAndId(any(), any(Long.class));
+                doReturn(todo).when(todoRepository).save(any(Todo.class));
+
+                //when
+                final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, request);
+
+                //then
+                assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
+                verify(todoRepository, times(1)).save(any(Todo.class));
+            }
+
         }
 
-        @Test
-        public void 성공_카테고리Null() {
-            //given
-            final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
-                    .date("2023-09-25")
-                    .categoryId(0L)
-                    .todoContent("수능완성 수학 과목별 10문제")
-                    .build();
-            final Todo todo = Todo.builder()
-                    .id(1L)
-                    .category(null)
-                    .todoContent("수능완성 수학 과목별 10문제")
-                    .todoStatus(TodoStatus.EMPTY)
-                    .dailyPlanner(dailyPlanner)
-                    .build();
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
-            doReturn(todo).when(todoRepository).save(any(Todo.class));
+        @Nested
+        class 일일플래너할일수정 {
 
-            //when
-            final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, request);
+            @Test
+            public void 실패_유효하지않은할일상태값() {
+                //given
+                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("??")
+                        .build();
 
-            //then
-            assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
 
-            //verify
-            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(todoRepository, times(1)).save(any(Todo.class));
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO_STATUS);
+            }
+
+
+            @Test
+            public void 실패_유효하지않은일일플래너() {
+                //given
+                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            public void 실패_유효하지않은카테고리() {
+                //given
+                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_CATEGORY);
+            }
+
+            @Test
+            public void 실패_유효하지않은할일() {
+                //given
+                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(0L)
+                        .todoStatus("완료")
+                        .build();
+
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(null).when(todoRepository).findByIdAndAndDailyPlanner(request.getTodoId(), dailyPlanner);
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
+            }
+
+            @Test
+            public void 성공() {
+                //given
+                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(0L)
+                        .todoStatus("완료")
+                        .build();
+                final CategoryColor categoryColor = CategoryColor.builder()
+                        .categoryColorCode("D9B5D9")
+                        .build();
+                final Category category = Category.builder()
+                        .id(1L)
+                        .categoryColor(categoryColor)
+                        .user(user)
+                        .categoryTitle("국어")
+                        .categoryRemove(false)
+                        .categoryEmoticon("🍅")
+                        .build();
+                final Todo todo = Todo.builder()
+                        .id(1L)
+                        .category(category)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner)
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(todo).when(todoRepository).findByIdAndAndDailyPlanner(request.getTodoId(), dailyPlanner);
+
+                //when
+                dailyPlannerServiceImpl.updateDailyTodo(user, request);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+                verify(todoRepository, times(1)).findByIdAndAndDailyPlanner(any(Long.class), any());
+                verify(todoRepository, times(1)).save(any(Todo.class));
+            }
+
         }
 
-        @Test
-        public void 성공() {
-            //given
-            final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
-                    .date("2023-09-25")
-                    .categoryId(1L)
-                    .todoContent("수능완성 수학 과목별 10문제")
-                    .build();
-            final CategoryColor categoryColor = CategoryColor.builder()
-                    .categoryColorCode("D9B5D9")
-                    .build();
-            final Category category = Category.builder()
-                    .id(1L)
-                    .categoryColor(categoryColor)
-                    .user(user)
-                    .categoryTitle("국어")
-                    .categoryRemove(false)
-                    .categoryEmoticon("🍅")
-                    .build();
-            final Todo todo = Todo.builder()
-                    .id(1L)
-                    .category(category)
-                    .todoContent("수능완성 수학 과목별 10문제")
-                    .todoStatus(TodoStatus.EMPTY)
-                    .dailyPlanner(dailyPlanner)
-                    .build();
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
-            doReturn(category).when(categoryRepository).findByUserAndId(any(), any(Long.class));
-            doReturn(todo).when(todoRepository).save(any(Todo.class));
+        @Nested
+        class 일일플래너할일삭제 {
 
-            //when
-            final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, request);
+            @Test
+            public void 실패_유효하지않은일일플래너() {
+                //given
+                final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .build();
+                doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
 
-            //then
-            assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, request));
 
-            //verify
-            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
-            verify(todoRepository, times(1)).save(any(Todo.class));
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            public void 성공() {
+                //given
+                final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+                //when
+                dailyPlannerServiceImpl.removeDailyTodo(user, request);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+                verify(todoRepository, times(1)).deleteByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+            }
+
         }
-
     }
 
     @Nested
@@ -307,46 +479,6 @@ public class DailyPlannerServiceTest {
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
             verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
-        }
-
-    }
-
-    @Nested
-    class 일일플래너할일삭제 {
-
-        @Test
-        public void 실패_유효하지않은일일플래너() {
-            //given
-            final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
-                    .date("2023-09-25")
-                    .todoId(1L)
-                    .build();
-            doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-
-            //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, request));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
-        }
-
-        @Test
-        public void 성공() {
-            //given
-            final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
-                    .date("2023-09-25")
-                    .todoId(1L)
-                    .build();
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-
-            //when
-            dailyPlannerServiceImpl.removeDailyTodo(user, request);
-
-            //then
-
-            //verify
-            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(todoRepository, times(1)).deleteByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
         }
 
     }

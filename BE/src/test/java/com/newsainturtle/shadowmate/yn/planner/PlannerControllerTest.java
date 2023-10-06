@@ -226,6 +226,324 @@ public class PlannerControllerTest {
         }
 
         @Nested
+        class 할일수정 {
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023.09.25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_할일내용_길이초과() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("012345678901234567890123456789012345678901234567891")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_날짜_Null() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date(null)
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_할일ID_Null() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(null)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_할일내용_Null() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent(null)
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_카테고리ID_Null() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(null)
+                        .todoStatus("완료")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_할일상태_Null() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_할일상태_길이초과() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("????")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은할일상태값() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO_STATUS)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은일일플래너() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은카테고리() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_CATEGORY)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은할일() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .categoryId(1L)
+                        .todoStatus("완료")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
+
+        @Nested
         class 할일삭제 {
             @Test
             public void 실패_없는사용자() throws Exception {
