@@ -70,8 +70,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({FollowException.class})
-    public ResponseEntity<ErrorResponse> handlePlannerException(final FollowException exception) {
-        log.warn("PlannerException occur: ", exception);
+    public ResponseEntity<ErrorResponse> handleFollowException(final FollowException exception) {
+        log.warn("FollowException occur: ", exception);
         return this.makeErrorResponseEntity(exception.getErrorResult());
     }
 
