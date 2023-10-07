@@ -123,8 +123,11 @@ public class FollowControllerTest {
             public void 성공_팔로잉조회() throws Exception {
                 //given
                 list.add(FollowingResponse.builder()
-                        .followingId(user1)
-                        .followerId(user2)
+                        .followId(1L)
+                        .email(user2.getEmail())
+                        .nickname(user2.getNickname())
+                        .profileImage(user2.getProfileImage())
+                        .followingId(user2.getId())
                         .build());
                 doReturn(list).when(followService).getFollowing(any());
 

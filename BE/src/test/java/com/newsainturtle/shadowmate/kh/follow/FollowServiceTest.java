@@ -79,7 +79,7 @@ public class FollowServiceTest {
             final List<FollowingResponse> result = followService.getFollowing(user1);
 
             //then
-            assertThat(result.get(0).getFollowingId()).isEqualTo(user2);
+            assertThat(result.get(0).getNickname()).isEqualTo(user2.getNickname());
         }
     }
 }
