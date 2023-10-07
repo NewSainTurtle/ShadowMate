@@ -235,7 +235,7 @@ public class DailyPlannerServiceTest {
                         .build();
 
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(null).when(todoRepository).findByIdAndAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
 
                 //when
                 final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
@@ -273,7 +273,7 @@ public class DailyPlannerServiceTest {
                         .dailyPlanner(dailyPlanner)
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(todo).when(todoRepository).findByIdAndAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
 
                 //when
                 dailyPlannerServiceImpl.updateDailyTodo(user, request);
@@ -282,7 +282,7 @@ public class DailyPlannerServiceTest {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-                verify(todoRepository, times(1)).findByIdAndAndDailyPlanner(any(Long.class), any());
+                verify(todoRepository, times(1)).findByIdAndDailyPlanner(any(Long.class), any());
                 verify(todoRepository, times(1)).save(any(Todo.class));
             }
 
@@ -323,7 +323,7 @@ public class DailyPlannerServiceTest {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-                verify(todoRepository, times(1)).deleteByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                verify(todoRepository, times(1)).deleteByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
             }
 
         }

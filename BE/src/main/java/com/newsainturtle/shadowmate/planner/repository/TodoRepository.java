@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    Todo findByIdAndAndDailyPlanner(final Long id, final DailyPlanner dailyPlanner);
-    void deleteByIdAndAndDailyPlanner(final Long id, final DailyPlanner dailyPlanner);
+    Todo findByIdAndDailyPlanner(final Long id, final DailyPlanner dailyPlanner);
+    void deleteByIdAndDailyPlanner(final Long id, final DailyPlanner dailyPlanner);
     long countByCategory(final Category category);
 }

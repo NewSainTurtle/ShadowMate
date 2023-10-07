@@ -81,7 +81,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         }
         final DailyPlanner dailyPlanner = getDailyPlanner(user, updateDailyTodoRequest.getDate());
         final Category category = getCategory(user, updateDailyTodoRequest.getCategoryId());
-        final Todo todo = todoRepository.findByIdAndAndDailyPlanner(updateDailyTodoRequest.getTodoId(), dailyPlanner);
+        final Todo todo = todoRepository.findByIdAndDailyPlanner(updateDailyTodoRequest.getTodoId(), dailyPlanner);
         if (todo == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_TODO);
         }
@@ -101,7 +101,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Transactional
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
-        todoRepository.deleteByIdAndAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+        todoRepository.deleteByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
     }
 
     @Override
