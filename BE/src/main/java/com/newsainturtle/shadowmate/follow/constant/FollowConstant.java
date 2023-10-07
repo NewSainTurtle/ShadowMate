@@ -6,5 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FollowConstant {
 
+    public static final String SUCCESS_ADD_FOLLOW_PUBLIC = "팔로우 신청이 완료되었습니다.";
+    public static final String SUCCESS_ADD_FOLLOW_NONPUBLIC = "친구 신청이 완료되었습니다.";
     public static final String SUCCESS_GET_FOLLOWING_LIST = "팔로잉 목록 조회가 완료되었습니다.";
 }
