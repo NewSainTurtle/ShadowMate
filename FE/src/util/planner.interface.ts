@@ -13,10 +13,6 @@ export interface todoType {
   todoStatus: 0 | 1 | 2; // none, O, X
 }
 
-export interface todoListType extends todoType {
-  isPossible?: boolean;
-}
-
 /* --- Week Interfaces --- */
 
 export interface WeekTodoItemConfig {

@@ -2,24 +2,34 @@ import React, { useMemo, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
-import { todoListType, categoryType } from "@util/planner.interface";
+import { todoType, categoryType } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
 
+const TodoDataDefalut: todoType = {
+  todoId: -1,
+  categoryTitle: "",
+  categoryColorCode: "",
+  todoContent: "",
+  todoStatus: 0,
+};
+
 interface Props {
-  item: todoListType;
-  addTodo: boolean;
-  insertTodo: () => void;
-  updateTodo: (todo: todoListType) => void;
-  deleteTodo: (id: number) => void;
+  idx?: number;
+  item?: todoType;
+  addTodo?: boolean;
+  disable?: boolean;
+  todoModule: {
+    insertTodo: (props: todoType) => void;
+    updateTodo: (idx: number, props: todoType) => void;
+    deleteTodo: (idx: number) => void;
+  };
 }
 
-const TodoItem = ({ item, addTodo, insertTodo, updateTodo, deleteTodo }: Props) => {
-  const { todoId, categoryTitle, categoryColorCode, todoContent, todoStatus, isPossible } = item;
+const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModule }: Props) => {
+  const { categoryTitle, categoryColorCode, todoContent, todoStatus } = item;
+  const { insertTodo, updateTodo, deleteTodo } = todoModule;
   const [text, setText] = useState(todoContent);
-  const [state, setState] = useState(todoStatus);
-  const stateString = useMemo(() => {
-    return [" ", "O", "X"][state];
-  }, [state]);
+  const [state, setState] = useState<0 | 1 | 2>(todoStatus);
   const maxLenght = 50;
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +40,7 @@ const TodoItem = ({ item, addTodo, insertTodo, updateTodo, deleteTodo }: Props) 
   };
 
   const editState = () => {
-    if (isPossible) {
+    if (!(disable || addTodo)) {
       setState(state == 0 ? 1 : state == 1 ? 2 : 0);
       (document.activeElement as HTMLElement).blur();
     }
@@ -39,12 +49,14 @@ const TodoItem = ({ item, addTodo, insertTodo, updateTodo, deleteTodo }: Props) 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if (e.nativeEvent.isComposing) return;
-      (document.activeElement as HTMLElement).blur();
+      if (addTodo) {
+        if (text === "") return;
+        insertTodo({ ...TodoDataDefalut, todoContent: text });
+        setText("");
+      } else {
+        (document.activeElement as HTMLElement).blur();
+      }
     }
-  };
-
-  const handleOnAddTodo = (addTodo: boolean, possible: boolean | undefined) => {
-    if (addTodo && !possible) insertTodo();
   };
 
   const handleSaveTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,12 +66,11 @@ const TodoItem = ({ item, addTodo, insertTodo, updateTodo, deleteTodo }: Props) 
       todoContent: e.target.value,
       todoStatus: state,
     };
-    updateTodo(todo);
+    updateTodo(idx, { ...todo });
   };
 
   const removeTodo = () => {
-    if (text == "") return;
-    deleteTodo(todoId);
+    deleteTodo(idx);
     setText("");
     setState(0);
   };
@@ -79,38 +90,46 @@ const TodoItem = ({ item, addTodo, insertTodo, updateTodo, deleteTodo }: Props) 
     color: `${getTextColorByBackgroundColor(categoryColorCode)}`,
   };
 
+  const clicked = addTodo || !disable;
+
   return (
-    <div className={`${styles["todo-item"]} ${!isPossible && styles["todo-item--disable"]}`}>
-      <div className={`${styles["todo-item__category"]} ${addTodo && styles["todo-item__content-add"]}`}>
+    <div className={styles[`todo-item${disable ? "--disable" : ""}`]}>
+      <div className={styles[`todo-item__category${clicked ? "--add" : ""}`]}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle}>
-          {isPossible ? <Text>{categoryTitle}</Text> : addTodo && <AddOutlined />}
+          {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
         </div>
       </div>
-      <div
-        className={`${styles["todo-item__content"]} ${addTodo && styles["todo-item__content-add"]}`}
-        onClick={() => handleOnAddTodo(addTodo, isPossible)}
-      >
-        {isPossible ? (
+
+      <div className={styles[`todo-item__content${clicked ? "--add" : ""}`]}>
+        {disable ? (
+          addTodo && (
+            <span>
+              <AddOutlined />
+            </span>
+          )
+        ) : (
           <div className={styles["todo-item__content__possiable"]}>
             <input
-              defaultValue={todoContent}
+              value={text || todoContent}
               placeholder={"할 일을 입력하세요"}
               minLength={2}
               maxLength={maxLenght}
-              // onChange={editText}
-              onBlur={handleSaveTodo}
+              autoFocus={addTodo}
+              onChange={editText}
               onKeyDown={handleOnKeyPress}
+              onBlur={handleSaveTodo}
             />
-            <div onClick={removeTodo}>
-              <DeleteOutlined />
-            </div>
+            {!addTodo && (
+              <div onClick={removeTodo}>
+                <DeleteOutlined />
+              </div>
+            )}
           </div>
-        ) : (
-          addTodo && <AddOutlined />
         )}
       </div>
-      <div className={styles["todo-item__checked"]} onClick={editState}>
-        <Text types="semi-medium">{stateString}</Text>
+
+      <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={editState}>
+        <Text types="semi-medium">{[" ", "O", "X"][state || todoStatus]}</Text>
       </div>
     </div>
   );
