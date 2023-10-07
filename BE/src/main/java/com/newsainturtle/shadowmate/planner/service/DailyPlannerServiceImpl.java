@@ -3,12 +3,14 @@ package com.newsainturtle.shadowmate.planner.service;
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
+import com.newsainturtle.shadowmate.planner.entity.TimeTable;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepository;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final TodoRepository todoRepository;
     private final CategoryRepository categoryRepository;
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
+    private final TimeTableRepository timeTableRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
@@ -57,6 +62,14 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         return category;
     }
 
+    private Todo getTodo(final Long todoId, final DailyPlanner dailyPlanner) {
+        final Todo todo = todoRepository.findByIdAndAndDailyPlanner(todoId, dailyPlanner);
+        if (todo == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TODO);
+        }
+        return todo;
+    }
+
     @Override
     @Transactional
     public AddDailyTodoResponse addDailyTodo(final User user, final AddDailyTodoRequest addDailyTodoRequest) {
@@ -81,11 +94,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         }
         final DailyPlanner dailyPlanner = getDailyPlanner(user, updateDailyTodoRequest.getDate());
         final Category category = getCategory(user, updateDailyTodoRequest.getCategoryId());
-        final Todo todo = todoRepository.findByIdAndDailyPlanner(updateDailyTodoRequest.getTodoId(), dailyPlanner);
-        if (todo == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_TODO);
-        }
-
+        final Todo todo = getTodo(updateDailyTodoRequest.getTodoId(), dailyPlanner);
         final Todo changeTodo = Todo.builder()
                 .id(todo.getId())
                 .createTime(todo.getCreateTime())
@@ -205,5 +214,42 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, removeDailyLikeRequest.getAnotherUserId(),
                 removeDailyLikeRequest.getDate());
         dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user, dailyPlanner);
+    }
+
+    private LocalDateTime stringToLocalDateTime(String timeStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(timeStr, formatter);
+    }
+
+    private void checkValidDateTime(String date, LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDateTime localDateTime = stringToLocalDateTime(date + " 00:00");
+        if (endTime.isBefore(startTime)
+                || localDateTime.withHour(4).isAfter(startTime)
+                || localDateTime.plusDays(1).withHour(4).isBefore(endTime)) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TIME);
+        }
+    }
+
+    @Override
+    @Transactional
+    public AddTimeTableResponse addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
+        LocalDateTime startTime = stringToLocalDateTime(addTimeTableRequest.getStartTime());
+        LocalDateTime endTime = stringToLocalDateTime(addTimeTableRequest.getEndTime());
+        checkValidDateTime(addTimeTableRequest.getDate(), startTime, endTime);
+
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, addTimeTableRequest.getDate());
+        final Todo todo = getTodo(addTimeTableRequest.getTodoId(), dailyPlanner);
+
+        TimeTable timeTable = timeTableRepository.findByTodo(todo);
+        if (timeTable != null) {
+            throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE);
+        }
+        timeTable = TimeTable.builder()
+                .todo(todo)
+                .endTime(endTime)
+                .startTime(startTime)
+                .build();
+        TimeTable saveTimeTable = timeTableRepository.save(timeTable);
+        return AddTimeTableResponse.builder().timeTableId(saveTimeTable.getId()).build();
     }
 }

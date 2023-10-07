@@ -3,12 +3,14 @@ package com.newsainturtle.shadowmate.yn.planner;
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
+import com.newsainturtle.shadowmate.planner.entity.TimeTable;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepository;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
@@ -25,6 +27,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,6 +52,9 @@ public class DailyPlannerServiceTest {
 
     @Mock
     private DailyPlannerLikeRepository dailyPlannerLikeRepository;
+
+    @Mock
+    private TimeTableRepository timeTableRepository;
 
     final User user = User.builder()
             .id(1L)
@@ -614,6 +621,170 @@ public class DailyPlannerServiceTest {
                 verify(dailyPlannerRepository, times(1)).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
                 verify(dailyPlannerLikeRepository, times(1)).deleteByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             }
+        }
+    }
+
+    @Nested
+    class 타임테이블 {
+        final String date = "2023-10-06";
+        final String startTime = "2023-10-06 23:50";
+        final String endTime = "2023-10-07 01:30";
+        final Todo todo = Todo.builder()
+                .id(1L)
+                .category(null)
+                .todoContent("수능완성 수학 과목별 10문제")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build();
+        final TimeTable timeTable = TimeTable.builder()
+                .id(1L)
+                .todo(todo)
+                .startTime(stringToLocalDateTime(startTime))
+                .endTime(stringToLocalDateTime(endTime))
+                .build();
+
+        private LocalDateTime stringToLocalDateTime(String timeStr) {
+            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return LocalDateTime.parse(timeStr, formatter);
+        }
+
+        @Nested
+        class 타임테이블등록 {
+
+            @Test
+            public void 실패_잘못된시간값_끝시간이_시간시간보다_빠름() {
+                //given
+                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime("2023-10-06 14:10")
+                        .todoId(todo.getId())
+                        .build();
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME);
+            }
+
+            @Test
+            public void 실패_잘못된시간값_그날의시간에포함되지않음_과거() {
+                //given
+                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime("2023-10-06 03:50")
+                        .endTime(endTime)
+                        .todoId(todo.getId())
+                        .build();
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME);
+            }
+
+            @Test
+            public void 실패_잘못된시간값_그날의시간에포함되지않음_미래() {
+                //given
+                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime("2023-10-07 04:10")
+                        .todoId(todo.getId())
+                        .build();
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME);
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() {
+                //given
+                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(todo.getId())
+                        .build();
+                doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            public void 실패_유효하지않은할일() {
+                //given
+                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(todo.getId())
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(null).when(todoRepository).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
+            }
+
+            @Test
+            public void 실패_이미타임테이블시간이존재() {
+                //given
+                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(todo.getId())
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(todo).when(todoRepository).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                doReturn(timeTable).when(timeTableRepository).findByTodo(any(Todo.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE);
+            }
+
+            @Test
+            public void 성공() {
+                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(todo.getId())
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(todo).when(todoRepository).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                doReturn(null).when(timeTableRepository).findByTodo(any(Todo.class));
+                doReturn(timeTable).when(timeTableRepository).save(any(TimeTable.class));
+
+                //when
+                final AddTimeTableResponse addTimeTableResponse = dailyPlannerServiceImpl.addTimeTable(user, request);
+
+                //then
+                assertThat(addTimeTableResponse).isNotNull();
+                assertThat(addTimeTableResponse.getTimeTableId()).isEqualTo(timeTable.getId());
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                verify(todoRepository, times(1)).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                verify(timeTableRepository, times(1)).findByTodo(any(Todo.class));
+                verify(timeTableRepository, times(1)).save(any(TimeTable.class));
+            }
+
         }
     }
 }

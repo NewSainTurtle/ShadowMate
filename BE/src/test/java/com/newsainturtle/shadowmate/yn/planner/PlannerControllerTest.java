@@ -1933,4 +1933,295 @@ public class PlannerControllerTest {
             }
         }
     }
+  
+  @Nested
+    class 타임테이블 {
+        final String url = "/api/planners/{userId}/daily/timetables";
+        final String date = "2023-10-06";
+        final String startTime = "2023-10-06 23:50";
+        final String endTime = "2023-10-07 01:30";
+
+        @Nested
+        class 타임테이블등록 {
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식_date() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date("2023.10.06")
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식_startTime() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime("2023-10-06 23:59")
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식_endTime() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime("2023-10-0623:50")
+                        .todoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_date_null() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(null)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_startTime_null() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(null)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_endTime_null() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(null)
+                        .todoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_todoId_null() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_잘못된시간값() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은할일() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_이미타임테이블시간이존재() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                        .date(date)
+                        .startTime(startTime)
+                        .endTime(endTime)
+                        .todoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
+    }
 }
