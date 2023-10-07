@@ -7,6 +7,8 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
+import com.newsainturtle.shadowmate.follow.dto.AddFollowRequest;
+import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -31,6 +34,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -138,6 +142,82 @@ public class FollowControllerTest {
 
             }
         }
+    }
+    @Nested
+    class 팔로우신청TEST {
+        final String url = "/api/follow/{userId}/requested";
 
+        final Long userId = 2L;
+
+        final AddFollowRequest addFollowRequest = AddFollowRequest
+                .builder()
+                .followingId(userId)
+                .build();
+
+        @Test
+        public void 실패_팔로우신청_유저없음() throws Exception {
+            //given
+            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER)).when(followService).addFollow(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isNotFound());
+        }
+
+
+        @Test
+        public void 성공_팔로우신청_비공개() throws Exception {
+            //given
+            final AddFollowResponse addFollowResponse = AddFollowResponse
+                    .builder()
+                    .followId(1L)
+                    .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                    .build();
+            doReturn(addFollowResponse).when(followService).addFollow(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.plannerAccessScope")
+                            .value(equalTo(addFollowResponse.getPlannerAccessScope().toString())));
+
+        }
+
+        
+        @Test
+        public void 성공_팔로우신청_전체공개() throws Exception {
+            //given
+            final AddFollowResponse addFollowResponse = AddFollowResponse
+                    .builder()
+                    .followId(1L)
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .build();
+            doReturn(addFollowResponse).when(followService).addFollow(any(), any());
+            
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+            
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.plannerAccessScope")
+                            .value(equalTo(addFollowResponse.getPlannerAccessScope().toString())));
+        }
+        
     }
 }
