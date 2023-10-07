@@ -26,8 +26,11 @@ public class FollowServiceImpl implements FollowService {
         List<Follow> followingList = followRepository.findAllByFollowerId(user);
         return followingList.stream()
                 .map(follow -> FollowingResponse.builder()
-                        .followingId(follow.getFollowingId())
-                        .followerId(follow.getFollowerId())
+                        .followId(follow.getId())
+                        .email(follow.getFollowingId().getEmail())
+                        .nickname(follow.getFollowingId().getNickname())
+                        .profileImage(follow.getFollowingId().getProfileImage())
+                        .followingId(follow.getFollowingId().getId())
                         .build()).collect(Collectors.toList());
     }
 }

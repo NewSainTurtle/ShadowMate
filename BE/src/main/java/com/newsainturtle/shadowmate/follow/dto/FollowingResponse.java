@@ -8,7 +8,20 @@ import lombok.Getter;
 @Builder
 public class FollowingResponse {
 
-    private User followerId;
+    private Long followId;
 
-    private User followingId;
+    private String email;
+
+    private String nickname;
+
+    private String profileImage;
+
+    private Long followingId;
 }
+/*
+"followId" : 1,
+"email": String,
+"nickname": String,
+"profileImage" : String,
+"followingId" : 2,
+ */
