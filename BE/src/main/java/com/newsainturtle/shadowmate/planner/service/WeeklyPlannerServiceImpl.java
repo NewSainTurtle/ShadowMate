@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.UpdateWeeklyTodoContentRequest;
 import com.newsainturtle.shadowmate.planner.entity.Weekly;
 import com.newsainturtle.shadowmate.planner.entity.WeeklyTodo;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -24,17 +25,17 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
     private final WeeklyRepository weeklyRepository;
     private final WeeklyTodoRepository weeklyTodoRepository;
 
-    private Weekly getOrCreateWeeklyPlanner(final User user, final String startDate, final String endDate) {
-        Date startDay = Date.valueOf(startDate);
-        Date endDay = Date.valueOf(endDate);
-        if (startDay.getDay() != 1 || Period.between(startDay.toLocalDate(), endDay.toLocalDate()).getDays() != 6) {
+    private Weekly getOrCreateWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
+        Date startDate = Date.valueOf(startDateStr);
+        Date endDate = Date.valueOf(endDateStr);
+        if (startDate.getDay() != 1 || Period.between(startDate.toLocalDate(), endDate.toLocalDate()).getDays() != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
-        Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDay, endDay);
+        Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDate, endDate);
         if (weekly == null) {
             weekly = weeklyRepository.save(Weekly.builder()
-                    .startDay(startDay)
-                    .endDay(endDay)
+                    .startDay(startDate)
+                    .endDay(endDate)
                     .user(user)
                     .build());
         }
@@ -51,5 +52,23 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
                 .weeklyTodoStatus(false)
                 .build());
         return AddWeeklyTodoResponse.builder().weeklyTodoId(weeklyTodo.getId()).build();
+    }
+
+    @Override
+    @Transactional
+    public void updateWeeklyTodoContent(final User user, final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest) {
+        final Weekly weekly = getOrCreateWeeklyPlanner(user, updateWeeklyTodoContentRequest.getStartDate(), updateWeeklyTodoContentRequest.getEndDate());
+        final WeeklyTodo weeklyTodo = weeklyTodoRepository.findByIdAndWeekly(updateWeeklyTodoContentRequest.getWeeklyTodoId(), weekly);
+        if (weeklyTodo == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TODO);
+        }
+        final WeeklyTodo changeWeeklyTodo = WeeklyTodo.builder()
+                .id(weeklyTodo.getId())
+                .createTime(weeklyTodo.getCreateTime())
+                .weekly(weeklyTodo.getWeekly())
+                .weeklyTodoContent(updateWeeklyTodoContentRequest.getWeeklyTodoContent())
+                .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
+                .build();
+        weeklyTodoRepository.save(changeWeeklyTodo);
     }
 }
