@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 public class TimeTable extends CommonEntity {
 
     @Column(name = "start_time")
-    LocalDateTime startTime;
+    private LocalDateTime startTime;
 
     @Column(name = "end_time")
-    LocalDateTime endTime;
+    private LocalDateTime endTime;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
