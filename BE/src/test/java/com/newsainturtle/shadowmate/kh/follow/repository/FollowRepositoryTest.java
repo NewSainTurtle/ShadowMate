@@ -1,4 +1,4 @@
-package com.newsainturtle.shadowmate.kh.follow;
+package com.newsainturtle.shadowmate.kh.follow.repository;
 
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
@@ -28,25 +28,30 @@ public class FollowRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    final User user1 = User.builder()
+            .email("test1@test.com")
+            .password("123456")
+            .socialLogin(SocialType.BASIC)
+            .nickname("거북이1")
+            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .withdrawal(false)
+            .build();
+
+    final User user2 = User.builder()
+            .email("test2@test.com")
+            .password("123456")
+            .socialLogin(SocialType.BASIC)
+            .nickname("거북이2")
+            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .withdrawal(false)
+            .build();
+
+
 
     @BeforeEach
     public void init() {
-        userRepository.save(User.builder()
-                .email("test1@naver.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이1")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build());
-        userRepository.save(User.builder()
-                .email("test2@naver.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이2")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build());
+        userRepository.save(user1);
+        userRepository.save(user2);
     }
 
     @Nested
@@ -56,7 +61,6 @@ public class FollowRepositoryTest {
         @DisplayName("팔로잉 NULL 조회")
         void 실패_팔로잉조회_NULL() {
             //given
-            final Long userId = 1L;
             final User user = userRepository.findByEmail("test1234@naver.com");
 
             //when
@@ -69,8 +73,8 @@ public class FollowRepositoryTest {
         @Test
         void 성공_팔로잉조회() {
             //given
-            final Long userId = 1L;
-            final User user1 = userRepository.findByEmail("test1@naver.com");        final User user2 = userRepository.findByEmail("test2@naver.com");
+            final User user1 = userRepository.findByEmail("test1@test.com");
+            final User user2 = userRepository.findByEmail("test2@test.com");
             followRepository.save(Follow.builder()
                     .followerId(user1)
                     .followingId(user2)
@@ -83,5 +87,26 @@ public class FollowRepositoryTest {
             assertThat(followingList.get(0).getFollowingId().getId()).isEqualTo(user2.getId());
 
         }
+    }
+
+    @Nested
+    class 팔로우신청TEST {
+
+        @Test
+        public void 성공_팔로우신청_전체공개() {
+            //given
+            followRepository.save(Follow.builder()
+                    .followerId(user1)
+                    .followingId(user2)
+                    .build());
+
+            //when
+            final List<Follow> followingList = followRepository.findAllByFollowerId(user1);
+
+            //then
+            assertThat(followingList.get(0).getFollowerId()).isEqualTo(user1);
+            assertThat(followingList.get(0).getFollowingId()).isEqualTo(user2);
+        }
+
     }
 }
