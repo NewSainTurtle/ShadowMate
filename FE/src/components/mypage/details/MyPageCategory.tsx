@@ -4,8 +4,6 @@ import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CategoryColorList from "../item/CategoryColorList";
 import { categoryType } from "@util/planner.interface";
-import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import { ClickAwayListener } from "@mui/material";
 import { CATEGORY_COLORS } from "@util/data/CategoryData";
 
 interface Props {
