@@ -35,19 +35,31 @@ const MyPageFrame = ({ title }: Props) => {
   const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
 
-  const nextId = useRef(categoryList.length);
+  const category_nextId = useRef(categoryList.length);
+  const dday_nextId = useRef(ddayList.length);
 
-  const handleAdd = () => {
-    const newCategory: categoryType = {
-      categoryId: nextId.current,
-      categoryTitle: "새 카테고리",
-      categoryEmoticon: "",
-      categoryColorCode: "#B6DEF7",
-    };
-    setCategoryList([...categoryList, newCategory]);
-    setCategoryInput(newCategory);
-    setCategoryClick(categoryList.length);
-    nextId.current += 1;
+  const handleAdd = (title: string) => {
+    if (title === "카테고리") {
+      const newCategory: categoryType = {
+        categoryId: category_nextId.current,
+        categoryTitle: "새 카테고리",
+        categoryEmoticon: "",
+        categoryColorCode: "#B6DEF7",
+      };
+      setCategoryList([...categoryList, newCategory]);
+      setCategoryInput(newCategory);
+      setCategoryClick(categoryList.length);
+      category_nextId.current += 1;
+    } else {
+      const newDday: ddayType = {
+        ddayId: dday_nextId.current,
+        ddayTitle: "새 디데이",
+        ddayDate: new Date(),
+      };
+      setDdayList([...ddayList, newDday]);
+      setDdayClick(ddayList.length);
+      dday_nextId.current += 1;
+    }
   };
 
   const handleSave = () => {

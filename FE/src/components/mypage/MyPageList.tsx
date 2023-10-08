@@ -5,7 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 interface Props {
   children: ReactNode;
-  handleAdd: () => void;
+  handleAdd: (title: string) => void;
   title: string;
 }
 
@@ -21,7 +21,7 @@ const MyPageList = ({ children, handleAdd, title }: Props) => {
       </div>
       {children}
       <div className={styles["frame__button"]}>
-        <div className={styles["frame__button--add"]} onClick={handleAdd}>
+        <div className={styles["frame__button--add"]} onClick={() => handleAdd(title)}>
           <AddIcon />
           <Text>새 {title}</Text>
         </div>

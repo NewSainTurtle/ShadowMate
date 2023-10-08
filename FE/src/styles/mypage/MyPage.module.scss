@@ -168,7 +168,7 @@ $color-warning: var(--color-warning);
 }
 
 .dday {
-  &-item {
+  &__item {
     display: grid;
     grid-template-columns: 7fr 3fr;
     align-items: center;
@@ -190,7 +190,7 @@ $color-warning: var(--color-warning);
     }
 
     &--clicked {
-      @extend .dday-item;
+      @extend .dday__item;
       background-color: $color-gray-1;
     }
   }
