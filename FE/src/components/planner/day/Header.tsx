@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
 import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
-import { NavigateBefore, NavigateNext, FiberManualRecord } from "@mui/icons-material";
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { todoData_friend } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
@@ -31,7 +31,7 @@ const HeaderDate = ({ date, moveDate }: HeaderDateType) => {
             <NavigateBefore />
           </div>
           <div onClick={() => moveDate(0)}>
-            <FiberManualRecord />
+            <Text bold>today</Text>
           </div>
           <div onClick={() => moveDate(1)}>
             <NavigateNext />
