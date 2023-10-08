@@ -118,6 +118,15 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE, dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest)));
     }
 
+    @DeleteMapping("/{userId}/daily/timetables")
+    public ResponseEntity<BaseResponse> removeTimeTable(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                        @PathVariable("userId") final Long userId,
+                                                        @RequestBody @Valid final RemoveTimeTableRequest removeTimeTableRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.removeTimeTable(principalDetails.getUser(), removeTimeTableRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_TIME_TABLE));
+    }
+
     @PostMapping("/{userId}/weekly/todos")
     public ResponseEntity<BaseResponse> addWeeklyTodo(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                       @PathVariable("userId") final Long userId,
