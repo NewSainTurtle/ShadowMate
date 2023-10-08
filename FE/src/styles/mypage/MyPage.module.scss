@@ -249,3 +249,86 @@ $color-warning: var(--color-warning);
     margin-left: 1em;
   }
 }
+
+.info {
+  &__cantainer {
+    display: grid;
+    height: 100%;
+    grid-template-rows: 1fr min-content;
+    padding: 0em 1em;
+    box-sizing: border-box;
+  }
+
+  &__contents {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 3em;
+    padding: 0.5em 0em 2em 0em;
+    box-sizing: border-box;
+
+    > :last-child {
+      color: $color-warning;
+      > span {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__line {
+    display: grid;
+    grid-template-columns: 2fr 8fr;
+    column-gap: 5em;
+    align-items: center;
+
+    > div:nth-child(1) {
+      height: 100%;
+      padding-top: 0.5em;
+      box-sizing: border-box;
+    }
+  }
+
+  &__button {
+    @extend .frame__button;
+    position: static;
+
+    &--save {
+      @extend .frame__button--save;
+    }
+  }
+
+  &__profile {
+    &--nickname {
+      display: flex;
+      width: 100%;
+      gap: 0.1em;
+      align-items: baseline;
+
+      > :nth-child(2) {
+        width: 20%;
+      }
+    }
+
+    &--img {
+      > input[type="file"] {
+        display: none;
+      }
+
+      > label {
+        display: inline-block;
+        > :nth-child(1) {
+          width: 60px;
+          height: 60px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    &--password {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+  }
+}
