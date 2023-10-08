@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "../MyPage.module.scss";
+import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { Stack } from "@mui/material";
 import { SwitchButton } from "@components/common/Header/Toggle";

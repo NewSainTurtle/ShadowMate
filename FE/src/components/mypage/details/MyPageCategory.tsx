@@ -1,31 +1,73 @@
-import React from "react";
-import styles from "../MyPage.module.scss";
+import React, { ChangeEvent, ChangeEventHandler, Dispatch, SetStateAction, useEffect, useState } from "react";
+import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import { CategoryConfig } from "../MyPageFrame";
+import CategoryColorList from "../item/CategoryColorList";
+import { categoryType } from "@util/planner.interface";
+import { CATEGORY_COLORS } from "@util/data/CategoryData";
 
 interface Props {
   click: number;
-  categoryList: CategoryConfig[];
+  categoryList: categoryType[];
+  input: categoryType;
+  setInput: Dispatch<SetStateAction<categoryType>>;
+  colorClick: number;
+  setColorClick: Dispatch<SetStateAction<number>>;
 }
 
-const MyPageCategory = ({ click, categoryList }: Props) => {
+const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setColorClick }: Props) => {
+  const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = input;
+
+  const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    if (name === "categoryEmoticon") {
+      if (value.length > 2) return;
+      if (value !== "" && !value.match("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+")) {
+        return;
+      }
+    }
+    setInput({ ...input, [name]: value });
+  };
+
+  useEffect(() => {
+    let currentColor: number = 0;
+    CATEGORY_COLORS.map((item, idx) => {
+      if (item === categoryList[click].categoryColorCode) currentColor = idx;
+    });
+    setColorClick(currentColor);
+    setInput(categoryList[click]);
+  }, [click, categoryList]);
+
   return (
     <div className={styles["frame__contents"]}>
       <div className={styles["frame__line"]}>
         <Text>카테고리 이름</Text>
-        <Input name="title" value={categoryList[click].title} placeholder="카테고리 이름을 입력하세요." />
+        <Input
+          name="categoryTitle"
+          value={categoryTitle}
+          placeholder="카테고리 이름을 입력하세요."
+          onChange={onChangeInput}
+        />
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 이모지</Text>
         <Input
-          name="emoticon"
-          value={categoryList[click].emoticon}
-          placeholder="카테고리 이모지(맥, 윈도우 단축키  설명 넣기)"
+          name="categoryEmoticon"
+          value={categoryEmoticon}
+          placeholder="카테고리 이모지"
+          onChange={onChangeInput}
+          helperText={
+            // <>
+            //   윈도우 사용 시 윈도우키 + . 를 눌러보세요.
+            //   <br /> 맥 사용 시 Fn + E 를 눌러보세요.
+            // </>
+            <>이모지 외 사용이 불가능합니다.</>
+          }
         />
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 색상</Text>
+        <CategoryColorList click={colorClick} setClick={setColorClick} />
       </div>
     </div>
   );

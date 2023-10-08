@@ -1,10 +1,11 @@
 import React, { ReactNode } from "react";
-import styles from "./MyPage.module.scss";
+import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import AddIcon from "@mui/icons-material/Add";
 
 interface Props {
   children: ReactNode;
+  handleAdd: () => void;
   title: string;
 }
 
@@ -12,7 +13,7 @@ interface Props {
  * MyPage - 다이어리, 디데이 설정 중 왼쪽 사이드
  */
 
-const MyPageList = ({ children, title }: Props) => {
+const MyPageList = ({ children, handleAdd, title }: Props) => {
   return (
     <div className={styles["frame__container"]}>
       <div className={styles["frame__title"]}>
@@ -20,8 +21,10 @@ const MyPageList = ({ children, title }: Props) => {
       </div>
       {children}
       <div className={styles["frame__button"]}>
-        <AddIcon />
-        <Text>새 {title}</Text>
+        <div className={styles["frame__button--add"]} onClick={handleAdd}>
+          <AddIcon />
+          <Text>새 {title}</Text>
+        </div>
       </div>
     </div>
   );

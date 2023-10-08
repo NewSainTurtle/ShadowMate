@@ -1,60 +1,101 @@
-import React, { useState } from "react";
-import styles from "./MyPage.module.scss";
+import React, { useEffect, useRef, useState } from "react";
+import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageCategoryItem from "./item/MyPageCategoryItem";
 import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/MyPageCategory";
 import MyPageDday from "./details/MyPageDday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
+import { categoryType, ddayType } from "@util/planner.interface";
+import { CATEGORY_LIST, CATEGORY_COLORS } from "@util/data/CategoryData";
+import { DDAY_LIST } from "@util/data/DdayData";
 
 interface Props {
   title: string;
 }
 
-export interface CategoryConfig {
-  title: string;
-  emoticon?: string;
-  colorCode?: string;
-}
-
-export interface DdayConfig {
-  title: string;
-  date?: string;
-}
-
 export interface EditInfoConfig {
   type: string;
-  info: CategoryConfig | DdayConfig | null;
+  info: categoryType | ddayType | null;
   clicked: number;
 }
 
 const MyPageFrame = ({ title }: Props) => {
-  const [categoryList, setCategoryList] = useState<CategoryConfig[]>([
-    { title: "국어", emoticon: "📕", colorCode: "#F1607D" },
-    { title: "수학", emoticon: "📗", colorCode: "#637F69" },
-    { title: "영어", emoticon: "📒", colorCode: "#F1FCAD" },
-    { title: "생물", emoticon: "", colorCode: "#B6DEF7" },
-  ]);
-  const [ddayList, setDdayList] = useState<DdayConfig[]>([
-    { title: "목표일이 남았을 때", date: "2023.07.22(토)" },
-    { title: "목표일이 당일일 때", date: "2023.07.20(목)" },
-    { title: "목표일이 지났을 때", date: "2023.07.17(월)" },
-  ]);
+  const [categoryList, setCategoryList] = useState<categoryType[]>(CATEGORY_LIST);
+  const [categoryInput, setCategoryInput] = useState<categoryType>({
+    categoryId: 0,
+    categoryTitle: categoryList[0].categoryTitle,
+    categoryEmoticon: categoryList[0].categoryEmoticon,
+    categoryColorCode: categoryList[0].categoryColorCode,
+  });
   const [categoryClick, setCategoryClick] = useState<number>(0);
+  const [colorClick, setColorClick] = useState<number>(0);
+  const [isDisable, setIsDisable] = useState<boolean>(false);
+
+  const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
+
+  const nextId = useRef(categoryList.length);
+
+  const handleAdd = () => {
+    const newCategory: categoryType = {
+      categoryId: nextId.current,
+      categoryTitle: "새 카테고리",
+      categoryEmoticon: "",
+      categoryColorCode: "#B6DEF7",
+    };
+    setCategoryList([...categoryList, newCategory]);
+    setCategoryInput(newCategory);
+    setCategoryClick(categoryList.length);
+    nextId.current += 1;
+  };
+
+  const handleSave = () => {
+    setCategoryList(
+      categoryList.map((item, idx) => {
+        if (categoryInput.categoryId == item.categoryId) {
+          return {
+            ...item,
+            categoryId: categoryInput.categoryId,
+            categoryTitle: categoryInput.categoryTitle,
+            categoryEmoticon: categoryInput.categoryEmoticon,
+            categoryColorCode: CATEGORY_COLORS[colorClick],
+          };
+        }
+        return item;
+      }),
+    );
+  };
+
+  const handleDelete = () => {
+    if (isDisable) return;
+    setCategoryList(
+      categoryList.filter((item, idx) => {
+        return idx !== categoryClick;
+      }),
+    );
+    // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
+    setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
+  };
+
+  useEffect(() => {
+    // 카테고리 항목이 1개 남은 경우, 삭제 불가
+    if (categoryList.length <= 1) setIsDisable(true);
+    else setIsDisable(false);
+  }, [categoryList]);
 
   return (
     <div className={styles["frame"]}>
-      <MyPageList title={title}>
+      <MyPageList handleAdd={handleAdd} title={title}>
         {
           {
             카테고리: (
               <>
-                {categoryList.map((item, key) => (
+                {categoryList.map((item, idx) => (
                   <MyPageCategoryItem
-                    key={key}
+                    key={item.categoryId}
+                    index={idx}
                     item={item}
-                    index={key}
                     click={categoryClick}
                     setClick={setCategoryClick}
                   />
@@ -71,10 +112,19 @@ const MyPageFrame = ({ title }: Props) => {
           }[title]
         }
       </MyPageList>
-      <MyPageDetail>
+      <MyPageDetail isDisable={isDisable} handleSave={handleSave} handleDelete={handleDelete}>
         {
           {
-            카테고리: <MyPageCategory click={categoryClick} categoryList={categoryList} />,
+            카테고리: (
+              <MyPageCategory
+                click={categoryClick}
+                categoryList={categoryList}
+                input={categoryInput}
+                setInput={setCategoryInput}
+                colorClick={colorClick}
+                setColorClick={setColorClick}
+              />
+            ),
             디데이: <MyPageDday click={ddayClick} ddayList={ddayList} />,
           }[title]
         }

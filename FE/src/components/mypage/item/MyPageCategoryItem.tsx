@@ -1,23 +1,22 @@
-import React, { Dispatch, SetStateAction } from "react";
-import styles from "../MyPage.module.scss";
-import { CategoryConfig } from "../MyPageFrame";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
+import styles from "@styles/mypage/MyPage.module.scss";
+import { categoryType } from "@util/planner.interface";
 
 interface Props {
-  item: CategoryConfig;
+  item: categoryType;
   index: number;
   click: number;
   setClick: Dispatch<SetStateAction<number>>;
 }
 
 const MyPageCategoryItem = ({ item, index, click, setClick }: Props) => {
+  const clicked = click === index ? "--clicked" : "";
+
   return (
-    <div
-      className={click === index ? styles["category-item--clicked"] : styles["category-item"]}
-      onClick={() => setClick(index)}
-    >
-      <div>{item.emoticon}</div>
-      <div>{item.title}</div>
-      <div style={{ backgroundColor: item.colorCode }}></div>
+    <div className={styles[`category__item${clicked}`]} onClick={() => setClick(index)}>
+      <div>{item.categoryEmoticon}</div>
+      <div>{item.categoryTitle}</div>
+      <div style={{ backgroundColor: item.categoryColorCode }}></div>
     </div>
   );
 };

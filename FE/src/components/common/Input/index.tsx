@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import styles from "@styles/common/Input.module.scss";
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { Visibility, VisibilityOff, Search } from "@mui/icons-material";
@@ -9,6 +9,7 @@ type Props = {
   types: "default" | "password" | "search";
   value?: string | number;
   disabled?: boolean;
+  helperText?: string | ReactNode;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onKeyPress?: React.KeyboardEventHandler<HTMLInputElement>;
 };

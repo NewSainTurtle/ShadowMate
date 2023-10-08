@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "@components/mypage/MyPage.module.scss";
+import styles from "@styles/mypage/MyPage.module.scss";
 import Profile from "@components/common/Profile";
 import { profileInfo } from "./commonPage";
 import MyPageTab from "@components/mypage/MyPageTab";

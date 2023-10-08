@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import styles from "../MyPage.module.scss";
+import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import { DdayConfig } from "../MyPageFrame";
+import { ddayType } from "@util/planner.interface";
 
 interface Props {
   click: number;
-  ddayList: DdayConfig[];
+  ddayList: ddayType[];
 }
 
 const MyPageDday = ({ click, ddayList }: Props) => {
-  const [title, setTitle] = useState<string>(ddayList[click].title);
+  const [title, setTitle] = useState<string>(ddayList[click].ddayTitle);
 
   useEffect(() => {
-    setTitle(ddayList[click].title);
+    setTitle(ddayList[click].ddayTitle);
   }, [click]);
 
   return (
