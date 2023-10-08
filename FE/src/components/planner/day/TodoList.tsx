@@ -6,7 +6,6 @@ import { todoData_list } from "@util/data/DayTodos";
 
 const TodoList = () => {
   const [todos, setTodos] = useState<todoType[]>(todoData_list);
-  // const [isAddIconView, setIsAddIconView] = useState(todos.length != 0);
   const todoListSize = useMemo(() => {
     return todos.length + 1 >= 12 ? todos.length + 1 : 12;
   }, [todos]);
@@ -49,7 +48,7 @@ const TodoList = () => {
       style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/12)` }}
     >
       {todos.map((todo, idx) => (
-        <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
+        <TodoItem key={idx} idx={idx} item={todo} todoModule={todoModule} />
       ))}
       <TodoItem addTodo todoModule={todoModule} />
       {[...Array(11 - todos.length)].map((item, idx) => (
