@@ -33,14 +33,9 @@ public class FollowController {
     @PostMapping("/{userId}/requested")
     public ResponseEntity<BaseResponse> addFollow(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                   @PathVariable("userId") final Long userId,
-                                                  final AddFollowRequest addFollowRequest) {
+                                                  @RequestBody final AddFollowRequest addFollowRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
         AddFollowResponse addFollowResponse = followService.addFollow(principalDetails.getUser(), addFollowRequest.getFollowingId());
-        if(addFollowResponse.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
-            return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW_PUBLIC, addFollowResponse));
-        }
-        else {
-            return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW_NONPUBLIC, addFollowResponse));
-        }
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW, addFollowResponse));
     }
 }
