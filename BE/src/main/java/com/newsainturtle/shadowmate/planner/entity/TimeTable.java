@@ -23,7 +23,10 @@ public class TimeTable extends CommonEntity {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "todo_id")
+    @OneToOne(mappedBy = "timeTable")
     private Todo todo;
+
+    public void setTodo(Todo todo){
+        this.todo = todo;
+    }
 }
