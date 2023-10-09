@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.follow.dto;
 
-import com.newsainturtle.shadowmate.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,10 +17,3 @@ public class FollowingResponse {
 
     private Long followingId;
 }
-/*
-"followId" : 1,
-"email": String,
-"nickname": String,
-"profileImage" : String,
-"followingId" : 2,
- */
