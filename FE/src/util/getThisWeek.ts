@@ -17,9 +17,10 @@ interface Props {
   date: string | number | Date | dayjs.Dayjs;
 }
 
+const dayOfWeekList = ["일", "월", "화", "수", "목", "금", "토"];
+
 export const getThisWeek = ({ date }: Props) => {
   const inputDate = dayjs(date).toDate();
-  const dayOfWeekList = ["월", "화", "수", "목", "금", "토", "일"];
   let weekInfo: DayInfoConfig[] = [];
 
   const theYear = inputDate.getFullYear();
@@ -37,7 +38,7 @@ export const getThisWeek = ({ date }: Props) => {
       year,
       month,
       day,
-      dayOfWeek: dayOfWeekList[i - 1],
+      dayOfWeek: dayOfWeekList[i],
     };
   }
 
@@ -57,4 +58,9 @@ export const getThisWeekCnt = ({ date }: Props) => {
   };
 
   return week;
+};
+
+export const dateFormat = (dateInfo: Date | string) => {
+  const date = new Date(dateInfo);
+  return dayjs(date).format("YYYY.MM.DD") + "(" + dayOfWeekList[date.getDay()] + ")";
 };
