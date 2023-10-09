@@ -1157,32 +1157,10 @@ public class PlannerControllerTest {
         class 좋아요등록 {
 
             @Test
-            public void 실패_없는사용자() throws Exception {
-                //given
-                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
-                        .date("2023-09-28")
-                        .anotherUserId(1L)
-                        .build();
-
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addDailyLikeRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isForbidden());
-            }
-
-            @Test
             public void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023.09.28")
-                        .anotherUserId(1L)
                         .build();
 
                 //when
@@ -1201,26 +1179,6 @@ public class PlannerControllerTest {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date(null)
-                        .anotherUserId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addDailyLikeRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            public void 실패_ID_Null() throws Exception {
-                //given
-                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
-                        .date("2023-09-28")
-                        .anotherUserId(null)
                         .build();
 
                 //when
@@ -1239,10 +1197,29 @@ public class PlannerControllerTest {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
-                        .anotherUserId(1L)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은사용자() throws Exception {
+                //given
+                final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1260,10 +1237,9 @@ public class PlannerControllerTest {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
-                        .anotherUserId(1L)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1281,10 +1257,9 @@ public class PlannerControllerTest {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
-                        .anotherUserId(1L)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1302,7 +1277,6 @@ public class PlannerControllerTest {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
-                        .anotherUserId(1L)
                         .build();
 
                 //when
@@ -1322,32 +1296,10 @@ public class PlannerControllerTest {
         class 좋아요취소 {
 
             @Test
-            public void 실패_없는사용자() throws Exception {
-                //given
-                final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
-                        .date("2023-09-28")
-                        .anotherUserId(1L)
-                        .build();
-
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeDailyLikeRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isForbidden());
-            }
-
-            @Test
             public void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023.09.28")
-                        .anotherUserId(1L)
                         .build();
 
                 //when
@@ -1366,26 +1318,6 @@ public class PlannerControllerTest {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date(null)
-                        .anotherUserId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeDailyLikeRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            public void 실패_ID_Null() throws Exception {
-                //given
-                final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
-                        .date("2023-09-28")
-                        .anotherUserId(null)
                         .build();
 
                 //when
@@ -1404,10 +1336,29 @@ public class PlannerControllerTest {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023-09-28")
-                        .anotherUserId(1L)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(RemoveDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyLikeRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은사용자() throws Exception {
+                //given
+                final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
+                        .date("2023-09-28")
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1425,10 +1376,9 @@ public class PlannerControllerTest {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023-09-28")
-                        .anotherUserId(1L)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(RemoveDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1446,7 +1396,6 @@ public class PlannerControllerTest {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023-09-28")
-                        .anotherUserId(1L)
                         .build();
 
                 //when
