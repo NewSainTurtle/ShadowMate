@@ -21,6 +21,7 @@ export interface EditInfoConfig {
 }
 
 const MyPageFrame = ({ title }: Props) => {
+  /* 카테고리 관련 변수 */
   const [categoryList, setCategoryList] = useState<categoryType[]>(CATEGORY_LIST);
   const [categoryInput, setCategoryInput] = useState<categoryType>({
     categoryId: 0,
@@ -30,8 +31,9 @@ const MyPageFrame = ({ title }: Props) => {
   });
   const [categoryClick, setCategoryClick] = useState<number>(0);
   const [colorClick, setColorClick] = useState<number>(0);
-  const [isDisable, setIsDisable] = useState<boolean>(false);
+  const category_nextId = useRef(categoryList.length);
 
+  /* 디데이 관련 변수 */
   const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
   const [ddayInput, setDdayInput] = useState<ddayType>({
@@ -40,9 +42,10 @@ const MyPageFrame = ({ title }: Props) => {
     ddayDate: ddayList[0].ddayDate,
   });
   const [ddayError, setDdayError] = useState<boolean>(false);
-
-  const category_nextId = useRef(categoryList.length);
   const dday_nextId = useRef(ddayList.length);
+
+  /* 공통 사용 변수 */
+  const [isDisable, setIsDisable] = useState<boolean>(false);
 
   const handleAdd = (title: string) => {
     if (title === "카테고리") {
@@ -116,15 +119,21 @@ const MyPageFrame = ({ title }: Props) => {
       // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
       setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
     } else {
-      //...
+      setDdayList(
+        ddayList.filter((item, idx) => {
+          return idx !== ddayClick;
+        }),
+      );
+      setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1);
     }
   };
 
   useEffect(() => {
-    // 카테고리 항목이 1개 남은 경우, 삭제 불가
-    if (categoryList.length <= 1) setIsDisable(true);
+    // 카테고리 및 디데이 항목이 1개 남은 경우, 삭제 불가
+    if (title === "카테고리" && categoryList.length <= 1) setIsDisable(true);
+    else if (title === "디데이" && ddayList.length <= 1) setIsDisable(true);
     else setIsDisable(false);
-  }, [categoryList]);
+  }, [title, categoryList, ddayList]);
 
   return (
     <div className={styles["frame"]}>

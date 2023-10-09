@@ -23,7 +23,7 @@ const MyPageDday = ({ click, ddayList, input, setInput, error }: Props) => {
 
   useEffect(() => {
     setInput(ddayList[click]);
-  }, [click]);
+  }, [click, ddayList]);
 
   return (
     <div className={styles["frame__contents"]}>
