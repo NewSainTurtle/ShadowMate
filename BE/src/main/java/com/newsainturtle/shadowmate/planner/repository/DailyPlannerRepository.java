@@ -10,5 +10,4 @@ import java.sql.Date;
 @Repository
 public interface DailyPlannerRepository extends JpaRepository<DailyPlanner, Long> {
     DailyPlanner findByUserAndDailyPlannerDay(final User user, final Date DailyPlannerDay);
-    DailyPlanner findByUserIdAndDailyPlannerDay(final Long userId, final Date DailyPlannerDay);
 }
