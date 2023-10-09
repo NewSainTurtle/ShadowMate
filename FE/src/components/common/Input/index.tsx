@@ -2,6 +2,7 @@ import React, { ReactNode, useState } from "react";
 import styles from "@styles/common/Input.module.scss";
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { Visibility, VisibilityOff, Search } from "@mui/icons-material";
+import colors from "@util/colors";
 
 type Props = {
   name: string;
@@ -21,8 +22,13 @@ const Input = ({ types, ...rest }: Props) => {
 
   return (
     <TextField
-      className={styles.input}
+      className={styles["input"]}
       type={types == "password" && !showPassword ? "password" : "text"}
+      sx={{
+        "& .MuiInputBase-input.Mui-disabled": {
+          WebkitTextFillColor: colors.colorGray_Light_4,
+        },
+      }}
       InputProps={
         types == "password"
           ? {
@@ -44,6 +50,9 @@ const Input = ({ types, ...rest }: Props) => {
             }
           : {}
       }
+      FormHelperTextProps={{
+        className: styles["input__helper-text"],
+      }}
       {...rest}
       variant="standard"
     />
