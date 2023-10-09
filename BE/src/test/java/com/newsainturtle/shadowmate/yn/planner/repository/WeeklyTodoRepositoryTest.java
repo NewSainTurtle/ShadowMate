@@ -94,8 +94,36 @@ public class WeeklyTodoRepositoryTest {
         //then
         assertThat(changeWeeklyTodo).isNotNull();
         assertThat(changeWeeklyTodo.getWeekly()).isEqualTo(weeklyTodo.getWeekly());
-        assertThat(changeWeeklyTodo.getWeeklyTodoStatus()).isEqualTo(weeklyTodo.getWeeklyTodoStatus());
+        assertThat(changeWeeklyTodo.getWeeklyTodoStatus()).isFalse();
         assertThat(changeWeeklyTodo.getWeeklyTodoContent()).isEqualTo("자기소개서 첨삭하기");
+        assertThat(changeWeeklyTodo.getCreateTime()).isNotEqualTo(changeWeeklyTodo.getUpdateTime());
+    }
+
+    @Test
+    public void 주차별할일상태수정() {
+        //given
+        final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
+                .weekly(weekly)
+                .weeklyTodoContent("자기소개서 제출하기")
+                .weeklyTodoStatus(false)
+                .build());
+        //when
+        final WeeklyTodo changeWeeklyTodo = weeklyTodoRepository.save(
+                WeeklyTodo.builder()
+                        .id(weeklyTodo.getId())
+                        .createTime(weeklyTodo.getCreateTime())
+                        .weekly(weeklyTodo.getWeekly())
+                        .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
+                        .weeklyTodoStatus(true)
+                        .build()
+        );
+
+
+        //then
+        assertThat(changeWeeklyTodo).isNotNull();
+        assertThat(changeWeeklyTodo.getWeekly()).isEqualTo(weeklyTodo.getWeekly());
+        assertThat(changeWeeklyTodo.getWeeklyTodoContent()).isEqualTo(weeklyTodo.getWeeklyTodoContent());
+        assertThat(changeWeeklyTodo.getWeeklyTodoStatus()).isTrue();
         assertThat(changeWeeklyTodo.getCreateTime()).isNotEqualTo(changeWeeklyTodo.getUpdateTime());
     }
 }
