@@ -41,7 +41,8 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public AddFollowResponse addFollow(User user, Long targetUserId) {
+    @Transactional
+    public AddFollowResponse addFollow(final User user, final Long targetUserId) {
         User targetUser = certifyFollowUser(targetUserId);
         if(targetUser.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
             return addFollowPublic(user, targetUser);
@@ -51,7 +52,8 @@ public class FollowServiceImpl implements FollowService {
         }
     }
 
-    private AddFollowResponse addFollowPublic(User follower, User following) {
+    private AddFollowResponse addFollowPublic(final User follower, final User following) {
+        duplicatedCheckFollow(followRepository.findByFollowerIdAndFollowingId(follower, following));
         Follow result = followRepository.save(Follow.builder()
                 .followerId(follower)
                 .followingId(following)
@@ -62,7 +64,8 @@ public class FollowServiceImpl implements FollowService {
                 .build();
     }
 
-    private AddFollowResponse addFollowNonPublic(User requester, User receiver) {
+    private AddFollowResponse addFollowNonPublic(final User requester, final User receiver) {
+        duplicatedCheckFollow(followRequestRepository.findByFollowerIdAndFollowingId(requester, receiver));
         FollowRequest result = followRequestRepository.save(FollowRequest.builder()
                 .requesterId(requester)
                 .receiverId(receiver)
@@ -75,10 +78,15 @@ public class FollowServiceImpl implements FollowService {
 
     private User certifyFollowUser(final Long followingId) {
         Optional<User> result = userRepository.findById(followingId);
-        if(!result.isPresent()) {
+        if(!result.isPresent() || result.get().getWithdrawal()) {
             throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER);
         }
         return result.get();
     }
 
+    private void duplicatedCheckFollow(final User user) {
+        if(user!=null) {
+            throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
+        }
+    }
 }
