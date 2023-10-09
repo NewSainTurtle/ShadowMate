@@ -4,13 +4,13 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowRequest;
-import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
-import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static com.newsainturtle.shadowmate.follow.constant.FollowConstant.*;
 
@@ -33,9 +33,8 @@ public class FollowController {
     @PostMapping("/{userId}/requested")
     public ResponseEntity<BaseResponse> addFollow(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                   @PathVariable("userId") final Long userId,
-                                                  @RequestBody final AddFollowRequest addFollowRequest) {
+                                                  @RequestBody @Valid final AddFollowRequest addFollowRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        AddFollowResponse addFollowResponse = followService.addFollow(principalDetails.getUser(), addFollowRequest.getFollowingId());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW, addFollowResponse));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW, followService.addFollow(principalDetails.getUser(), addFollowRequest.getFollowingId())));
     }
 }
