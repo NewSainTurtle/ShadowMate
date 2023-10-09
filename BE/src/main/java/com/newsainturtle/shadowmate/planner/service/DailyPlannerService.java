@@ -13,6 +13,6 @@ public interface DailyPlannerService {
     void updateRetrospectionImage(final User user, final UpdateRetrospectionImageRequest updateRetrospectionImageRequest);
     void addDailyLike(final User user, final AddDailyLikeRequest addDailyPlannerLikeRequest);
     void removeDailyLike(final User user, final RemoveDailyLikeRequest removeDailyLikeRequest);
-    AddTimeTableResponse addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest);
+    void addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest);
     void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest);
 }

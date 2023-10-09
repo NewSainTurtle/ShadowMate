@@ -17,11 +17,11 @@ public class RemoveTimeTableRequest {
     private String date;
 
     @NotNull
-    private Long timeTableId;
+    private Long todoId;
 
     @Builder
-    public RemoveTimeTableRequest(String date, Long timeTableId) {
+    public RemoveTimeTableRequest(String date, Long todoId) {
         this.date = date;
-        this.timeTableId = timeTableId;
+        this.todoId = todoId;
     }
 }
