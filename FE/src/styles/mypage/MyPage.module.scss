@@ -35,14 +35,22 @@ $color-warning: var(--color-warning);
 
   &__container {
     position: relative;
+    height: 100%;
   }
 
   &__title {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1em 0;
+    height: 60px;
     border-bottom: 1px solid $color-text;
+  }
+
+  &__list {
+    position: absolute;
+    height: calc(100% - 120px - 1px);
+    width: 100%;
+    overflow-y: auto;
   }
 
   &__button {
@@ -51,7 +59,7 @@ $color-warning: var(--color-warning);
     display: flex;
     justify-content: space-evenly;
     width: 100%;
-    padding: 1em 0;
+    height: 60px;
     border-top: 1px solid $color-text;
     > div {
       display: flex;
