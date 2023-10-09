@@ -10,6 +10,7 @@ type Props = {
   value?: string | number;
   disabled?: boolean;
   helperText?: string | ReactNode;
+  error?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onKeyPress?: React.KeyboardEventHandler<HTMLInputElement>;
 };
