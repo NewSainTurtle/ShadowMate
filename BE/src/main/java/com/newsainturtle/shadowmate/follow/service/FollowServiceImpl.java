@@ -35,8 +35,11 @@ public class FollowServiceImpl implements FollowService {
         List<Follow> followingList = followRepository.findAllByFollowerId(user);
         return followingList.stream()
                 .map(follow -> FollowingResponse.builder()
-                        .followingId(follow.getFollowingId())
-                        .followerId(follow.getFollowerId())
+                        .followId(follow.getId())
+                        .email(follow.getFollowingId().getEmail())
+                        .nickname(follow.getFollowingId().getNickname())
+                        .profileImage(follow.getFollowingId().getProfileImage())
+                        .followingId(follow.getFollowingId().getId())
                         .build()).collect(Collectors.toList());
     }
 
@@ -53,7 +56,9 @@ public class FollowServiceImpl implements FollowService {
     }
 
     private AddFollowResponse addFollowPublic(final User follower, final User following) {
-        duplicatedCheckFollow(followRepository.findByFollowerIdAndFollowingId(follower, following));
+        if(followRepository.findByFollowerIdAndFollowingId(follower, following) != null) {
+            throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
+        }
         Follow result = followRepository.save(Follow.builder()
                 .followerId(follower)
                 .followingId(following)
@@ -65,7 +70,9 @@ public class FollowServiceImpl implements FollowService {
     }
 
     private AddFollowResponse addFollowNonPublic(final User requester, final User receiver) {
-        duplicatedCheckFollow(followRequestRepository.findByFollowerIdAndFollowingId(requester, receiver));
+        if (followRequestRepository.findByRequesterIdAndReceiverId(requester, receiver) != null) {
+            throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
+        }
         FollowRequest result = followRequestRepository.save(FollowRequest.builder()
                 .requesterId(requester)
                 .receiverId(receiver)
@@ -82,11 +89,5 @@ public class FollowServiceImpl implements FollowService {
             throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER);
         }
         return result.get();
-    }
-
-    private void duplicatedCheckFollow(final User user) {
-        if(user!=null) {
-            throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
-        }
     }
 }
