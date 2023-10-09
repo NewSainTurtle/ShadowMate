@@ -34,6 +34,12 @@ const MyPageFrame = ({ title }: Props) => {
 
   const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
+  const [ddayInput, setDdayInput] = useState<ddayType>({
+    ddayId: 0,
+    ddayTitle: ddayList[0].ddayTitle,
+    ddayDate: ddayList[0].ddayDate,
+  });
+  const [ddayError, setDdayError] = useState<boolean>(false);
 
   const category_nextId = useRef(categoryList.length);
   const dday_nextId = useRef(ddayList.length);
@@ -62,32 +68,56 @@ const MyPageFrame = ({ title }: Props) => {
     }
   };
 
-  const handleSave = () => {
-    setCategoryList(
-      categoryList.map((item, idx) => {
-        if (categoryInput.categoryId == item.categoryId) {
-          return {
-            ...item,
-            categoryId: categoryInput.categoryId,
-            categoryTitle: categoryInput.categoryTitle,
-            categoryEmoticon: categoryInput.categoryEmoticon,
-            categoryColorCode: CATEGORY_COLORS[colorClick],
-          };
-        }
-        return item;
-      }),
-    );
+  const handleSave = (title: string) => {
+    if (title === "카테고리") {
+      setCategoryList(
+        categoryList.map((item, idx) => {
+          if (categoryInput.categoryId === item.categoryId) {
+            return {
+              ...item,
+              categoryId: categoryInput.categoryId,
+              categoryTitle: categoryInput.categoryTitle,
+              categoryEmoticon: categoryInput.categoryEmoticon,
+              categoryColorCode: CATEGORY_COLORS[colorClick],
+            };
+          }
+          return item;
+        }),
+      );
+    } else {
+      if (ddayInput.ddayTitle === "" || ddayInput.ddayTitle.length < 2 || ddayInput.ddayTitle.length > 20) {
+        setDdayError(true);
+        return;
+      }
+      setDdayError(false);
+      setDdayList(
+        ddayList.map((item, idx) => {
+          if (ddayInput.ddayId === item.ddayId) {
+            return {
+              ...item,
+              ddayTitle: ddayInput.ddayTitle,
+              ddayDate: ddayInput.ddayDate,
+            };
+          }
+          return item;
+        }),
+      );
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = (title: string) => {
     if (isDisable) return;
-    setCategoryList(
-      categoryList.filter((item, idx) => {
-        return idx !== categoryClick;
-      }),
-    );
-    // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
-    setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
+    if (title === "카테고리") {
+      setCategoryList(
+        categoryList.filter((item, idx) => {
+          return idx !== categoryClick;
+        }),
+      );
+      // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
+      setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
+    } else {
+      //...
+    }
   };
 
   useEffect(() => {
@@ -124,7 +154,7 @@ const MyPageFrame = ({ title }: Props) => {
           }[title]
         }
       </MyPageList>
-      <MyPageDetail isDisable={isDisable} handleSave={handleSave} handleDelete={handleDelete}>
+      <MyPageDetail title={title} isDisable={isDisable} handleSave={handleSave} handleDelete={handleDelete}>
         {
           {
             카테고리: (
@@ -137,7 +167,15 @@ const MyPageFrame = ({ title }: Props) => {
                 setColorClick={setColorClick}
               />
             ),
-            디데이: <MyPageDday click={ddayClick} ddayList={ddayList} />,
+            디데이: (
+              <MyPageDday
+                click={ddayClick}
+                ddayList={ddayList}
+                input={ddayInput}
+                setInput={setDdayInput}
+                error={ddayError}
+              />
+            ),
           }[title]
         }
       </MyPageDetail>

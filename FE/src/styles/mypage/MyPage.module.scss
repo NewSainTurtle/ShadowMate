@@ -89,8 +89,9 @@ $color-warning: var(--color-warning);
     grid-template-columns: 2fr 8fr;
     align-items: center;
     margin-bottom: 2em;
-    &:nth-child(3) {
-      align-items: start;
+
+    > input {
+      height: 100%;
     }
   }
 }
