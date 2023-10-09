@@ -252,4 +252,15 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         TimeTable saveTimeTable = timeTableRepository.save(timeTable);
         return AddTimeTableResponse.builder().timeTableId(saveTimeTable.getId()).build();
     }
+
+    @Override
+    @Transactional
+    public void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, removeTimeTableRequest.getDate());
+        final TimeTable timeTable = timeTableRepository.findById(removeTimeTableRequest.getTimeTableId()).orElse(null);
+        if (timeTable == null || !dailyPlanner.equals(timeTable.getTodo().getDailyPlanner())) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE);
+        }
+        timeTableRepository.deleteById(removeTimeTableRequest.getTimeTableId());
+    }
 }

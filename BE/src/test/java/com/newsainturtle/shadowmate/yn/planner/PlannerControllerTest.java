@@ -1933,8 +1933,8 @@ public class PlannerControllerTest {
             }
         }
     }
-  
-  @Nested
+
+    @Nested
     class 타임테이블 {
         final String url = "/api/planners/{userId}/daily/timetables";
         final String date = "2023-10-06";
@@ -2215,6 +2215,146 @@ public class PlannerControllerTest {
                 final ResultActions resultActions = mockMvc.perform(
                         MockMvcRequestBuilders.post(url, userId)
                                 .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
+
+        @Nested
+        class 타임테이블삭제 {
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(1L)
+                        .build();
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜형식_date() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date("2023.10.06")
+                        .timeTableId(1L)
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_date_null() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date(null)
+                        .timeTableId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_timeTableId_null() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은타임테이블() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                 );
 

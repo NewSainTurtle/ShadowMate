@@ -29,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -626,9 +627,9 @@ public class DailyPlannerServiceTest {
 
     @Nested
     class 타임테이블 {
-        final String date = "2023-10-06";
-        final String startTime = "2023-10-06 23:50";
-        final String endTime = "2023-10-07 01:30";
+        final String date = "2023-09-25";
+        final String startTime = "2023-09-25 23:50";
+        final String endTime = "2023-09-26 01:30";
         final Todo todo = Todo.builder()
                 .id(1L)
                 .category(null)
@@ -657,7 +658,7 @@ public class DailyPlannerServiceTest {
                 final AddTimeTableRequest request = AddTimeTableRequest.builder()
                         .date(date)
                         .startTime(startTime)
-                        .endTime("2023-10-06 14:10")
+                        .endTime("2023-09-25 14:10")
                         .todoId(todo.getId())
                         .build();
 
@@ -673,7 +674,7 @@ public class DailyPlannerServiceTest {
                 //given
                 final AddTimeTableRequest request = AddTimeTableRequest.builder()
                         .date(date)
-                        .startTime("2023-10-06 03:50")
+                        .startTime("2023-09-25 03:50")
                         .endTime(endTime)
                         .todoId(todo.getId())
                         .build();
@@ -691,7 +692,7 @@ public class DailyPlannerServiceTest {
                 final AddTimeTableRequest request = AddTimeTableRequest.builder()
                         .date(date)
                         .startTime(startTime)
-                        .endTime("2023-10-07 04:10")
+                        .endTime("2023-09-26 04:10")
                         .todoId(todo.getId())
                         .build();
 
@@ -783,6 +784,99 @@ public class DailyPlannerServiceTest {
                 verify(todoRepository, times(1)).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
                 verify(timeTableRepository, times(1)).findByTodo(any(Todo.class));
                 verify(timeTableRepository, times(1)).save(any(TimeTable.class));
+            }
+
+        }
+
+        @Nested
+        class 타임테이블삭제 {
+
+            @Test
+            public void 실패_유효하지않은플래너() {
+                //given
+                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(timeTable.getId())
+                        .build();
+                doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            public void 실패_타임테이블값없음() {
+                //given
+                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(timeTable.getId())
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(Optional.empty()).when(timeTableRepository).findById(any(Long.class));
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME_TABLE);
+            }
+
+            @Test
+            public void 실패_해당플래너에있는_타임테이블이아님() {
+                //given
+                final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
+                        .id(2L)
+                        .dailyPlannerDay(Date.valueOf("2023-09-26"))
+                        .user(user)
+                        .build();
+                final Todo todo2 = Todo.builder()
+                        .id(2L)
+                        .category(null)
+                        .todoContent("비문학 풀기")
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner2)
+                        .build();
+                final TimeTable timeTable2 = TimeTable.builder()
+                        .id(2L)
+                        .todo(todo2)
+                        .startTime(stringToLocalDateTime(startTime))
+                        .endTime(stringToLocalDateTime(endTime))
+                        .build();
+                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(timeTable2.getId())
+                        .build();
+
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(Optional.of(timeTable2)).when(timeTableRepository).findById(any(Long.class));
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME_TABLE);
+            }
+
+            @Test
+            public void 성공() {
+                //given
+                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .timeTableId(timeTable.getId())
+                        .build();
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(Optional.of(timeTable)).when(timeTableRepository).findById(any(Long.class));
+
+                //when
+                dailyPlannerServiceImpl.removeTimeTable(user, request);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                verify(timeTableRepository, times(1)).findById(any(Long.class));
+                verify(timeTableRepository, times(1)).deleteById(any(Long.class));
             }
 
         }
