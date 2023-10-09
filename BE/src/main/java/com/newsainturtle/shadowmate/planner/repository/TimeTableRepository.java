@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TimeTableRepository extends JpaRepository<TimeTable, Long> {
     TimeTable findByTodo(final Todo todo);
+    void deleteByTodo(final Todo todo);
 }
