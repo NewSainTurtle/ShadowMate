@@ -70,4 +70,32 @@ public class WeeklyTodoRepositoryTest {
         assertThat(weeklyTodo.getWeeklyTodoContent()).isEqualTo("자기소개서 제출하기");
         assertThat(weeklyTodo.getWeeklyTodoStatus()).isFalse();
     }
+
+    @Test
+    public void 주차별할일내용수정() {
+        //given
+        final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
+                .weekly(weekly)
+                .weeklyTodoContent("자기소개서 제출하기")
+                .weeklyTodoStatus(false)
+                .build());
+        //when
+        final WeeklyTodo changeWeeklyTodo = weeklyTodoRepository.save(
+                WeeklyTodo.builder()
+                        .id(weeklyTodo.getId())
+                        .createTime(weeklyTodo.getCreateTime())
+                        .weekly(weeklyTodo.getWeekly())
+                        .weeklyTodoContent("자기소개서 첨삭하기")
+                        .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
+                        .build()
+        );
+
+
+        //then
+        assertThat(changeWeeklyTodo).isNotNull();
+        assertThat(changeWeeklyTodo.getWeekly()).isEqualTo(weeklyTodo.getWeekly());
+        assertThat(changeWeeklyTodo.getWeeklyTodoStatus()).isEqualTo(weeklyTodo.getWeeklyTodoStatus());
+        assertThat(changeWeeklyTodo.getWeeklyTodoContent()).isEqualTo("자기소개서 첨삭하기");
+        assertThat(changeWeeklyTodo.getCreateTime()).isNotEqualTo(changeWeeklyTodo.getUpdateTime());
+    }
 }

@@ -126,4 +126,13 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_WEEKLY_TODO, weeklyPlannerServiceImpl.addWeeklyTodo(principalDetails.getUser(), addWeeklyTodoRequest)));
     }
 
+    @PutMapping("/{userId}/weekly/todos")
+    public ResponseEntity<BaseResponse> updateWeeklyTodoContent(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                                @PathVariable("userId") final Long userId,
+                                                                @RequestBody @Valid final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        weeklyPlannerServiceImpl.updateWeeklyTodoContent(principalDetails.getUser(), updateWeeklyTodoContentRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_WEEKLY_TODO_CONTENT));
+    }
+
 }

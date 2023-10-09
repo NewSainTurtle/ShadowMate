@@ -63,7 +63,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     }
 
     private Todo getTodo(final Long todoId, final DailyPlanner dailyPlanner) {
-        final Todo todo = todoRepository.findByIdAndAndDailyPlanner(todoId, dailyPlanner);
+        final Todo todo = todoRepository.findByIdAndDailyPlanner(todoId, dailyPlanner);
         if (todo == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_TODO);
         }
@@ -110,7 +110,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Transactional
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
-        todoRepository.deleteByIdAndAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+        todoRepository.deleteByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
     }
 
     @Override

@@ -242,7 +242,7 @@ public class DailyPlannerServiceTest {
                         .build();
 
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(null).when(todoRepository).findByIdAndAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
 
                 //when
                 final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
@@ -280,7 +280,7 @@ public class DailyPlannerServiceTest {
                         .dailyPlanner(dailyPlanner)
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(todo).when(todoRepository).findByIdAndAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
 
                 //when
                 dailyPlannerServiceImpl.updateDailyTodo(user, request);
@@ -289,7 +289,7 @@ public class DailyPlannerServiceTest {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-                verify(todoRepository, times(1)).findByIdAndAndDailyPlanner(any(Long.class), any());
+                verify(todoRepository, times(1)).findByIdAndDailyPlanner(any(Long.class), any());
                 verify(todoRepository, times(1)).save(any(Todo.class));
             }
 
@@ -330,7 +330,7 @@ public class DailyPlannerServiceTest {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-                verify(todoRepository, times(1)).deleteByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                verify(todoRepository, times(1)).deleteByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
             }
 
         }
@@ -730,7 +730,7 @@ public class DailyPlannerServiceTest {
                         .todoId(todo.getId())
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(null).when(todoRepository).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
                 //when
                 final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
 
@@ -748,7 +748,7 @@ public class DailyPlannerServiceTest {
                         .todoId(todo.getId())
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(todo).when(todoRepository).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
                 doReturn(timeTable).when(timeTableRepository).findByTodo(any(Todo.class));
 
                 //when
@@ -767,7 +767,7 @@ public class DailyPlannerServiceTest {
                         .todoId(todo.getId())
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(todo).when(todoRepository).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
                 doReturn(null).when(timeTableRepository).findByTodo(any(Todo.class));
                 doReturn(timeTable).when(timeTableRepository).save(any(TimeTable.class));
 
@@ -780,7 +780,7 @@ public class DailyPlannerServiceTest {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                verify(todoRepository, times(1)).findByIdAndAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                verify(todoRepository, times(1)).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
                 verify(timeTableRepository, times(1)).findByTodo(any(Todo.class));
                 verify(timeTableRepository, times(1)).save(any(TimeTable.class));
             }
