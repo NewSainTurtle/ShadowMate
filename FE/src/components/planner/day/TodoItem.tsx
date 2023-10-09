@@ -159,7 +159,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
             </span>
           )
         ) : (
-          <div className={styles["todo-item__content__possiable"]}>
+          <div className={styles["todo-item__content__possible"]}>
             <input
               value={text || todoContent}
               placeholder={"할 일을 입력하세요"}
