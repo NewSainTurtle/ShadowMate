@@ -15,6 +15,7 @@ import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final CategoryRepository categoryRepository;
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
     private final TimeTableRepository timeTableRepository;
+    private final UserRepository userRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
@@ -183,11 +185,17 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         dailyPlannerRepository.save(changeDailyPlanner);
     }
 
-    private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long anotherUserId, final String date) {
-        if (user.getId().equals(anotherUserId)) {
+    private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long plannerWriterId, final String date) {
+        if (user.getId().equals(plannerWriterId)) {
             throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
         }
-        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserIdAndDailyPlannerDay(anotherUserId, Date.valueOf(date));
+
+        final User plannerWriter = userRepository.findByIdAndWithdrawalIsFalse(plannerWriterId);
+        if(plannerWriter == null){
+            throw new PlannerException(PlannerErrorResult.INVALID_USER);
+        }
+
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
         if (dailyPlanner == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
         }
@@ -196,9 +204,8 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
     @Override
     @Transactional
-    public void addDailyLike(final User user, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
-        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, addDailyPlannerLikeRequest.getAnotherUserId(),
-                addDailyPlannerLikeRequest.getDate());
+    public void addDailyLike(final User user, final Long plannerWriterId, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
+        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, plannerWriterId, addDailyPlannerLikeRequest.getDate());
         DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner);
         if (dailyPlannerLike != null) {
             throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE);
@@ -212,9 +219,8 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
     @Override
     @Transactional
-    public void removeDailyLike(final User user, final RemoveDailyLikeRequest removeDailyLikeRequest) {
-        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, removeDailyLikeRequest.getAnotherUserId(),
-                removeDailyLikeRequest.getDate());
+    public void removeDailyLike(final User user, final Long plannerWriterId, final RemoveDailyLikeRequest removeDailyLikeRequest) {
+        final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, plannerWriterId, removeDailyLikeRequest.getDate());
         dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user, dailyPlanner);
     }
 
