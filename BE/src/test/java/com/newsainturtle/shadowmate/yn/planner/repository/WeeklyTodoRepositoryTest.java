@@ -126,4 +126,21 @@ public class WeeklyTodoRepositoryTest {
         assertThat(changeWeeklyTodo.getWeeklyTodoStatus()).isTrue();
         assertThat(changeWeeklyTodo.getCreateTime()).isNotEqualTo(changeWeeklyTodo.getUpdateTime());
     }
+
+    @Test
+    public void 주차별할일삭제() {
+        //given
+        final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
+                .weekly(weekly)
+                .weeklyTodoContent("자기소개서 제출하기")
+                .weeklyTodoStatus(false)
+                .build());
+        //when
+        weeklyTodoRepository.deleteByIdAndWeekly(weeklyTodo.getId(), weekly);
+        final WeeklyTodo findWeeklyTodo = weeklyTodoRepository.findByIdAndWeekly(weeklyTodo.getId(), weekly);
+
+        //then
+        assertThat(findWeeklyTodo).isNull();
+    }
+
 }
