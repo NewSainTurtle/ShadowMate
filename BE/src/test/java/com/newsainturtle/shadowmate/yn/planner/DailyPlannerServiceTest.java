@@ -316,13 +316,51 @@ public class DailyPlannerServiceTest {
             }
 
             @Test
+            public void 실패_유효하지않은할일() {
+                //given
+                final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
+                        .date("2023-09-25")
+                        .todoId(1L)
+                        .build();
+
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, request));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
+            }
+
+            @Test
             public void 성공() {
                 //given
                 final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
                         .date("2023-09-25")
                         .todoId(1L)
                         .build();
+                final CategoryColor categoryColor = CategoryColor.builder()
+                        .categoryColorCode("D9B5D9")
+                        .build();
+                final Category category = Category.builder()
+                        .id(1L)
+                        .categoryColor(categoryColor)
+                        .user(user)
+                        .categoryTitle("국어")
+                        .categoryRemove(false)
+                        .categoryEmoticon("🍅")
+                        .build();
+                final Todo todo = Todo.builder()
+                        .id(1L)
+                        .category(category)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner)
+                        .build();
+
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
 
                 //when
                 dailyPlannerServiceImpl.removeDailyTodo(user, request);
