@@ -51,7 +51,7 @@ const TodoList = () => {
         <TodoItem key={idx} idx={idx} item={todo} todoModule={todoModule} />
       ))}
       <TodoItem addTodo todoModule={todoModule} />
-      {[...Array(11 - todos.length)].map((item, idx) => (
+      {Array.from({ length: 11 - todos.length }).map((item, idx) => (
         <TodoItem key={idx} disable todoModule={todoModule} />
       ))}
     </div>
