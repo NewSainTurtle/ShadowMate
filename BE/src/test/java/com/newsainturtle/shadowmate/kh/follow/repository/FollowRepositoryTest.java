@@ -93,6 +93,21 @@ public class FollowRepositoryTest {
     class 팔로우신청TEST {
 
         @Test
+        public void 성공_팔로우신청_조회() {
+            //given
+            followRepository.save(Follow.builder()
+                    .followerId(user1)
+                    .followingId(user2)
+                    .build());
+
+            //when
+            final Follow result = followRepository.findByFollowerIdAndFollowingId(user1, user2);
+            //then
+            assertThat(result.getFollowingId().getNickname()).isEqualTo(user2.getNickname());
+        }
+
+
+        @Test
         public void 성공_팔로우신청_전체공개() {
             //given
             followRepository.save(Follow.builder()
@@ -104,6 +119,7 @@ public class FollowRepositoryTest {
             final List<Follow> followingList = followRepository.findAllByFollowerId(user1);
 
             //then
+            System.out.println(followingList.get(0).getFollowerId().getNickname());
             assertThat(followingList.get(0).getFollowerId()).isEqualTo(user1);
             assertThat(followingList.get(0).getFollowingId()).isEqualTo(user2);
         }

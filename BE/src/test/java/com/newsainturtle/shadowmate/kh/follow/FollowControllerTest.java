@@ -3,7 +3,6 @@ package com.newsainturtle.shadowmate.kh.follow;
 import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
-import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
@@ -12,12 +11,10 @@ import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
-import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -127,8 +124,11 @@ public class FollowControllerTest {
             public void 성공_팔로잉조회() throws Exception {
                 //given
                 list.add(FollowingResponse.builder()
-                        .followingId(user1)
-                        .followerId(user2)
+                        .followId(1L)
+                        .email(user2.getEmail())
+                        .nickname(user2.getNickname())
+                        .profileImage(user2.getProfileImage())
+                        .followingId(user2.getId())
                         .build());
                 doReturn(list).when(followService).getFollowing(any());
 
@@ -153,6 +153,23 @@ public class FollowControllerTest {
                 .builder()
                 .followingId(userId)
                 .build();
+
+        @Test
+        public void 실패_중복신청() throws Exception {
+            //given
+            doThrow(new FollowException(FollowErrorResult.DUPLICATED_FOLLOW)).when(followService).addFollow(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
 
         @Test
         public void 실패_팔로우신청_유저없음() throws Exception {
@@ -198,6 +215,10 @@ public class FollowControllerTest {
         
         @Test
         public void 성공_팔로우신청_전체공개() throws Exception {
+            final AddFollowRequest addFollowRequest = AddFollowRequest
+                    .builder()
+                    .followingId(userId)
+                    .build();
             //given
             final AddFollowResponse addFollowResponse = AddFollowResponse
                     .builder()
@@ -205,14 +226,13 @@ public class FollowControllerTest {
                     .plannerAccessScope(PlannerAccessScope.PUBLIC)
                     .build();
             doReturn(addFollowResponse).when(followService).addFollow(any(), any());
-            
+
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.post(url, userId)
                             .content(gson.toJson(addFollowRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
-            
             //then
             resultActions.andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.plannerAccessScope")

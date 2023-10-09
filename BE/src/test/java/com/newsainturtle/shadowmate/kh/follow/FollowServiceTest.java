@@ -94,12 +94,50 @@ public class FollowServiceTest {
             final List<FollowingResponse> result = followService.getFollowing(user1);
 
             //then
-            assertThat(result.get(0).getFollowingId()).isEqualTo(user2);
+            assertThat(result.get(0).getNickname()).isEqualTo(user2.getNickname());
         }
     }
 
     @Nested
     class 팔로우신청TEST {
+
+        @Test
+        public void 실패_중복친구신청() {
+            //given
+            final User user2 = User.builder()
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이2")
+                    .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                    .withdrawal(false)
+                    .build();
+            final Long userId = 9999L;
+            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+            doReturn(FollowRequest.builder().requesterId(user1).receiverId(user2).build()).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
+
+            //when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.addFollow(user1, userId));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.DUPLICATED_FOLLOW);
+        }
+
+
+        @Test
+        public void 실패_중복팔로우신청() {
+            //given
+            final Long userId = 9999L;
+            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+            doReturn(Follow.builder().followerId(user1).followingId(user2).build()).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+
+            //when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.addFollow(user1, userId));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.DUPLICATED_FOLLOW);
+        }
+
 
         @Test
         public void 실패_팔로우신청_유저없음() {
