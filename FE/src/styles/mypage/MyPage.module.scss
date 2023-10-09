@@ -80,6 +80,7 @@ $color-warning: var(--color-warning);
   }
 
   &__contents {
+    position: relative;
     padding: 3em;
     box-sizing: border-box;
   }
@@ -92,6 +93,31 @@ $color-warning: var(--color-warning);
 
     > input {
       height: 100%;
+    }
+
+    & + #date {
+      display: grid;
+      grid-template-columns: 2fr 7.5fr 0.5fr;
+
+      > svg {
+        justify-self: center;
+        font-size: medium;
+        fill: $color-text;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.date {
+  &__picker {
+    position: absolute;
+    right: 2em;
+    top: 10em;
+    > svg,
+    span,
+    button {
+      color: $color-text;
     }
   }
 }
