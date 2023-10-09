@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.planner.service;
 import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.UpdateWeeklyTodoContentRequest;
+import com.newsainturtle.shadowmate.planner.dto.UpdateWeeklyTodoStatusRequest;
 import com.newsainturtle.shadowmate.planner.entity.Weekly;
 import com.newsainturtle.shadowmate.planner.entity.WeeklyTodo;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -42,6 +43,15 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
         return weekly;
     }
 
+    private WeeklyTodo getWeeklyTodo(final User user, final String startDateStr, final String endDateStr, final Long weeklyTodoId) {
+        final Weekly weekly = getOrCreateWeeklyPlanner(user, startDateStr, endDateStr);
+        final WeeklyTodo weeklyTodo = weeklyTodoRepository.findByIdAndWeekly(weeklyTodoId, weekly);
+        if (weeklyTodo == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TODO);
+        }
+        return weeklyTodo;
+    }
+
     @Override
     @Transactional
     public AddWeeklyTodoResponse addWeeklyTodo(final User user, final AddWeeklyTodoRequest addWeeklyTodoRequest) {
@@ -57,17 +67,27 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
     @Override
     @Transactional
     public void updateWeeklyTodoContent(final User user, final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest) {
-        final Weekly weekly = getOrCreateWeeklyPlanner(user, updateWeeklyTodoContentRequest.getStartDate(), updateWeeklyTodoContentRequest.getEndDate());
-        final WeeklyTodo weeklyTodo = weeklyTodoRepository.findByIdAndWeekly(updateWeeklyTodoContentRequest.getWeeklyTodoId(), weekly);
-        if (weeklyTodo == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_TODO);
-        }
+        final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoContentRequest.getStartDate(), updateWeeklyTodoContentRequest.getEndDate(), updateWeeklyTodoContentRequest.getWeeklyTodoId());
         final WeeklyTodo changeWeeklyTodo = WeeklyTodo.builder()
                 .id(weeklyTodo.getId())
                 .createTime(weeklyTodo.getCreateTime())
                 .weekly(weeklyTodo.getWeekly())
                 .weeklyTodoContent(updateWeeklyTodoContentRequest.getWeeklyTodoContent())
                 .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
+                .build();
+        weeklyTodoRepository.save(changeWeeklyTodo);
+    }
+
+    @Override
+    @Transactional
+    public void updateWeeklyTodoStatus(final User user, final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest) {
+        final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoStatusRequest.getStartDate(), updateWeeklyTodoStatusRequest.getEndDate(), updateWeeklyTodoStatusRequest.getWeeklyTodoId());
+        final WeeklyTodo changeWeeklyTodo = WeeklyTodo.builder()
+                .id(weeklyTodo.getId())
+                .createTime(weeklyTodo.getCreateTime())
+                .weekly(weeklyTodo.getWeekly())
+                .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
+                .weeklyTodoStatus(updateWeeklyTodoStatusRequest.getWeeklyTodoStatus())
                 .build();
         weeklyTodoRepository.save(changeWeeklyTodo);
     }
