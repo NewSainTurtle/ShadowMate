@@ -647,6 +647,26 @@ public class PlannerControllerTest {
             }
 
             @Test
+            public void 실패_유효하지않은할일() throws Exception {
+                //given
+                final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                        .todoId(1L)
+                        .date("2023-09-25")
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).removeDailyTodo(any(), any(RemoveDailyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeDailyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
             public void 성공() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()

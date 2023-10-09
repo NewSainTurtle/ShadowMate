@@ -110,7 +110,9 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Transactional
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
-        todoRepository.deleteByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+        final Todo todo = getTodo(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+        timeTableRepository.deleteByTodo(todo);
+        todoRepository.deleteByIdAndDailyPlanner(todo.getId(), dailyPlanner);
     }
 
     @Override
