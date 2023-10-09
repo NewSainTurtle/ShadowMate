@@ -35,9 +35,9 @@ const TodoList = () => {
     };
 
     return {
-      insertTodo: insertTodo,
-      updateTodo: updateTodo,
-      deleteTodo: deleteTodo,
+      insertTodo,
+      updateTodo,
+      deleteTodo,
     };
   })();
 
