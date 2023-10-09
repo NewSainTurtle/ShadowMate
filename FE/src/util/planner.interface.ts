@@ -31,3 +31,9 @@ export interface TodoItemConfig {
   categoryEmoticon?: string;
   todoUpdate: boolean;
 }
+
+export interface ddayType {
+  ddayId: number;
+  ddayDate: Date | string;
+  ddayTitle: string;
+}

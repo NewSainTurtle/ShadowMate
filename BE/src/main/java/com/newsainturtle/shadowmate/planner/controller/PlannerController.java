@@ -118,12 +118,30 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE, dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest)));
     }
 
+    @DeleteMapping("/{userId}/daily/timetables")
+    public ResponseEntity<BaseResponse> removeTimeTable(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                        @PathVariable("userId") final Long userId,
+                                                        @RequestBody @Valid final RemoveTimeTableRequest removeTimeTableRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.removeTimeTable(principalDetails.getUser(), removeTimeTableRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_TIME_TABLE));
+    }
+
     @PostMapping("/{userId}/weekly/todos")
     public ResponseEntity<BaseResponse> addWeeklyTodo(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                       @PathVariable("userId") final Long userId,
                                                       @RequestBody @Valid final AddWeeklyTodoRequest addWeeklyTodoRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_WEEKLY_TODO, weeklyPlannerServiceImpl.addWeeklyTodo(principalDetails.getUser(), addWeeklyTodoRequest)));
+    }
+
+    @PutMapping("/{userId}/weekly/todos")
+    public ResponseEntity<BaseResponse> updateWeeklyTodoContent(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                                @PathVariable("userId") final Long userId,
+                                                                @RequestBody @Valid final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        weeklyPlannerServiceImpl.updateWeeklyTodoContent(principalDetails.getUser(), updateWeeklyTodoContentRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_WEEKLY_TODO_CONTENT));
     }
 
 }

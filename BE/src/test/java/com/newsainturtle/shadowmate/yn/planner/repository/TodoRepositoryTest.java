@@ -131,7 +131,7 @@ public class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
-        todoRepository.deleteByIdAndAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
         final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
@@ -164,7 +164,7 @@ public class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
-        final Todo findTodo = todoRepository.findByIdAndAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        final Todo findTodo = todoRepository.findByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
         final Todo changeTodo = todoRepository.save(Todo.builder()
                 .id(findTodo.getId())
                 .createTime(findTodo.getCreateTime())

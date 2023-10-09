@@ -63,7 +63,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     }
 
     private Todo getTodo(final Long todoId, final DailyPlanner dailyPlanner) {
-        final Todo todo = todoRepository.findByIdAndAndDailyPlanner(todoId, dailyPlanner);
+        final Todo todo = todoRepository.findByIdAndDailyPlanner(todoId, dailyPlanner);
         if (todo == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_TODO);
         }
@@ -110,7 +110,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Transactional
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
-        todoRepository.deleteByIdAndAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+        todoRepository.deleteByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
     }
 
     @Override
@@ -251,5 +251,16 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                 .build();
         TimeTable saveTimeTable = timeTableRepository.save(timeTable);
         return AddTimeTableResponse.builder().timeTableId(saveTimeTable.getId()).build();
+    }
+
+    @Override
+    @Transactional
+    public void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, removeTimeTableRequest.getDate());
+        final TimeTable timeTable = timeTableRepository.findById(removeTimeTableRequest.getTimeTableId()).orElse(null);
+        if (timeTable == null || !dailyPlanner.equals(timeTable.getTodo().getDailyPlanner())) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE);
+        }
+        timeTableRepository.deleteById(removeTimeTableRequest.getTimeTableId());
     }
 }

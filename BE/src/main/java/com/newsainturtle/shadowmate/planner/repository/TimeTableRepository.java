@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TimeTableRepository extends JpaRepository<TimeTable, Long> {
-    TimeTable findByTodo(Todo todo);
+    TimeTable findByTodo(final Todo todo);
 }

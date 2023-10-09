@@ -4,6 +4,7 @@ $color-gray-1: var(--color-gray-1);
 $color-gray-2: var(--color-gray-2);
 $color-gray-4: var(--color-gray-4);
 $color-blue: var(--color-btn-blue);
+$color-warning: var(--color-warning);
 
 .mypage {
   &__container {
@@ -48,21 +49,33 @@ $color-blue: var(--color-btn-blue);
     position: absolute;
     bottom: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-evenly;
     width: 100%;
     padding: 1em 0;
     border-top: 1px solid $color-text;
-    cursor: pointer;
-    > svg {
-      font-size: medium;
-      padding: 0.5em;
+    > div {
+      display: flex;
+      align-items: center;
+
+      > svg {
+        font-size: medium;
+        padding: 0.5em;
+      }
     }
 
-    &--disable {
-      @extend .frame__button;
-      color: $color-gray-4;
-      cursor: auto;
+    &--add,
+    &--save,
+    &--delete {
+      cursor: pointer;
+    }
+
+    &--delete {
+      color: $color-warning;
+      &--disable {
+        @extend .frame__button--delete;
+        color: $color-gray-4;
+        cursor: not-allowed;
+      }
     }
   }
 
@@ -76,6 +89,9 @@ $color-blue: var(--color-btn-blue);
     grid-template-columns: 2fr 8fr;
     align-items: center;
     margin-bottom: 2em;
+    &:nth-child(3) {
+      align-items: start;
+    }
   }
 }
 
@@ -94,7 +110,7 @@ $color-blue: var(--color-btn-blue);
 }
 
 .category {
-  &-item {
+  &__item {
     display: grid;
     grid-template-columns: 1fr 8fr 1fr;
     align-items: center;
@@ -113,10 +129,42 @@ $color-blue: var(--color-btn-blue);
     }
 
     &--clicked {
-      @extend .category-item;
+      @extend .category__item;
       background-color: $color-gray-1;
     }
   }
+}
+
+.color {
+  &__container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    justify-items: center;
+    gap: 1em;
+  }
+
+  &__item {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    padding: 1px;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &--clicked {
+      @extend .color__item;
+      outline: 1px solid $color-text;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.emoji {
+  position: absolute;
+  bottom: 90;
+  height: 22em;
+  z-index: 100;
 }
 
 .dday {
