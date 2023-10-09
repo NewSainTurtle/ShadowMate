@@ -39,7 +39,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
   const [isDropdownView, setDropdownView] = useState(false);
-  const maxLenght = 50;
+  const maxLength = 50;
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
@@ -50,8 +50,8 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
   }, [isDropdownView]);
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length > maxLenght) {
-      e.target.value = e.target.value.slice(0, maxLenght);
+    if (e.target.value.length > maxLength) {
+      e.target.value = e.target.value.slice(0, maxLength);
     }
     setText(e.target.value);
   };
@@ -164,7 +164,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
               value={text || todoContent}
               placeholder={"할 일을 입력하세요"}
               minLength={2}
-              maxLength={maxLenght}
+              maxLength={maxLength}
               autoFocus={addTodo}
               onChange={editText}
               onKeyDown={handleOnKeyPress}
