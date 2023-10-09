@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FollowRequestRepository extends JpaRepository<FollowRequest, Long> {
 
-    User findByFollowerIdAndFollowingId(final User requester, final User receiver);
+    FollowRequest findByRequesterIdAndReceiverId(final User requester, final User receiver);
 }
