@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.user.dto;
 
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +21,5 @@ public class UserResponse {
 
     private PlannerAccessScope plannerAccessScope;
 
-    private boolean isFollow;
+    private FollowStatus isFollow;
 }
