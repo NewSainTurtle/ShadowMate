@@ -16,6 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import static com.newsainturtle.shadowmate.planner.constant.PlannerConstant.*;
 
@@ -159,6 +161,14 @@ public class PlannerController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         weeklyPlannerServiceImpl.removeWeeklyTodo(principalDetails.getUser(), removeWeeklyTodoRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_WEEKLY_TODO));
+    }
+
+    @GetMapping("/{userId}/daily")
+    public ResponseEntity<BaseResponse> searchDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                           @PathVariable("userId") final Long userId,
+                                                           @RequestParam(name = "date") final String date) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_DAILY_PLANNER,
+                dailyPlannerServiceImpl.searchDailyPlanner(principalDetails.getUser(), userId, date)));
     }
 
 }
