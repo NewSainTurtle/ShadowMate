@@ -10,6 +10,7 @@ import java.util.List;
 public class SearchDailyPlannerResponse {
 
     private String date;
+    private String plannerAccessScope;
     private String dday;
     private String todayGoal;
     private String retrospection;

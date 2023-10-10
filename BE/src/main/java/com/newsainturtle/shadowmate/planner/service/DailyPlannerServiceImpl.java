@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner.service;
 
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
@@ -17,6 +18,7 @@ import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final TimeTableRepository timeTableRepository;
     private final UserRepository userRepository;
     private final DdayRepository ddayRepository;
+    private final FollowRepository followRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
@@ -290,6 +293,16 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         return dday == null ? null : dday.getDdayDate().toString();
     }
 
+    private boolean havePermissionToSearch(final User user, final User plannerWriter) {
+        if (user.equals(plannerWriter) ||
+                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date) {
         final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$";
@@ -305,9 +318,10 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
         int totalMinutes = 0;
 
-        if (dailyPlanner == null) {
+        if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {
             return SearchDailyPlannerResponse.builder()
                     .date(date)
+                    .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
                     .dday(getDday(user))
                     .build();
         } else {
@@ -340,6 +354,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
             return SearchDailyPlannerResponse.builder()
                     .date(date)
+                    .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
                     .dday(getDday(user))
                     .todayGoal(dailyPlanner.getTodayGoal())
                     .retrospection(dailyPlanner.getRetrospection())
