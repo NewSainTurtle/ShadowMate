@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WeeklyTodoRepository extends JpaRepository<WeeklyTodo, Long> {
     WeeklyTodo findByIdAndWeekly(final Long id, final Weekly weekly);
+    void deleteByIdAndWeekly(final Long id, final Weekly weekly);
 }

@@ -152,4 +152,13 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_WEEKLY_TODO_STATUS));
     }
 
+    @DeleteMapping("/{userId}/weekly/todos")
+    public ResponseEntity<BaseResponse> removeWeeklyTodo(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                         @PathVariable("userId") final Long userId,
+                                                         @RequestBody @Valid final RemoveWeeklyTodoRequest removeWeeklyTodoRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        weeklyPlannerServiceImpl.removeWeeklyTodo(principalDetails.getUser(), removeWeeklyTodoRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_WEEKLY_TODO));
+    }
+
 }

@@ -2148,6 +2148,198 @@ public class PlannerControllerTest {
                 resultActions.andExpect(status().isOk());
             }
         }
+
+        @Nested
+        class 주차별할일삭제 {
+            private final String startDay = "2023-10-09";
+            private final String endDay = "2023-10-15";
+
+            @Test
+            public void 실패_없는사용자() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(startDay)
+                        .endDate(endDay)
+                        .weeklyTodoId(1L)
+                        .build();
+
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            public void 실패_올바르지않은시작날짜형식() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate("2023.10.09")
+                        .endDate(endDay)
+                        .weeklyTodoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_올바르지않은끝날짜형식() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(startDay)
+                        .endDate("2023.10.15")
+                        .weeklyTodoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_시작날짜Null() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(null)
+                        .endDate(endDay)
+                        .weeklyTodoId(1L)
+                        .build();
+
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_끝날짜Null() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(startDay)
+                        .endDate(null)
+                        .weeklyTodoId(1L)
+                        .build();
+
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_주차별할일ID_Null() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(startDay)
+                        .endDate(endDay)
+                        .weeklyTodoId(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate("2023-10-10")
+                        .endDate(endDay)
+                        .weeklyTodoId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(startDay)
+                        .endDate("2023-10-16")
+                        .weeklyTodoId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 성공() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(startDay)
+                        .endDate(endDay)
+                        .weeklyTodoId(1L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
     }
 
     @Nested

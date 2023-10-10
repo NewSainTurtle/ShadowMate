@@ -1,9 +1,6 @@
 package com.newsainturtle.shadowmate.yn.planner;
 
-import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoResponse;
-import com.newsainturtle.shadowmate.planner.dto.UpdateWeeklyTodoContentRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateWeeklyTodoStatusRequest;
+import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.Weekly;
 import com.newsainturtle.shadowmate.planner.entity.WeeklyTodo;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -314,6 +311,70 @@ public class WeeklyPlannerServiceTest {
             verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             verify(weeklyTodoRepository, times(1)).findByIdAndWeekly(any(Long.class), any(Weekly.class));
             verify(weeklyTodoRepository, times(1)).save(any(WeeklyTodo.class));
+        }
+
+    }
+
+    @Nested
+    class 주차별할일삭제 {
+
+        @Test
+        public void 실패_올바르지않은날짜_시작요일이월요일이아님() {
+            //given
+            final RemoveWeeklyTodoRequest request = RemoveWeeklyTodoRequest.builder()
+                    .startDate("2023-10-10")
+                    .endDate(endDay)
+                    .weeklyTodoId(1L)
+                    .build();
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
+        }
+
+        @Test
+        public void 실패_올바르지않은날짜_일주일간격이아님() {
+            //given
+            final RemoveWeeklyTodoRequest request = RemoveWeeklyTodoRequest.builder()
+                    .startDate(startDay)
+                    .endDate("2023-10-16")
+                    .weeklyTodoId(1L)
+                    .build();
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, request));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
+        }
+
+        @Test
+        public void 성공() {
+            //given
+            final RemoveWeeklyTodoRequest request = RemoveWeeklyTodoRequest.builder()
+                    .startDate(startDay)
+                    .endDate(endDay)
+                    .weeklyTodoId(1L)
+                    .build();
+            final Weekly weekly = Weekly.builder()
+                    .id(1L)
+                    .startDay(Date.valueOf(startDay))
+                    .endDay(Date.valueOf(endDay))
+                    .user(user)
+                    .build();
+
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+
+            //when
+            weeklyPlannerServiceImpl.removeWeeklyTodo(user, request);
+
+            //then
+
+            //verify
+            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            verify(weeklyTodoRepository, times(1)).deleteByIdAndWeekly(any(Long.class), any(Weekly.class));
         }
 
     }

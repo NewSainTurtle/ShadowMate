@@ -1,9 +1,6 @@
 package com.newsainturtle.shadowmate.planner.service;
 
-import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.AddWeeklyTodoResponse;
-import com.newsainturtle.shadowmate.planner.dto.UpdateWeeklyTodoContentRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateWeeklyTodoStatusRequest;
+import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.Weekly;
 import com.newsainturtle.shadowmate.planner.entity.WeeklyTodo;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -90,5 +87,12 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
                 .weeklyTodoStatus(updateWeeklyTodoStatusRequest.getWeeklyTodoStatus())
                 .build();
         weeklyTodoRepository.save(changeWeeklyTodo);
+    }
+
+    @Override
+    @Transactional
+    public void removeWeeklyTodo(final User user, final RemoveWeeklyTodoRequest removeWeeklyTodoRequest) {
+        final Weekly weekly = getOrCreateWeeklyPlanner(user, removeWeeklyTodoRequest.getStartDate(), removeWeeklyTodoRequest.getEndDate());
+        weeklyTodoRepository.deleteByIdAndWeekly(removeWeeklyTodoRequest.getWeeklyTodoId(), weekly);
     }
 }
