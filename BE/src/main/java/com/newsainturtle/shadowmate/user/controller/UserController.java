@@ -32,9 +32,7 @@ public class UserController {
     public ResponseEntity<BaseResponse> searchNickname(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestParam final String nickname) {
-        System.out.println("nickname = " + nickname);
         authService.certifyUser(userId, principalDetails.getUser());
-        System.out.println("userId = " + userId);
         return ResponseEntity.ok(BaseResponse.from(
                 SUCCESS_SEARCH_NICKNAME, userService.searchNickname(principalDetails.getUser(), nickname)));
     }
