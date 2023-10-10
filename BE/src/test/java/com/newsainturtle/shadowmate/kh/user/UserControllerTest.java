@@ -1,7 +1,9 @@
 package com.newsainturtle.shadowmate.kh.user;
 
 import com.google.gson.Gson;
+import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.user.controller.UserController;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -35,6 +37,9 @@ public class UserControllerTest {
 
     @Mock
     private UserServiceImpl userService;
+
+    @Mock
+    private AuthServiceImpl authService;
 
     private MockMvc mockMvc;
 
@@ -131,14 +136,14 @@ public class UserControllerTest {
                     .nickname(user2.getNickname())
                     .statusMessage(user2.getStatusMessage())
                     .plannerAccessScope(user2.getPlannerAccessScope())
-                    .isFollow(false)
+                    .isFollow(FollowStatus.EMPTY)
                     .build();
             doReturn(userResponse).when(userService).searchNickname(any(), any());
 
             // when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.get(url, userId)
-                            .param("nickname",user2.getNickname()));
+                            .param("nickname", user2.getNickname()));
 
             // then
             resultActions.andExpect(status().isOk());
