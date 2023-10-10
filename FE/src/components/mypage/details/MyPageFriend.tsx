@@ -5,8 +5,8 @@ const MyPageFriend = () => {
   const [currentTab, setCurrentTab] = useState(0);
 
   const menuArr = [
-    { name: "팔로워", node: "팔로워 목록" },
-    { name: "팔로잉", node: "팔로잉 목록" },
+    { name: "팔로워(15)", node: "팔로워 목록" },
+    { name: "팔로잉(8)", node: "팔로잉 목록" },
   ];
 
   return (
@@ -22,8 +22,9 @@ const MyPageFriend = () => {
           </li>
         ))}
       </div>
-      <div>
-        <p>{menuArr[currentTab].node}</p>
+      <div className={styles["friend__content"]}>
+        <div className={styles["friend__list--request"]}>팔로우 요청 목록</div>
+        <div className={styles["friend__list--follow"]}></div>
       </div>
     </div>
   );

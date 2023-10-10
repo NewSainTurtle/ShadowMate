@@ -352,9 +352,9 @@ $color-warning: var(--color-warning);
     transition: 0.5s;
     justify-content: center;
     border-bottom: 1px solid $color-text;
+    cursor: pointer;
 
     &--focused {
-      //선택된 Tabmenu 에만 적용되는 CSS를 구현
       background-color: $color-blue;
       color: rgb(21, 20, 20);
     }
