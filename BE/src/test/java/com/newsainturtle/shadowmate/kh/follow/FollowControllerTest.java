@@ -8,6 +8,7 @@ import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowRequest;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
+import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
@@ -143,6 +144,52 @@ public class FollowControllerTest {
             }
         }
     }
+    @Nested
+    class 팔로워TEST {
+        final String url = "/api/follow/{userId}/followers";
+        final List<FollowerResponse> list = new ArrayList<>();
+        final Long userId = 2L;
+
+        @Test
+        public void 실패_팔로워조회Null() throws Exception {
+            //given
+            final List<FollowerResponse> followerResponses = new ArrayList<>();
+            doReturn(followerResponses).when(followService).getFollower(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data").isEmpty());
+
+        }
+
+        @Test
+        public void 성공_팔로워조회() throws Exception {
+            //given
+            list.add(FollowerResponse.builder()
+                    .followId(1L)
+                    .email(user1.getEmail())
+                    .nickname(user1.getNickname())
+                    .profileImage(user1.getProfileImage())
+                    .followerId(user1.getId())
+                    .build());
+            doReturn(list).when(followService).getFollower(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+
+        }
+    }
+
     @Nested
     class 팔로우신청TEST {
         final String url = "/api/follow/{userId}/requested";
