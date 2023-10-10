@@ -29,4 +29,9 @@ public class UserServiceImpl implements UserService {
                 .plannerAccessScope(user.getPlannerAccessScope())
                 .build();
     }
+
+    @Override
+    public User searchNickname(String nickname) {
+        return userRepository.findByNickname(nickname);
+    }
 }
