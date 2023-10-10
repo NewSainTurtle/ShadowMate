@@ -2499,7 +2499,7 @@ public class PlannerControllerTest {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
-                        .timeTableId(1L)
+                        .todoId(1L)
                         .build();
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
@@ -2519,7 +2519,7 @@ public class PlannerControllerTest {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date("2023.10.06")
-                        .timeTableId(1L)
+                        .todoId(1L)
                         .build();
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2537,7 +2537,7 @@ public class PlannerControllerTest {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(null)
-                        .timeTableId(1L)
+                        .todoId(1L)
                         .build();
 
                 //when
@@ -2552,11 +2552,11 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_timeTableId_null() throws Exception {
+            public void 실패_todoId_null() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
-                        .timeTableId(null)
+                        .todoId(null)
                         .build();
 
                 //when
@@ -2575,7 +2575,7 @@ public class PlannerControllerTest {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
-                        .timeTableId(1L)
+                        .todoId(1L)
                         .build();
                 doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
 
@@ -2595,9 +2595,29 @@ public class PlannerControllerTest {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
-                        .timeTableId(1L)
+                        .todoId(1L)
                         .build();
                 doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            public void 실패_유효하지않은할일() throws Exception {
+                //given
+                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                        .date(date)
+                        .todoId(1L)
+                        .build();
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2615,7 +2635,7 @@ public class PlannerControllerTest {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
-                        .timeTableId(1L)
+                        .todoId(1L)
                         .build();
 
                 //when

@@ -32,4 +32,15 @@ public class Todo extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "timeTable_id")
+    private TimeTable timeTable;
+
+    public void setTimeTable(TimeTable timeTable) {
+        this.timeTable = timeTable;
+        if(timeTable != null){
+            timeTable.setTodo(this);
+        }
+    }
 }

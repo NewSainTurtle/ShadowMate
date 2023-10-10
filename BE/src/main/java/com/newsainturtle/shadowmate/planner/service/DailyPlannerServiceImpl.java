@@ -111,7 +111,6 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
         final Todo todo = getTodo(removeDailyTodoRequest.getTodoId(), dailyPlanner);
-        timeTableRepository.deleteByTodo(todo);
         todoRepository.deleteByIdAndDailyPlanner(todo.getId(), dailyPlanner);
     }
 
@@ -234,7 +233,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
     @Override
     @Transactional
-    public AddTimeTableResponse addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
+    public void addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
         LocalDateTime startTime = stringToLocalDateTime(addTimeTableRequest.getStartTime());
         LocalDateTime endTime = stringToLocalDateTime(addTimeTableRequest.getEndTime());
         checkValidDateTime(addTimeTableRequest.getDate(), startTime, endTime);
@@ -242,27 +241,26 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, addTimeTableRequest.getDate());
         final Todo todo = getTodo(addTimeTableRequest.getTodoId(), dailyPlanner);
 
-        TimeTable timeTable = timeTableRepository.findByTodo(todo);
-        if (timeTable != null) {
+        if (todo.getTimeTable() != null) {
             throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE);
         }
-        timeTable = TimeTable.builder()
-                .todo(todo)
+
+        todo.setTimeTable(TimeTable.builder()
                 .endTime(endTime)
                 .startTime(startTime)
-                .build();
-        TimeTable saveTimeTable = timeTableRepository.save(timeTable);
-        return AddTimeTableResponse.builder().timeTableId(saveTimeTable.getId()).build();
+                .build());
     }
 
     @Override
     @Transactional
     public void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeTimeTableRequest.getDate());
-        final TimeTable timeTable = timeTableRepository.findById(removeTimeTableRequest.getTimeTableId()).orElse(null);
-        if (timeTable == null || !dailyPlanner.equals(timeTable.getTodo().getDailyPlanner())) {
+        final Todo todo = getTodo(removeTimeTableRequest.getTodoId(), dailyPlanner);
+        if (todo.getTimeTable() == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE);
         }
-        timeTableRepository.deleteById(removeTimeTableRequest.getTimeTableId());
+        final long timeTableId = todo.getTimeTable().getId();
+        todo.setTimeTable(null);
+        timeTableRepository.deleteById(timeTableId);
     }
 }

@@ -115,7 +115,8 @@ public class PlannerController {
                                                      @PathVariable("userId") final Long userId,
                                                      @RequestBody @Valid final AddTimeTableRequest addTimeTableRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE, dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest)));
+        dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE));
     }
 
     @DeleteMapping("/{userId}/daily/timetables")

@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.yn.planner.repository;
 
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.TimeTable;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
@@ -20,6 +21,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -129,6 +132,40 @@ public class TodoRepositoryTest {
                 .dailyPlanner(dailyPlanner)
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
+
+        //when
+        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
+
+        //then
+        assertThat(findTodo).isNull();
+    }
+
+    @Test
+    public void 일일플래너_할일삭제_타임테이블있는경우() {
+        //given
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
+        final LocalDateTime endTime = LocalDateTime.parse("2023-10-06 18:30", formatter);
+        final Category category = categoryRepository.save(Category.builder()
+                .categoryColor(categoryColorRepository.findById(1L).orElse(null))
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build());
+        final Todo todo = Todo.builder()
+                .category(category)
+                .todoContent("수능완성 수학 과목별 10문제")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build();
+        final Todo saveTodo = todoRepository.save(todo);
+        final TimeTable timeTable = TimeTable.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
+        saveTodo.setTimeTable(timeTable);
 
         //when
         todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
