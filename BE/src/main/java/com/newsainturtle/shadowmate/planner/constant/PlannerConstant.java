@@ -20,4 +20,5 @@ public class PlannerConstant {
     public static final String SUCCESS_UPDATE_WEEKLY_TODO_CONTENT = "주차별 할일 내용 수정이 완료되었습니다.";
     public static final String SUCCESS_UPDATE_WEEKLY_TODO_STATUS = "주차별 할일 상태 수정이 완료되었습니다.";
     public static final String SUCCESS_REMOVE_WEEKLY_TODO = "주차별 할일 삭제가 완료되었습니다.";
+    public static final String SUCCESS_SEARCH_DAILY_PLANNER = "일일플래너 조회가 완료되었습니다.";
 }

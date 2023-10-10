@@ -1,5 +1,7 @@
 package com.newsainturtle.shadowmate.yn.planner;
 
+import com.newsainturtle.shadowmate.follow.entity.Follow;
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.planner.dto.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
@@ -15,7 +17,9 @@ import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
+import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -28,9 +32,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,6 +67,12 @@ public class DailyPlannerServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private DdayRepository ddayRepository;
+
+    @Mock
+    private FollowRepository followRepository;
+
     final User user = User.builder()
             .id(1L)
             .email("test@test.com")
@@ -75,6 +87,11 @@ public class DailyPlannerServiceTest {
             .dailyPlannerDay(Date.valueOf("2023-09-25"))
             .user(user)
             .build();
+
+    private LocalDateTime stringToLocalDateTime(String timeStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(timeStr, formatter);
+    }
 
     @Nested
     class 일일플래너할일 {
@@ -708,11 +725,6 @@ public class DailyPlannerServiceTest {
                 .endTime(stringToLocalDateTime(endTime))
                 .build();
 
-        private LocalDateTime stringToLocalDateTime(String timeStr) {
-            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            return LocalDateTime.parse(timeStr, formatter);
-        }
-
         @Nested
         class 타임테이블등록 {
 
@@ -936,6 +948,294 @@ public class DailyPlannerServiceTest {
                 verify(timeTableRepository, times(1)).deleteById(any(Long.class));
             }
 
+        }
+    }
+
+    @Nested
+    class 일일플래너조회 {
+        final long plannerWriterId = 1L;
+        final String today = "2023-10-10";
+
+        @Test
+        public void 실패_유효하지않은날짜형식() {
+            //given
+            final String invalidToday = "2023.10.10";
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, invalidToday));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE_FORMAT);
+        }
+
+        @Test
+        public void 실패_유효하지않은플래너작성자() {
+            //given
+            doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
+        }
+
+        @Test
+        public void 성공_플래너없을때() {
+            //given
+            doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
+            doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(Date.class));
+
+            //when
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
+
+            //then
+            assertThat(searchDailyPlannerResponse).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchDailyPlannerResponse.getDday()).isNull();
+            assertThat(searchDailyPlannerResponse.getTodayGoal()).isNull();
+            assertThat(searchDailyPlannerResponse.getRetrospection()).isNull();
+            assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isNull();
+            assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isNull();
+            assertThat(searchDailyPlannerResponse.isLike()).isFalse();
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNull();
+        }
+
+        @Test
+        public void 성공_플래너있을때_비공개() {
+            //given
+            final User user2 = User.builder()
+                    .id(2L)
+                    .email("test@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이")
+                    .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                    .withdrawal(false)
+                    .build();
+            final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                    .user(user2)
+                    .build();
+
+            doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any());
+            doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
+            doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(Date.class));
+
+            //when
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, 2L, today);
+
+            //then
+            assertThat(searchDailyPlannerResponse).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE.getScope());
+            assertThat(searchDailyPlannerResponse.getDday()).isNull();
+            assertThat(searchDailyPlannerResponse.getTodayGoal()).isNull();
+            assertThat(searchDailyPlannerResponse.getRetrospection()).isNull();
+            assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isNull();
+            assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isNull();
+            assertThat(searchDailyPlannerResponse.isLike()).isFalse();
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNull();
+        }
+
+        @Test
+        public void 성공_플래너있을때_친구공개_친구아님() {
+            //given
+            final User user2 = User.builder()
+                    .id(2L)
+                    .email("test@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이")
+                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                    .withdrawal(false)
+                    .build();
+            final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                    .user(user2)
+                    .build();
+
+            doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any());
+            doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(null).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
+            doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(Date.class));
+
+            //when
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, 2L, today);
+
+            //then
+            assertThat(searchDailyPlannerResponse).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
+            assertThat(searchDailyPlannerResponse.getDday()).isNull();
+            assertThat(searchDailyPlannerResponse.getTodayGoal()).isNull();
+            assertThat(searchDailyPlannerResponse.getRetrospection()).isNull();
+            assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isNull();
+            assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isNull();
+            assertThat(searchDailyPlannerResponse.isLike()).isFalse();
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNull();
+        }
+
+        @Test
+        public void 성공_플래너있을때_친구공개_친구() {
+            //given
+            final User user2 = User.builder()
+                    .id(2L)
+                    .email("test@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이")
+                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                    .withdrawal(false)
+                    .build();
+            final Follow follow = Follow.builder()
+                    .id(1L)
+                    .followerId(user)
+                    .followingId(user2)
+                    .build();
+            final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf(today))
+                    .user(user2)
+                    .build();
+            final Date birthday = Date.valueOf(LocalDate.now());
+            final Dday dday = Dday.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(birthday)
+                    .user(user)
+                    .build();
+            final CategoryColor categoryColor = CategoryColor.builder()
+                    .categoryColorCode("#D9B5D9")
+                    .build();
+            final Category category = Category.builder()
+                    .id(1L)
+                    .categoryColor(categoryColor)
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build();
+            final List<Todo> todoList = new ArrayList<>();
+            todoList.add(Todo.builder()
+                    .id(1L)
+                    .category(category)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .timeTable(TimeTable.builder()
+                            .startTime(stringToLocalDateTime("2023-10-10 22:50"))
+                            .endTime(stringToLocalDateTime("2023-10-11 01:30"))
+                            .build())
+                    .build());
+
+            doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any());
+            doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
+            doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+            doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(todoList).when(todoRepository).findAllByDailyPlanner(any(DailyPlanner.class));
+
+            //when
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
+
+            //then
+            assertThat(searchDailyPlannerResponse).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
+            assertThat(searchDailyPlannerResponse.getDday()).isEqualTo(birthday.toString());
+            assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
+            assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
+            assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
+            assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
+            assertThat(searchDailyPlannerResponse.isLike()).isFalse();
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(40);
+            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodo().size()).isEqualTo(1);
+        }
+
+        @Test
+        public void 성공_플래너있을때_전체공개() {
+            //given
+            final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                    .id(1L)
+                    .dailyPlannerDay(Date.valueOf(today))
+                    .user(user)
+                    .build();
+            final Date birthday = Date.valueOf(LocalDate.now());
+            final Dday dday = Dday.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(birthday)
+                    .user(user)
+                    .build();
+            final CategoryColor categoryColor = CategoryColor.builder()
+                    .categoryColorCode("#D9B5D9")
+                    .build();
+            final Category category = Category.builder()
+                    .id(1L)
+                    .categoryColor(categoryColor)
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build();
+            final List<Todo> todoList = new ArrayList<>();
+            todoList.add(Todo.builder()
+                    .id(1L)
+                    .category(category)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .timeTable(TimeTable.builder()
+                            .startTime(stringToLocalDateTime("2023-10-10 22:50"))
+                            .endTime(stringToLocalDateTime("2023-10-11 01:30"))
+                            .build())
+                    .build());
+
+            doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
+            doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+            doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(todoList).when(todoRepository).findAllByDailyPlanner(any(DailyPlanner.class));
+
+
+            //when
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
+
+            //then
+            assertThat(searchDailyPlannerResponse).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchDailyPlannerResponse.getDday()).isEqualTo(birthday.toString());
+            assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
+            assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
+            assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
+            assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
+            assertThat(searchDailyPlannerResponse.isLike()).isFalse();
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(40);
+            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodo().size()).isEqualTo(1);
         }
     }
 }
