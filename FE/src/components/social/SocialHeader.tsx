@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "@styles/social/social.module.scss";
+import styles from "@styles/social/Social.module.scss";
 import Button from "@components/common/Button";
 import Input from "@components/common/Input";
 import { userNickname } from "@util/data/SocialData";

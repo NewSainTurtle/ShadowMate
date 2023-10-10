@@ -74,72 +74,38 @@ public class TimeTableRepositoryTest {
         final TimeTable timeTable = TimeTable.builder()
                 .startTime(startTime)
                 .endTime(endTime)
-                .todo(todo)
                 .build();
         //when
-        final TimeTable saveTimeTable = timeTableRepository.save(timeTable);
+        todo.setTimeTable(timeTable);
+        final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
-        assertThat(saveTimeTable).isNotNull();
-        assertThat(saveTimeTable.getStartTime()).isEqualTo(startTime);
-        assertThat(saveTimeTable.getEndTime()).isEqualTo(endTime);
-        assertThat(saveTimeTable.getTodo()).isEqualTo(todo);
+        assertThat(findTodo).isNotNull();
+        assertThat(findTodo.getTimeTable()).isNotNull();
+        assertThat(findTodo.getTimeTable().getStartTime()).isEqualTo(startTime);
+        assertThat(findTodo.getTimeTable().getEndTime()).isEqualTo(endTime);
+        assertThat(findTodo.getTimeTable().getTodo()).isEqualTo(todo);
     }
 
     @Test
-    public void 타임테이블조회(){
+    public void 타임테이블삭제() {
         //given
         final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
         final LocalDateTime endTime = LocalDateTime.parse("2023-10-06 18:30", formatter);
-        timeTableRepository.save(TimeTable.builder()
+        final TimeTable timeTable = TimeTable.builder()
                 .startTime(startTime)
                 .endTime(endTime)
-                .todo(todo)
-                .build());
+                .build();
+        todo.setTimeTable(timeTable);
+
         //when
-        final TimeTable findTimeTable = timeTableRepository.findByTodo(todo);
+        final Todo findTodo = todoRepository.findByIdAndDailyPlanner(todo.getId(), dailyPlanner);
+        final long timeTableId = findTodo.getTimeTable().getId();
+        findTodo.setTimeTable(null);
+        timeTableRepository.deleteById(timeTableId);
 
         //then
-        assertThat(findTimeTable).isNotNull();
-        assertThat(findTimeTable.getStartTime()).isEqualTo(startTime);
-        assertThat(findTimeTable.getEndTime()).isEqualTo(endTime);
-        assertThat(findTimeTable.getTodo()).isEqualTo(todo);
-    }
-
-    @Test
-    public void 타임테이블삭제(){
-        //given
-        final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
-        final LocalDateTime endTime = LocalDateTime.parse("2023-10-06 18:30", formatter);
-        final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
-                .startTime(startTime)
-                .endTime(endTime)
-                .todo(todo)
-                .build());
-        //when
-        timeTableRepository.deleteById(timeTable.getId());
-        final TimeTable findTimeTable = timeTableRepository.findByTodo(todo);
-
-        //then
-        assertThat(findTimeTable).isNull();
-    }
-
-    @Test
-    public void 할일과관련된타임테이블삭제(){
-        //given
-        final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
-        final LocalDateTime endTime = LocalDateTime.parse("2023-10-06 18:30", formatter);
-        final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
-                .startTime(startTime)
-                .endTime(endTime)
-                .todo(todo)
-                .build());
-        //when
-        timeTableRepository.deleteByTodo(todo);
-        final TimeTable findTimeTable = timeTableRepository.findByTodo(todo);
-
-        //then
-        assertThat(findTimeTable).isNull();
+        assertThat(findTodo.getTimeTable()).isNull();
     }
 
 }

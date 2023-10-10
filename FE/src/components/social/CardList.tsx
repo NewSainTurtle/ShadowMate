@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "@styles/social/social.module.scss";
+import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import { socialListData } from "@util/data/SocialData";
 import { ProfileConfig } from "@components/common/FriendProfile";

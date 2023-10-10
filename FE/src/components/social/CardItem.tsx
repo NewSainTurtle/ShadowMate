@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from "react";
-import styles from "@styles/social/social.module.scss";
+import styles from "@styles/social/Social.module.scss";
 import Text from "@components/common/Text";
 import { SocialDataType } from "@components/social/CardList";
 import { ProfileConfig } from "@components/common/FriendProfile";

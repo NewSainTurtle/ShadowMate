@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "@styles/social/social.module.scss";
+import styles from "@styles/social/Social.module.scss";
 import CardList from "@components/social/CardList";
 import SocialHeader from "@components/social/SocialHeader";
 

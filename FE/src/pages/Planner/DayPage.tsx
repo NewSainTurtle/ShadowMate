@@ -4,15 +4,21 @@ import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
 import Ment from "@components/planner/day/Ment";
 import TodoList from "@components/planner/day/TodoList";
+import dayjs from "dayjs";
 
 const DayPage = () => {
   const { state } = useLocation();
-  const date = state?.date || new Date();
+  const [date, setDate] = useState<string | Date | dayjs.Dayjs>(state?.date || new Date());
   const [ment, setMent] = useState({
     todayGoals: "",
     tomorrowGoals: "",
     retrospections: "",
   });
+
+  const moveDate = (n: -1 | 0 | 1) => {
+    const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
+    setDate(newDate);
+  };
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMent({
@@ -25,7 +31,7 @@ const DayPage = () => {
 
   return (
     <div className={styles["page-container"]}>
-      <Header date={date} />
+      <Header date={date} moveDate={moveDate} />
 
       <Ment title={"오늘의 다짐"} name="todayGoals" value={todayGoals} onChange={handleInput} rows={1} maxLength={50} />
 

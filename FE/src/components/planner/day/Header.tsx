@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
@@ -12,10 +12,11 @@ import "dayjs/locale/ko";
 dayjs.locale("ko");
 
 interface HeaderDateType {
-  date: string | Date;
+  date: string | Date | dayjs.Dayjs;
+  moveDate: (n: -1 | 0 | 1) => void;
 }
 
-const HeaderDate = ({ date }: HeaderDateType) => {
+const HeaderDate = ({ date, moveDate }: HeaderDateType) => {
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
 
   return (
@@ -25,11 +26,16 @@ const HeaderDate = ({ date }: HeaderDateType) => {
         <Text types="semi-large" bold>
           {titleDay}
         </Text>
-        <div>
-          <NavigateBefore />
-        </div>
-        <div>
-          <NavigateNext />
+        <div className={styles["date-move"]}>
+          <div onClick={() => moveDate(-1)}>
+            <NavigateBefore />
+          </div>
+          <div onClick={() => moveDate(0)}>
+            <Text bold>today</Text>
+          </div>
+          <div onClick={() => moveDate(1)}>
+            <NavigateNext />
+          </div>
         </div>
       </div>
     </div>
@@ -87,13 +93,13 @@ const MyHeader = ({ heart }: { heart: number }) => {
   );
 };
 
-const Header = ({ date }: HeaderDateType) => {
+const Header = (props: HeaderDateType) => {
   const heartNum = 50; // 임시 좋아요 수
   const isFriend = false;
 
   return (
     <div className={styles["planner-header"]}>
-      <HeaderDate date={date} />
+      <HeaderDate {...props} />
       {isFriend ? <FriendHeader heart={heartNum} /> : <MyHeader heart={heartNum} />}
     </div>
   );
