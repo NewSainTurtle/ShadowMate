@@ -28,7 +28,7 @@ public class UserController {
                 SUCCESS_PROFILE, profileResponse));
     }
 
-    @GetMapping("{userId}/searches")
+    @GetMapping("/{userId}/searches")
     public ResponseEntity<BaseResponse> searchNickname(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestParam final String nickname) {
