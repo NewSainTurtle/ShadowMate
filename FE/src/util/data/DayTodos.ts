@@ -29,14 +29,14 @@ export const todoData_category: categoryType[] = [
 
 export const todoData_list: todoType[] = [
   {
-    todoId: 0,
+    todoId: 1,
     categoryTitle: "수학",
     categoryColorCode: "#B6F7E1",
     todoContent: "수능완성 수학 과목별 10문제",
     todoStatus: 2,
   },
   {
-    todoId: 1,
+    todoId: 2,
     categoryTitle: "국어",
     categoryColorCode: "#FFCBE1",
     todoContent: "초고난도 독서 02 (사회·경제)",

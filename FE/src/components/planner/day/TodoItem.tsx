@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
@@ -6,9 +6,9 @@ import { todoType, categoryType } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
 
 const TodoDataDefalut: todoType = {
-  todoId: -1,
+  todoId: 0,
   categoryTitle: "",
-  categoryColorCode: "",
+  categoryColorCode: "#E9E9EB",
   todoContent: "",
   todoStatus: 0,
 };
@@ -16,7 +16,7 @@ const TodoDataDefalut: todoType = {
 const categoryDefault: categoryType = {
   categoryId: 0,
   categoryTitle: "",
-  categoryColorCode: "E9E9EB",
+  categoryColorCode: "#E9E9EB",
   categoryEmoticon: "",
 };
 
@@ -61,11 +61,9 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
       if (e.nativeEvent.isComposing) return;
       if (addTodo) {
         if (text === "") return;
-        insertTodo({ ...TodoDataDefalut, todoContent: text });
+        insertTodo({ ...item, todoContent: text });
         setText("");
-      } else {
-        (document.activeElement as HTMLElement).blur();
-      }
+      } else (document.activeElement as HTMLElement).blur();
     }
   };
 
@@ -73,32 +71,22 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
     if (addTodo) {
       insertTodo({ ...TodoDataDefalut, categoryTitle: title, categoryColorCode: bgColor });
     } else {
-      handleSaveCategoryTodo(title, bgColor);
+      updateTodo(idx, { ...item, categoryTitle: title, categoryColorCode: bgColor });
     }
   };
 
-  const handleSaveCategoryTodo = (newCategoryTitle: string, newCategoryColorCode: string) => {
-    let todo: todoType = {
-      ...item,
-      categoryTitle: newCategoryTitle,
-      categoryColorCode: newCategoryColorCode,
-    };
-    updateTodo(idx, { ...todo });
+  const handleSaveTextTodo = () => {
+    if (text === "") return;
+    updateTodo(idx, { ...item, todoContent: text });
   };
 
-  const handleSaveTodo = () => {
+  const handleSaveStatusTodo = () => {
     if (text === "") return;
-    let todo: todoType = {
-      ...item,
-      todoContent: text,
-      todoStatus: todoStatus == 0 ? 1 : todoStatus == 1 ? 2 : 0,
-    };
-    updateTodo(idx, { ...todo });
+    updateTodo(idx, { ...item, todoStatus: todoStatus == 0 ? 1 : todoStatus == 1 ? 2 : 0 });
   };
 
   const removeTodo = () => {
     deleteTodo(idx);
-    setText("");
   };
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
@@ -113,7 +101,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
 
   const categoryStyle = (bgColor: string) => {
     return {
-      backgroundColor: `${bgColor}`,
+      backgroundColor: `${bgColor == categoryDefault.categoryColorCode ? "none" : bgColor}`,
       color: `${getTextColorByBackgroundColor(bgColor.slice(1))}`,
     };
   };
@@ -161,14 +149,14 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
         ) : (
           <div className={styles["todo-item__content__possible"]}>
             <input
-              value={text || todoContent}
+              value={text}
               placeholder={"할 일을 입력하세요"}
               minLength={2}
               maxLength={maxLength}
               autoFocus={addTodo}
               onChange={editText}
               onKeyDown={handleOnKeyPress}
-              onBlur={handleSaveTodo}
+              onBlur={handleSaveTextTodo}
             />
             {!addTodo && (
               <div onClick={removeTodo}>
@@ -179,7 +167,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
         )}
       </div>
 
-      <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={handleSaveTodo}>
+      <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
         <Text types="semi-medium">{[" ", "O", "X"][todoStatus]}</Text>
       </div>
     </div>

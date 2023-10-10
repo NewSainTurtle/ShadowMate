@@ -10,16 +10,22 @@ const TodoList = () => {
     return todos.length + 1 >= 12 ? todos.length + 1 : 12;
   }, [todos]);
   const todoEndRef = useRef<HTMLDivElement>(null);
+  const nextId = useRef(todos.length + 1);
 
   useEffect(() => {
     if (todos.length + 1 >= 12 && todoEndRef.current) {
       todoEndRef.current.scrollTop = todoEndRef.current.scrollHeight;
     }
+  }, [todos.length]);
+
+  useEffect(() => {
+    console.log(todos);
   }, [todos]);
 
   const todoModule = (() => {
     const insertTodo = (props: todoType) => {
-      setTodos([...todos, { ...props }]);
+      setTodos([...todos, { ...props, todoId: nextId.current }]);
+      nextId.current += 1;
     };
 
     const updateTodo = (idx: number, props: todoType) => {
@@ -29,9 +35,8 @@ const TodoList = () => {
     };
 
     const deleteTodo = (idx: number) => {
-      let copyTodos = [...todos];
-      copyTodos.splice(idx, 1);
-      setTodos(copyTodos);
+      let newTodos = todos.filter((item, i) => idx != i);
+      setTodos(newTodos);
     };
 
     return {
@@ -48,7 +53,7 @@ const TodoList = () => {
       style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/12)` }}
     >
       {todos.map((todo, idx) => (
-        <TodoItem key={idx} idx={idx} item={todo} todoModule={todoModule} />
+        <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
       ))}
       <TodoItem addTodo todoModule={todoModule} />
       {Array.from({ length: 11 - todos.length }).map((item, idx) => (
