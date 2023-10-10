@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.follow.service;
 
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
+import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
@@ -40,6 +41,19 @@ public class FollowServiceImpl implements FollowService {
                         .nickname(follow.getFollowingId().getNickname())
                         .profileImage(follow.getFollowingId().getProfileImage())
                         .followingId(follow.getFollowingId().getId())
+                        .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FollowerResponse> getFollower(final User user) {
+        List<Follow> followerList = followRepository.findAllByFollowingId(user);
+        return followerList.stream()
+                .map(follow -> FollowerResponse.builder()
+                        .followId(follow.getId())
+                        .email(follow.getFollowerId().getEmail())
+                        .nickname(follow.getFollowerId().getNickname())
+                        .profileImage(follow.getFollowerId().getProfileImage())
+                        .followerId(follow.getFollowerId().getId())
                         .build()).collect(Collectors.toList());
     }
 

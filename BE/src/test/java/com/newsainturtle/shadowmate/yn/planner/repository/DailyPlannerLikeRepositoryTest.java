@@ -9,6 +9,7 @@ import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -33,11 +34,12 @@ public class DailyPlannerLikeRepositoryTest {
 
     private User user1;
     private User user2;
+    private DailyPlanner dailyPlanner;
 
     @BeforeEach
     public void init() {
         user1 = userRepository.save(User.builder()
-                .email("test1234@naver.com")
+                .email("test1234@test.com")
                 .password("123456")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
@@ -45,45 +47,41 @@ public class DailyPlannerLikeRepositoryTest {
                 .withdrawal(false)
                 .build());
         user2 = userRepository.save(User.builder()
-                .email("test127@naver.com")
+                .email("test127@test.com")
                 .password("123456")
                 .socialLogin(SocialType.BASIC)
                 .nickname("토끼")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
                 .withdrawal(false)
                 .build());
+        dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+                .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                .user(user1)
+                .build());
     }
 
     @Test
     public void 좋아요등록() {
         //given
-        final DailyPlanner saveDailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-25"))
-                .user(user1)
-                .build());
 
         //when
         final DailyPlannerLike saveDailyPlannerLike = dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
-                .dailyPlanner(saveDailyPlanner)
+                .dailyPlanner(dailyPlanner)
                 .user(user2)
                 .build());
 
         //then
         assertThat(saveDailyPlannerLike).isNotNull();
-        assertThat(saveDailyPlannerLike.getDailyPlanner()).isEqualTo(saveDailyPlanner);
+        assertThat(saveDailyPlannerLike.getDailyPlanner()).isEqualTo(dailyPlanner);
         assertThat(saveDailyPlannerLike.getUser()).isEqualTo(user2);
     }
 
     @Test
     public void 좋아요조회_이전에좋아요안누름() {
         //given
-        final DailyPlanner saveDailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-25"))
-                .user(user1)
-                .build());
 
         //when
-        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
+        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, dailyPlanner);
 
         //then
         assertThat(dailyPlannerLike).isNull();
@@ -92,21 +90,17 @@ public class DailyPlannerLikeRepositoryTest {
     @Test
     public void 좋아요조회_이전에좋아요누름() {
         //given
-        final DailyPlanner saveDailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-25"))
-                .user(user1)
-                .build());
         dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
-                .dailyPlanner(saveDailyPlanner)
+                .dailyPlanner(dailyPlanner)
                 .user(user2)
                 .build());
 
         //when
-        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
+        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, dailyPlanner);
 
         //then
         assertThat(dailyPlannerLike).isNotNull();
-        assertThat(dailyPlannerLike.getDailyPlanner()).isEqualTo(saveDailyPlanner);
+        assertThat(dailyPlannerLike.getDailyPlanner()).isEqualTo(dailyPlanner);
         assertThat(dailyPlannerLike.getUser()).isEqualTo(user2);
 
     }
@@ -114,21 +108,73 @@ public class DailyPlannerLikeRepositoryTest {
     @Test
     public void 좋아요취소() {
         //given
-        final DailyPlanner saveDailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-25"))
-                .user(user1)
-                .build());
         dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
-                .dailyPlanner(saveDailyPlanner)
+                .dailyPlanner(dailyPlanner)
                 .user(user2)
                 .build());
 
         //when
-        dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user2, saveDailyPlanner);
-        final DailyPlannerLike findDailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, saveDailyPlanner);
+        dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user2, dailyPlanner);
+        final DailyPlannerLike findDailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, dailyPlanner);
 
         //then
         assertThat(findDailyPlannerLike).isNull();
     }
 
+    @Nested
+    class 좋아요카운트 {
+
+        @Test
+        public void 좋아요0() {
+            //given
+
+            //when
+            final long count = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
+
+            //then
+            assertThat(count).isEqualTo(0);
+        }
+
+        @Test
+        public void 좋아요1() {
+            //given
+            dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                    .dailyPlanner(dailyPlanner)
+                    .user(user2)
+                    .build());
+
+            //when
+            final long count = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
+
+            //then
+            assertThat(count).isEqualTo(1);
+        }
+
+        @Test
+        public void 좋아요2() {
+            //given
+            final User user3 = userRepository.save(User.builder()
+                    .email("test98765@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("호랑이")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build());
+            dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                    .dailyPlanner(dailyPlanner)
+                    .user(user2)
+                    .build());
+            dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                    .dailyPlanner(dailyPlanner)
+                    .user(user3)
+                    .build());
+
+            //when
+            final long count = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
+
+            //then
+            assertThat(count).isEqualTo(2);
+        }
+    }
 }

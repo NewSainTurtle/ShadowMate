@@ -23,6 +23,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.6",
     "@mui/material": "^5.14.4",
+    "@mui/x-date-pickers": "^6.16.1",
     "@reduxjs/toolkit": "^1.9.6",
     "axios": "^1.5.0",
     "css-loader": "^6.8.1",

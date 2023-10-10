@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class FollowingResponse {
+public class FollowerResponse {
 
     private Long followId;
 
-    private Long followingId;
+    private Long followerId;
 
     private String email;
 

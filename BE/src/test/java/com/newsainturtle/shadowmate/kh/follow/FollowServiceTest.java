@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.kh.follow;
 
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
+import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
@@ -95,6 +96,39 @@ public class FollowServiceTest {
 
             //then
             assertThat(result.get(0).getNickname()).isEqualTo(user2.getNickname());
+        }
+    }
+
+    @Nested
+    class 팔로워TEST {
+
+        @Test
+        void 실패_팔로잉조회Null() {
+            //given
+            List<FollowerResponse> followerResponses = new ArrayList<>();
+            doReturn(followerResponses).when(followRepository).findAllByFollowingId(user2);
+
+            //when
+            final List<FollowerResponse> result = followService.getFollower(user2);
+
+            //then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        public void 성공_팔로워조회() {
+            //given
+
+            List<Follow> followingList = new ArrayList<>();
+            followingList.add(Follow.builder().followerId(user1).followingId(user2).build());
+
+            doReturn(followingList).when(followRepository).findAllByFollowingId(user2);
+
+            //when
+            final List<FollowerResponse> result = followService.getFollower(user2);
+
+            //then
+            assertThat(result.get(0).getNickname()).isEqualTo(user1.getNickname());
         }
     }
 
