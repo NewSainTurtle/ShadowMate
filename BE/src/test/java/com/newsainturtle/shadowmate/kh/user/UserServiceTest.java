@@ -30,10 +30,10 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     final User user = User.builder()
-            .email("aa@test.com")
+            .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
-            .nickname("닉네임임")
+            .nickname("거북이1")
             .withdrawal(false)
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -68,6 +68,33 @@ public class UserServiceTest {
             // then
             assertThat(profileResponse.getEmail()).isEqualTo(user.getEmail());
 
+        }
+    }
+
+    @Nested
+    class 회원TEST {
+
+        @Test
+        void 실패_회원없음() {
+            // given
+
+            // when
+            User result = userService.searchNickname(user.getNickname());
+
+            // then
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void 성공_회원검색() {
+            // given
+            doReturn(user).when(userRepository).findByNickname(any());
+
+            // when
+            User result = userService.searchNickname(user.getNickname());
+
+            // then
+            assertThat(result.getNickname()).isEqualTo(user.getNickname());
         }
     }
 }

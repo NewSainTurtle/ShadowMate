@@ -27,6 +27,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,10 +47,10 @@ public class UserControllerTest {
     private Gson gson;
 
     final User user = User.builder()
-            .email("aa@test.com")
+            .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
-            .nickname("닉네임임")
+            .nickname("거북이1")
             .withdrawal(false)
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -88,6 +89,40 @@ public class UserControllerTest {
             // when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.get(url,userId));
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    class 회원TEST {
+
+        final String url = "/api/users/searches";
+
+        @Test
+        void 실패_회원없음() throws Exception {
+            // given
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url)
+                            .param("nickname","없는닉네임"));
+
+            // then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data").isEmpty());
+        }
+
+        @Test
+        void 성공_회원검색() throws Exception {
+            // given
+            doReturn(user).when(userService).searchNickname(user.getNickname());
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url)
+                            .param("nickname",user.getNickname()));
 
             // then
             resultActions.andExpect(status().isOk());
