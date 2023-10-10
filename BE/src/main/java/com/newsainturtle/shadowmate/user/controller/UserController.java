@@ -1,10 +1,13 @@
 package com.newsainturtle.shadowmate.user.controller;
 
+import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
+import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
 import com.newsainturtle.shadowmate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.newsainturtle.shadowmate.user.constant.UserConstant.*;
@@ -16,6 +19,8 @@ public class UserController {
 
     private final UserService userService;
 
+    private final AuthService authService;
+
     @GetMapping("/{userId}/profiles")
     public ResponseEntity<BaseResponse> getProfile(@PathVariable Long userId) {
         ProfileResponse profileResponse = userService.getProfile(userId);
@@ -23,10 +28,14 @@ public class UserController {
                 SUCCESS_PROFILE, profileResponse));
     }
 
-    @GetMapping("searches")
-    public ResponseEntity<BaseResponse> searchNickname(@RequestParam String nickname) {
+    @GetMapping("{userId}/searches")
+    public ResponseEntity<BaseResponse> searchNickname(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestParam final String nickname) {
         System.out.println("nickname = " + nickname);
+        authService.certifyUser(userId, principalDetails.getUser());
+        System.out.println("userId = " + userId);
         return ResponseEntity.ok(BaseResponse.from(
-                SUCCESS_SEARCH_NICKNAME, userService.searchNickname(nickname)));
+                SUCCESS_SEARCH_NICKNAME, userService.searchNickname(principalDetails.getUser(), nickname)));
     }
 }
