@@ -1,9 +1,13 @@
 package com.newsainturtle.shadowmate.kh.user;
 
+import com.newsainturtle.shadowmate.follow.entity.Follow;
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
+import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
 import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import com.newsainturtle.shadowmate.user.service.UserServiceImpl;
@@ -12,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -29,11 +34,23 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    final User user = User.builder()
+    @Spy
+    private FollowRepository followRepository;
+
+    final User user1 = User.builder()
             .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
             .nickname("거북이1")
+            .withdrawal(false)
+            .profileImage("TestProfileURL")
+            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .build();
+    final User user2 = User.builder()
+            .email("test2@test.com")
+            .password("123456")
+            .socialLogin(SocialType.BASIC)
+            .nickname("거북이2")
             .withdrawal(false)
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -59,14 +76,14 @@ public class UserServiceTest {
         void 성공_프로필조회() {
             // given
             final Long userId = 1L;
-            Optional<User> optUser = Optional.ofNullable(user);
+            Optional<User> optUser = Optional.ofNullable(user1);
             doReturn(optUser).when(userRepository).findById(userId);
 
             // when
             final ProfileResponse profileResponse = userService.getProfile(userId);
 
             // then
-            assertThat(profileResponse.getEmail()).isEqualTo(user.getEmail());
+            assertThat(profileResponse.getEmail()).isEqualTo(user1.getEmail());
 
         }
     }
@@ -79,22 +96,24 @@ public class UserServiceTest {
             // given
 
             // when
-            User result = userService.searchNickname(user.getNickname());
+            final UserException result = assertThrows(UserException.class, () -> userService.searchNickname(user1, user2.getNickname()));
 
             // then
-            assertThat(result).isNull();
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_NICKNAME);
         }
 
         @Test
         void 성공_회원검색() {
             // given
-            doReturn(user).when(userRepository).findByNickname(any());
+            Follow follow = Follow.builder().followerId(user1).followingId(user2).build();
+            doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(user2).when(userRepository).findByNickname(any());
 
             // when
-            User result = userService.searchNickname(user.getNickname());
+            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
 
             // then
-            assertThat(result.getNickname()).isEqualTo(user.getNickname());
+            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
         }
     }
 }
