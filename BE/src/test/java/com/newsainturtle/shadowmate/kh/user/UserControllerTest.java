@@ -1,8 +1,10 @@
 package com.newsainturtle.shadowmate.kh.user;
 
 import com.google.gson.Gson;
+import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.user.controller.UserController;
+import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,18 +42,25 @@ public class UserControllerTest {
     @Mock
     private UserServiceImpl userService;
 
-    @Mock
-    private UserRepository userRepository;
-
     private MockMvc mockMvc;
 
     private Gson gson;
 
-    final User user = User.builder()
+    final User user1 = User.builder()
             .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
             .nickname("거북이1")
+            .withdrawal(false)
+            .profileImage("TestProfileURL")
+            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .build();
+
+    final User user2 = User.builder()
+            .email("test2@test.com")
+            .password("123456")
+            .socialLogin(SocialType.BASIC)
+            .nickname("거북이2")
             .withdrawal(false)
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -98,31 +108,43 @@ public class UserControllerTest {
     @Nested
     class 회원TEST {
 
-        final String url = "/api/users/searches";
+        final String url = "/api/users/{userId}/searches";
+
+        final Long userId = 1L;
 
         @Test
         void 실패_회원없음() throws Exception {
             // given
+            doThrow(new UserException(UserErrorResult.NOT_FOUND_NICKNAME)).when(userService).searchNickname(any(), any());
 
             // when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.get(url)
+                    MockMvcRequestBuilders.get(url, userId)
                             .param("nickname","없는닉네임"));
 
             // then
-            resultActions.andExpect(status().isOk())
-                    .andExpect(jsonPath("$.data").isEmpty());
+            resultActions.andExpect(status().isNotFound());
+
         }
 
         @Test
         void 성공_회원검색() throws Exception {
             // given
-            doReturn(user).when(userService).searchNickname(user.getNickname());
+            UserResponse userResponse = UserResponse.builder()
+                    .userId(user2.getId())
+                    .email(user2.getEmail())
+                    .prfileImage(user2.getProfileImage())
+                    .nickname(user2.getNickname())
+                    .statusMessage(user2.getStatusMessage())
+                    .plannerAccessScope(user2.getPlannerAccessScope())
+                    .isFollow(false)
+                    .build();
+            doReturn(userResponse).when(userService).searchNickname(any(), any());
 
             // when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.get(url)
-                            .param("nickname",user.getNickname()));
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("nickname",user2.getNickname()));
 
             // then
             resultActions.andExpect(status().isOk());
