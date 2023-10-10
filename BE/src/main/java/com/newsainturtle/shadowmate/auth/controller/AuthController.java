@@ -37,4 +37,9 @@ public class AuthController {
         authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_NICKNAME_CHECK));
     }
+
+    @GetMapping("/google")
+    public String test() {
+        return "구글로그인성공";
+    }
 }

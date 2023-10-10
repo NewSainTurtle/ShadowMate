@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        System.out.println("JwtAuthenticationFilter.attemptAuthentication");
         ObjectMapper om = new ObjectMapper();
         try {
             User user = om.readValue(request.getInputStream(), User.class);
@@ -45,6 +46,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        System.out.println("JwtAuthenticationFilter.successfulAuthentication");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
         String jwtToken = jwtProvider.createToken(principalDetails);
         jwtProvider.addTokenHeader(response, jwtToken);

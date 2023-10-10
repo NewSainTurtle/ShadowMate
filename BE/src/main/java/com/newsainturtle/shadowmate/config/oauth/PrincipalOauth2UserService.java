@@ -35,7 +35,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         if(user == null) {
             user = User.builder()
                     .email(userEmail)
-                    .password("임시")
+                    .password("INTP")
                     .nickname(createNicknameRandomCode(oAuth2User.getAttribute("name")))
                     .socialLogin(SocialType.GOOGLE)
                     .plannerAccessScope(PlannerAccessScope.PUBLIC)

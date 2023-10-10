@@ -44,7 +44,9 @@ public class JwtProvider {
     public boolean validateHeader(HttpServletRequest request) {
         String jwtHeader = getHeader(request);
         if (jwtHeader == null || !jwtHeader.startsWith(PREFIX)) {
-            return false;
+            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN);
+            throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN);
+            //return false;
         }
         return true;
     }
