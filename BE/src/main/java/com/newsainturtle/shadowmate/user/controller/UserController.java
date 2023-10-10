@@ -22,4 +22,11 @@ public class UserController {
         return ResponseEntity.ok(BaseResponse.from(
                 SUCCESS_PROFILE, profileResponse));
     }
+
+    @GetMapping("searches")
+    public ResponseEntity<BaseResponse> searchNickname(@RequestParam String nickname) {
+        System.out.println("nickname = " + nickname);
+        return ResponseEntity.ok(BaseResponse.from(
+                SUCCESS_SEARCH_NICKNAME, userService.searchNickname(nickname)));
+    }
 }
