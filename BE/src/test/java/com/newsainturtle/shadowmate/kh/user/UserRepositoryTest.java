@@ -31,10 +31,12 @@ public class UserRepositoryTest {
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
+    Long userId;
+
 
     @BeforeEach
     public void init() {
-        userRepository.save(user);
+        userId = userRepository.save(user).getId();
     }
 
     @Nested
@@ -43,7 +45,7 @@ public class UserRepositoryTest {
         @Test
         void 실패_프로필조회() {
             // given
-            final Long userId = 1L;
+            userId += 1L;
 
             // when
             final Optional<User> userEntity = userRepository.findById(userId);
@@ -55,8 +57,6 @@ public class UserRepositoryTest {
         @Test
         void 성공_프로필조회() {
             // given
-            final User userResponse = userRepository.save(user);
-            final Long userId = userResponse.getId();
 
             // when
             final User userEntity = userRepository.findById(userId).get();
