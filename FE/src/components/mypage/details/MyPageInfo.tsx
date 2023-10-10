@@ -86,14 +86,22 @@ const MyPageInfo = () => {
         title: "비밀번호 변경",
         node: (
           <div className={styles["info__profile--password"]}>
-            <Input placeholder="현재 비밀번호 입력" name="nowPassword" value={nowPassword} onChange={handlePassword} />
             <Input
+              types="password"
+              placeholder="현재 비밀번호 입력"
+              name="nowPassword"
+              value={nowPassword}
+              onChange={handlePassword}
+            />
+            <Input
+              types="password"
               placeholder="변경할 비밀번호 입력"
               name="newPassword"
               value={newPassword}
               onChange={handlePassword}
             />
             <Input
+              types="password"
               placeholder="변경할 비밀번호 확인"
               name="newPasswordCheck"
               value={newPasswordCheck}
