@@ -332,3 +332,31 @@ $color-warning: var(--color-warning);
     }
   }
 }
+
+.friend {
+  &__cantainer {
+    height: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+  }
+
+  &__tab {
+    color: $color-text;
+    display: flex;
+  }
+
+  &__subtab {
+    display: flex;
+    width: 50%;
+    padding: 10px;
+    transition: 0.5s;
+    justify-content: center;
+    border-bottom: 1px solid $color-text;
+
+    &--focused {
+      //선택된 Tabmenu 에만 적용되는 CSS를 구현
+      background-color: $color-blue;
+      color: rgb(21, 20, 20);
+    }
+  }
+}
