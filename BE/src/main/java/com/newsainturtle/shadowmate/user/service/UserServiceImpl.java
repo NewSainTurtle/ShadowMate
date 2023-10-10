@@ -55,10 +55,7 @@ public class UserServiceImpl implements UserService {
     private boolean isFollow(final User user, final User searchUser) {
         Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
         if (follow == null) {
-            follow = followRepository.findByFollowerIdAndFollowingId(searchUser, user);
-            if(follow == null) {
-                return false;
-            }
+            return false;
         }
         return true;
     }
