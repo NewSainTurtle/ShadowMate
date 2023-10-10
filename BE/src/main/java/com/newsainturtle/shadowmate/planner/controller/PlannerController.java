@@ -96,8 +96,7 @@ public class PlannerController {
     public ResponseEntity<BaseResponse> addDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                      @PathVariable("userId") final Long userId,
                                                      @RequestBody @Valid final AddDailyLikeRequest addDailyLikeRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        dailyPlannerServiceImpl.addDailyLike(principalDetails.getUser(), addDailyLikeRequest);
+        dailyPlannerServiceImpl.addDailyLike(principalDetails.getUser(), userId, addDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DAILY_LIKE));
     }
 
@@ -105,8 +104,7 @@ public class PlannerController {
     public ResponseEntity<BaseResponse> removeDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                         @PathVariable("userId") final Long userId,
                                                         @RequestBody @Valid final RemoveDailyLikeRequest removeDailyLikeRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        dailyPlannerServiceImpl.removeDailyLike(principalDetails.getUser(), removeDailyLikeRequest);
+        dailyPlannerServiceImpl.removeDailyLike(principalDetails.getUser(), userId, removeDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_LIKE));
     }
 

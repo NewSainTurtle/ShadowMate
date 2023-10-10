@@ -16,12 +16,8 @@ public class AddDailyLikeRequest {
     @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message = "yyyy-MM-dd 형식의 올바른 날짜값이 아닙니다.")
     private String date;
 
-    @NotNull
-    private Long anotherUserId;
-
     @Builder
-    public AddDailyLikeRequest(String date, Long anotherUserId) {
+    public AddDailyLikeRequest(String date) {
         this.date = date;
-        this.anotherUserId = anotherUserId;
     }
 }

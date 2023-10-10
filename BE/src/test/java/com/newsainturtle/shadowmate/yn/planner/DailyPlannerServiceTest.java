@@ -19,6 +19,7 @@ import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepositor
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
+import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +57,9 @@ public class DailyPlannerServiceTest {
 
     @Mock
     private TimeTableRepository timeTableRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     final User user = User.builder()
             .id(1L)
@@ -531,20 +535,21 @@ public class DailyPlannerServiceTest {
 
     @Nested
     class 좋아요 {
+        final Long plannerWriterId = 1L;
+        final User user2 = User.builder()
+                .id(2L)
+                .email("test2@test.com")
+                .password("123456")
+                .socialLogin(SocialType.BASIC)
+                .nickname("토끼")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+
         @Nested
         class 좋아요등록 {
             final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                     .date("2023-09-28")
-                    .anotherUserId(1L)
-                    .build();
-            final User user2 = User.builder()
-                    .id(2L)
-                    .email("test2@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("토끼")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .withdrawal(false)
                     .build();
 
             @Test
@@ -552,19 +557,32 @@ public class DailyPlannerServiceTest {
                 //given
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user, addDailyLikeRequest));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user, plannerWriterId, addDailyLikeRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
             }
 
             @Test
-            public void 실패_유효하지않은플래너() {
+            public void 실패_유효하지않은사용자() {
                 //given
-                doReturn(null).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, addDailyLikeRequest));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, plannerWriterId, addDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() {
+                //given
+                doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+                doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, plannerWriterId, addDailyLikeRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -578,11 +596,12 @@ public class DailyPlannerServiceTest {
                         .dailyPlanner(dailyPlanner)
                         .user(user2)
                         .build();
-                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 doReturn(dailyPlannerLike).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, addDailyLikeRequest));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, plannerWriterId, addDailyLikeRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.ALREADY_ADDED_LIKE);
@@ -591,16 +610,18 @@ public class DailyPlannerServiceTest {
             @Test
             public void 성공() {
                 //given
-                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
 
                 //when
-                dailyPlannerServiceImpl.addDailyLike(user2, addDailyLikeRequest);
+                dailyPlannerServiceImpl.addDailyLike(user2, plannerWriterId, addDailyLikeRequest);
 
                 //then
 
                 //verify
-                verify(dailyPlannerRepository, times(1)).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 verify(dailyPlannerLikeRepository, times(1)).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
                 verify(dailyPlannerLikeRepository, times(1)).save(any(DailyPlannerLike.class));
 
@@ -611,16 +632,6 @@ public class DailyPlannerServiceTest {
         class 좋아요취소 {
             final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                     .date("2023-09-28")
-                    .anotherUserId(1L)
-                    .build();
-            final User user2 = User.builder()
-                    .id(2L)
-                    .email("test2@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("토끼")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .withdrawal(false)
                     .build();
 
             @Test
@@ -628,19 +639,32 @@ public class DailyPlannerServiceTest {
                 //given
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user, removeDailyLikeRequest));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user, plannerWriterId, removeDailyLikeRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
             }
 
             @Test
-            public void 실패_유효하지않은플래너() {
+            public void 실패_유효하지않은사용자() {
                 //given
-                doReturn(null).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user2, removeDailyLikeRequest));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user2, plannerWriterId, removeDailyLikeRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
+            }
+
+            @Test
+            public void 실패_유효하지않은플래너() {
+                //given
+                doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+                doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyLike(user2, plannerWriterId, removeDailyLikeRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -649,15 +673,17 @@ public class DailyPlannerServiceTest {
             @Test
             public void 성공() {
                 //given
-                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
 
                 //when
-                dailyPlannerServiceImpl.removeDailyLike(user2, removeDailyLikeRequest);
+                dailyPlannerServiceImpl.removeDailyLike(user2, plannerWriterId, removeDailyLikeRequest);
 
                 //then
 
                 //verify
-                verify(dailyPlannerRepository, times(1)).findByUserIdAndDailyPlannerDay(any(Long.class), any(Date.class));
+                verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 verify(dailyPlannerLikeRepository, times(1)).deleteByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             }
         }
