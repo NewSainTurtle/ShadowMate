@@ -1,6 +1,9 @@
 package com.newsainturtle.shadowmate.user.service;
 
+import com.newsainturtle.shadowmate.follow.entity.Follow;
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
 import com.newsainturtle.shadowmate.user.exception.UserException;
@@ -16,8 +19,10 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private final FollowRepository followRepository;
+
     @Override
-    public ProfileResponse getProfile(Long userId) {
+    public ProfileResponse getProfile(final Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if(!optionalUser.isPresent()) throw new UserException(UserErrorResult.NOT_FOUND_PROFILE);
         User user = optionalUser.get();
@@ -31,7 +36,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User searchNickname(String nickname) {
-        return userRepository.findByNickname(nickname);
+    public UserResponse searchNickname(final User user, final String nickname) {
+        User searchUser = userRepository.findByNickname(nickname);
+        if(searchUser==null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
+        }
+        return UserResponse.builder()
+                .userId(searchUser.getId())
+                .email(searchUser.getEmail())
+                .prfileImage(searchUser.getProfileImage())
+                .nickname(searchUser.getNickname())
+                .statusMessage(searchUser.getStatusMessage())
+                .plannerAccessScope(searchUser.getPlannerAccessScope())
+                .isFollow(isFollow(user, searchUser))
+                .build();
+    }
+
+    private boolean isFollow(final User user, final User searchUser) {
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
+        if (follow == null) {
+            follow = followRepository.findByFollowerIdAndFollowingId(searchUser, user);
+            if(follow == null) {
+                return false;
+            }
+        }
+        return true;
     }
 }
