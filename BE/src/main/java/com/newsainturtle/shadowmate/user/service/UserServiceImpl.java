@@ -1,7 +1,10 @@
 package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.follow.entity.Follow;
+import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
+import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -20,6 +23,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final FollowRepository followRepository;
+
+    private final FollowRequestRepository followRequestRepository;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
@@ -52,11 +57,15 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    private boolean isFollow(final User user, final User searchUser) {
+    private FollowStatus isFollow(final User user, final User searchUser) {
         Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
         if (follow == null) {
-            return false;
+            FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
+            if(followRequest == null) {
+                return FollowStatus.EMPTY;
+            }
+            return FollowStatus.REQUESTED;
         }
-        return true;
+        return FollowStatus.FOLLOW;
     }
 }
