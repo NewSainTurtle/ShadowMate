@@ -37,9 +37,7 @@ const MyPageFriendFrame = ({ title, search, friendList }: Props) => {
   );
 };
 
-const MyPageFriend = () => {
-  const currentTab: "팔로워" | "팔로잉" | "친구검색" = "팔로워";
-
+const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색" }) => {
   return (
     <div className={styles["friend__cantainer"]}>
       <div className={styles["friend__content"]}>
@@ -55,11 +53,11 @@ const MyPageFriend = () => {
             ),
             팔로잉: <MyPageFriendFrame title="내 팔로잉" friendList={followingListData} />,
             친구검색: <MyPageFriendFrame title="친구 검색" search />,
-          }[currentTab]
+          }[title]
         }
       </div>
     </div>
   );
 };
 
-export default MyPageFriend;
+export default MyFriend;
