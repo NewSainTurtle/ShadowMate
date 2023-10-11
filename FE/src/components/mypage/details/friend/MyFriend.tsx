@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
@@ -26,6 +26,12 @@ interface Props {
 }
 
 const MyFriendFrame = ({ title, search, friendList }: Props) => {
+  const [searchKeyWord, setSearchKeyWord] = useState("");
+
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKeyWord(e.target.value);
+  };
+
   const friendCheck = (friend: MyFriendListType) => {
     if (friend.followId) {
       if (friend.isfollow) return { id: friend.followId, isfollow: friend.isfollow };
@@ -39,7 +45,9 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
       <div className={styles["friend__frame__title"]}>
         <Text bold>{title}</Text>
       </div>
-      {search && <Input types="search" placeholder="사용자 닉네임으로 검색" />}
+      {search && (
+        <Input types="search" value={searchKeyWord} onChange={onChangeHandler} placeholder="사용자 닉네임으로 검색" />
+      )}
       <div className={styles["friend__frame__list"]}>
         {friendList && friendList.length > 0 ? (
           friendList.map((item, index) => {
