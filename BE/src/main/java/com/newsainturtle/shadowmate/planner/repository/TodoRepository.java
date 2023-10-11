@@ -16,4 +16,5 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     long countByCategory(final Category category);
     List<Todo> findAllByDailyPlanner(final DailyPlanner dailyPlanner);
     int countByDailyPlanner(final DailyPlanner dailyPlanner);
+    int countByDailyPlannerAndTodoStatusNot(final DailyPlanner dailyPlanner, final TodoStatus todoStatus);
 }
