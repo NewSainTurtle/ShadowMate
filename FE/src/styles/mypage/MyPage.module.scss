@@ -21,10 +21,12 @@ $color-warning: var(--color-warning);
   &__setting {
     display: inline-flex;
     margin: 0 1em 1em 1em;
+    overflow: auto;
   }
 
   &__contents {
     width: 100%;
+    overflow: auto;
   }
 }
 
@@ -371,7 +373,7 @@ $color-warning: var(--color-warning);
     display: grid;
     height: 100%;
     grid-template-rows: 1fr min-content;
-    padding: 0em 1em;
+    padding: 1em;
     box-sizing: border-box;
   }
 
@@ -445,6 +447,41 @@ $color-warning: var(--color-warning);
       display: flex;
       flex-direction: column;
       gap: 1em;
+    }
+  }
+}
+
+.friend {
+  &__cantainer {
+    height: 100%;
+  }
+
+  &__content {
+    overflow-y: auto;
+    padding-right: 1em;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+  }
+
+  &__frame {
+    &__title {
+      padding: 1em;
+      box-sizing: border-box;
+      border-bottom: 1px solid $color-text;
+      margin-bottom: 1em;
+    }
+
+    &__list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 1em;
+      > span {
+        margin: 3em 0em;
+        text-align: center;
+        color: $color-gray-4;
+      }
     }
   }
 }

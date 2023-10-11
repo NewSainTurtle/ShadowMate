@@ -9,6 +9,7 @@ import MyPageInfo from "@components/mypage/details/myInfo/MyInfo";
 import Following from "@components/mypage/details/friend/Following";
 import Follower from "@components/mypage/details/friend/Follower";
 import Search from "@components/mypage/details/friend/Search";
+import MyFriend from "@components/mypage/details/friend/MyFriend";
 
 const MyPage = () => {
   const [tabName, setTabName] = useState<string>("내 정보 확인");
@@ -27,9 +28,9 @@ const MyPage = () => {
               "다이어리 설정": <MyPageDiary />,
               "카테고리 설정": <MyPageFrame title="카테고리" />,
               "디데이 설정": <MyPageFrame title="디데이" />,
-              "팔로잉 목록": <Following />,
-              "팔로워 목록": <Follower />,
-              "친구 검색": <Search />,
+              "팔로워 목록": <MyFriend title="팔로워" />,
+              "팔로잉 목록": <MyFriend title="팔로잉" />,
+              "친구 검색": <MyFriend title="친구검색" />,
             }[tabName]
           }
         </div>
