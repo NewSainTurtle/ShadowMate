@@ -11,7 +11,7 @@ public class SearchWeeklyPlannerResponse {
 
     private String plannerAccessScope;
     private String dday;
-    private List<WeeklyPlannerTodo> weeklyTodos;
-    private List<WeeklyPlannerDaily> dayList;
+    private List<WeeklyPlannerTodoResponse> weeklyTodos;
+    private List<WeeklyPlannerDailyResponse> dayList;
 
 }

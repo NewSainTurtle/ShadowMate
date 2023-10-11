@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 @Builder
-public class WeeklyPlannerDaily {
+public class WeeklyPlannerDailyResponse {
 
     private String date;
     private String retrospection;
-    private List<WeeklyPlannerDailyTodo> dailyTodos;
+    private List<WeeklyPlannerDailyTodoResponse> dailyTodos;
 
 }

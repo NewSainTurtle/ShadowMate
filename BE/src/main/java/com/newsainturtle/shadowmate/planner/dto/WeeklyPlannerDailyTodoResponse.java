@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class WeeklyPlannerDailyTodo {
+public class WeeklyPlannerDailyTodoResponse {
 
     private Long todoId;
     private DailyPlannerTodoCategory category;

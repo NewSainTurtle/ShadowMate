@@ -20,6 +20,6 @@ public class SearchDailyPlannerResponse {
     private long likeCount;
     private int studyTimeHour;
     private int studyTimeMinute;
-    private List<DailyPlannerTodo> dailyTodos;
+    private List<DailyPlannerTodoResponse> dailyTodos;
 
 }

@@ -45,7 +45,7 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
     private Weekly getOrCreateWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
         Date startDate = Date.valueOf(startDateStr);
         Date endDate = Date.valueOf(endDateStr);
-        if (startDate.getDay() != 1 || Period.between(startDate.toLocalDate(), endDate.toLocalDate()).getDays() != 6) {
+        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || Period.between(startDate.toLocalDate(), endDate.toLocalDate()).getDays() != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
         Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDate, endDate);
@@ -142,13 +142,13 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
         return false;
     }
 
-    private List<WeeklyPlannerTodo> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
+    private List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
         final Weekly weekly = getOrCreateWeeklyPlanner(plannerWriter, startDate, endDate);
         final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
-        final List<WeeklyPlannerTodo> weeklyTodos = new ArrayList<>();
+        final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
         if (permission) {
             for (WeeklyTodo weeklyTodo : weeklyTodoList) {
-                weeklyTodos.add(WeeklyPlannerTodo.builder()
+                weeklyTodos.add(WeeklyPlannerTodoResponse.builder()
                         .weeklyTodoId(weeklyTodo.getId())
                         .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
                         .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
@@ -158,13 +158,13 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
         return weeklyTodos;
     }
 
-    private List<WeeklyPlannerDaily> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
-        final List<WeeklyPlannerDaily> dayList = new ArrayList<>();
+    private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
+        final List<WeeklyPlannerDailyResponse> dayList = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
-            final List<WeeklyPlannerDailyTodo> dailyTodos = new ArrayList<>();
+            final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
             if (dailyPlanner == null || !permission) {
-                dayList.add(WeeklyPlannerDaily.builder()
+                dayList.add(WeeklyPlannerDailyResponse.builder()
                         .date(LocalDateToString(date.plusDays(i)))
                         .retrospection(null)
                         .dailyTodos(dailyTodos)
@@ -172,7 +172,7 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
             } else {
                 final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
                 for (Todo todo : todoList) {
-                    dailyTodos.add(WeeklyPlannerDailyTodo.builder()
+                    dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
                             .todoId(todo.getId())
                             .category(todo.getCategory() != null ? DailyPlannerTodoCategory.builder()
                                     .categoryId(todo.getCategory().getId())
@@ -184,7 +184,7 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
                             .todoStatus(todo.getTodoStatus().getStatus())
                             .build());
                 }
-                dayList.add(WeeklyPlannerDaily.builder()
+                dayList.add(WeeklyPlannerDailyResponse.builder()
                         .date(LocalDateToString(date.plusDays(i)))
                         .retrospection(dailyPlanner.getRetrospection())
                         .dailyTodos(dailyTodos)
@@ -207,8 +207,8 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
         }
 
         final boolean permission = havePermissionToSearch(user, plannerWriter);
-        final List<WeeklyPlannerTodo> weeklyTodos = getWeeklyTodos(plannerWriter, startDate, endDate, permission);
-        final List<WeeklyPlannerDaily> dayList = getDayList(plannerWriter, stringToLocalDate(startDate), permission);
+        final List<WeeklyPlannerTodoResponse> weeklyTodos = getWeeklyTodos(plannerWriter, startDate, endDate, permission);
+        final List<WeeklyPlannerDailyResponse> dayList = getDayList(plannerWriter, stringToLocalDate(startDate), permission);
 
         return SearchWeeklyPlannerResponse.builder()
                 .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())

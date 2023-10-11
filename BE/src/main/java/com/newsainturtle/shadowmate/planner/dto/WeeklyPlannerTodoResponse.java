@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class WeeklyPlannerTodo {
+public class WeeklyPlannerTodoResponse {
 
     private long weeklyTodoId;
     private String weeklyTodoContent;
