@@ -1,15 +1,14 @@
 $color-text: var(--color-text);
 
 .month {
-  &_container {
-    height: 100%;
-    display: grid;
-    grid-template-rows: 1fr 9fr;
-    gap: 1em;
-    padding: 1em;
-    box-sizing: border-box;
-  }
-  &_title {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr 9fr;
+  gap: 1em;
+  padding: 1em;
+  box-sizing: border-box;
+
+  &__title {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -23,19 +22,18 @@ $color-text: var(--color-text);
       }
     }
   }
-  &_calendar {
+
+  &__calendar {
     display: grid;
     grid-template-columns: 6fr 4fr;
     gap: 1em;
   }
 }
 
-.monthCalendar {
-  &_container {
-    position: relative;
-  }
+.calendar {
+  position: relative;
 
-  &_overlay {
+  &__overlay {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -53,14 +51,12 @@ $color-text: var(--color-text);
   }
 }
 
-.monthFriends {
-  &_container {
-    > div {
-      margin: 1em 0;
-    }
+.friend {
+  > div {
+    margin: 1em 0;
   }
 
-  &_friendsList {
+  &__list {
     height: 30em;
     overflow-y: scroll;
     > div {

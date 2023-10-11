@@ -17,11 +17,11 @@ const FRIENDS_LIST: ProfileConfig[] = [
 
 const MonthFriends = () => {
   return (
-    <div className={styles.monthFriends_container}>
-      <div className={styles.monthFriends_mine}>
+    <div className={styles["friend"]}>
+      <div className={styles["friend__mine"]}>
         <Profile types="기본" profile={profileInfo} />
       </div>
-      <div className={styles.monthFriends_friendsList}>
+      <div className={styles["friend__list"]}>
         {FRIENDS_LIST.map((item: ProfileConfig, key: number) => (
           <FriendProfile types="기본" profile={item} />
         ))}

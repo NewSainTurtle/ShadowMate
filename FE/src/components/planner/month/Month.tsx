@@ -9,8 +9,8 @@ const Month = () => {
   const year: number = today.getFullYear();
   const month: number = today.getMonth() + 1;
   return (
-    <div className={styles.month_container}>
-      <div className={styles.month_title}>
+    <div className={styles["month"]}>
+      <div className={styles["month__title"]}>
         <Text types="semi-large" bold>
           {year}년 {month}월
         </Text>
@@ -23,7 +23,7 @@ const Month = () => {
           </svg>
         </div>
       </div>
-      <div className={styles.month_calendar}>
+      <div className={styles["month__calendar"]}>
         <MonthCalendar />
         <MonthFriends />
       </div>
