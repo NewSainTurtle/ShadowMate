@@ -318,4 +318,44 @@ public class TodoRepositoryTest {
         assertThat(totalCount).isEqualTo(5);
     }
 
+    @Test
+    public void 일일플래너_할일카운트_완료못한할일() {
+        //given
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("수능완성 수학 10문제")
+                .todoStatus(TodoStatus.COMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("국어")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("개념원리 1단원 문제 풀기")
+                .todoStatus(TodoStatus.INCOMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("쎈 1단원 문제 풀기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("수능완성 과학 10문제")
+                .todoStatus(TodoStatus.COMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+
+        //when
+        final int todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
+
+        //then
+        assertThat(todoCount).isEqualTo(3);
+    }
 }
