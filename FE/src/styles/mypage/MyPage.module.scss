@@ -3,6 +3,7 @@ $color-background: var(--color-background);
 $color-gray-1: var(--color-gray-1);
 $color-gray-2: var(--color-gray-2);
 $color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
 $color-blue: var(--color-btn-blue);
 $color-warning: var(--color-warning);
 
@@ -141,6 +142,9 @@ $color-warning: var(--color-warning);
     display: inline-flex;
     > span:nth-child(1) {
       margin-right: 6em;
+    }
+    > div:nth-child(2) > span {
+      color: $color-gray-5;
     }
   }
 }
@@ -299,12 +303,15 @@ $color-warning: var(--color-warning);
   }
 }
 
-.toggle {
-  display: flex;
-  margin: 1em 0 0;
+.radio {
+  margin: 1em 0.2em;
 
-  &__icon {
-    margin-left: 1em;
+  &__label > span {
+    display: flex;
+    align-items: center;
+    > svg {
+      margin-right: 0.2em;
+    }
   }
 }
 
