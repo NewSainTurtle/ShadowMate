@@ -177,4 +177,12 @@ public class PlannerController {
                 weeklyPlannerServiceImpl.searchWeeklyPlanner(principalDetails.getUser(), userId, startDate, endDate)));
     }
 
+    @GetMapping("/{userId}/calendars")
+    public ResponseEntity<BaseResponse> searchCalendar(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestParam(name = "date") final String date) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_CALENDAR,
+                dailyPlannerServiceImpl.searchCalendar(principalDetails.getUser(), userId, date)));
+    }
+
 }
