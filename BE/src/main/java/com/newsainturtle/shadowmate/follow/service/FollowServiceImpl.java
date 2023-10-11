@@ -69,6 +69,13 @@ public class FollowServiceImpl implements FollowService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteFollower(User user, Long targetUserId) {
+        User targetUser = certifyFollowUser(targetUserId);
+        followRepository.deleteByFollowingIdAndFollowerId(user, targetUser);
+    }
+
     private AddFollowResponse addFollowPublic(final User follower, final User following) {
         if(followRepository.findByFollowerIdAndFollowingId(follower, following) != null) {
             throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
@@ -97,10 +104,10 @@ public class FollowServiceImpl implements FollowService {
                 .build();
     }
 
-    private User certifyFollowUser(final Long followingId) {
-        Optional<User> result = userRepository.findById(followingId);
+    private User certifyFollowUser(final Long userId) {
+        Optional<User> result = userRepository.findById(userId);
         if(!result.isPresent() || result.get().getWithdrawal()) {
-            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER);
+            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER);
         }
         return result.get();
     }
