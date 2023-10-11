@@ -1,6 +1,8 @@
 package com.newsainturtle.shadowmate.planner.service;
 
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.planner.dto.request.*;
+import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchDailyPlannerResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface DailyPlannerService {

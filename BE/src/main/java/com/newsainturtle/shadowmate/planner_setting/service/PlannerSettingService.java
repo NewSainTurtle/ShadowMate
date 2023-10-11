@@ -1,7 +1,8 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
 
-import com.newsainturtle.shadowmate.planner_setting.dto.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
 import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface PlannerSettingService {
