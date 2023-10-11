@@ -144,7 +144,7 @@ public class FollowServiceTest {
         @Test
         void 성공_팔로워삭제() {
             // given
-            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+            doReturn(Optional.ofNullable(user1)).when(userRepository).findById(any());
 
             // when
             followService.deleteFollower(user2, user1.getId());
@@ -260,6 +260,29 @@ public class FollowServiceTest {
             //then
             assertThat(result.getFollowId()).isEqualTo(follow.getId());
             assertThat(result.getPlannerAccessScope()).isEqualTo(follow.getFollowingId().getPlannerAccessScope());
+        }
+
+        @Test
+        void 실패_친구신청취소유저없음() {
+            // given
+
+            // when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowRequest(user1, user2.getId()));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
+        }
+
+        @Test
+        void 성공_친구신청취소() {
+            // given
+            doReturn(Optional.ofNullable(user1)).when(userRepository).findById(any());
+
+            // when
+            followService.deleteFollowRequest(user2, user1.getId());
+
+            // then
+            verify(followRequestRepository, times(1)).deleteByRequesterIdAndReceiverId(any(), any());
         }
 
     }
