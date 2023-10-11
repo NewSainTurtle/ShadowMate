@@ -71,6 +71,13 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
+    public void deleteFollowing(User user, Long targetUserId) {
+        User targetUser = certifyFollowUser(targetUserId);
+        followRepository.deleteByFollowingIdAndFollowerId(targetUser, user);
+    }
+
+    @Override
+    @Transactional
     public void deleteFollower(final User user, final Long targetUserId) {
         User targetUser = certifyFollowUser(targetUserId);
         followRepository.deleteByFollowingIdAndFollowerId(user, targetUser);
