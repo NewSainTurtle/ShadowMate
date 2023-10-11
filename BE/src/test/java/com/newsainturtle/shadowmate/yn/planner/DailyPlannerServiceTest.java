@@ -1004,7 +1004,7 @@ public class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
             assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).isNull();
         }
 
         @Test
@@ -1046,7 +1046,7 @@ public class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
             assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).isNull();
         }
 
         @Test
@@ -1089,7 +1089,7 @@ public class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
             assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).isNull();
         }
 
         @Test
@@ -1168,8 +1168,8 @@ public class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
             assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(40);
-            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNotNull();
-            assertThat(searchDailyPlannerResponse.getDailyTodo().size()).isEqualTo(1);
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodos().size()).isEqualTo(1);
         }
 
         @Test
@@ -1234,8 +1234,8 @@ public class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
             assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(40);
-            assertThat(searchDailyPlannerResponse.getDailyTodo()).isNotNull();
-            assertThat(searchDailyPlannerResponse.getDailyTodo().size()).isEqualTo(1);
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodos().size()).isEqualTo(1);
         }
     }
 }
