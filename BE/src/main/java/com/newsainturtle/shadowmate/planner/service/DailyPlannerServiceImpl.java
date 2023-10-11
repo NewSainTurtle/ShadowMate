@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -369,5 +370,62 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                     .build();
 
         }
+    }
+
+    private String LocalDateToString(final LocalDate date) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    private LocalDate stringToLocalDate(final String dateStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
+
+    @Override
+    public SearchCalendarResponse searchCalendar(final User user, final Long plannerWriterId, final String dateStr) {
+        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-01)$";
+        if (!Pattern.matches(datePattern, dateStr)) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT);
+        }
+
+        final User plannerWriter = userRepository.findByIdAndWithdrawalIsFalse(plannerWriterId);
+        if (plannerWriter == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_USER);
+        }
+
+        final List<CalendarDayResponse> dayList = new ArrayList<>();
+        if (havePermissionToSearch(user, plannerWriter)) {
+            final LocalDate date = stringToLocalDate(dateStr);
+            int lastDay = YearMonth.from(date).lengthOfMonth();
+
+            for (int i = 0; i < lastDay; i++) {
+                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
+                int todoCount = 0;
+                int dayStaus = 0;
+                if (dailyPlanner != null) {
+                    final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner);
+                    if (totalCount > 0) {
+                        todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
+                        final double percent = ((totalCount - todoCount) / (double)totalCount) * 100;
+                        dayStaus = percent == 100 ? 3 : percent >= 60 ? 2 : 1;
+                    }
+                }
+                dayList.add(
+                        CalendarDayResponse.builder()
+                                .date(LocalDateToString(date.plusDays(i)))
+                                .todoCount(todoCount)
+                                .dayStatus(dayStaus)
+                                .build()
+                );
+
+            }
+
+        }
+
+        return SearchCalendarResponse.builder()
+                .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
+                .dayList(dayList)
+                .build();
     }
 }
