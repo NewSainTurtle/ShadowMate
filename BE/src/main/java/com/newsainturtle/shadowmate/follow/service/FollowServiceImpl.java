@@ -76,6 +76,13 @@ public class FollowServiceImpl implements FollowService {
         followRepository.deleteByFollowingIdAndFollowerId(user, targetUser);
     }
 
+    @Override
+    @Transactional
+    public void deleteFollowRequest(final User user, final Long targetUserId) {
+        User targetUser = certifyFollowUser(targetUserId);
+        followRequestRepository.deleteByRequesterIdAndReceiverId(user, targetUser);
+    }
+
     private AddFollowResponse addFollowPublic(final User follower, final User following) {
         if(followRepository.findByFollowerIdAndFollowingId(follower, following) != null) {
             throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);

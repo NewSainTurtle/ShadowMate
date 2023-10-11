@@ -126,8 +126,6 @@ public class FollowRepositoryTest {
     }
     @Nested
     class 팔로워TEST {
-        final User user1 = userRepository.findByEmail("test1@test.com");
-        final User user2 = userRepository.findByEmail("test2@test.com");
 
         @Test
         void 실패_팔로워조회_NULL() {
@@ -144,7 +142,7 @@ public class FollowRepositoryTest {
         @Test
         void 성공_팔로워조회() {
             //given
-            followRepository.save(Follow.builder()
+            Follow follow = followRepository.save(Follow.builder()
                     .followerId(user1)
                     .followingId(user2)
                     .build());
@@ -153,7 +151,7 @@ public class FollowRepositoryTest {
             final List<Follow> followList = followRepository.findAllByFollowingId(user2);
 
             //then
-            assertThat(followList.get(0).getFollowerId().getId()).isEqualTo(user1.getId());
+            assertThat(followList.get(0).getFollowerId().getNickname()).isEqualTo(user1.getNickname());
         }
 
         @Test
