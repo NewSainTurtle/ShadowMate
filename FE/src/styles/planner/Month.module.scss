@@ -1,24 +1,32 @@
 $color-text: var(--color-text);
+$color-gray-1: var(--color-gray-1);
 
 .month {
   height: 100%;
-  display: grid;
-  grid-template-rows: 1fr 9fr;
-  gap: 1em;
   padding: 1em;
   box-sizing: border-box;
 
   &__title {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 2em;
+    align-items: flex-end;
+    height: 8em;
     > div {
-      margin: 0 0 0.2em 1em;
-      > svg {
+      display: flex;
+      align-items: center;
+      margin: 0 1em;
+      > span {
         margin-right: 1em;
-        fill: $color-text;
+      }
+      > div {
+        padding: 0.5em;
+        box-sizing: border-box;
         cursor: pointer;
+        > svg {
+          fill: $color-text;
+        }
+        &:hover {
+          background-color: $color-gray-1;
+        }
       }
     }
   }

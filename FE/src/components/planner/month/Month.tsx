@@ -11,16 +11,20 @@ const Month = () => {
   return (
     <div className={styles["month"]}>
       <div className={styles["month__title"]}>
-        <Text types="semi-large" bold>
-          {year}년 {month}월
-        </Text>
         <div>
-          <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-            <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
-          </svg>
-          <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-            <path d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z" />
-          </svg>
+          <Text types="semi-large" bold>
+            {year}년 {month}월
+          </Text>
+          <div>
+            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
+              <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
+            </svg>
+          </div>
+          <div>
+            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
+              <path d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z" />
+            </svg>
+          </div>
         </div>
       </div>
       <div className={styles["month__calendar"]}>
