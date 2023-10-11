@@ -1,34 +1,47 @@
 $color-text: var(--color-text);
 $color-gray-1: var(--color-gray-1);
+$color-gray-3: var(--color-gray-3);
+$color-gray-5: var(--color-gray-5);
 $color-blue: var(--color-btn-blue);
 
 .month {
   height: 100%;
-  padding: 1em;
+  padding: 2em;
   box-sizing: border-box;
 
   &__title {
     display: flex;
     align-items: flex-end;
     height: 8em;
+    margin-bottom: 2em;
     > div {
       display: flex;
       align-items: center;
-      margin: 0 1em;
-      > span {
-        margin-right: 1em;
-      }
       > div {
-        padding: 0.5em;
-        box-sizing: border-box;
-        cursor: pointer;
-        > svg {
-          fill: $color-text;
+        display: flex;
+        // 날짜(년월) 영역
+        > div:nth-child(1) {
+          width: 8em;
+          text-align: end;
         }
-        &:hover {
-          background-color: $color-gray-1;
+        > div:nth-child(2) {
+          width: 4.7em;
+          text-align: end;
         }
       }
+    }
+  }
+
+  &__button {
+    margin-left: 1em;
+    padding: 0.5em;
+    box-sizing: border-box;
+    cursor: pointer;
+    > svg {
+      fill: $color-text;
+    }
+    &:hover {
+      background-color: $color-gray-1;
     }
   }
 
@@ -36,12 +49,68 @@ $color-blue: var(--color-btn-blue);
     display: grid;
     grid-template-columns: 6fr 4fr;
     gap: 1em;
-    height: calc(100% - 8em);
+    height: calc(100% - 8em - 2em);
   }
 }
 
 .calendar {
   position: relative;
+  display: grid;
+  grid-template-columns: auto repeat(7, 1fr);
+  grid-template-rows: auto repeat(6, 1fr);
+  padding: 1em;
+  box-sizing: border-box;
+
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $color-gray-5;
+    > span {
+      padding-bottom: 1em;
+    }
+  }
+
+  &__week {
+    @extend .calendar__container;
+    align-items: flex-end;
+    &-cnt {
+      @extend .calendar__container;
+      justify-content: flex-end;
+      margin-right: 0.5em;
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    > div:nth-child(1) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 2.5em;
+      width: 2.5em;
+      background-color: $color-blue;
+      color: $color-text;
+      border-radius: 20%;
+    }
+    > span:nth-child(2) {
+      margin-top: 0.2em;
+      color: $color-text;
+    }
+    &--null {
+      @extend .calendar__item;
+      > div:nth-child(1) {
+        background-color: $color-gray-1;
+      }
+      > span {
+        visibility: hidden;
+      }
+    }
+  }
 
   &__overlay {
     display: flex;
@@ -59,16 +128,6 @@ $color-blue: var(--color-btn-blue);
       fill: $color-text;
     }
   }
-
-  &__item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 2em;
-    width: 2em;
-    background-color: $color-blue;
-    border-radius: 20%;
-  }
 }
 
 .friend {
@@ -81,7 +140,8 @@ $color-blue: var(--color-btn-blue);
   &__list {
     position: absolute;
     width: 100%;
-    height: calc(100% - 8em - 2em); // title: 8em, margin: 2em 뺀 나머지.
+    // title: 8em, margin: 2em 뺀 나머지, 2.7em: 한번에 친구 5개만 출력되도록.
+    height: calc(100% - 8em - 2em - 2.7em);
     overflow-y: auto;
     > div {
       margin-bottom: 1em;

@@ -1,12 +1,66 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
+import dayjs from "dayjs";
 
-const MonthCalendar = () => {
+interface Props {
+  selectedDay: string;
+  setSelectedDay: Dispatch<SetStateAction<string>>;
+}
+
+const MonthCalendar = ({ selectedDay, setSelectedDay }: Props) => {
   const [isNotFriend, setIsNotFriend] = useState<boolean>(false);
+  const [ItemList, setItemList] = useState<(string | null)[]>([null]);
+  const dayOfWeek = ["", "월", "화", "수", "목", "금", "토", "일"];
+
+  const initArr = (firstDay: number, daysInMonth: number) => {
+    return Array.from({ length: firstDay + daysInMonth }, (v, i) =>
+      i < firstDay
+        ? null
+        : dayjs(selectedDay)
+            .startOf("month")
+            .set("date", i - firstDay + 1)
+            .format("YYYY-MM-DD"),
+    );
+  };
+
+  useEffect(() => {
+    const firstDay = dayjs(selectedDay).startOf("month").day();
+    const daysInMonth = dayjs(selectedDay).daysInMonth();
+    setItemList(initArr(firstDay, daysInMonth));
+  }, [selectedDay]);
+
   return (
     <>
       <div className={styles["calendar"]}>
+        {dayOfWeek.map((item, idx) => (
+          <div className={styles["calendar__week"]} key={idx}>
+            <Text types="small">{item}</Text>
+          </div>
+        ))}
+        {ItemList.map((item, idx) => {
+          return (
+            <>
+              {idx % 7 === 0 && (
+                <div className={styles["calendar__container"]}>
+                  <Text types="small">{(idx % 6) + 1}주차</Text>
+                </div>
+              )}
+              <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>
+                {item ? (
+                  <div className={styles["calendar__item"]}>
+                    <div>
+                      <Text types="small">0</Text>
+                    </div>
+                    <Text types="small">{dayjs(item).date()}</Text>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            </>
+          );
+        })}
         {isNotFriend && (
           <div className={styles["calendar__overlay"]}>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
