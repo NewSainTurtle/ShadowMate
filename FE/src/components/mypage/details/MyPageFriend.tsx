@@ -14,29 +14,31 @@ interface Props {
 
 const MyPageFriendFrame = ({ title, search, friendList }: Props) => {
   return (
-    <>
-      <div className={styles["friend__frame--title"]}>
+    <div className={styles["friend__frame"]}>
+      <div className={styles["friend__frame__title"]}>
         <Text bold>{title}</Text>
       </div>
       {search && <Input types="search" placeholder="사용자 닉네임으로 검색" />}
-      <div className={styles["friend__frame--list"]}>
-        {friendList?.map((item, index) => {
-          let type = typeof item;
-          console.log(title);
-          let followInfo = {
-            nickname: item.nickname,
-            message: item.statusMessage,
-            src: item.profileImage,
-          };
-          return <FriendProfile key={index} types="기본" profile={followInfo} />;
-        })}
+      <div className={styles["friend__frame__list"]}>
+        {friendList && friendList.length > 0 ? (
+          friendList.map((item, index) => {
+            let followInfo = {
+              nickname: item.nickname,
+              message: item.statusMessage,
+              src: item.profileImage,
+            };
+            return <FriendProfile key={index} types="기본" profile={followInfo} />;
+          })
+        ) : (
+          <Text types="small">{title}이(가) 없습니다.</Text>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
 const MyPageFriend = () => {
-  const currentTab = "팔로워";
+  const currentTab: "팔로워" | "팔로잉" | "친구검색" = "팔로워";
 
   return (
     <div className={styles["friend__cantainer"]}>
