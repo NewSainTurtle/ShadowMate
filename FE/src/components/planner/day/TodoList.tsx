@@ -18,10 +18,6 @@ const TodoList = () => {
     }
   }, [todos.length]);
 
-  useEffect(() => {
-    console.log(todos);
-  }, [todos]);
-
   const todoModule = (() => {
     const insertTodo = (props: todoType) => {
       setTodos([...todos, { ...props, todoId: nextId.current }]);
