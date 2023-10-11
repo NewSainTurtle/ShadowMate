@@ -29,6 +29,33 @@ export const followerListData: followerType[] = [
     statusMessage: "오늘 점심은 꿀이다",
     isfollow: "팔로워신청",
   },
+  {
+    followId: 1,
+    followerId: 1,
+    email: "ribbonE@todo.mate",
+    nickname: "ribbonE",
+    profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/ad4b287b-3d15-4756-a476-06bab40cefaa",
+    statusMessage: "방가방가",
+    isfollow: "취소",
+  },
+  {
+    followId: 2,
+    followerId: 2,
+    email: "토롱이@todo.mate",
+    nickname: "토롱이",
+    profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/d4ee7bff-299f-49de-a372-91b7a15076d2",
+    statusMessage: "인생은 생각하는대로 흘러간다.",
+    isfollow: "삭제",
+  },
+  {
+    followId: 3,
+    followerId: 3,
+    email: "곰돌이@todo.mate",
+    nickname: "곰돌이 푸",
+    profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/56212d87-c2e8-44c8-ac40-53e3a0b55e47",
+    statusMessage: "오늘 점심은 꿀이다",
+    isfollow: "팔로워신청",
+  },
 ];
 
 export const followingListData: followingType[] = [

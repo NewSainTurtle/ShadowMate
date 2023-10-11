@@ -29,7 +29,6 @@ export interface followRequestType extends friendInfo {
 }
 
 // 친구 검색
-
 export interface friendSearchType extends friendInfo, isfollow {
   userId: number;
 }

@@ -20,6 +20,7 @@ $color-warning: var(--color-warning);
   &__setting {
     display: inline-flex;
     margin: 0 1em 1em 1em;
+    overflow: auto;
   }
 
   &__contents {
@@ -336,27 +337,26 @@ $color-warning: var(--color-warning);
 .friend {
   &__cantainer {
     height: 100%;
-    padding: 1em;
+  }
+
+  &__content {
+    overflow-y: auto;
+    padding-right: 1em;
     box-sizing: border-box;
   }
 
-  &__tab {
-    color: $color-text;
-    display: flex;
-  }
+  &__frame {
+    &--title {
+      padding: 1em;
+      box-sizing: border-box;
+      border-bottom: 1px solid $color-text;
+      margin-bottom: 1em;
+    }
 
-  &__subtab {
-    display: flex;
-    width: 50%;
-    padding: 10px;
-    transition: 0.5s;
-    justify-content: center;
-    border-bottom: 1px solid $color-text;
-    cursor: pointer;
-
-    &--focused {
-      background-color: $color-blue;
-      color: rgb(21, 20, 20);
+    &--list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 1em;
     }
   }
 }
