@@ -51,8 +51,6 @@ public class FollowController {
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final DeleteFollowerRequest deleteFollowerRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        System.out.println("userId = " + userId);
-        System.out.println("deleteFollowerRequest = " + deleteFollowerRequest.getFollowerId());
         followService.deleteFollower(principalDetails.getUser(), deleteFollowerRequest.getFollowerId());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_FOLLOWER));
     }
