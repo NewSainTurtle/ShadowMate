@@ -319,8 +319,9 @@ $color-warning: var(--color-warning);
         cursor: pointer;
         & + div {
           margin: 0.2em 0;
-          max-height: 0;
-          transition: all 0.25s;
+          // 탭 아코디언 동작 시 사용됨.
+          // max-height: 0;
+          // transition: all 0.25s;
           overflow: hidden;
           cursor: pointer;
         }
