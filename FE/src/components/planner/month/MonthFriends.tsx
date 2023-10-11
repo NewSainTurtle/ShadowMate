@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Month.module.scss";
+import styles from "@styles/planner/Month.module.scss";
 import Profile from "@components/common/Profile";
 import { profileInfo } from "@pages/commonPage";
 import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";

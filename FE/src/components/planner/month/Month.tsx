@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../month/Month.module.scss";
+import styles from "@styles/planner/Month.module.scss";
 import MonthCalendar from "./MonthCalendar";
 import MonthFriends from "./MonthFriends";
 import Text from "@components/common/Text";

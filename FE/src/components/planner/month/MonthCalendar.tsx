@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./Month.module.scss";
+import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 
 const MonthCalendar = () => {
