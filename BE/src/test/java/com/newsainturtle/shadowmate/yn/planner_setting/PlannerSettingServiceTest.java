@@ -1,7 +1,8 @@
 package com.newsainturtle.shadowmate.yn.planner_setting;
 
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
-import com.newsainturtle.shadowmate.planner_setting.dto.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;

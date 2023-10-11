@@ -1,6 +1,11 @@
 package com.newsainturtle.shadowmate.planner.service;
 
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.planner.dto.request.AddWeeklyTodoRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.RemoveWeeklyTodoRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoContentRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoStatusRequest;
+import com.newsainturtle.shadowmate.planner.dto.response.AddWeeklyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchWeeklyPlannerResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface WeeklyPlannerService {

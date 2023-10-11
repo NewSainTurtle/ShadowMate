@@ -6,7 +6,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingController;
-import com.newsainturtle.shadowmate.planner_setting.dto.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;

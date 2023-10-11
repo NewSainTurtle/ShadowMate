@@ -1,7 +1,8 @@
 package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.planner.dto.request.*;
+import com.newsainturtle.shadowmate.planner.dto.response.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -333,7 +334,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
             for (Todo todo : todoList) {
                 dailyTodos.add(DailyPlannerTodoResponse.builder()
                         .todoId(todo.getId())
-                        .category(todo.getCategory() != null ? DailyPlannerTodoCategory.builder()
+                        .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
                                 .categoryId(todo.getCategory().getId())
                                 .categoryTitle(todo.getCategory().getCategoryTitle())
                                 .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())

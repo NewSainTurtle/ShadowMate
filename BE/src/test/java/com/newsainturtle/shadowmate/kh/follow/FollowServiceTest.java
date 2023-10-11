@@ -29,8 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FollowServiceTest {
@@ -130,6 +129,29 @@ public class FollowServiceTest {
             //then
             assertThat(result.get(0).getNickname()).isEqualTo(user1.getNickname());
         }
+
+        @Test
+        void 실패_팔로워유저없음() {
+            // given
+
+            // when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollower(user1, user2.getId()));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
+        }
+
+        @Test
+        void 성공_팔로워삭제() {
+            // given
+            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+
+            // when
+            followService.deleteFollower(user2, user1.getId());
+
+            // then
+            verify(followRepository, times(1)).deleteByFollowingIdAndFollowerId(any(), any());
+        }
     }
 
     @Nested
@@ -178,13 +200,13 @@ public class FollowServiceTest {
             //given
             final Long userId = 9999L;
 
-            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER)).when(userRepository).findById(any());
+            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(userRepository).findById(any());
 
             //when
             final FollowException result = assertThrows(FollowException.class, () -> followService.addFollow(user1, userId));
 
             //then
-            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOWING_USER);
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
         }
 
 

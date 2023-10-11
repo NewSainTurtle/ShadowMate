@@ -1,8 +1,8 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
-import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
-import com.newsainturtle.shadowmate.planner_setting.dto.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
@@ -22,7 +22,6 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

@@ -14,4 +14,6 @@ public interface FollowService {
     List<FollowerResponse> getFollower(final User user);
 
     AddFollowResponse addFollow(final User user, final Long targetUserId);
+
+    void deleteFollower(final User user, final Long targetUserId);
 }
