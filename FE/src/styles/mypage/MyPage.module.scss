@@ -345,7 +345,8 @@ $color-warning: var(--color-warning);
     justify-content: center;
     background-color: $color-background;
     > div {
-      margin: 0.5em 1.5em;
+      padding: 0.5em 1.5em;
+      box-sizing: border-box;
       &:hover {
         font-weight: 800; // 왜 안먹지
       }
