@@ -65,7 +65,6 @@ $color-warning: var(--color-warning);
     > div {
       display: flex;
       align-items: center;
-
       > svg {
         font-size: medium;
         padding: 0.5em;
@@ -132,19 +131,34 @@ $color-warning: var(--color-warning);
 }
 
 .diary {
-  &__contents {
-    padding: 1em;
-    margin-left: 3em;
+  &__container {
+    height: 100%;
+    padding: 0 1em;
     box-sizing: border-box;
+  }
+
+  &__contents {
+    position: relative;
+    height: 100%;
   }
 
   &__line {
     display: inline-flex;
+    margin-left: 3em;
+    padding-top: 1em;
     > span:nth-child(1) {
       margin-right: 6em;
     }
     > div:nth-child(2) > span {
       color: $color-gray-5;
+    }
+  }
+
+  &__button {
+    @extend .frame__button;
+
+    &--save {
+      @extend .frame__button--save;
     }
   }
 }
