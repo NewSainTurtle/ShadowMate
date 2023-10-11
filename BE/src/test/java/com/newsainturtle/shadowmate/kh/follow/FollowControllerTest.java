@@ -185,6 +185,22 @@ public class FollowControllerTest {
             resultActions.andExpect(status().isOk());
 
         }
+        @Test
+        void 실패_팔로워삭제유저없음() throws Exception {
+            //given
+            final DeleteFollowerRequest deleteFollowerRequest = DeleteFollowerRequest.builder().followerId(1L).build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(deleteFollowerRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
 
         @Test
         void 성공_팔로워삭제() throws Exception {
