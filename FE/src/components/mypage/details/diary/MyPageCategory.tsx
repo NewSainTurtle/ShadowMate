@@ -2,7 +2,7 @@ import React, { ChangeEvent, ChangeEventHandler, Dispatch, SetStateAction, useEf
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import CategoryColorList from "../item/CategoryColorList";
+import CategoryColorList from "@components/mypage/item/CategoryColorList";
 import { categoryType } from "@util/planner.interface";
 import { CATEGORY_COLORS } from "@util/data/CategoryData";
 
