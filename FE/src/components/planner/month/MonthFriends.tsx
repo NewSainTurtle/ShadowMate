@@ -23,7 +23,7 @@ const MonthFriends = () => {
       </div>
       <div className={styles["friend__list"]}>
         {FRIENDS_LIST.map((item: ProfileConfig, key: number) => (
-          <FriendProfile types="기본" profile={item} />
+          <FriendProfile types="기본" profile={item} key={key} />
         ))}
       </div>
     </div>
