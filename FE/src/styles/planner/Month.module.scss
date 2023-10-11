@@ -1,5 +1,6 @@
 $color-text: var(--color-text);
 $color-gray-1: var(--color-gray-1);
+$color-blue: var(--color-btn-blue);
 
 .month {
   height: 100%;
@@ -57,6 +58,16 @@ $color-gray-1: var(--color-gray-1);
       margin-bottom: 1em;
       fill: $color-text;
     }
+  }
+
+  &__item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2em;
+    width: 2em;
+    background-color: $color-blue;
+    border-radius: 20%;
   }
 }
 
