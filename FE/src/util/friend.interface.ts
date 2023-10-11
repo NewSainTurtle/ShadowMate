@@ -7,7 +7,7 @@ interface friendInfo {
 }
 
 interface isfollow {
-  isfollow: "취소" | "삭제" | "팔로워신청";
+  isfollow: "취소" | "삭제" | "팔로워 신청";
 }
 
 // 팔로워 목록

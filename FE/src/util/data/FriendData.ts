@@ -27,10 +27,10 @@ export const followerListData: followerType[] = [
     nickname: "곰돌이 푸",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/56212d87-c2e8-44c8-ac40-53e3a0b55e47",
     statusMessage: "오늘 점심은 꿀이다",
-    isfollow: "팔로워신청",
+    isfollow: "팔로워 신청",
   },
   {
-    followId: 1,
+    followId: 4,
     followerId: 1,
     email: "ribbonE@todo.mate",
     nickname: "ribbonE",
@@ -39,7 +39,7 @@ export const followerListData: followerType[] = [
     isfollow: "취소",
   },
   {
-    followId: 2,
+    followId: 5,
     followerId: 2,
     email: "토롱이@todo.mate",
     nickname: "토롱이",
@@ -48,13 +48,13 @@ export const followerListData: followerType[] = [
     isfollow: "삭제",
   },
   {
-    followId: 3,
+    followId: 6,
     followerId: 3,
     email: "곰돌이@todo.mate",
     nickname: "곰돌이 푸",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/56212d87-c2e8-44c8-ac40-53e3a0b55e47",
     statusMessage: "오늘 점심은 꿀이다",
-    isfollow: "팔로워신청",
+    isfollow: "팔로워 신청",
   },
 ];
 
@@ -135,7 +135,7 @@ export const FriendSearch: friendSearchType[] = [
     nickname: "곰돌이 푸",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/56212d87-c2e8-44c8-ac40-53e3a0b55e47",
     statusMessage: "오늘 점심은 꿀이다",
-    isfollow: "팔로워신청",
+    isfollow: "팔로워 신청",
   },
   {
     userId: 1,
@@ -159,6 +159,6 @@ export const FriendSearch: friendSearchType[] = [
     nickname: "세계평화",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/4effef28-b7ea-4c77-90bb-6c570c4c66cd",
     statusMessage: "세계 정복을 목표로 공부하기",
-    isfollow: "팔로워신청",
+    isfollow: "팔로워 신청",
   },
 ];
