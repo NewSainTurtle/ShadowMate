@@ -397,7 +397,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         final List<CalendarDayResponse> dayList = new ArrayList<>();
         if (havePermissionToSearch(user, plannerWriter)) {
             final LocalDate date = stringToLocalDate(dateStr);
-            int lastDay = YearMonth.from(date).lengthOfMonth();
+            final int lastDay = YearMonth.from(date).lengthOfMonth();
 
             for (int i = 0; i < lastDay; i++) {
                 final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
