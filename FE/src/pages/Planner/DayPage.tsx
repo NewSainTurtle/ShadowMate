@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
-import Ment from "@components/planner/day/Ment";
+import TimeTable from "@components/planner/day/TimeTable";
 import TodoList from "@components/planner/day/TodoList";
+import Ment from "@components/planner/day/Ment";
 import dayjs from "dayjs";
 
 const DayPage = () => {
@@ -59,7 +60,7 @@ const DayPage = () => {
       </div>
 
       <div className={styles["item__timetable"]}>
-        <div>타임테이블</div>
+        <TimeTable date={date} />
       </div>
 
       <Ment
