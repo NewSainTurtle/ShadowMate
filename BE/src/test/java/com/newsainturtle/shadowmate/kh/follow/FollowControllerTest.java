@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
+import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
 import com.newsainturtle.shadowmate.follow.dto.*;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
@@ -347,6 +348,125 @@ public class FollowControllerTest {
             // then
             resultActions.andExpect(status().isOk());
         }
-        
+        @Test
+        public void 실패_친구신청유저인증실패() throws Exception {
+            //given
+            final Long userId = 2L;
+            final String url = "/api/follow/{userId}/receive";
+            final ReceiveFollowRequest receiveFollowRequest = ReceiveFollowRequest.builder()
+                    .requesterId(1L)
+                    .followReceive(false)
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(receiveFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+
+        }
+        @Test
+        public void 실패_친구신청유저없음() throws Exception {
+            //given
+            final Long userId = 2L;
+            final String url = "/api/follow/{userId}/receive";
+            final ReceiveFollowRequest receiveFollowRequest = ReceiveFollowRequest.builder()
+                    .requesterId(1L)
+                    .followReceive(false)
+                    .build();
+            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(followService).receiveFollow(any(), any(), any(boolean.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(receiveFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isNotFound());
+
+        }
+
+        @Test
+        public void 실패_친구신청존재하지않음() throws Exception {
+            //given
+            final Long userId = 2L;
+            final String url = "/api/follow/{userId}/receive";
+            final ReceiveFollowRequest receiveFollowRequest = ReceiveFollowRequest.builder()
+                    .requesterId(1L)
+                    .followReceive(false)
+                    .build();
+            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST)).when(followService).receiveFollow(any(), any(), any(boolean.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(receiveFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isNotFound());
+
+        }
+
+        @Test
+        public void 성공_친구신청거절() throws Exception {
+            //given
+            final Long userId = 2L;
+            final String url = "/api/follow/{userId}/receive";
+            final ReceiveFollowRequest receiveFollowRequest = ReceiveFollowRequest.builder()
+                    .requesterId(1L)
+                    .followReceive(false)
+                    .build();
+            doReturn(FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE).when(followService).receiveFollow(any(),
+                    any(),
+                    any(boolean.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(receiveFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE));
+
+        }
+
+        @Test
+        public void 성공_친구신청수락() throws Exception {
+            //given
+            final Long userId = 2L;
+            final String url = "/api/follow/{userId}/receive";
+            final ReceiveFollowRequest receiveFollowRequest = ReceiveFollowRequest.builder()
+                    .requesterId(1L)
+                    .followReceive(true)
+                    .build();
+            doReturn(FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE).when(followService).receiveFollow(any(),
+                    any(),
+                    any(boolean.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(receiveFollowRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE));
+
+        }
+
     }
 }
