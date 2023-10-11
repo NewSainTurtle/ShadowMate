@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchCalendarResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.SearchDailyPlannerResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
@@ -1239,5 +1240,278 @@ public class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getDailyTodos()).isNotNull();
             assertThat(searchDailyPlannerResponse.getDailyTodos().size()).isEqualTo(1);
         }
+    }
+
+    @Nested
+    class 캘린더조회 {
+        final long plannerWriterId = 1L;
+        final String dateStr = "2023-10-01";
+        final int lastDay = 31;
+
+        @Test
+        public void 실패_유효하지않은날짜형식() {
+            //given
+            final String invalidDay = "2023.10.01";
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, invalidDay));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE_FORMAT);
+        }
+
+        @Test
+        public void 실패_유효하지않은날짜_1일이아님() {
+            //given
+            final String invalidDay = "2023-10-02";
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, invalidDay));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE_FORMAT);
+        }
+
+        @Test
+        public void 실패_유효하지않은플래너작성자() {
+            //given
+            doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
+        }
+
+        @Test
+        public void 성공_비공개() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test123@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                    .withdrawal(false)
+                    .build();
+
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+
+            //when
+            final SearchCalendarResponse searchCalendarResponse = dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
+
+            //then
+            assertThat(searchCalendarResponse).isNotNull();
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE.getScope());
+            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(0);
+        }
+
+        @Test
+        public void 성공_친구공개_친구아님() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test123@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                    .withdrawal(false)
+                    .build();
+
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+
+            //when
+            final SearchCalendarResponse searchCalendarResponse = dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
+
+            //then
+            assertThat(searchCalendarResponse).isNotNull();
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
+            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(0);
+        }
+
+        @Test
+        public void 성공_친구공개_친구() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test123@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                    .withdrawal(false)
+                    .build();
+            final Follow follow = Follow.builder()
+                    .id(1L)
+                    .followerId(user)
+                    .followingId(plannerWriter)
+                    .build();
+            final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
+                    .user(plannerWriter)
+                    .build();
+
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(0).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
+
+            //when
+            final SearchCalendarResponse searchCalendarResponse = dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
+
+            //then
+            assertThat(searchCalendarResponse).isNotNull();
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
+            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+        }
+
+        @Test
+        public void 성공_전체공개_할일등록안함() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test123@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+            final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
+                    .user(plannerWriter)
+                    .build();
+
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(0).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
+
+            //when
+            final SearchCalendarResponse searchCalendarResponse = dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
+
+            //then
+            assertThat(searchCalendarResponse).isNotNull();
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
+            assertThat(searchCalendarResponse.getDayList().get(lastDay-1).getDate()).isEqualTo("2023-10-31");
+            assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(0);
+            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(0);
+        }
+
+        @Test
+        public void 성공_전체공개_할일60미만달성() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test123@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+            final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
+                    .user(plannerWriter)
+                    .build();
+
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(6).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
+
+            //when
+            final SearchCalendarResponse searchCalendarResponse = dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
+
+            //then
+            assertThat(searchCalendarResponse).isNotNull();
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
+            assertThat(searchCalendarResponse.getDayList().get(lastDay-1).getDate()).isEqualTo("2023-10-31");
+            assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(1);
+            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(6);
+        }
+
+        @Test
+        public void 성공_전체공개_할일100미만60이상달성() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test123@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+            final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
+                    .user(plannerWriter)
+                    .build();
+
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(2).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
+
+            //when
+            final SearchCalendarResponse searchCalendarResponse = dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
+
+            //then
+            assertThat(searchCalendarResponse).isNotNull();
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
+            assertThat(searchCalendarResponse.getDayList().get(lastDay-1).getDate()).isEqualTo("2023-10-31");
+            assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(2);
+            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(2);
+        }
+
+        @Test
+        public void 성공_전체공개_할일100달성() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test123@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+            final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                    .id(2L)
+                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
+                    .user(plannerWriter)
+                    .build();
+
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(2).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(0).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
+
+            //when
+            final SearchCalendarResponse searchCalendarResponse = dailyPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
+
+            //then
+            assertThat(searchCalendarResponse).isNotNull();
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
+            assertThat(searchCalendarResponse.getDayList().get(lastDay-1).getDate()).isEqualTo("2023-10-31");
+            assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(3);
+            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(0);
+        }
+
+
     }
 }
