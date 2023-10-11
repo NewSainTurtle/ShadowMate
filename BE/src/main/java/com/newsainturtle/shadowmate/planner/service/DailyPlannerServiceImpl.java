@@ -329,9 +329,9 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
             final long likeCount = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
             final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
 
-            final List<DailyPlannerTodo> dailyTodo = new ArrayList<>();
+            final List<DailyPlannerTodoResponse> dailyTodos = new ArrayList<>();
             for (Todo todo : todoList) {
-                dailyTodo.add(DailyPlannerTodo.builder()
+                dailyTodos.add(DailyPlannerTodoResponse.builder()
                         .todoId(todo.getId())
                         .category(todo.getCategory() != null ? DailyPlannerTodoCategory.builder()
                                 .categoryId(todo.getCategory().getId())
@@ -341,7 +341,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                                 .build() : null)
                         .todoContent(todo.getTodoContent())
                         .todoStatus(todo.getTodoStatus().getStatus())
-                        .timeTable(todo.getTimeTable() != null ? DailyPlannerTodoTimeTable.builder()
+                        .timeTable(todo.getTimeTable() != null ? DailyPlannerTodoTimeTableResponse.builder()
                                 .timeTableId(todo.getTimeTable().getId())
                                 .startTime(LocalDateTimeToString(todo.getTimeTable().getStartTime()))
                                 .endTime(LocalDateTimeToString(todo.getTimeTable().getEndTime()))
@@ -364,7 +364,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                     .likeCount(likeCount)
                     .studyTimeHour(totalMinutes / 60)
                     .studyTimeMinute(totalMinutes % 60)
-                    .dailyTodo(dailyTodo)
+                    .dailyTodos(dailyTodos)
                     .build();
 
         }

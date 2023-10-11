@@ -5,12 +5,12 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class DailyPlannerTodo {
+public class DailyPlannerTodoResponse {
 
     private Long todoId;
     private DailyPlannerTodoCategory category;
     private String todoContent;
     private String todoStatus;
-    private DailyPlannerTodoTimeTable timeTable;
+    private DailyPlannerTodoTimeTableResponse timeTable;
 
 }

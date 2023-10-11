@@ -9,12 +9,14 @@ import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Date;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -141,6 +143,42 @@ public class WeeklyTodoRepositoryTest {
 
         //then
         assertThat(findWeeklyTodo).isNull();
+    }
+
+    @Nested
+    class 주차별할일목록조회 {
+        @Test
+        public void 주차별할일데이터없음() {
+            //given
+
+            //when
+            final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
+
+            //then
+            assertThat(weeklyTodoList).isNotNull();
+            assertThat(weeklyTodoList.size()).isEqualTo(0);
+        }
+
+        @Test
+        public void 주차별할일데이터있음() {
+            //given
+            weeklyTodoRepository.save(WeeklyTodo.builder()
+                    .weekly(weekly)
+                    .weeklyTodoContent("자기소개서 제출하기")
+                    .weeklyTodoStatus(false)
+                    .build());
+            weeklyTodoRepository.save(WeeklyTodo.builder()
+                    .weekly(weekly)
+                    .weeklyTodoContent("마트에서 장보기")
+                    .weeklyTodoStatus(true)
+                    .build());
+            //when
+            final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
+
+            //then
+            assertThat(weeklyTodoList).isNotNull();
+            assertThat(weeklyTodoList.size()).isEqualTo(2);
+        }
     }
 
 }

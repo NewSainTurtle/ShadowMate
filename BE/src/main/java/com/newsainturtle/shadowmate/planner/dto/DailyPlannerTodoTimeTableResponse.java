@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class DailyPlannerTodoTimeTable {
+public class DailyPlannerTodoTimeTableResponse {
 
     private Long timeTableId;
     private String startTime;
