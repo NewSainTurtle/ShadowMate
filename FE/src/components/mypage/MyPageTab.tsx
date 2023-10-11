@@ -41,7 +41,7 @@ const MyPageTab = ({ setTabName }: MyPageTabProps) => {
         const clicked = idx === headerIndex ? "--clicked" : "";
         return (
           <div key={idx} className={styles[`tab__title${clicked}`]}>
-            <input type="checkbox" id={item.id} checked />
+            <input type="checkbox" id={item.id} checked readOnly />
             <label htmlFor={item.id}>{item.title}</label>
             {item.contents.list && (
               <div className={styles["tab__contents"]}>
