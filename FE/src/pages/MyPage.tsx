@@ -6,9 +6,6 @@ import MyPageTab from "@components/mypage/MyPageTab";
 import MyPageDiary from "@components/mypage/details/diary/Diary";
 import MyPageFrame from "@components/mypage/MyPageFrame";
 import MyPageInfo from "@components/mypage/details/myInfo/MyInfo";
-import Following from "@components/mypage/details/friend/Following";
-import Follower from "@components/mypage/details/friend/Follower";
-import Search from "@components/mypage/details/friend/Search";
 import MyFriend from "@components/mypage/details/friend/MyFriend";
 
 const MyPage = () => {
