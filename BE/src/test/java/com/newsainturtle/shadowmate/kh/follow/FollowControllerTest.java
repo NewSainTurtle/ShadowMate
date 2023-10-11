@@ -314,6 +314,39 @@ public class FollowControllerTest {
                     .andExpect(jsonPath("$.data.plannerAccessScope")
                             .value(equalTo(addFollowResponse.getPlannerAccessScope().toString())));
         }
+
+        @Test
+        void 실패_친구신청취소유저없음() throws Exception {
+            //given
+            final DeleteFollowRequestRequest deleteFollowRequestRequest = DeleteFollowRequestRequest.builder().receiverId(1L).build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(deleteFollowRequestRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 성공_친구신청취소() throws Exception {
+            // given
+            final DeleteFollowRequestRequest deleteFollowRequestRequest = DeleteFollowRequestRequest.builder().receiverId(1L).build();
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(deleteFollowRequestRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
         
     }
 }
