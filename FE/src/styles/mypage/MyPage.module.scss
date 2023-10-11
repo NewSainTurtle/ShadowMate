@@ -25,6 +25,7 @@ $color-warning: var(--color-warning);
 
   &__contents {
     width: 100%;
+    overflow: auto;
   }
 }
 
@@ -256,7 +257,7 @@ $color-warning: var(--color-warning);
     display: grid;
     height: 100%;
     grid-template-rows: 1fr min-content;
-    padding: 0em 1em;
+    padding: 1em;
     box-sizing: border-box;
   }
 
