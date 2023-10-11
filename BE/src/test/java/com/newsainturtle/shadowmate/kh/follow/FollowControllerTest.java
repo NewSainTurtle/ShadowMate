@@ -6,9 +6,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
-import com.newsainturtle.shadowmate.follow.dto.AddFollowRequest;
-import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
-import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
+import com.newsainturtle.shadowmate.follow.dto.*;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
@@ -144,6 +142,84 @@ public class FollowControllerTest {
         }
     }
     @Nested
+    class 팔로워TEST {
+        final String url = "/api/follow/{userId}/followers";
+        final List<FollowerResponse> list = new ArrayList<>();
+        final Long userId = 2L;
+
+        @Test
+        public void 실패_팔로워조회Null() throws Exception {
+            //given
+            final List<FollowerResponse> followerResponses = new ArrayList<>();
+            doReturn(followerResponses).when(followService).getFollower(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data").isEmpty());
+
+        }
+
+        @Test
+        public void 성공_팔로워조회() throws Exception {
+            //given
+            list.add(FollowerResponse.builder()
+                    .followId(1L)
+                    .email(user1.getEmail())
+                    .nickname(user1.getNickname())
+                    .profileImage(user1.getProfileImage())
+                    .followerId(user1.getId())
+                    .build());
+            doReturn(list).when(followService).getFollower(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+
+        }
+        @Test
+        void 실패_팔로워삭제유저없음() throws Exception {
+            //given
+            final DeleteFollowerRequest deleteFollowerRequest = DeleteFollowerRequest.builder().followerId(1L).build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(deleteFollowerRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 성공_팔로워삭제() throws Exception {
+            // given
+            final DeleteFollowerRequest deleteFollowerRequest = DeleteFollowerRequest.builder().followerId(1L).build();
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(deleteFollowerRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
     class 팔로우신청TEST {
         final String url = "/api/follow/{userId}/requested";
 
@@ -174,7 +250,7 @@ public class FollowControllerTest {
         @Test
         public void 실패_팔로우신청_유저없음() throws Exception {
             //given
-            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER)).when(followService).addFollow(any(), any());
+            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(followService).addFollow(any(), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -237,6 +313,39 @@ public class FollowControllerTest {
             resultActions.andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.plannerAccessScope")
                             .value(equalTo(addFollowResponse.getPlannerAccessScope().toString())));
+        }
+
+        @Test
+        void 실패_친구신청취소유저없음() throws Exception {
+            //given
+            final DeleteFollowRequestRequest deleteFollowRequestRequest = DeleteFollowRequestRequest.builder().receiverId(1L).build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(deleteFollowRequestRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 성공_친구신청취소() throws Exception {
+            // given
+            final DeleteFollowRequestRequest deleteFollowRequestRequest = DeleteFollowRequestRequest.builder().receiverId(1L).build();
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(deleteFollowRequestRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            // then
+            resultActions.andExpect(status().isOk());
         }
         
     }

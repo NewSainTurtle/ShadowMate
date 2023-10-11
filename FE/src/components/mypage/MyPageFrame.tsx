@@ -3,8 +3,8 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageCategoryItem from "./item/MyPageCategoryItem";
 import MyPageDetail from "./MyPageDetail";
-import MyPageCategory from "./details/MyPageCategory";
-import MyPageDday from "./details/MyPageDday";
+import MyPageCategory from "./details/diary/Category";
+import MyPageDday from "./details/diary/Dday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
 import { categoryType, ddayType } from "@util/planner.interface";
 import { CATEGORY_LIST, CATEGORY_COLORS } from "@util/data/CategoryData";
@@ -21,6 +21,7 @@ export interface EditInfoConfig {
 }
 
 const MyPageFrame = ({ title }: Props) => {
+  /* 카테고리 관련 변수 */
   const [categoryList, setCategoryList] = useState<categoryType[]>(CATEGORY_LIST);
   const [categoryInput, setCategoryInput] = useState<categoryType>({
     categoryId: 0,
@@ -30,59 +31,109 @@ const MyPageFrame = ({ title }: Props) => {
   });
   const [categoryClick, setCategoryClick] = useState<number>(0);
   const [colorClick, setColorClick] = useState<number>(0);
-  const [isDisable, setIsDisable] = useState<boolean>(false);
+  const category_nextId = useRef(categoryList.length);
 
+  /* 디데이 관련 변수 */
   const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
   const [ddayClick, setDdayClick] = useState<number>(0);
+  const [ddayInput, setDdayInput] = useState<ddayType>({
+    ddayId: 0,
+    ddayTitle: ddayList[0].ddayTitle,
+    ddayDate: ddayList[0].ddayDate,
+  });
+  const [ddayError, setDdayError] = useState<boolean>(false);
+  const dday_nextId = useRef(ddayList.length);
 
-  const nextId = useRef(categoryList.length);
+  /* 공통 사용 변수 */
+  const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  const handleAdd = () => {
-    const newCategory: categoryType = {
-      categoryId: nextId.current,
-      categoryTitle: "새 카테고리",
-      categoryEmoticon: "",
-      categoryColorCode: "#B6DEF7",
-    };
-    setCategoryList([...categoryList, newCategory]);
-    setCategoryInput(newCategory);
-    setCategoryClick(categoryList.length);
-    nextId.current += 1;
+  const handleAdd = (title: string) => {
+    if (title === "카테고리") {
+      const newCategory: categoryType = {
+        categoryId: category_nextId.current,
+        categoryTitle: "새 카테고리",
+        categoryEmoticon: "",
+        categoryColorCode: "#B6DEF7",
+      };
+      setCategoryList([...categoryList, newCategory]);
+      setCategoryInput(newCategory);
+      setCategoryClick(categoryList.length);
+      category_nextId.current += 1;
+    } else {
+      const newDday: ddayType = {
+        ddayId: dday_nextId.current,
+        ddayTitle: "새 디데이",
+        ddayDate: new Date(),
+      };
+      setDdayList([...ddayList, newDday]);
+      setDdayClick(ddayList.length);
+      dday_nextId.current += 1;
+    }
   };
 
-  const handleSave = () => {
-    setCategoryList(
-      categoryList.map((item, idx) => {
-        if (categoryInput.categoryId == item.categoryId) {
-          return {
-            ...item,
-            categoryId: categoryInput.categoryId,
-            categoryTitle: categoryInput.categoryTitle,
-            categoryEmoticon: categoryInput.categoryEmoticon,
-            categoryColorCode: CATEGORY_COLORS[colorClick],
-          };
-        }
-        return item;
-      }),
-    );
+  const handleSave = (title: string) => {
+    if (title === "카테고리") {
+      setCategoryList(
+        categoryList.map((item, idx) => {
+          if (categoryInput.categoryId === item.categoryId) {
+            return {
+              ...item,
+              categoryId: categoryInput.categoryId,
+              categoryTitle: categoryInput.categoryTitle,
+              categoryEmoticon: categoryInput.categoryEmoticon,
+              categoryColorCode: CATEGORY_COLORS[colorClick],
+            };
+          }
+          return item;
+        }),
+      );
+    } else {
+      if (ddayInput.ddayTitle === "" || ddayInput.ddayTitle.length < 2 || ddayInput.ddayTitle.length > 20) {
+        setDdayError(true);
+        return;
+      }
+      setDdayError(false);
+      setDdayList(
+        ddayList.map((item, idx) => {
+          if (ddayInput.ddayId === item.ddayId) {
+            return {
+              ...item,
+              ddayTitle: ddayInput.ddayTitle,
+              ddayDate: ddayInput.ddayDate,
+            };
+          }
+          return item;
+        }),
+      );
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = (title: string) => {
     if (isDisable) return;
-    setCategoryList(
-      categoryList.filter((item, idx) => {
-        return idx !== categoryClick;
-      }),
-    );
-    // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
-    setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
+    if (title === "카테고리") {
+      setCategoryList(
+        categoryList.filter((item, idx) => {
+          return idx !== categoryClick;
+        }),
+      );
+      // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
+      setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
+    } else {
+      setDdayList(
+        ddayList.filter((item, idx) => {
+          return idx !== ddayClick;
+        }),
+      );
+      setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1);
+    }
   };
 
   useEffect(() => {
-    // 카테고리 항목이 1개 남은 경우, 삭제 불가
-    if (categoryList.length <= 1) setIsDisable(true);
+    // 카테고리 및 디데이 항목이 1개 남은 경우, 삭제 불가
+    if (title === "카테고리" && categoryList.length <= 1) setIsDisable(true);
+    else if (title === "디데이" && ddayList.length <= 1) setIsDisable(true);
     else setIsDisable(false);
-  }, [categoryList]);
+  }, [title, categoryList, ddayList]);
 
   return (
     <div className={styles["frame"]}>
@@ -112,7 +163,7 @@ const MyPageFrame = ({ title }: Props) => {
           }[title]
         }
       </MyPageList>
-      <MyPageDetail isDisable={isDisable} handleSave={handleSave} handleDelete={handleDelete}>
+      <MyPageDetail title={title} isDisable={isDisable} handleSave={handleSave} handleDelete={handleDelete}>
         {
           {
             카테고리: (
@@ -125,7 +176,15 @@ const MyPageFrame = ({ title }: Props) => {
                 setColorClick={setColorClick}
               />
             ),
-            디데이: <MyPageDday click={ddayClick} ddayList={ddayList} />,
+            디데이: (
+              <MyPageDday
+                click={ddayClick}
+                ddayList={ddayList}
+                input={ddayInput}
+                setInput={setDdayInput}
+                error={ddayError}
+              />
+            ),
           }[title]
         }
       </MyPageDetail>

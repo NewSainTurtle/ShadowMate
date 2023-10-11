@@ -3,6 +3,7 @@ $color-background: var(--color-background);
 $color-gray-1: var(--color-gray-1);
 $color-gray-2: var(--color-gray-2);
 $color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
 $color-blue: var(--color-btn-blue);
 $color-warning: var(--color-warning);
 
@@ -37,14 +38,22 @@ $color-warning: var(--color-warning);
 
   &__container {
     position: relative;
+    height: 100%;
   }
 
   &__title {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1em 0;
+    height: 60px;
     border-bottom: 1px solid $color-text;
+  }
+
+  &__list {
+    position: absolute;
+    height: calc(100% - 120px - 1px);
+    width: 100%;
+    overflow-y: auto;
   }
 
   &__button {
@@ -53,12 +62,11 @@ $color-warning: var(--color-warning);
     display: flex;
     justify-content: space-evenly;
     width: 100%;
-    padding: 1em 0;
+    height: 60px;
     border-top: 1px solid $color-text;
     > div {
       display: flex;
       align-items: center;
-
       > svg {
         font-size: medium;
         padding: 0.5em;
@@ -82,6 +90,7 @@ $color-warning: var(--color-warning);
   }
 
   &__contents {
+    position: relative;
     padding: 3em;
     box-sizing: border-box;
   }
@@ -91,22 +100,103 @@ $color-warning: var(--color-warning);
     grid-template-columns: 2fr 8fr;
     align-items: center;
     margin-bottom: 2em;
-    &:nth-child(3) {
-      align-items: start;
+
+    > input {
+      height: 100%;
+    }
+
+    & + #date {
+      display: grid;
+      grid-template-columns: 2fr 7.5fr 0.5fr;
+
+      > svg {
+        justify-self: center;
+        font-size: medium;
+        fill: $color-text;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.date {
+  &__picker {
+    position: absolute;
+    right: 2em;
+    top: 10em;
+    > svg,
+    span,
+    button {
+      color: $color-text;
     }
   }
 }
 
 .diary {
-  &__contents {
-    padding: 1em;
+  &__container {
+    height: 100%;
+    padding: 0 1em;
     box-sizing: border-box;
+  }
+
+  &__contents {
+    position: relative;
+    height: 100%;
   }
 
   &__line {
     display: inline-flex;
+    margin-left: 3em;
+    padding-top: 1em;
     > span:nth-child(1) {
       margin-right: 6em;
+    }
+    > div:nth-child(2) > span {
+      color: $color-gray-5;
+    }
+  }
+
+  &__button {
+    @extend .frame__button;
+
+    &--save {
+      @extend .frame__button--save;
+    }
+  }
+
+  &__modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2em;
+    > :nth-child(1),
+    > :nth-child(2) {
+      color: $color-warning;
+    }
+    > :nth-child(2) {
+      margin-top: 0.5em;
+      text-align: center;
+    }
+    > :nth-child(3) {
+      margin-top: 1.5em;
+    }
+    > div:nth-child(4) {
+      display: flex;
+      width: 100%;
+      margin-top: 2em;
+      background-color: $color-gray-1;
+      > div {
+        width: 100%;
+        height: 100%;
+        padding: 1em 0;
+        box-sizing: border-box;
+        text-align: center;
+        cursor: pointer;
+        &:nth-child(2) {
+          background-color: $color-blue;
+        }
+      }
     }
   }
 }
@@ -170,7 +260,7 @@ $color-warning: var(--color-warning);
 }
 
 .dday {
-  &-item {
+  &__item {
     display: grid;
     grid-template-columns: 7fr 3fr;
     align-items: center;
@@ -179,8 +269,21 @@ $color-warning: var(--color-warning);
     box-sizing: border-box;
     border-bottom: 0.5px solid $color-gray-2;
     cursor: pointer;
-    > span {
+
+    > div:nth-child(2) {
       text-align: end;
+    }
+
+    &--today {
+      > span {
+        color: $color-warning;
+      }
+    }
+
+    &--plus {
+      > span {
+        color: $color-gray-4;
+      }
     }
 
     &__title {
@@ -192,7 +295,7 @@ $color-warning: var(--color-warning);
     }
 
     &--clicked {
-      @extend .dday-item;
+      @extend .dday__item;
       background-color: $color-gray-1;
     }
   }
@@ -204,51 +307,64 @@ $color-warning: var(--color-warning);
   margin-right: 1em;
 
   &__title {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 0.5em;
-    background-color: $color-gray-1;
-    cursor: pointer;
-    > div > span {
-      display: flex;
-      align-items: center;
-      height: 3em;
-      margin-left: 1em;
-    }
-
-    &--open {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 0;
-      // padding-top: 0.5em;
-      overflow: hidden;
-      box-sizing: border-box;
-      background-color: $color-background;
-      transition: height 0.25s ease;
-      > div {
-        margin: 0.5em 1.5em;
-        &:hover {
-          // font-weight: 800; // 왜 안먹지
-          color: $color-blue;
+    > input {
+      display: none;
+      & + label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 3em;
+        padding-left: 1em;
+        box-sizing: border-box;
+        background-color: $color-gray-2;
+        & + div {
+          margin: 0.2em 0;
+          // 탭 아코디언 동작 시 사용됨.
+          // max-height: 0;
+          // transition: all 0.25s;
+          overflow: hidden;
+          cursor: pointer;
         }
+      }
+
+      &:checked + label + div {
+        max-height: 6.2em;
       }
     }
 
     &--clicked {
       @extend .tab__title;
-      background-color: $color-blue;
+      > input + label {
+        background-color: $color-blue;
+      }
+    }
+  }
+
+  &__contents {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: $color-background;
+    > div {
+      padding: 0.5em 1.5em;
+      box-sizing: border-box;
+      &:hover {
+        font-weight: 800; // 왜 안먹지
+      }
     }
   }
 }
 
-.toggle {
-  display: flex;
-  margin: 1em 0 0;
+.radio {
+  margin: 1em 0.2em;
 
-  &__icon {
-    margin-left: 1em;
+  &__label > span {
+    display: flex;
+    align-items: center;
+    > svg {
+      margin-right: 0.2em;
+    }
   }
 }
 

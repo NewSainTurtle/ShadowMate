@@ -23,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -221,4 +222,140 @@ public class TodoRepositoryTest {
         assertThat(changeTodo.getCreateTime()).isNotEqualTo(changeTodo.getUpdateTime());
     }
 
+    @Test
+    public void 일일플래너리스트조회() {
+        //given
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        final Category category = categoryRepository.save(Category.builder()
+                .categoryColor(categoryColorRepository.findById(1L).orElse(null))
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build());
+
+        final Todo saveTodo1 = todoRepository.save(Todo.builder()
+                .category(category)
+                .todoContent("수능완성 수학 과목별 10문제")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        saveTodo1.setTimeTable(TimeTable.builder()
+                .startTime(LocalDateTime.parse("2023-10-06 16:10", formatter))
+                .endTime(LocalDateTime.parse("2023-10-06 18:30", formatter))
+                .build());
+
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("국어")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(category)
+                .todoContent("개념원리 1단원 문제 풀기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+
+        final Todo saveTodo4 = todoRepository.save(Todo.builder()
+                .category(category)
+                .todoContent("개념원리 1단원 문제 풀기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        saveTodo4.setTimeTable(TimeTable.builder()
+                .startTime(LocalDateTime.parse("2023-10-06 23:40", formatter))
+                .endTime(LocalDateTime.parse("2023-10-07 01:10", formatter))
+                .build());
+
+        //when
+        final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
+
+        //then
+        assertThat(todoList).isNotNull();
+        assertThat(todoList.size()).isEqualTo(4);
+    }
+
+    @Test
+    public void 일일플래너_할일카운트_전체() {
+        //given
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("수능완성 수학 10문제")
+                .todoStatus(TodoStatus.COMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("국어")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("개념원리 1단원 문제 풀기")
+                .todoStatus(TodoStatus.INCOMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("쎈 1단원 문제 풀기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("수능완성 과학 10문제")
+                .todoStatus(TodoStatus.COMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+
+        //when
+        final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner);
+
+        //then
+        assertThat(totalCount).isEqualTo(5);
+    }
+
+    @Test
+    public void 일일플래너_할일카운트_완료못한할일() {
+        //given
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("수능완성 수학 10문제")
+                .todoStatus(TodoStatus.COMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("국어")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("개념원리 1단원 문제 풀기")
+                .todoStatus(TodoStatus.INCOMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("쎈 1단원 문제 풀기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build());
+        todoRepository.save(Todo.builder()
+                .category(null)
+                .todoContent("수능완성 과학 10문제")
+                .todoStatus(TodoStatus.COMPLETE)
+                .dailyPlanner(dailyPlanner)
+                .build());
+
+        //when
+        final int todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
+
+        //then
+        assertThat(todoCount).isEqualTo(3);
+    }
 }

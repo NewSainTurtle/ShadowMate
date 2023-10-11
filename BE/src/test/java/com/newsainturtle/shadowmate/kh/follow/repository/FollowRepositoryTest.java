@@ -58,10 +58,9 @@ public class FollowRepositoryTest {
     class 팔로잉TEST {
 
         @Test
-        @DisplayName("팔로잉 NULL 조회")
         void 실패_팔로잉조회_NULL() {
             //given
-            final User user = userRepository.findByEmail("test1234@naver.com");
+            final User user = userRepository.findByEmail("test1@test.com");
 
             //when
             final List<Follow> followingList = followRepository.findAllByFollowerId(user);
@@ -124,5 +123,51 @@ public class FollowRepositoryTest {
             assertThat(followingList.get(0).getFollowingId()).isEqualTo(user2);
         }
 
+    }
+    @Nested
+    class 팔로워TEST {
+
+        @Test
+        void 실패_팔로워조회_NULL() {
+            //given
+            final User user2 = userRepository.findByEmail("test2@test.com");
+
+            //when
+            final List<Follow> followList = followRepository.findAllByFollowingId(user2);
+
+            //then
+            assertThat(followList).isEmpty();
+        }
+
+        @Test
+        void 성공_팔로워조회() {
+            //given
+            Follow follow = followRepository.save(Follow.builder()
+                    .followerId(user1)
+                    .followingId(user2)
+                    .build());
+
+            //when
+            final List<Follow> followList = followRepository.findAllByFollowingId(user2);
+
+            //then
+            assertThat(followList.get(0).getFollowerId().getNickname()).isEqualTo(user1.getNickname());
+        }
+
+        @Test
+        void 성공_팔로워삭제() {
+            // given
+            followRepository.save(Follow.builder()
+                    .followerId(user1)
+                    .followingId(user2)
+                    .build());
+
+            // when
+            followRepository.deleteByFollowingIdAndFollowerId(user2, user1);
+            final Follow result = followRepository.findByFollowerIdAndFollowingId(user1, user2);
+
+            // then
+            assertThat(result).isNull();
+        }
     }
 }

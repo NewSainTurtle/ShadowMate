@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.follow.service;
 
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
+import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
@@ -44,6 +45,19 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
+    public List<FollowerResponse> getFollower(final User user) {
+        List<Follow> followerList = followRepository.findAllByFollowingId(user);
+        return followerList.stream()
+                .map(follow -> FollowerResponse.builder()
+                        .followId(follow.getId())
+                        .email(follow.getFollowerId().getEmail())
+                        .nickname(follow.getFollowerId().getNickname())
+                        .profileImage(follow.getFollowerId().getProfileImage())
+                        .followerId(follow.getFollowerId().getId())
+                        .build()).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public AddFollowResponse addFollow(final User user, final Long targetUserId) {
         User targetUser = certifyFollowUser(targetUserId);
@@ -53,6 +67,20 @@ public class FollowServiceImpl implements FollowService {
         else {
             return addFollowNonPublic(user, targetUser);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteFollower(final User user, final Long targetUserId) {
+        User targetUser = certifyFollowUser(targetUserId);
+        followRepository.deleteByFollowingIdAndFollowerId(user, targetUser);
+    }
+
+    @Override
+    @Transactional
+    public void deleteFollowRequest(final User user, final Long targetUserId) {
+        User targetUser = certifyFollowUser(targetUserId);
+        followRequestRepository.deleteByRequesterIdAndReceiverId(user, targetUser);
     }
 
     private AddFollowResponse addFollowPublic(final User follower, final User following) {
@@ -83,10 +111,10 @@ public class FollowServiceImpl implements FollowService {
                 .build();
     }
 
-    private User certifyFollowUser(final Long followingId) {
-        Optional<User> result = userRepository.findById(followingId);
+    private User certifyFollowUser(final Long userId) {
+        Optional<User> result = userRepository.findById(userId);
         if(!result.isPresent() || result.get().getWithdrawal()) {
-            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER);
+            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER);
         }
         return result.get();
     }

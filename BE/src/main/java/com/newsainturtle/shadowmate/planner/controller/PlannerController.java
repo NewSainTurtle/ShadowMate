@@ -3,11 +3,10 @@ package com.newsainturtle.shadowmate.planner.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateRetrospectionRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.planner.dto.request.*;
+import com.newsainturtle.shadowmate.planner.dto.request.UpdateRetrospectionRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.UpdateTodayGoalRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
 import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerService;
 import lombok.RequiredArgsConstructor;
@@ -159,6 +158,31 @@ public class PlannerController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         weeklyPlannerServiceImpl.removeWeeklyTodo(principalDetails.getUser(), removeWeeklyTodoRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_WEEKLY_TODO));
+    }
+
+    @GetMapping("/{userId}/daily")
+    public ResponseEntity<BaseResponse> searchDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                           @PathVariable("userId") final Long userId,
+                                                           @RequestParam(name = "date") final String date) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_DAILY_PLANNER,
+                dailyPlannerServiceImpl.searchDailyPlanner(principalDetails.getUser(), userId, date)));
+    }
+
+    @GetMapping("/{userId}/weekly")
+    public ResponseEntity<BaseResponse> searchWeeklyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                            @PathVariable("userId") final Long userId,
+                                                            @RequestParam(name = "start-date") final String startDate,
+                                                            @RequestParam(name = "end-date") final String endDate) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_WEEKLY_PLANNER,
+                weeklyPlannerServiceImpl.searchWeeklyPlanner(principalDetails.getUser(), userId, startDate, endDate)));
+    }
+
+    @GetMapping("/{userId}/calendars")
+    public ResponseEntity<BaseResponse> searchCalendar(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestParam(name = "date") final String date) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_CALENDAR,
+                dailyPlannerServiceImpl.searchCalendar(principalDetails.getUser(), userId, date)));
     }
 
 }

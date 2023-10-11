@@ -6,11 +6,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner.controller.PlannerController;
-import com.newsainturtle.shadowmate.planner.dto.AddDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateRetrospectionRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTodayGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.UpdateTomorrowGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
@@ -2790,6 +2786,176 @@ public class PlannerControllerTest {
                 resultActions.andExpect(status().isOk());
             }
 
+        }
+    }
+
+    @Nested
+    class 일일플래너조회 {
+        final String url = "/api/planners/{userId}/daily";
+        final String today = "2023-10-10";
+
+        @Test
+        public void 실패_올바르지않은날짜형식() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(dailyPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("date", "2023.10.10")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_유효하지않은플래너작성자() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("date", today)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("date", today)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    class 주간플래너조회 {
+        final String url = "/api/planners/{userId}/weekly";
+        private final String startDate = "2023-10-09";
+        private final String endDate = "2023-10-15";
+
+        @Test
+        public void 실패_올바르지않은날짜형식() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("start-date", "2023.10.09")
+                            .param("end-date", endDate)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_유효하지않은플래너작성자() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("start-date", startDate)
+                            .param("end-date", endDate)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_올바르지않은날짜() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("start-date", "2023-10-10")
+                            .param("end-date", endDate)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("start-date", startDate)
+                            .param("end-date", endDate)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    class 캘린더조회 {
+        final String url = "/api/planners/{userId}/calendars";
+        private final String date = "2023-10-01";
+
+        @Test
+        public void 실패_올바르지않은날짜형식() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(dailyPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("date", "2023.10.01")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 실패_유효하지않은플래너작성자() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("date", date)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("date", date)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
         }
     }
 }

@@ -13,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -76,5 +79,18 @@ public class FollowRequestRepositoryTest {
         //then
         assertThat(result.getRequesterId()).isEqualTo(user1);
         assertThat(result.getReceiverId()).isEqualTo(user2);
+    }
+
+    @Test
+    void 성공_친구신청취소() {
+        // given
+        followRequestRepository.save(followRequest);
+
+        // when
+        followRequestRepository.deleteByRequesterIdAndReceiverId(user1, user2);
+        final FollowRequest result = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
+
+        // then
+        assertThat(result).isNull();
     }
 }

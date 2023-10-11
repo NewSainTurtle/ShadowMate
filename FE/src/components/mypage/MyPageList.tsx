@@ -1,11 +1,11 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import AddIcon from "@mui/icons-material/Add";
 
 interface Props {
   children: ReactNode;
-  handleAdd: () => void;
+  handleAdd: (title: string) => void;
   title: string;
 }
 
@@ -19,9 +19,9 @@ const MyPageList = ({ children, handleAdd, title }: Props) => {
       <div className={styles["frame__title"]}>
         <Text>{title} 목록</Text>
       </div>
-      {children}
+      <div className={styles["frame__list"]}>{children}</div>
       <div className={styles["frame__button"]}>
-        <div className={styles["frame__button--add"]} onClick={handleAdd}>
+        <div className={styles["frame__button--add"]} onClick={() => handleAdd(title)}>
           <AddIcon />
           <Text>새 {title}</Text>
         </div>

@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.kh.follow;
 
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
+import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
@@ -28,8 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FollowServiceTest {
@@ -99,6 +99,62 @@ public class FollowServiceTest {
     }
 
     @Nested
+    class 팔로워TEST {
+
+        @Test
+        void 실패_팔로잉조회Null() {
+            //given
+            List<FollowerResponse> followerResponses = new ArrayList<>();
+            doReturn(followerResponses).when(followRepository).findAllByFollowingId(user2);
+
+            //when
+            final List<FollowerResponse> result = followService.getFollower(user2);
+
+            //then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        public void 성공_팔로워조회() {
+            //given
+
+            List<Follow> followingList = new ArrayList<>();
+            followingList.add(Follow.builder().followerId(user1).followingId(user2).build());
+
+            doReturn(followingList).when(followRepository).findAllByFollowingId(user2);
+
+            //when
+            final List<FollowerResponse> result = followService.getFollower(user2);
+
+            //then
+            assertThat(result.get(0).getNickname()).isEqualTo(user1.getNickname());
+        }
+
+        @Test
+        void 실패_팔로워유저없음() {
+            // given
+
+            // when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollower(user1, user2.getId()));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
+        }
+
+        @Test
+        void 성공_팔로워삭제() {
+            // given
+            doReturn(Optional.ofNullable(user1)).when(userRepository).findById(any());
+
+            // when
+            followService.deleteFollower(user2, user1.getId());
+
+            // then
+            verify(followRepository, times(1)).deleteByFollowingIdAndFollowerId(any(), any());
+        }
+    }
+
+    @Nested
     class 팔로우신청TEST {
 
         @Test
@@ -144,13 +200,13 @@ public class FollowServiceTest {
             //given
             final Long userId = 9999L;
 
-            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOWING_USER)).when(userRepository).findById(any());
+            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(userRepository).findById(any());
 
             //when
             final FollowException result = assertThrows(FollowException.class, () -> followService.addFollow(user1, userId));
 
             //then
-            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOWING_USER);
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
         }
 
 
@@ -204,6 +260,29 @@ public class FollowServiceTest {
             //then
             assertThat(result.getFollowId()).isEqualTo(follow.getId());
             assertThat(result.getPlannerAccessScope()).isEqualTo(follow.getFollowingId().getPlannerAccessScope());
+        }
+
+        @Test
+        void 실패_친구신청취소유저없음() {
+            // given
+
+            // when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowRequest(user1, user2.getId()));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
+        }
+
+        @Test
+        void 성공_친구신청취소() {
+            // given
+            doReturn(Optional.ofNullable(user1)).when(userRepository).findById(any());
+
+            // when
+            followService.deleteFollowRequest(user2, user1.getId());
+
+            // then
+            verify(followRequestRepository, times(1)).deleteByRequesterIdAndReceiverId(any(), any());
         }
 
     }

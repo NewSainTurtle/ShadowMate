@@ -1,6 +1,8 @@
 package com.newsainturtle.shadowmate.planner.service;
 
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
+import com.newsainturtle.shadowmate.planner.dto.request.*;
+import com.newsainturtle.shadowmate.planner.dto.response.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -13,16 +15,25 @@ import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
+import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +46,8 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
     private final TimeTableRepository timeTableRepository;
     private final UserRepository userRepository;
+    private final DdayRepository ddayRepository;
+    private final FollowRepository followRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
@@ -190,7 +203,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         }
 
         final User plannerWriter = userRepository.findByIdAndWithdrawalIsFalse(plannerWriterId);
-        if(plannerWriter == null){
+        if (plannerWriter == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_USER);
         }
 
@@ -268,5 +281,151 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         final long timeTableId = todo.getTimeTable().getId();
         todo.setTimeTable(null);
         timeTableRepository.deleteById(timeTableId);
+    }
+
+    private String LocalDateTimeToString(final LocalDateTime time) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return time.format(formatter);
+    }
+
+    private String getDday(final User user) {
+        final Date today = Date.valueOf(LocalDate.now());
+        Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+        if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+        return dday == null ? null : dday.getDdayDate().toString();
+    }
+
+    private boolean havePermissionToSearch(final User user, final User plannerWriter) {
+        if (user.equals(plannerWriter) ||
+                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date) {
+        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$";
+        if (!Pattern.matches(datePattern, date)) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT);
+        }
+
+        final User plannerWriter = userRepository.findByIdAndWithdrawalIsFalse(plannerWriterId);
+        if (plannerWriter == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_USER);
+        }
+
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
+        int totalMinutes = 0;
+
+        if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {
+            return SearchDailyPlannerResponse.builder()
+                    .date(date)
+                    .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
+                    .dday(getDday(user))
+                    .build();
+        } else {
+            final boolean like = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner) != null;
+            final long likeCount = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
+            final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
+
+            final List<DailyPlannerTodoResponse> dailyTodos = new ArrayList<>();
+            for (Todo todo : todoList) {
+                dailyTodos.add(DailyPlannerTodoResponse.builder()
+                        .todoId(todo.getId())
+                        .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
+                                .categoryId(todo.getCategory().getId())
+                                .categoryTitle(todo.getCategory().getCategoryTitle())
+                                .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
+                                .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
+                                .build() : null)
+                        .todoContent(todo.getTodoContent())
+                        .todoStatus(todo.getTodoStatus().getStatus())
+                        .timeTable(todo.getTimeTable() != null ? DailyPlannerTodoTimeTableResponse.builder()
+                                .timeTableId(todo.getTimeTable().getId())
+                                .startTime(LocalDateTimeToString(todo.getTimeTable().getStartTime()))
+                                .endTime(LocalDateTimeToString(todo.getTimeTable().getEndTime()))
+                                .build() : null)
+                        .build());
+                if (todo.getTimeTable() != null) {
+                    totalMinutes += ChronoUnit.MINUTES.between(todo.getTimeTable().getStartTime(), todo.getTimeTable().getEndTime());
+                }
+            }
+
+            return SearchDailyPlannerResponse.builder()
+                    .date(date)
+                    .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
+                    .dday(getDday(user))
+                    .todayGoal(dailyPlanner.getTodayGoal())
+                    .retrospection(dailyPlanner.getRetrospection())
+                    .retrospectionImage(dailyPlanner.getRetrospectionImage())
+                    .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .like(like)
+                    .likeCount(likeCount)
+                    .studyTimeHour(totalMinutes / 60)
+                    .studyTimeMinute(totalMinutes % 60)
+                    .dailyTodos(dailyTodos)
+                    .build();
+
+        }
+    }
+
+    private String LocalDateToString(final LocalDate date) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    private LocalDate stringToLocalDate(final String dateStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
+
+    @Override
+    public SearchCalendarResponse searchCalendar(final User user, final Long plannerWriterId, final String dateStr) {
+        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-01)$";
+        if (!Pattern.matches(datePattern, dateStr)) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT);
+        }
+
+        final User plannerWriter = userRepository.findByIdAndWithdrawalIsFalse(plannerWriterId);
+        if (plannerWriter == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_USER);
+        }
+
+        final List<CalendarDayResponse> dayList = new ArrayList<>();
+        if (havePermissionToSearch(user, plannerWriter)) {
+            final LocalDate date = stringToLocalDate(dateStr);
+            final int lastDay = YearMonth.from(date).lengthOfMonth();
+
+            for (int i = 0; i < lastDay; i++) {
+                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
+                int todoCount = 0;
+                int dayStaus = 0;
+                if (dailyPlanner != null) {
+                    final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner);
+                    if (totalCount > 0) {
+                        todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
+                        final double percent = ((totalCount - todoCount) / (double)totalCount) * 100;
+                        dayStaus = percent == 100 ? 3 : percent >= 60 ? 2 : 1;
+                    }
+                }
+                dayList.add(
+                        CalendarDayResponse.builder()
+                                .date(LocalDateToString(date.plusDays(i)))
+                                .todoCount(todoCount)
+                                .dayStatus(dayStaus)
+                                .build()
+                );
+
+            }
+
+        }
+
+        return SearchCalendarResponse.builder()
+                .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
+                .dayList(dayList)
+                .build();
     }
 }

@@ -3,7 +3,7 @@ package com.newsainturtle.shadowmate.planner_setting.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.planner_setting.dto.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
