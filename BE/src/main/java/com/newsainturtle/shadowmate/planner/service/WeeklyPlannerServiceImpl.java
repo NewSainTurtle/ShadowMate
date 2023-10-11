@@ -1,7 +1,11 @@
 package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.planner.dto.request.AddWeeklyTodoRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.RemoveWeeklyTodoRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoContentRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoStatusRequest;
+import com.newsainturtle.shadowmate.planner.dto.response.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.entity.Weekly;
@@ -174,7 +178,7 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
                 for (Todo todo : todoList) {
                     dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
                             .todoId(todo.getId())
-                            .category(todo.getCategory() != null ? DailyPlannerTodoCategory.builder()
+                            .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
                                     .categoryId(todo.getCategory().getId())
                                     .categoryTitle(todo.getCategory().getCategoryTitle())
                                     .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())

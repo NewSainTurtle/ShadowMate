@@ -2,7 +2,9 @@ package com.newsainturtle.shadowmate.yn.planner;
 
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.planner.dto.*;
+import com.newsainturtle.shadowmate.planner.dto.request.*;
+import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchDailyPlannerResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
