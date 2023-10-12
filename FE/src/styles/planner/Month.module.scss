@@ -2,6 +2,8 @@ $color-text: var(--color-text);
 $color-gray-1: var(--color-gray-1);
 $color-gray-3: var(--color-gray-3);
 $color-gray-5: var(--color-gray-5);
+$color-black: var(--color-black);
+$color-white: var(--color-white);
 $color-blue: var(--color-btn-blue);
 
 .month {
@@ -91,11 +93,14 @@ $color-blue: var(--color-btn-blue);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 2.5em;
-      width: 2.5em;
-      background-color: $color-blue;
-      color: $color-text;
+      height: 3em;
+      width: 3em;
+      color: $color-black;
       border-radius: 20%;
+      > span > svg {
+        font-size: large;
+        color: $color-black;
+      }
     }
     > span:nth-child(2) {
       margin-top: 0.2em;
