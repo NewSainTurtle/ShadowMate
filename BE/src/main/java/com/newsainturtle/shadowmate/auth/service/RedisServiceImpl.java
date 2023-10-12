@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RedisServiceImpl implements RedisService{
 
     private final RedisTemplate<String, Object> redisTemplate;
