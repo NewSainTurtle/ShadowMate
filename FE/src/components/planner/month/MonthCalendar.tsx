@@ -2,25 +2,38 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import dayjs from "dayjs";
+import { MonthType } from "@util/data/MonthData";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 
 interface Props {
   selectedDay: string;
   setSelectedDay: Dispatch<SetStateAction<string>>;
 }
 
-const MonthCalendar = ({ selectedDay, setSelectedDay }: Props) => {
+const dayOfWeek = ["", "월", "화", "수", "목", "금", "토", "일"];
+const statusColor = [
+  "var(--color-calendar-0)",
+  "var(--color-calendar-10)",
+  "var(--color-calendar-60)",
+  "var(--color-calendar-100)",
+];
+
+const MonthCalendar = ({ selectedDay }: Props) => {
   const [isNotFriend, setIsNotFriend] = useState<boolean>(false);
-  const [ItemList, setItemList] = useState<(string | null)[]>([null]);
-  const dayOfWeek = ["", "월", "화", "수", "목", "금", "토", "일"];
+  const [ItemList, setItemList] = useState<(MonthType | null)[]>([]);
 
   const initArr = (firstDay: number, daysInMonth: number) => {
     return Array.from({ length: firstDay + daysInMonth }, (v, i) =>
       i < firstDay
         ? null
-        : dayjs(selectedDay)
-            .startOf("month")
-            .set("date", i - firstDay + 1)
-            .format("YYYY-MM-DD"),
+        : {
+            date: dayjs(selectedDay)
+              .startOf("month")
+              .set("date", i - firstDay + 1)
+              .format("YYYY-MM-DD"),
+            todoCount: i,
+            dayStatus: i % 4,
+          },
     );
   };
 
@@ -38,7 +51,7 @@ const MonthCalendar = ({ selectedDay, setSelectedDay }: Props) => {
             <Text types="small">{item}</Text>
           </div>
         ))}
-        {ItemList.map((item, idx) => {
+        {ItemList?.map((item, idx) => {
           return (
             <>
               {idx % 7 === 0 && (
@@ -49,10 +62,10 @@ const MonthCalendar = ({ selectedDay, setSelectedDay }: Props) => {
               <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>
                 {item ? (
                   <div className={styles["calendar__item"]}>
-                    <div>
-                      <Text types="small">0</Text>
+                    <div style={{ backgroundColor: statusColor[item.dayStatus] }}>
+                      <Text types="small">{item.dayStatus === 3 ? <CheckRoundedIcon /> : item.todoCount}</Text>
                     </div>
-                    <Text types="small">{dayjs(item).date()}</Text>
+                    <Text types="small">{dayjs(item.date).date()}</Text>
                   </div>
                 ) : (
                   <></>
