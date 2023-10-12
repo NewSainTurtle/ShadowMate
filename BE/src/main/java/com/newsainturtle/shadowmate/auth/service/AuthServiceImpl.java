@@ -1,6 +1,6 @@
 package com.newsainturtle.shadowmate.auth.service;
 
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
@@ -47,8 +47,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void certifyEmail(final CertifyEmailRequest certifyEmailRequest) {
-        final String email = certifyEmailRequest.getEmail();
+    public void sendEmailAuthenticationCode(final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest) {
+        final String email = sendEmailAuthenticationCodeRequest.getEmail();
         checkDuplicatedEmail(email);
 
         final String code = createRandomCode();

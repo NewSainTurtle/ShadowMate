@@ -1,6 +1,6 @@
 package com.newsainturtle.shadowmate.yn.auth;
 
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
@@ -63,13 +63,13 @@ public class AuthServiceTest {
         @Test
         public void 실패_이메일중복() {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
             doReturn(user).when(userRepository).findByEmail(email);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.certifyEmail(certifyEmailRequest));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
@@ -78,7 +78,7 @@ public class AuthServiceTest {
         @Test
         public void 실패_이미인증된이메일사용() {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
             final EmailAuthentication emailAuth = EmailAuthentication.builder()
@@ -90,7 +90,7 @@ public class AuthServiceTest {
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.certifyEmail(certifyEmailRequest));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
@@ -99,7 +99,7 @@ public class AuthServiceTest {
         @Test
         public void 성공_이메일중복아님_인증전() {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
             final EmailAuthentication emailAuth = EmailAuthentication.builder()
@@ -112,14 +112,14 @@ public class AuthServiceTest {
             doReturn(message).when(mailSender).createMimeMessage();
 
             //when
-            authServiceImpl.certifyEmail(certifyEmailRequest);
+            authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
             //then
         }
 
         @Test
         public void 성공_이메일중복아님() {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
 
@@ -128,7 +128,7 @@ public class AuthServiceTest {
             doReturn(message).when(mailSender).createMimeMessage();
 
             //when
-            authServiceImpl.certifyEmail(certifyEmailRequest);
+            authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
             //then
         }
 
@@ -264,16 +264,6 @@ public class AuthServiceTest {
             verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
         }
 
-        @Test
-        public void 성공_코드생성() {
-            //given
-
-            //when
-            final String code = authServiceImpl.createRandomCode();
-
-            //then
-            assertThat(code.length()).isEqualTo(6);
-        }
     }
 
     @Nested

@@ -2,7 +2,7 @@ package com.newsainturtle.shadowmate.yn.auth;
 
 import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.controller.AuthController;
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
@@ -48,20 +48,20 @@ class AuthControllerTest {
 
     @Nested
     class 이메일인증 {
-        final String url = "/api/auth/email-certificated";
+        final String url = "/api/auth/email-authentication";
 
         @Test
         public void 실패_이메일중복() throws Exception {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@naver.com")
                     .build();
-            doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL)).when(authServiceImpl).certifyEmail(any());
+            doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL)).when(authServiceImpl).sendEmailAuthenticationCode(any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.post(url)
-                            .content(gson.toJson(certifyEmailRequest))
+                            .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
@@ -72,14 +72,14 @@ class AuthControllerTest {
         @Test
         public void 실패_이메일Null() throws Exception {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(null)
                     .build();
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.post(url)
-                            .content(gson.toJson(certifyEmailRequest))
+                            .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
@@ -90,14 +90,14 @@ class AuthControllerTest {
         @Test
         public void 실패_이메일형식아님() throws Exception {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@")
                     .build();
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.post(url)
-                            .content(gson.toJson(certifyEmailRequest))
+                            .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
@@ -108,15 +108,15 @@ class AuthControllerTest {
         @Test
         public void 실패_이미인증된이메일() throws Exception {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@test.com")
                     .build();
-            doThrow(new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL)).when(authServiceImpl).certifyEmail(any());
+            doThrow(new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL)).when(authServiceImpl).sendEmailAuthenticationCode(any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.post(url)
-                            .content(gson.toJson(certifyEmailRequest))
+                            .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
@@ -127,15 +127,15 @@ class AuthControllerTest {
         @Test
         public void 실패_이메일전송실패() throws Exception {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@test.com")
                     .build();
-            doThrow(new AuthException(AuthErrorResult.FAIL_SEND_EMAIL)).when(authServiceImpl).certifyEmail(any());
+            doThrow(new AuthException(AuthErrorResult.FAIL_SEND_EMAIL)).when(authServiceImpl).sendEmailAuthenticationCode(any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.post(url)
-                            .content(gson.toJson(certifyEmailRequest))
+                            .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
@@ -146,14 +146,14 @@ class AuthControllerTest {
         @Test
         public void 성공_이메일중복아님() throws Exception {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@naver.com")
                     .build();
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.post(url)
-                            .content(gson.toJson(certifyEmailRequest))
+                            .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
@@ -164,7 +164,7 @@ class AuthControllerTest {
 
     @Nested
     class 이메일인증코드확인 {
-        final String url = "/api/auth/email-certificated/check";
+        final String url = "/api/auth/email-authentication/check";
         final String email = "test@test.com";
         final String code = "code127";
 
