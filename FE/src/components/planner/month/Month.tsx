@@ -27,12 +27,12 @@ const Month = () => {
         <div>
           <div>
             <div>
-              <Text types="semi-large" bold>
+              <Text types="semi-large" title>
                 {year}년
               </Text>
             </div>
             <div>
-              <Text types="semi-large" bold>
+              <Text types="semi-large" title>
                 {month.toString().length > 1 ? month : "0" + month.toString()}월
               </Text>
             </div>
