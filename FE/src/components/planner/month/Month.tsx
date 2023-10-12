@@ -33,7 +33,7 @@ const Month = () => {
             </div>
             <div>
               <Text types="semi-large" bold>
-                {month}월
+                {month.toString().length > 1 ? month : "0" + month.toString()}월
               </Text>
             </div>
           </div>
