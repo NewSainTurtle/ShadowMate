@@ -153,3 +153,12 @@ $color-blue: var(--color-btn-blue);
     }
   }
 }
+
+@media (max-width: 1200px) {
+  .calendar__item {
+    > div:nth-child(1) {
+      height: 2.5em;
+      width: 2.5em;
+    }
+  }
+}
