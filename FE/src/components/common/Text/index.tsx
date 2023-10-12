@@ -5,11 +5,12 @@ interface Props {
   children: ReactNode;
   types?: "small" | "default" | "semi-medium" | "medium" | "semi-large" | "large";
   bold?: boolean;
+  title?: boolean;
 }
 
-const Text = ({ types = "default", bold, children }: Props) => {
+const Text = ({ types = "default", bold, title, children }: Props) => {
   const style = {
-    fontWeight: bold ? "600" : "400",
+    fontWeight: title ? "800" : bold ? "600" : "400",
   };
 
   return (
