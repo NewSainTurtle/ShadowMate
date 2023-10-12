@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -69,6 +71,19 @@ public class FollowRequestRepositoryTest {
         //then
         assertThat(result.getReceiverId().getNickname()).isEqualTo(user2.getNickname());
     }
+    
+    @Test
+    public void 성공_받은친구신청조회() {
+        //given
+        
+        //when
+        followRequestRepository.save(followRequest);
+        List<FollowRequest> followRequests = followRequestRepository.findAllByReceiverId(user2);
+        
+        //then
+        assertThat(followRequests.get(0).getRequesterId()).isEqualTo(user1);
+    }
+    
 
     @Test
     public void 성공_팔로우신청_비공개() {
