@@ -16,7 +16,7 @@ interface MyFriendListType {
   nickname: string;
   profileImage: string;
   statusMessage: string;
-  isfollow?: "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소";
+  isFollow?: "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소";
 }
 
 interface Props {
@@ -34,10 +34,10 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
 
   const friendCheck = (friend: MyFriendListType) => {
     if (friend.followId) {
-      if (friend.isfollow) return { id: friend.followId, isfollow: friend.isfollow };
-      else return { id: friend.followId, isfollow: "삭제" };
-    } else if (friend.followRequestId) return { id: friend.followRequestId, isfollow: "요청" };
-    else return { id: friend.userId, isfollow: friend.isfollow };
+      if (friend.isFollow) return { id: friend.followId, isFollow: friend.isFollow };
+      else return { id: friend.followId, isFollow: "삭제" };
+    } else if (friend.followRequestId) return { id: friend.followRequestId, isFollow: "요청" };
+    else return { id: friend.userId, isFollow: friend.isFollow };
   };
 
   return (
@@ -51,7 +51,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
       <div className={styles["friend__frame__list"]}>
         {friendList && friendList.length > 0 ? (
           friendList.map((item, index) => {
-            const { id, isfollow } = friendCheck(item);
+            const { id, isFollow } = friendCheck(item);
             const followInfo = {
               nickname: item.nickname,
               message: item.statusMessage,
@@ -60,7 +60,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
             return (
               <FriendProfile
                 key={id}
-                types={isfollow as "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소"}
+                types={isFollow as "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소"}
                 profile={followInfo}
               />
             );
