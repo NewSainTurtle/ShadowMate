@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.follow.dto.AddFollowRequest;
 import com.newsainturtle.shadowmate.follow.dto.DeleteFollowRequestRequest;
 import com.newsainturtle.shadowmate.follow.dto.DeleteFollowerRequest;
 import com.newsainturtle.shadowmate.follow.dto.ReceiveFollowRequest;
+import com.newsainturtle.shadowmate.follow.dto.DeleteFollowingRequest;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,15 @@ public class FollowController {
                                                   @RequestBody @Valid final AddFollowRequest addFollowRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW, followService.addFollow(principalDetails.getUser(), addFollowRequest.getFollowingId())));
+    }
+
+    @DeleteMapping("/{userId}/following")
+    public ResponseEntity<BaseResponse> deleteFollowing(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final DeleteFollowingRequest deleteFollowingRequest) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        followService.deleteFollowing(principalDetails.getUser(), deleteFollowingRequest.getFollowingId());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_FOLLOWING));
     }
 
     @DeleteMapping("/{userId}/followers")

@@ -97,6 +97,29 @@ public class FollowServiceTest {
             //then
             assertThat(result.get(0).getNickname()).isEqualTo(user2.getNickname());
         }
+
+        @Test
+        void 실패_팔로잉유저없음() {
+            // given
+
+            // when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowing(user1, user2.getId()));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
+        }
+
+        @Test
+        void 성공_팔로잉삭제() {
+            // given
+            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+
+            // when
+            followService.deleteFollowing(user1, user2.getId());
+
+            // then
+            verify(followRepository, times(1)).deleteByFollowingIdAndFollowerId(any(), any());
+        }
     }
 
     @Nested

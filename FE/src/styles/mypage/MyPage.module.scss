@@ -454,6 +454,10 @@ $color-warning: var(--color-warning);
 .friend {
   &__cantainer {
     height: 100%;
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-right: 1em;
+    overflow-y: auto;
   }
 
   &__content {
