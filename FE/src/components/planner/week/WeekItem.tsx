@@ -1,5 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import styles from "./Week.module.scss";
+import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
 import { TodoItemConfig } from "@util/planner.interface";

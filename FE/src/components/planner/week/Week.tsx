@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "@components/planner/week/Week.module.scss";
+import styles from "@styles/planner/Week.module.scss";
 import WeekItem from "./WeekItem";
 import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
