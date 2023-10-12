@@ -1,6 +1,8 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
-import com.newsainturtle.shadowmate.planner_setting.dto.*;
+import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
+import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     private final CategoryColorRepository categoryColorRepository;
     private final DdayRepository ddayRepository;
     private final UserRepository userRepository;
+    private final TodoRepository todoRepository;
 
     private CategoryColor getCategoryColor(final Long categoryColorId) {
         final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
@@ -36,6 +40,14 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR);
         }
         return categoryColor;
+    }
+
+    private Category getCategory(final User user, final Long categoryId) {
+        final Category category = categoryRepository.findByUserAndId(user, categoryId);
+        if (category == null || category.getCategoryRemove()) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
+        }
+        return category;
     }
 
     @Override
@@ -57,10 +69,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     @Override
     @Transactional
     public void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest) {
-        final Category findCategory = categoryRepository.findByUserAndId(user, updateCategoryRequest.getCategoryId());
-        if (findCategory == null || findCategory.getCategoryRemove()) {
-            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
-        }
+        final Category findCategory = getCategory(user, updateCategoryRequest.getCategoryId());
         final CategoryColor categoryColor = getCategoryColor(updateCategoryRequest.getCategoryColorId());
         final Category category = Category.builder()
                 .id(findCategory.getId())
@@ -68,11 +77,35 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
                 .categoryEmoticon(updateCategoryRequest.getCategoryEmoticon())
                 .categoryRemove(findCategory.getCategoryRemove())
                 .categoryColor(categoryColor)
-                .user(user)
+                .user(findCategory.getUser())
                 .createTime(findCategory.getCreateTime())
                 .build();
 
         categoryRepository.save(category);
+    }
+
+    @Override
+    @Transactional
+    public void removeCategory(final User user, final RemoveCategoryRequest removeCategoryRequest) {
+        final Category findCategory = getCategory(user, removeCategoryRequest.getCategoryId());
+        final long count = todoRepository.countByCategory(findCategory);
+
+        if (count == 0) {
+            categoryRepository.deleteByUserAndId(user, removeCategoryRequest.getCategoryId());
+        } else {
+            final Category category = Category.builder()
+                    .id(findCategory.getId())
+                    .categoryTitle(findCategory.getCategoryTitle())
+                    .categoryEmoticon(findCategory.getCategoryEmoticon())
+                    .categoryRemove(true)
+                    .categoryColor(findCategory.getCategoryColor())
+                    .user(findCategory.getUser())
+                    .createTime(findCategory.getCreateTime())
+                    .deleteTime(LocalDateTime.now())
+                    .build();
+
+            categoryRepository.save(category);
+        }
     }
 
     @Override
@@ -83,7 +116,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
 
     @Override
     public GetCategoryListResponse getCategoryList(final User user) {
-        final List<Category> result = categoryRepository.findByUser(user);
+        final List<Category> result = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
         List<GetCategoryResponse> categoryList = new ArrayList<>();
 
         for (Category category : result) {

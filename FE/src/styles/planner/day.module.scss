@@ -1,0 +1,374 @@
+@use "@styles/common/Text.module.scss";
+$color-gray_4: var(--color-gray-4);
+$color-gray_3: var(--color-gray-3);
+$color-gray_2: var(--color-gray-2);
+$color-gray_1: var(--color-gray-1);
+$color-text: var(--color-text);
+$color-warning: var(--color-warning);
+$color-background: var(--color-background);
+$color-btn-blue: var(--color-btn-blue);
+
+%item-container {
+  padding: 0.5em 0.5rem;
+  box-sizing: border-box;
+}
+
+%set-input {
+  background-color: $color-background;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: $color-text;
+}
+
+.page-container {
+  height: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 2fr max-content 1fr;
+  grid-template-rows: 1fr 1fr 5fr 2fr;
+
+  > .planner-header {
+    grid-column: 1 / span 3;
+  }
+
+  > .item__driver {
+    grid-row: 2 / 5;
+    width: 1.06px;
+    margin: 0.5em 0.1em;
+    padding: 0;
+    background-color: $color-text;
+  }
+
+  > .item__todo-list,
+  > .item__timetable {
+    overflow-y: auto;
+    border: {
+      top: 1px solid $color-gray_4;
+      bottom: 1px solid $color-gray_4;
+    }
+  }
+
+  > .item__time {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    place-content: center;
+    gap: 1rem;
+    font: {
+      size: 1.6rem;
+      weight: 600;
+    }
+  }
+}
+
+.planner-header {
+  @extend %item-container;
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: end;
+  border-bottom: solid 1px $color-gray_4;
+
+  &__date {
+    display: flex;
+    flex-direction: column;
+
+    > div:nth-child(2) {
+      display: flex;
+      align-items: end;
+
+      > span:nth-child(1) {
+        width: 18rem;
+      }
+    }
+
+    .date-move {
+      @extend .text-semi-large;
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+      cursor: pointer;
+    }
+  }
+
+  &__default {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 0.2em;
+    gap: 10px;
+
+    > div {
+      width: 5.5em;
+      &:nth-child(1) {
+        cursor: default;
+        &:hover {
+          background-color: var(--color-btn-red);
+        }
+        &:active {
+          box-shadow: none;
+        }
+      }
+    }
+
+    > .button__visit > div {
+      box-shadow: inset 0px 3px 6px 0px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  &__friend {
+    height: 100%;
+    display: flex;
+    justify-items: end;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 0.5em;
+
+    > div:nth-child(1) {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+
+      > div {
+        width: 5.5em;
+      }
+    }
+
+    > div:nth-child(2) {
+      width: 100%;
+      max-width: 28em;
+    }
+  }
+}
+
+.ment-container {
+  @extend %item-container;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr min-content;
+  align-items: center;
+
+  > .ment-content__box {
+    height: 100%;
+    position: relative;
+    display: grid;
+    grid-template-rows: min-content 1fr;
+    align-items: center;
+
+    > input {
+      @extend %set-input;
+      @extend .text-default;
+    }
+
+    > textarea {
+      @extend %set-input;
+      @extend .text-default;
+      max-height: 100%;
+      resize: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    > span:nth-child(3) {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      color: $color-gray_4;
+    }
+  }
+}
+
+.ment-preview__box {
+  width: 10em;
+  height: 10em;
+  background: $color-gray_1;
+  margin-left: 0.5em;
+  border-radius: 0.625rem;
+  border: 1px solid $color-gray_2;
+
+  > input[type="file"] {
+    display: none;
+  }
+
+  .ment-preview__img {
+    position: relative;
+
+    > img {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0.625rem;
+    }
+
+    > button {
+      display: none;
+    }
+
+    &:hover > button {
+      display: block;
+      color: $color-warning;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    &__none {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-gray_4;
+      cursor: pointer;
+    }
+  }
+}
+
+.todo-list {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: start;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.todo-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 7rem auto 2rem;
+  border-bottom: 1px solid $color-text;
+  position: relative;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  > div:nth-child(n) {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      @extend .text-default;
+      display: none;
+    }
+
+    &:hover svg {
+      display: block;
+      color: $color-gray_4;
+    }
+  }
+
+  > div:nth-child(-n + 2) {
+    border-right: 1px dashed $color-text;
+  }
+
+  &--disable {
+    @extend .todo-item;
+    border-bottom: 1px solid $color-gray_3;
+  }
+
+  &__category,
+  &__content {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    > span {
+      width: 100%;
+      padding: 50%;
+      box-sizing: border-box;
+    }
+
+    &--add {
+      @extend .todo-item__content;
+      cursor: pointer;
+    }
+  }
+
+  &__category,
+  &__category--add {
+    &-box {
+      width: 100%;
+      height: 60%;
+      padding: 0 0.5rem;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      > span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    &-menu {
+      background-color: $color-background;
+      border-radius: 1em;
+      border: 2px solid $color-btn-blue;
+      width: min-content;
+      max-width: 15em;
+      max-height: 8em;
+      padding: 1em;
+      box-sizing: border-box;
+      position: absolute;
+      top: calc(100% + 0.5em);
+      left: 0.5em;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5em 1em;
+      z-index: 2;
+      cursor: default;
+
+      > :nth-child(1) {
+        border: 1px dashed $color-text;
+      }
+
+      > :nth-child(n) {
+        cursor: pointer;
+        padding: 0 1rem;
+      }
+    }
+  }
+
+  &__content {
+    padding: 0 1em;
+    box-sizing: border-box;
+
+    &__possible {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    input {
+      @extend %set-input;
+      @extend .text-default;
+      height: 100%;
+
+      &::placeholder {
+        @extend .text-small;
+      }
+
+      &:focus::placeholder {
+        color: transparent;
+      }
+    }
+  }
+
+  &__checked {
+    &--add {
+      cursor: pointer;
+    }
+  }
+}

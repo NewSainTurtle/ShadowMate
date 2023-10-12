@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +63,7 @@ public class DdayRepositoryTest {
     }
 
     @Test
-    public void 디데이조회_미래순() {
+    public void 디데이목록조회_미래순() {
         //given
         ddayRepository.save(Dday.builder()
                 .ddayTitle("생일")
@@ -175,4 +176,112 @@ public class DdayRepositoryTest {
     }
 
 
+    @Nested
+    class 디데이조회_오늘과가까운날짜 {
+        final Date test = Date.valueOf("2023-02-09");
+        final Date today = Date.valueOf(LocalDate.now());
+        final Date christmas = Date.valueOf(LocalDate.of(LocalDate.now().getYear() + 1, 12, 25));
+
+        @Test
+        public void 오늘미래과거_디데이데이터가있는경우() {
+            //given
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("시험")
+                    .ddayDate(test)
+                    .user(user)
+                    .build());
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("생일")
+                    .ddayDate(today)
+                    .user(user)
+                    .build());
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("크리스마스")
+                    .ddayDate(christmas)
+                    .user(user)
+                    .build());
+
+            //when
+            final Dday ddayFuture = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+            final Dday ddayPast = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+
+            //then
+            assertThat(ddayFuture).isNotNull();
+            assertThat(ddayFuture.getDdayDate()).isEqualTo(today);
+            assertThat(ddayFuture.getDdayTitle()).isEqualTo("생일");
+            assertThat(ddayPast).isNotNull();
+            assertThat(ddayPast.getDdayDate()).isEqualTo(test);
+            assertThat(ddayPast.getDdayTitle()).isEqualTo("시험");
+        }
+
+        @Test
+        public void 미래과거_디데이데이터가있는경우() {
+            //given
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("시험")
+                    .ddayDate(test)
+                    .user(user)
+                    .build());
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("크리스마스")
+                    .ddayDate(christmas)
+                    .user(user)
+                    .build());
+
+            //when
+            final Dday ddayFuture = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+            final Dday ddayPast = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+
+            //then
+            assertThat(ddayFuture).isNotNull();
+            assertThat(ddayFuture.getDdayDate()).isEqualTo(christmas);
+            assertThat(ddayFuture.getDdayTitle()).isEqualTo("크리스마스");
+            assertThat(ddayPast).isNotNull();
+            assertThat(ddayPast.getDdayDate()).isEqualTo(test);
+            assertThat(ddayPast.getDdayTitle()).isEqualTo("시험");
+        }
+
+        @Test
+        public void 과거_디데이데이터가있는경우() {
+            //given
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("시험")
+                    .ddayDate(test)
+                    .user(user)
+                    .build());
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("기념")
+                    .ddayDate(Date.valueOf("2020-01-27"))
+                    .user(user)
+                    .build());
+            ddayRepository.save(Dday.builder()
+                    .ddayTitle("새해")
+                    .ddayDate(Date.valueOf("2023-01-01"))
+                    .user(user)
+                    .build());
+
+            //when
+            final Dday ddayFuture = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+            final Dday ddayPast = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+
+            //then
+            assertThat(ddayFuture).isNull();
+            assertThat(ddayPast).isNotNull();
+            assertThat(ddayPast.getDdayDate()).isEqualTo(test);
+            assertThat(ddayPast.getDdayTitle()).isEqualTo("시험");
+        }
+
+        @Test
+        public void 디데이데이터가없는경우() {
+            //given
+
+            //when
+            final Dday ddayFuture = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+            final Dday ddayPast = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+
+            //then
+            assertThat(ddayFuture).isNull();
+            assertThat(ddayPast).isNull();
+        }
+    }
 }

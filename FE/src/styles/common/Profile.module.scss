@@ -28,6 +28,11 @@ $color-white: var(--color-white);
   box-sizing: border-box;
   border-radius: 50%;
   cursor: pointer;
+
+  > div {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .profile_content,
