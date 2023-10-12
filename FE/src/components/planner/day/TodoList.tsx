@@ -4,6 +4,18 @@ import TodoItem from "@components/planner/day/TodoItem";
 import { todoType } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
 
+export const TodoDataDefalut: todoType = {
+  todoId: 0,
+  categoryTitle: "",
+  categoryColorCode: "#E9E9EB",
+  todoContent: "",
+  todoStatus: 0,
+};
+
+interface Props {
+  clicked: boolean;
+}
+
 const TodoList = () => {
   const [todos, setTodos] = useState<todoType[]>(todoData_list);
   const todoListSize = useMemo(() => {
@@ -51,9 +63,9 @@ const TodoList = () => {
       {todos.map((todo, idx) => (
         <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
       ))}
-      <TodoItem addTodo todoModule={todoModule} />
+      <TodoItem addTodo item={TodoDataDefalut} todoModule={todoModule} />
       {Array.from({ length: 11 - todos.length }).map((item, idx) => (
-        <TodoItem key={idx} disable todoModule={todoModule} />
+        <TodoItem key={idx} disable item={TodoDataDefalut} todoModule={todoModule} />
       ))}
     </div>
   );

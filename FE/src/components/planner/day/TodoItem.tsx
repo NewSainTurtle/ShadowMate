@@ -5,14 +5,6 @@ import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { todoType, categoryType } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
 
-const TodoDataDefalut: todoType = {
-  todoId: 0,
-  categoryTitle: "",
-  categoryColorCode: "#E9E9EB",
-  todoContent: "",
-  todoStatus: 0,
-};
-
 const categoryDefault: categoryType = {
   categoryId: 0,
   categoryTitle: "",
@@ -22,7 +14,7 @@ const categoryDefault: categoryType = {
 
 interface Props {
   idx?: number;
-  item?: todoType;
+  item: todoType;
   addTodo?: boolean;
   disable?: boolean;
   todoModule: {
@@ -32,7 +24,7 @@ interface Props {
   };
 }
 
-const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModule }: Props) => {
+const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
   const { categoryTitle, categoryColorCode, todoContent, todoStatus } = item;
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
   const categoryList: categoryType[] = todoData_category;
@@ -69,7 +61,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
 
   const handleClickCategory = (title: string, bgColor: string) => {
     if (addTodo) {
-      insertTodo({ ...TodoDataDefalut, categoryTitle: title, categoryColorCode: bgColor });
+      insertTodo({ ...item, categoryTitle: title, categoryColorCode: bgColor });
     } else {
       updateTodo(idx, { ...item, categoryTitle: title, categoryColorCode: bgColor });
     }
