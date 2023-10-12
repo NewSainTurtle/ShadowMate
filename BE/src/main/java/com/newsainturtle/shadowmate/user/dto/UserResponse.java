@@ -15,7 +15,7 @@ public class UserResponse {
 
     private String nickname;
 
-    private String prfileImage;
+    private String profileImage;
 
     private String statusMessage;
 
