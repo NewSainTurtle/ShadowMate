@@ -20,4 +20,6 @@ public interface FollowService {
     void deleteFollower(final User user, final Long targetUserId);
 
     void deleteFollowRequest(final User user, final Long targetUserId);
+
+    String receiveFollow(final User user, final Long targetUserId, final boolean followReceive);
 }

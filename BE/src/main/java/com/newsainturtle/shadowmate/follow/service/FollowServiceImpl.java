@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.follow.service;
 
+import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
@@ -88,6 +89,25 @@ public class FollowServiceImpl implements FollowService {
     public void deleteFollowRequest(final User user, final Long targetUserId) {
         User targetUser = certifyFollowUser(targetUserId);
         followRequestRepository.deleteByRequesterIdAndReceiverId(user, targetUser);
+    }
+
+    @Override
+    @Transactional
+    public String receiveFollow(final User user, final Long targetUserId, final boolean followReceive) {
+        User targetUser = certifyFollowUser(targetUserId);
+        FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, targetUser);
+        if(followRequest == null) {
+            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST);
+        }
+        followRequestRepository.deleteByRequesterIdAndReceiverId(user, targetUser);
+        if(followReceive) {
+            followRepository.save(Follow.builder()
+                    .followerId(user)
+                    .followingId(targetUser)
+                    .build());
+            return FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE;
+        }
+        return FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE;
     }
 
     private AddFollowResponse addFollowPublic(final User follower, final User following) {

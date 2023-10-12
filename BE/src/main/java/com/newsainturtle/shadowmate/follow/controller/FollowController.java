@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowRequest;
 import com.newsainturtle.shadowmate.follow.dto.DeleteFollowRequestRequest;
 import com.newsainturtle.shadowmate.follow.dto.DeleteFollowerRequest;
+import com.newsainturtle.shadowmate.follow.dto.ReceiveFollowRequest;
 import com.newsainturtle.shadowmate.follow.dto.DeleteFollowingRequest;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +74,14 @@ public class FollowController {
         authService.certifyUser(userId, principalDetails.getUser());
         followService.deleteFollowRequest(principalDetails.getUser(), deleteFollowRequestRequest.getReceiverId());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_FOLLOW_REQUEST));
+    }
+
+    @PostMapping("/{userId}/receive")
+    public ResponseEntity<BaseResponse> receiveFollow(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                            @PathVariable("userId") final Long userId,
+                                                            @RequestBody @Valid final ReceiveFollowRequest receiveFollowRequest) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(followService.receiveFollow(principalDetails.getUser(), receiveFollowRequest.getRequesterId(), receiveFollowRequest.isFollowReceive())));
     }
 
 }

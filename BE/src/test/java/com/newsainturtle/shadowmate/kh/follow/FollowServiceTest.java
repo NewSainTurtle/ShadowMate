@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.kh.follow;
 
+import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
@@ -306,6 +307,64 @@ public class FollowServiceTest {
 
             // then
             verify(followRequestRepository, times(1)).deleteByRequesterIdAndReceiverId(any(), any());
+        }
+
+        @Test
+        public void 실패_친구신청유저없음() {
+            //given
+
+            //when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.receiveFollow(user1, user2.getId(), true));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
+        }
+
+        @Test
+        public void 실패_친구신청존재하지않음() {
+            //given
+            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST)).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
+
+            //when
+            final FollowException result = assertThrows(FollowException.class, () -> followService.receiveFollow(user1, user2.getId(), true));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST);
+        }
+
+        @Test
+        public void 성공_친구신청거절() {
+            //given
+            final FollowRequest followRequest = FollowRequest.builder()
+                    .requesterId(user1)
+                    .receiverId(user2)
+                    .build();
+            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+            doReturn(followRequest).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
+
+            //when
+            final String result = followService.receiveFollow(user1, user2.getId(), false);
+
+            //then
+            assertThat(result).isEqualTo(FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE);
+        }
+
+        @Test
+        public void 성공_친구신청수락() {
+            //given
+            final FollowRequest followRequest = FollowRequest.builder()
+                    .requesterId(user1)
+                    .receiverId(user2)
+                    .build();
+            doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
+            doReturn(followRequest).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
+
+            //when
+            final String result = followService.receiveFollow(user1, user2.getId(), true);
+
+            //then
+            assertThat(result).isEqualTo(FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE);
         }
 
     }

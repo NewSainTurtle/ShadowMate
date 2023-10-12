@@ -121,7 +121,6 @@ public class FollowRepositoryTest {
             assertThat(result.getFollowingId().getNickname()).isEqualTo(user2.getNickname());
         }
 
-
         @Test
         public void 성공_팔로우신청_전체공개() {
             //given
