@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -84,6 +85,21 @@ public class FollowRepositoryTest {
 
             //then
             assertThat(followingList.get(0).getFollowingId().getId()).isEqualTo(user2.getId());
+
+        }
+
+        @Test
+        public void 성공_팔로잉삭제() {
+            //given
+            final Follow follow = Follow.builder().followerId(user1).followingId(user2).build();
+            followRepository.save(follow);
+
+            //when
+            followRepository.deleteByFollowingIdAndFollowerId(user2, user1);
+            final Follow result = followRepository.findByFollowerIdAndFollowingId(user1, user2);
+
+            //then
+            assertThat(result).isNull();
 
         }
     }
