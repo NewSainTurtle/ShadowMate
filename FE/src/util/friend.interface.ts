@@ -6,12 +6,12 @@ interface friendInfo {
   statusMessage: string;
 }
 
-interface isfollow {
-  isfollow: "취소" | "삭제" | "팔로워신청";
+interface isFollow {
+  isFollow: "취소" | "삭제" | "팔로워 신청";
 }
 
 // 팔로워 목록
-export interface followerType extends friendInfo, isfollow {
+export interface followerType extends friendInfo, isFollow {
   followId: number;
   followerId: number;
 }
@@ -29,6 +29,6 @@ export interface followRequestType extends friendInfo {
 }
 
 // 친구 검색
-export interface friendSearchType extends friendInfo, isfollow {
+export interface friendSearchType extends friendInfo, isFollow {
   userId: number;
 }
