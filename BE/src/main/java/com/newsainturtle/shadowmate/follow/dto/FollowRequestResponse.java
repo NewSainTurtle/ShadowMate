@@ -1,15 +1,16 @@
-package com.newsainturtle.shadowmate.user.dto;
+package com.newsainturtle.shadowmate.follow.dto;
 
-import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class UserResponse {
+public class FollowRequestResponse {
 
-    private Long userId;
+    private Long followRequestId;
+
+    private Long requesterId;
 
     private String email;
 
@@ -20,6 +21,4 @@ public class UserResponse {
     private String statusMessage;
 
     private PlannerAccessScope plannerAccessScope;
-
-    private FollowStatus isFollow;
 }

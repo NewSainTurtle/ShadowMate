@@ -41,6 +41,13 @@ public class FollowController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_FOLLOWER_LIST, followService.getFollower(principalDetails.getUser())));
     }
 
+    @GetMapping("/{userId}/receive-lists")
+    public ResponseEntity<BaseResponse> getFollowRequestList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                    @PathVariable("userId") final Long userId) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_FOLLOW_REQUEST_LIST, followService.getFollowRequestList(principalDetails.getUser())));
+    }
+
     @PostMapping("/{userId}/requested")
     public ResponseEntity<BaseResponse> addFollow(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                   @PathVariable("userId") final Long userId,

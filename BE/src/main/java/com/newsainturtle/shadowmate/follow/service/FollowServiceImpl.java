@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.follow.service;
 
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
+import com.newsainturtle.shadowmate.follow.dto.FollowRequestResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
@@ -55,6 +56,21 @@ public class FollowServiceImpl implements FollowService {
                         .nickname(follow.getFollowerId().getNickname())
                         .profileImage(follow.getFollowerId().getProfileImage())
                         .followerId(follow.getFollowerId().getId())
+                        .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FollowRequestResponse> getFollowRequestList(final User user) {
+        List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiverId(user);
+        return followRequestList.stream()
+                .map(followRequest -> FollowRequestResponse.builder()
+                        .followRequestId(followRequest.getId())
+                        .requesterId(followRequest.getRequesterId().getId())
+                        .email(followRequest.getRequesterId().getEmail())
+                        .nickname(followRequest.getRequesterId().getNickname())
+                        .profileImage(followRequest.getRequesterId().getProfileImage())
+                        .statusMessage(followRequest.getRequesterId().getStatusMessage())
+                        .plannerAccessScope(followRequest.getRequesterId().getPlannerAccessScope())
                         .build()).collect(Collectors.toList());
     }
 

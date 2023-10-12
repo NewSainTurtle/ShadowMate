@@ -132,7 +132,7 @@ public class UserControllerTest {
             UserResponse userResponse = UserResponse.builder()
                     .userId(user2.getId())
                     .email(user2.getEmail())
-                    .prfileImage(user2.getProfileImage())
+                    .profileImage(user2.getProfileImage())
                     .nickname(user2.getNickname())
                     .statusMessage(user2.getStatusMessage())
                     .plannerAccessScope(user2.getPlannerAccessScope())

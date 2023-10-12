@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         return UserResponse.builder()
                 .userId(searchUser.getId())
                 .email(searchUser.getEmail())
-                .prfileImage(searchUser.getProfileImage())
+                .profileImage(searchUser.getProfileImage())
                 .nickname(searchUser.getNickname())
                 .statusMessage(searchUser.getStatusMessage())
                 .plannerAccessScope(searchUser.getPlannerAccessScope())
