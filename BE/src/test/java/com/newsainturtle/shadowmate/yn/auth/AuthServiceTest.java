@@ -1,7 +1,7 @@
 package com.newsainturtle.shadowmate.yn.auth;
 
 import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
-import com.newsainturtle.shadowmate.auth.dto.CheckAuthenticationEmailCodeRequest;
+import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
@@ -149,14 +149,14 @@ public class AuthServiceTest {
         @Test
         public void 실패_이메일중복() {
             //given
-            final CheckAuthenticationEmailCodeRequest checkAuthenticationEmailCodeRequest = CheckAuthenticationEmailCodeRequest.builder()
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .code("code127")
                     .build();
             doReturn(user).when(userRepository).findByEmail(email);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkAuthenticationEmailCode(checkAuthenticationEmailCodeRequest));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
@@ -168,7 +168,7 @@ public class AuthServiceTest {
         @Test
         public void 실패_이메일인증_유효시간지남() {
             //given
-            final CheckAuthenticationEmailCodeRequest checkAuthenticationEmailCodeRequest = CheckAuthenticationEmailCodeRequest.builder()
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .code("code127")
                     .build();
@@ -177,7 +177,7 @@ public class AuthServiceTest {
             doReturn(null).when(redisServiceImpl).getHashEmailData(email);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkAuthenticationEmailCode(checkAuthenticationEmailCodeRequest));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
@@ -190,7 +190,7 @@ public class AuthServiceTest {
         @Test
         public void 실패_이미인증된이메일사용() {
             //given
-            final CheckAuthenticationEmailCodeRequest checkAuthenticationEmailCodeRequest = CheckAuthenticationEmailCodeRequest.builder()
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .code("code127")
                     .build();
@@ -203,7 +203,7 @@ public class AuthServiceTest {
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkAuthenticationEmailCode(checkAuthenticationEmailCodeRequest));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
@@ -216,7 +216,7 @@ public class AuthServiceTest {
         @Test
         public void 실패_이메일인증코드틀림() {
             //given
-            final CheckAuthenticationEmailCodeRequest checkAuthenticationEmailCodeRequest = CheckAuthenticationEmailCodeRequest.builder()
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .code("code1234")
                     .build();
@@ -229,7 +229,7 @@ public class AuthServiceTest {
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkAuthenticationEmailCode(checkAuthenticationEmailCodeRequest));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.INVALID_EMAIL_AUTHENTICATION_CODE);
@@ -242,7 +242,7 @@ public class AuthServiceTest {
         @Test
         public void 성공_이메일인증코드맞춤() {
             //given
-            final CheckAuthenticationEmailCodeRequest checkAuthenticationEmailCodeRequest = CheckAuthenticationEmailCodeRequest.builder()
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .code("code127")
                     .build();
@@ -255,7 +255,7 @@ public class AuthServiceTest {
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
-            authServiceImpl.checkAuthenticationEmailCode(checkAuthenticationEmailCodeRequest);
+            authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest);
 
             //then
 
