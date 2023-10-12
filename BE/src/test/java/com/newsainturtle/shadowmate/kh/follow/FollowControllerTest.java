@@ -8,6 +8,7 @@ import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
 import com.newsainturtle.shadowmate.follow.dto.*;
+import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
@@ -52,6 +53,7 @@ public class FollowControllerTest {
     private Gson gson;
 
     final User user1 = User.builder()
+            .id(1L)
             .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
@@ -61,6 +63,7 @@ public class FollowControllerTest {
             .build();
 
     final User user2 = User.builder()
+            .id(2L)
             .email("test2@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
@@ -279,6 +282,54 @@ public class FollowControllerTest {
                 .builder()
                 .followingId(userId)
                 .build();
+
+        @Test
+        public void 실패_친구신청목록조회_유저정보틀림() throws Exception {
+            //given
+            final String url = "/api/follow/{userId}/receive-lists";
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, user2.getId())
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void 성공_친구신청목록조회() throws Exception {
+            //given
+            final FollowRequest followRequest = FollowRequest.builder()
+                    .id(1L)
+                    .requesterId(user1)
+                    .receiverId(user2)
+                    .build();
+            final String url = "/api/follow/{userId}/receive-lists";
+            final List<FollowRequestResponse> followRequestResponseList = new ArrayList<>();
+            followRequestResponseList.add(FollowRequestResponse.builder()
+                    .followRequestId(followRequest.getId())
+                    .requesterId(followRequest.getRequesterId().getId())
+                    .email(followRequest.getRequesterId().getEmail())
+                    .nickname(followRequest.getRequesterId().getNickname())
+                    .profileImage(followRequest.getRequesterId().getProfileImage())
+                    .statusMessage(followRequest.getRequesterId().getStatusMessage())
+                    .plannerAccessScope(followRequest.getRequesterId().getPlannerAccessScope())
+                    .build());
+            doReturn(followRequestResponseList).when(followService).getFollowRequestList(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, user2.getId())
+            );
+
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(FollowConstant.SUCCESS_GET_FOLLOW_REQUEST_LIST));
+
+        }
 
         @Test
         public void 실패_중복신청() throws Exception {
