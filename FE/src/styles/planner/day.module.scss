@@ -274,6 +274,18 @@ $color-btn-blue: var(--color-btn-blue);
     border-bottom: 1px solid $color-gray_3;
   }
 
+  &.--possible {
+    cursor: pointer;
+  }
+
+  &.--impossible {
+    > div {
+      span {
+        color: $color-gray_3;
+      }
+    }
+  }
+
   &__category,
   &__content {
     display: block;
@@ -384,6 +396,7 @@ $color-btn-blue: var(--color-btn-blue);
 
 .timetable {
   &__container {
+    position: relative;
     height: 100%;
     overflow-y: auto;
     padding: 0em 0.2em;
@@ -395,6 +408,17 @@ $color-btn-blue: var(--color-btn-blue);
       display: grid;
       grid-template-columns: 1fr 8fr;
       grid-template-rows: 1fr;
+
+      &--clicked {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: lightpink;
+        opacity: 0.5;
+        z-index: 2;
+      }
     }
   }
 
@@ -420,6 +444,12 @@ $color-btn-blue: var(--color-btn-blue);
     }
     > div:nth-last-child(-n + 6) {
       border-bottom: none;
+    }
+
+    &__item {
+      &:hover {
+        background-color: antiquewhite;
+      }
     }
   }
 }

@@ -1,12 +1,14 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import dayjs from "dayjs";
 
 interface Props {
   date: string | Date | dayjs.Dayjs;
+  clicked: boolean;
+  setClicked: (props: boolean) => void;
 }
 
-const TimeTable = ({ date }: Props) => {
+const TimeTable = ({ date, clicked, setClicked }: Props) => {
   const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
   const plannerTime = {
     start: dayjs(plannerDate).set("h", 4).format("YYYY-MM-DD HH:mm"),
@@ -21,7 +23,6 @@ const TimeTable = ({ date }: Props) => {
       time.push({ id, time: dayjs(tempTime).format("YYYY-MM-DD HH:mm") });
       id++;
     }
-    console.log(time);
     return time;
   }, []);
 
@@ -37,6 +38,8 @@ const TimeTable = ({ date }: Props) => {
           {timeArr.map((item) => (
             <div
               key={item.id}
+              className={styles["timetable__table__item"]}
+              draggable
               onClick={() => {
                 console.log(item.time);
               }}
@@ -44,6 +47,14 @@ const TimeTable = ({ date }: Props) => {
           ))}
         </div>
       </div>
+      {!clicked && (
+        <div
+          className={styles["timetable__container-box--clicked"]}
+          onClick={() => {
+            setClicked(true);
+          }}
+        />
+      )}
     </div>
   );
 };

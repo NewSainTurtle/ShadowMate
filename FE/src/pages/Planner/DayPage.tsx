@@ -15,6 +15,7 @@ const DayPage = () => {
     tomorrowGoals: "",
     retrospections: "",
   });
+  const [isClickTimeTable, setIsClickTimeTable] = useState(false);
 
   const moveDate = (n: -1 | 0 | 1) => {
     const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
@@ -28,6 +29,10 @@ const DayPage = () => {
     });
   };
 
+  const handleClickTimeTable = (props: boolean) => {
+    setIsClickTimeTable(props);
+  };
+
   const { todayGoals, tomorrowGoals, retrospections } = ment;
 
   return (
@@ -37,7 +42,7 @@ const DayPage = () => {
       <Ment title={"오늘의 다짐"} name="todayGoals" value={todayGoals} onChange={handleInput} rows={1} maxLength={50} />
 
       <div className={styles["item__todo-list"]}>
-        <TodoList />
+        <TodoList clicked={isClickTimeTable} />
       </div>
 
       <Ment
@@ -60,7 +65,7 @@ const DayPage = () => {
       </div>
 
       <div className={styles["item__timetable"]}>
-        <TimeTable date={date} />
+        <TimeTable date={date} clicked={isClickTimeTable} setClicked={handleClickTimeTable} />
       </div>
 
       <Ment

@@ -3,6 +3,7 @@ import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/TodoItem";
 import { todoType } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
+import TodoItemChoice from "./TodoItemChoice";
 
 export const TodoDataDefalut: todoType = {
   todoId: 0,
@@ -16,7 +17,7 @@ interface Props {
   clicked: boolean;
 }
 
-const TodoList = () => {
+const TodoList = ({ clicked }: Props) => {
   const [todos, setTodos] = useState<todoType[]>(todoData_list);
   const todoListSize = useMemo(() => {
     return todos.length + 1 >= 12 ? todos.length + 1 : 12;
@@ -60,13 +61,26 @@ const TodoList = () => {
       className={styles["todo-list"]}
       style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/12)` }}
     >
-      {todos.map((todo, idx) => (
-        <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
-      ))}
-      <TodoItem addTodo item={TodoDataDefalut} todoModule={todoModule} />
-      {Array.from({ length: 11 - todos.length }).map((item, idx) => (
-        <TodoItem key={idx} disable item={TodoDataDefalut} todoModule={todoModule} />
-      ))}
+      {!clicked ? (
+        <>
+          {todos.map((todo, idx) => (
+            <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
+          ))}
+          <TodoItem addTodo item={TodoDataDefalut} todoModule={todoModule} />
+          {Array.from({ length: 11 - todos.length }).map((item, idx) => (
+            <TodoItem key={idx} disable item={TodoDataDefalut} todoModule={todoModule} />
+          ))}
+        </>
+      ) : (
+        <>
+          {todos.map((todo, idx) => (
+            <TodoItemChoice key={todo.todoId} idx={idx} item={todo} possible={todo.todoStatus === 1} />
+          ))}
+          {Array.from({ length: 12 - todos.length }).map((item, idx) => (
+            <TodoItemChoice key={idx} item={TodoDataDefalut} possible={false} />
+          ))}
+        </>
+      )}
     </div>
   );
 };
