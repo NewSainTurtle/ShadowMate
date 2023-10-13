@@ -26,16 +26,12 @@ const Month = () => {
       <div className={styles["month__title"]}>
         <div>
           <div>
-            <div>
-              <Text types="semi-large" title>
-                {year}년
-              </Text>
-            </div>
-            <div>
-              <Text types="semi-large" title>
-                {month.toString().length > 1 ? month : "0" + month.toString()}월
-              </Text>
-            </div>
+            <Text types="semi-large" title>
+              {year}년
+            </Text>
+            <Text types="semi-large" title>
+              {month.toString().length > 1 ? month : "0" + month.toString()}월
+            </Text>
           </div>
           <div className={styles["month__button"]} onClick={handlePrevMonth}>
             <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">

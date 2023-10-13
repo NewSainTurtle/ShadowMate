@@ -22,12 +22,12 @@ $color-blue: var(--color-btn-blue);
       > div {
         display: flex;
         // 날짜(년월) 영역
-        > div:nth-child(1) {
-          width: 8em;
+        > span:nth-child(1) {
+          width: 4em;
           text-align: end;
         }
-        > div:nth-child(2) {
-          width: 4.7em;
+        > span:nth-child(2) {
+          width: 2.5em;
           text-align: end;
         }
       }
