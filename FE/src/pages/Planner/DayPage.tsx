@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
@@ -6,6 +6,7 @@ import TimeTable from "@components/planner/day/TimeTable";
 import TodoList from "@components/planner/day/TodoList";
 import Ment from "@components/planner/day/Ment";
 import dayjs from "dayjs";
+import CustomCursor from "@components/planner/day/CustomCursor";
 
 const DayPage = () => {
   const { state } = useLocation();
@@ -56,6 +57,7 @@ const DayPage = () => {
         </div>
 
         <div className={styles["item__todo"]}>
+          {isClickTimeTable && <CustomCursor />}
           <div className={styles["item__todo-list"]}>
             <TodoList clicked={isClickTimeTable} />
           </div>

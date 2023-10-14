@@ -29,7 +29,6 @@ const daySlice = createSlice({
   reducers: {
     setTodo: (state, { payload: todo }) => {
       state.todo = todo;
-      console.log(todo);
     },
   },
 });
