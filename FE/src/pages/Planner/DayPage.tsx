@@ -38,44 +38,51 @@ const DayPage = () => {
   return (
     <div className={styles["page-container"]}>
       <Header date={date} moveDate={moveDate} />
+      <div className={styles["page-content"]}>
+        <Ment
+          title={"오늘의 다짐"}
+          name="todayGoals"
+          value={todayGoals}
+          onChange={handleInput}
+          rows={1}
+          maxLength={50}
+        />
 
-      <Ment title={"오늘의 다짐"} name="todayGoals" value={todayGoals} onChange={handleInput} rows={1} maxLength={50} />
+        <div className={styles["item__time"]}>
+          <span>{4}</span>
+          <span>시간</span>
+          <span>{10}</span>
+          <span>분</span>
+        </div>
 
-      <div className={styles["item__todo-list"]}>
-        <TodoList clicked={isClickTimeTable} />
+        <div className={styles["item__todo"]}>
+          <div className={styles["item__todo-list"]}>
+            <TodoList clicked={isClickTimeTable} />
+          </div>
+          <div className={styles["item__timetable"]}>
+            <TimeTable date={date} clicked={isClickTimeTable} setClicked={handleClickTimeTable} />
+          </div>
+        </div>
+
+        <Ment
+          title={"오늘의 회고"}
+          name="retrospections"
+          value={retrospections}
+          onChange={handleInput}
+          rows={5}
+          maxLength={100}
+          fileImg
+        />
+
+        <Ment
+          title={"내일 다짐"}
+          name="tomorrowGoals"
+          value={tomorrowGoals}
+          onChange={handleInput}
+          rows={5}
+          maxLength={50}
+        />
       </div>
-
-      <Ment
-        title={"오늘의 회고"}
-        name="retrospections"
-        value={retrospections}
-        onChange={handleInput}
-        rows={5}
-        maxLength={100}
-        fileImg
-      />
-
-      <div className={styles["item__driver"]} />
-
-      <div className={styles["item__time"]}>
-        <span>{4}</span>
-        <span>시간</span>
-        <span>{10}</span>
-        <span>분</span>
-      </div>
-
-      <div className={styles["item__timetable"]}>
-        <TimeTable date={date} clicked={isClickTimeTable} setClicked={handleClickTimeTable} />
-      </div>
-
-      <Ment
-        title={"내일 다짐"}
-        name="tomorrowGoals"
-        value={tomorrowGoals}
-        onChange={handleInput}
-        rows={5}
-        maxLength={50}
-      />
     </div>
   );
 };

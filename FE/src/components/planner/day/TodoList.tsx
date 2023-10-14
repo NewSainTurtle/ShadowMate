@@ -19,14 +19,15 @@ interface Props {
 
 const TodoList = ({ clicked }: Props) => {
   const [todos, setTodos] = useState<todoType[]>(todoData_list);
+  const listSize = 11;
   const todoListSize = useMemo(() => {
-    return todos.length + 1 >= 12 ? todos.length + 1 : 12;
+    return todos.length + 1 >= listSize ? todos.length + 1 : listSize;
   }, [todos]);
   const todoEndRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(todos.length + 1);
 
   useEffect(() => {
-    if (todos.length + 1 >= 12 && todoEndRef.current) {
+    if (todos.length + 1 >= listSize && todoEndRef.current) {
       todoEndRef.current.scrollTop = todoEndRef.current.scrollHeight;
     }
   }, [todos.length]);
@@ -59,7 +60,7 @@ const TodoList = ({ clicked }: Props) => {
     <div
       ref={todoEndRef}
       className={styles["todo-list"]}
-      style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/12)` }}
+      style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/${listSize})` }}
     >
       {!clicked ? (
         <>
@@ -67,7 +68,7 @@ const TodoList = ({ clicked }: Props) => {
             <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
           ))}
           <TodoItem addTodo item={TodoDataDefalut} todoModule={todoModule} />
-          {Array.from({ length: 11 - todos.length }).map((item, idx) => (
+          {Array.from({ length: listSize - todos.length - 1 }).map((item, idx) => (
             <TodoItem key={idx} disable item={TodoDataDefalut} todoModule={todoModule} />
           ))}
         </>
@@ -76,7 +77,7 @@ const TodoList = ({ clicked }: Props) => {
           {todos.map((todo, idx) => (
             <TodoItemChoice key={todo.todoId} idx={idx} item={todo} possible={todo.todoStatus === 1} />
           ))}
-          {Array.from({ length: 12 - todos.length }).map((item, idx) => (
+          {Array.from({ length: listSize - todos.length }).map((item, idx) => (
             <TodoItemChoice key={idx} item={TodoDataDefalut} possible={false} />
           ))}
         </>
