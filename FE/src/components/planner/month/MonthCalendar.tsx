@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Children, Dispatch, Fragment, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import dayjs from "dayjs";
@@ -51,29 +51,31 @@ const MonthCalendar = ({ selectedDay }: Props) => {
             <Text types="small">{item}</Text>
           </div>
         ))}
-        {ItemList?.map((item, idx) => {
-          return (
-            <>
-              {idx % 7 === 0 && (
-                <div className={styles["calendar__container"]}>
-                  <Text types="small">{(idx % 6) + 1}주차</Text>
-                </div>
-              )}
-              <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>
-                {item ? (
-                  <div className={styles["calendar__item"]}>
-                    <div style={{ backgroundColor: statusColor[item.dayStatus] }}>
-                      <Text types="small">{item.dayStatus === 3 ? <CheckRoundedIcon /> : item.todoCount}</Text>
-                    </div>
-                    <Text types="small">{dayjs(item.date).date()}</Text>
+        {Children.toArray(
+          ItemList?.map((item, idx) => {
+            return (
+              <>
+                {idx % 7 === 0 && (
+                  <div className={styles["calendar__container"]}>
+                    <Text types="small">{(idx % 6) + 1}주차</Text>
                   </div>
-                ) : (
-                  <></>
                 )}
-              </div>
-            </>
-          );
-        })}
+                <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>
+                  {item ? (
+                    <div className={styles["calendar__item"]}>
+                      <div style={{ backgroundColor: statusColor[item.dayStatus] }}>
+                        <Text types="small">{item.dayStatus === 3 ? <CheckRoundedIcon /> : item.todoCount}</Text>
+                      </div>
+                      <Text types="small">{dayjs(item.date).date()}</Text>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </>
+            );
+          }),
+        )}
         {isNotFriend && (
           <div className={styles["calendar__overlay"]}>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
