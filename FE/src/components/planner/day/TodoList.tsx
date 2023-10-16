@@ -3,6 +3,8 @@ import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/TodoItem";
 import { todoType } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
+import { useDispatch } from "react-redux";
+import { setDoneTodoList } from "@store/planner/daySlice";
 import TodoItemChoice from "./TodoItemChoice";
 
 export const TodoDataDefalut: todoType = {
@@ -18,6 +20,7 @@ interface Props {
 }
 
 const TodoList = ({ clicked }: Props) => {
+  const dispatch = useDispatch();
   const [todos, setTodos] = useState<todoType[]>(todoData_list);
   const listSize = 11;
   const todoListSize = useMemo(() => {
@@ -31,6 +34,10 @@ const TodoList = ({ clicked }: Props) => {
       todoEndRef.current.scrollTop = todoEndRef.current.scrollHeight;
     }
   }, [todos.length]);
+
+  useEffect(() => {
+    if (clicked) dispatch(setDoneTodoList(todos));
+  }, [clicked]);
 
   const todoModule = (() => {
     const insertTodo = (props: todoType) => {
