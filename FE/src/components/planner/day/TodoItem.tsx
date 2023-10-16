@@ -93,7 +93,7 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
 
   const categoryStyle = (bgColor: string) => {
     return {
-      backgroundColor: `${bgColor == categoryDefault.categoryColorCode ? "none" : bgColor}`,
+      backgroundColor: `${bgColor == categoryDefault.categoryColorCode ? "transparent" : bgColor}`,
       color: `${getTextColorByBackgroundColor(bgColor.slice(1))}`,
     };
   };
