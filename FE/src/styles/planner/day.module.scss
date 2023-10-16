@@ -444,7 +444,7 @@ $color-btn-blue: var(--color-btn-blue);
     }
   }
 
-  &__hour {
+  &__hours {
     @extend %timetable__item;
     > div:nth-child(n) {
       display: flex;
@@ -457,7 +457,7 @@ $color-btn-blue: var(--color-btn-blue);
     }
   }
 
-  &__table {
+  &__minutes {
     @extend %timetable__item;
     grid-template-columns: repeat(6, calc(100% / 6));
 

@@ -29,16 +29,16 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
   return (
     <div className={styles["timetable__container"]}>
       <div className={styles["timetable__container-box"]}>
-        <div className={styles["timetable__hour"]}>
+        <div className={styles["timetable__hours"]}>
           {Array.from({ length: 24 }).map((_, index) => (
             <div key={index}>{String((4 + index) % 24).padStart(2, "0")}</div>
           ))}
         </div>
-        <div className={styles["timetable__table"]}>
+        <div className={styles["timetable__minutes"]}>
           {timeArr.map((item) => (
             <div
               key={item.id}
-              className={styles["timetable__table__item"]}
+              className={styles["timetable__minutes__item"]}
               draggable
               onClick={() => {
                 console.log(item.time);
