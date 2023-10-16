@@ -1,3 +1,9 @@
+export interface MonthType {
+  date: string;
+  todoCount: number;
+  dayStatus: number;
+}
+
 export interface categoryType {
   categoryId: number;
   categoryColorCode: string;

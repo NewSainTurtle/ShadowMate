@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import dayjs from "dayjs";
-import { MonthType } from "@util/data/MonthData";
+import { MonthType } from "@util/planner.interface";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 
 interface Props {
