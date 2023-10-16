@@ -1,26 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import React from "react";
+import Month from "@components/planner/month/Month";
 
 const MonthPage = () => {
-  const [day, setDay] = useState("");
-
-  return (
-    <>
-      <span>MonthPage</span>
-      <p>
-        <input
-          type="date"
-          value={day}
-          onChange={(e) => {
-            setDay(e.target.value);
-          }}
-        />
-        <NavLink to={"/day"} state={{ date: day }}>
-          이동
-        </NavLink>
-      </p>
-    </>
-  );
+  return <Month />;
 };
 
 export default MonthPage;
