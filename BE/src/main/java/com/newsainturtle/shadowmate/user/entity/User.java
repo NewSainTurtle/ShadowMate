@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "user")
+@Table(name = "users")
 @AttributeOverride(name = "id", column = @Column(name= "user_id"))
 public class User extends CommonEntity {
 
