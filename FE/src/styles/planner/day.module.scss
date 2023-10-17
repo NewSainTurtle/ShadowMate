@@ -470,7 +470,7 @@ $color-btn-blue: var(--color-btn-blue);
 
     &__item {
       &:hover {
-        background-color: antiquewhite;
+        background-color: $color-gray_1;
       }
     }
   }

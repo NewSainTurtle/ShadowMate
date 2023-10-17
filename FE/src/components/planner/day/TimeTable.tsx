@@ -68,18 +68,21 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
 
   const mouseModule = (() => {
     const mouseDown = (e: React.MouseEvent<HTMLDivElement>, time: string) => {
-      setTimeClicked(true);
-      setSelectTime({ ...selectTime, startTime: time });
+      if (e.button != 2) {
+        setTimeClicked(true);
+        setSelectTime({ ...selectTime, startTime: time });
+      }
     };
-    const mouseEnter = (e: React.MouseEvent<HTMLDivElement>, time: string) => {
+    const mouseEnter = (time: string) => {
       if (timeClick) {
         setSelectTime({ ...selectTime, endTime: time });
       }
     };
 
-    const mouseUp = (e: React.MouseEvent<HTMLDivElement>, time: string) => {
+    const mouseUp = () => {
       setTimeClicked(false);
       setSelectTime({ startTime: "", endTime: "" });
+      dispatch(removeTodo());
     };
 
     return {
@@ -90,7 +93,12 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
   })();
 
   return (
-    <div className={styles["timetable__container"]}>
+    <div
+      className={styles["timetable__container"]}
+      onClick={() => {
+        setClicked(true);
+      }}
+    >
       <div className={styles["timetable__container-box"]}>
         <div className={styles["timetable__hours"]}>
           {Array.from({ length: 24 }).map((_, idx) => (
@@ -105,23 +113,23 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
               onMouseDown={(e) => {
                 mouseModule.mouseDown(e, item.time);
               }}
-              onMouseEnter={(e) => mouseModule.mouseEnter(e, item.time)}
-              onMouseUp={(e) => {
-                mouseModule.mouseUp(e, item.time);
+              onMouseEnter={() => mouseModule.mouseEnter(item.time)}
+              onMouseUp={() => {
+                mouseModule.mouseUp();
               }}
               style={{ backgroundColor: item.categoryColorCode }}
             />
           ))}
         </div>
       </div>
-      {!clicked && (
+      {/* {!clicked && (
         <div
           className={styles["timetable__container-box--clicked"]}
           onClick={() => {
             setClicked(true);
           }}
         />
-      )}
+      )} */}
     </div>
   );
 };

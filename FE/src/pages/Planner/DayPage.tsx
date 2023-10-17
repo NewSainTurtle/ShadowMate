@@ -36,6 +36,17 @@ const DayPage = () => {
   };
 
   useEffect(() => {
+    const handleOutsideClose = (e: MouseEvent) => {
+      if (todoDivRef && todoDivRef.current) {
+        if (e.button == 2) handleClickTimeTable(false);
+      }
+    };
+    document.addEventListener("mouseup", handleOutsideClose);
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+    return () => document.addEventListener("mouseup", handleOutsideClose);
+  }, []);
+
+  useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
       if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) handleClickTimeTable(false);
     };
