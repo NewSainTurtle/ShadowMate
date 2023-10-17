@@ -13,3 +13,76 @@ export const TODO_ITEMS = [
     todoUpdate: false,
   },
 ];
+
+export const TODO_ITEMS_RESPONSE = {
+  message: "주간 플래너 조회가 완료되었습니다.",
+  data: {
+    plannerAccessScope: "전체공개",
+    dday: "2023-11-11",
+    weeklyTodo: [
+      {
+        weeklyTodoId: 1,
+        weeklyTodoContent: "마트 장보기",
+        weeklyTodoStatus: true,
+      },
+      {
+        weeklyTodoId: 2,
+        weeklyTodoContent: "서버 환경구축하기",
+        weeklyTodoStatus: false,
+      },
+    ],
+    dayList: [
+      {
+        date: "2023-10-09",
+        retrospection: "이제는 더이상 물러나 곳이 없다.",
+        dailyTodo: [
+          {
+            todoId: 1,
+            category: {
+              categoryId: 1,
+              categoryEmoticon: "🍅",
+            },
+            todoContent: "비문학 3문제 풀기",
+            todoStatus: "완료",
+          },
+          {
+            todoId: 2,
+            category: null,
+            todoContent: "수학 3문제 풀기",
+            todoStatus: "공백",
+          },
+        ],
+      },
+      {
+        date: "2023-10-10",
+        retrospection: null,
+        dailyTodo: null,
+      },
+      {
+        date: "2023-10-11",
+        retrospection: null,
+        dailyTodo: null,
+      },
+      {
+        date: "2023-10-12",
+        retrospection: null,
+        dailyTodo: null,
+      },
+      {
+        date: "2023-10-13",
+        retrospection: null,
+        dailyTodo: null,
+      },
+      {
+        date: "2023-10-14",
+        retrospection: null,
+        dailyTodo: null,
+      },
+      {
+        date: "2023-10-15",
+        retrospection: null,
+        dailyTodo: null,
+      },
+    ],
+  },
+};
