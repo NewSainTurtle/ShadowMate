@@ -23,7 +23,7 @@ const initialState: dayConfig = {
   todo: {
     todoId: 0,
     categoryTitle: "",
-    categoryColorCode: "",
+    categoryColorCode: "#E9E9EB",
     todoContent: "",
     todoStatus: 0,
   },

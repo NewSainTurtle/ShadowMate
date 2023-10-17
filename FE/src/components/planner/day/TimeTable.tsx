@@ -68,7 +68,7 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
 
   const mouseModule = (() => {
     const mouseDown = (e: React.MouseEvent<HTMLDivElement>, time: string) => {
-      if (e.button != 2) {
+      if (e.button != 2 && todoId != 0) {
         setTimeClicked(true);
         setSelectTime({ ...selectTime, startTime: time });
       }
