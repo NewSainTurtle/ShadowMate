@@ -423,6 +423,26 @@ $color-btn-blue: var(--color-btn-blue);
     overflow-y: auto;
     padding: 0em 0.2em;
     box-sizing: border-box;
+    &::before {
+      @extend .text-small;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0 0 1.2em 1.2em;
+      color: $color-gray_4;
+      text-align: center;
+      white-space: pre;
+      line-height: 1.5em;
+      content: "클릭하여\A타임 테이블 등록";
+    }
+
+    &--clicked {
+      @extend .timetable__container;
+      &::before {
+        content: "";
+      }
+    }
 
     &-box {
       height: 100%;
@@ -430,17 +450,6 @@ $color-btn-blue: var(--color-btn-blue);
       display: grid;
       grid-template-columns: 1fr 8fr;
       grid-template-rows: 1fr;
-
-      &--clicked {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: lightpink;
-        opacity: 0.5;
-        z-index: 2;
-      }
     }
   }
 

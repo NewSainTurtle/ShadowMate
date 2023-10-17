@@ -92,9 +92,11 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
     };
   })();
 
+  const clickedStyle = clicked ? "--clicked" : "";
+
   return (
     <div
-      className={styles["timetable__container"]}
+      className={styles[`timetable__container${clickedStyle}`]}
       onClick={() => {
         setClicked(true);
       }}
@@ -122,14 +124,6 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
           ))}
         </div>
       </div>
-      {/* {!clicked && (
-        <div
-          className={styles["timetable__container-box--clicked"]}
-          onClick={() => {
-            setClicked(true);
-          }}
-        />
-      )} */}
     </div>
   );
 };
