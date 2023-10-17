@@ -17,6 +17,7 @@ const DayPage = () => {
     retrospections: "",
   });
   const [isClickTimeTable, setIsClickTimeTable] = useState(false);
+  const todoDivRef = useRef<HTMLDivElement>(null);
 
   const moveDate = (n: -1 | 0 | 1) => {
     const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
@@ -33,6 +34,14 @@ const DayPage = () => {
   const handleClickTimeTable = (props: boolean) => {
     setIsClickTimeTable(props);
   };
+
+  useEffect(() => {
+    const handleOutsideClose = (e: { target: any }) => {
+      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) handleClickTimeTable(false);
+    };
+    document.addEventListener("click", handleOutsideClose);
+    return () => document.removeEventListener("click", handleOutsideClose);
+  }, [isClickTimeTable]);
 
   const { todayGoals, tomorrowGoals, retrospections } = ment;
 
@@ -56,7 +65,7 @@ const DayPage = () => {
           <span>분</span>
         </div>
 
-        <div className={styles["item__todo"]}>
+        <div ref={todoDivRef} className={styles["item__todo"]}>
           {isClickTimeTable && <CustomCursor />}
           <div className={styles["item__todo-list"]}>
             <TodoList clicked={isClickTimeTable} />
