@@ -4,6 +4,7 @@ import Text from "@components/common/Text";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { todoType, categoryType } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
+import CategorySelector, { categoryStyle } from "@components/common/CategorySelector";
 
 const TodoDataDefalut: todoType = {
   todoId: 0,
@@ -13,7 +14,7 @@ const TodoDataDefalut: todoType = {
   todoStatus: 0,
 };
 
-const categoryDefault: categoryType = {
+export const categoryDefault: categoryType = {
   categoryId: 0,
   categoryTitle: "",
   categoryColorCode: "#E9E9EB",
@@ -89,23 +90,6 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
     deleteTodo(idx);
   };
 
-  const getTextColorByBackgroundColor = (hexColor: string) => {
-    const rgb = parseInt(hexColor, 16);
-    const r = (rgb >> 16) & 0xff;
-    const g = (rgb >> 8) & 0xff;
-    const b = (rgb >> 0) & 0xff;
-    const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-    return luma < 127.5 ? "white" : "black";
-  };
-
-  const categoryStyle = (bgColor: string) => {
-    return {
-      backgroundColor: `${bgColor == categoryDefault.categoryColorCode ? "none" : bgColor}`,
-      color: `${getTextColorByBackgroundColor(bgColor.slice(1))}`,
-    };
-  };
-
   const clicked = addTodo || !disable;
 
   return (
@@ -120,23 +104,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
         </div>
-        {isDropdownView && (
-          <div className={styles["todo-item__category-menu"]}>
-            <span onClick={() => handleClickCategory("", categoryDefault.categoryColorCode)}>&emsp;&emsp;</span>
-            {categoryList.map((item, idx) => {
-              const { categoryId, categoryColorCode, categoryTitle } = item;
-              return (
-                <span
-                  key={categoryId}
-                  style={categoryStyle(categoryColorCode)}
-                  onClick={() => handleClickCategory(categoryTitle, categoryColorCode)}
-                >
-                  {categoryTitle}
-                </span>
-              );
-            })}
-          </div>
-        )}
+        {isDropdownView && <CategorySelector handleClick={handleClickCategory} />}
       </div>
 
       <div className={styles[`todo-item__content${clicked ? "--add" : ""}`]}>
