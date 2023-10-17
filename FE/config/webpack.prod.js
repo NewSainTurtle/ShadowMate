@@ -9,6 +9,10 @@ const isAnalyze = process.argv.includes("--analyze");
 module.exports = merge(common, {
   mode: "production",
   devtool: "hidden-source-map",
+  devServer: {
+    historyApiFallback: true,
+    allowedHosts: "all",
+  },
   performance: {
     hints: false,
     maxEntrypointSize: 512000,
