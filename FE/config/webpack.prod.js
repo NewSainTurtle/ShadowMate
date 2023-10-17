@@ -10,6 +10,7 @@ module.exports = merge(common, {
   mode: "production",
   devtool: "hidden-source-map",
   devServer: {
+    port: 8080,
     historyApiFallback: true,
     allowedHosts: "all",
   },
