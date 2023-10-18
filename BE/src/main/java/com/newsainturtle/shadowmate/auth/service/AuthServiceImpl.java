@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.auth.service;
 
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
+import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
@@ -46,8 +47,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void certifyEmail(final CertifyEmailRequest certifyEmailRequest) {
-        final String email = certifyEmailRequest.getEmail();
+    public void sendEmailAuthenticationCode(final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest) {
+        final String email = sendEmailAuthenticationCodeRequest.getEmail();
         checkDuplicatedEmail(email);
 
         final String code = createRandomCode();
@@ -58,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
 
         final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
         if (findEmailAuth != null && findEmailAuth.isAuthStatus()) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
+            throw new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
         }
         redisServiceImpl.setHashEmailData(email, emailAuth);
 
@@ -67,6 +68,30 @@ public class AuthServiceImpl implements AuthService {
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new AuthException(AuthErrorResult.FAIL_SEND_EMAIL);
         }
+    }
+
+    @Override
+    @Transactional
+    public void checkEmailAuthenticationCode(final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest) {
+        final String email = checkEmailAuthenticationCodeRequest.getEmail();
+        checkDuplicatedEmail(email);
+
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        if (findEmailAuth == null) {
+            throw new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
+        } else if (findEmailAuth.isAuthStatus()) {
+            throw new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
+        }
+
+        if (!findEmailAuth.getCode().equals(checkEmailAuthenticationCodeRequest.getCode())) {
+            throw new AuthException(AuthErrorResult.INVALID_EMAIL_AUTHENTICATION_CODE);
+        }
+
+        final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                .code(findEmailAuth.getCode())
+                .authStatus(true)
+                .build();
+        redisServiceImpl.setHashEmailData(email, emailAuth);
     }
 
     @Override
