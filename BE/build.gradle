@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.14'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.sonarqube' version '3.0'
 }
 
 group = 'com.newsainturtle'
@@ -34,6 +35,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     implementation group: 'com.auth0', name: 'java-jwt', version: '4.3.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0"
 }
 
 tasks.named('test') {
