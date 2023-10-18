@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import dayjs from "dayjs";
+import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@hooks/hook";
 import { removeTodo, selectTodo } from "@store/planner/daySlice";
@@ -15,6 +16,7 @@ interface tableTimeType {
   todoId: number;
   categoryColorCode: string;
   time: string;
+  closeButton?: boolean;
 }
 
 const TimeTable = ({ date, clicked, setClicked }: Props) => {
@@ -42,8 +44,37 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
     startTime: "",
     endTime: "",
   });
+  const [closeTime, setCloseTime] = useState({
+    todoId: 0,
+    endTime: "",
+  });
 
-  useEffect(() => {
+  const mouseModule = (() => {
+    const mouseDown = (e: React.MouseEvent<HTMLDivElement>, startTime: string) => {
+      if (e.button != 2 && todoId != 0) {
+        setTimeClicked(true);
+        setSelectTime({ ...selectTime, startTime, endTime: startTime });
+      }
+    };
+    const mouseEnter = (endTime: string) => {
+      if (timeClick) {
+        setSelectTime({ ...selectTime, endTime });
+      }
+    };
+    const mouseUp = (endTime: string) => {
+      setTimeClicked(false);
+      setCloseTime({ todoId, endTime });
+      setSelectTime({ startTime: "", endTime: "" });
+      dispatch(removeTodo());
+    };
+    return {
+      mouseDown,
+      mouseEnter,
+      mouseUp,
+    };
+  })();
+
+  const dragTimeUpdate = () => {
     if (selectTime.startTime != "" && selectTime.endTime != "") {
       let { startTime, endTime } = selectTime;
       if (startTime > endTime) {
@@ -54,7 +85,7 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
 
       const dragTime: tableTimeType[] = timeArr.reduce((updateArr: tableTimeType[], obj) => {
         if (obj.time >= startTime && obj.time <= endTime) {
-          updateArr.push({ ...obj, todoId, categoryColorCode });
+          updateArr.push({ time: obj.time, todoId, categoryColorCode });
         }
         return updateArr;
       }, []);
@@ -64,43 +95,38 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
       copyTimeArr.splice(startIndex, dragTime.length, ...dragTime);
       setTimeArr(copyTimeArr);
     }
+  };
+
+  const closeTimeUpdate = () => {
+    let { todoId, endTime } = closeTime;
+    if (todoId != 0 && endTime != "") {
+      const closeIndex = timeArr.findIndex((e) => e.time == endTime);
+      const copyTimeArr = [...timeArr];
+      copyTimeArr[closeIndex].closeButton = true;
+      setTimeArr(copyTimeArr);
+    }
+  };
+
+  const deleteTimeUpdate = (todoId: number) => {
+    // const copyTimeArr: tableTimeType[] = [...timeArr];
+    const copyTimeArr: tableTimeType[] = timeArr.map((item) =>
+      item.todoId == todoId ? { todoId: 0, categoryColorCode: "", time: item.time } : item,
+    );
+    setTimeArr(copyTimeArr);
+  };
+
+  useEffect(() => {
+    dragTimeUpdate();
   }, [selectTime]);
 
-  const mouseModule = (() => {
-    const mouseDown = (e: React.MouseEvent<HTMLDivElement>, time: string) => {
-      if (e.button != 2 && todoId != 0) {
-        setTimeClicked(true);
-        setSelectTime({ ...selectTime, startTime: time });
-      }
-    };
-    const mouseEnter = (time: string) => {
-      if (timeClick) {
-        setSelectTime({ ...selectTime, endTime: time });
-      }
-    };
-
-    const mouseUp = () => {
-      setTimeClicked(false);
-      setSelectTime({ startTime: "", endTime: "" });
-      dispatch(removeTodo());
-    };
-
-    return {
-      mouseDown,
-      mouseEnter,
-      mouseUp,
-    };
-  })();
+  useEffect(() => {
+    closeTimeUpdate();
+  }, [closeTime]);
 
   const clickedStyle = clicked ? "--clicked" : "";
 
   return (
-    <div
-      className={styles[`timetable__container${clickedStyle}`]}
-      onClick={() => {
-        setClicked(true);
-      }}
-    >
+    <div className={styles[`timetable__container${clickedStyle}`]} onClick={() => setClicked(true)}>
       <div className={styles["timetable__container-box"]}>
         <div className={styles["timetable__hours"]}>
           {Array.from({ length: 24 }).map((_, idx) => (
@@ -112,15 +138,17 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
             <div
               key={idx}
               className={styles["timetable__minutes__item"]}
-              onMouseDown={(e) => {
-                mouseModule.mouseDown(e, item.time);
-              }}
+              onMouseDown={(e) => mouseModule.mouseDown(e, item.time)}
               onMouseEnter={() => mouseModule.mouseEnter(item.time)}
-              onMouseUp={() => {
-                mouseModule.mouseUp();
-              }}
+              onMouseUp={() => mouseModule.mouseUp(item.time)}
               style={{ backgroundColor: item.categoryColorCode }}
-            />
+            >
+              {item.closeButton && (
+                <div onClick={() => deleteTimeUpdate(item.todoId)}>
+                  <DoDisturbOnIcon />
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>

@@ -423,14 +423,14 @@ $color-btn-blue: var(--color-btn-blue);
     overflow-y: auto;
     padding: 0em 0.2em;
     box-sizing: border-box;
-    &::before {
+    &::after {
       @extend .text-small;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      opacity: 0.5;
       margin: 0 0 1.2em 1.2em;
-      color: $color-gray_4;
       text-align: center;
       white-space: pre;
       line-height: 1.5em;
@@ -439,7 +439,7 @@ $color-btn-blue: var(--color-btn-blue);
 
     &--clicked {
       @extend .timetable__container;
-      &::before {
+      &::after {
         content: "";
       }
     }
@@ -447,6 +447,7 @@ $color-btn-blue: var(--color-btn-blue);
     &-box {
       height: 100%;
       overflow-y: auto;
+      overflow-x: hidden;
       display: grid;
       grid-template-columns: 1fr 8fr;
       grid-template-rows: 1fr;
@@ -470,16 +471,38 @@ $color-btn-blue: var(--color-btn-blue);
     @extend %timetable__item;
     grid-template-columns: repeat(6, calc(100% / 6));
 
-    > div:nth-child(6n) {
-      border-right: none;
-    }
-    > div:nth-last-child(-n + 6) {
-      border-bottom: none;
+    > div {
+      > div:nth-child(6n) {
+        border-right: none;
+      }
+      > div:nth-last-child(-n + 6) {
+        border-bottom: none;
+      }
     }
 
     &__item {
+      position: relative;
+
+      > div {
+        cursor: pointer;
+        position: absolute;
+        right: 0.1em;
+        top: 0.1em;
+        background-color: white;
+        border-radius: 50%;
+        svg {
+          display: none;
+          font-size: 1em;
+          color: $color-warning;
+        }
+      }
+
       &:hover {
         background-color: $color-gray_1;
+        display: block;
+        svg {
+          display: block;
+        }
       }
     }
   }
