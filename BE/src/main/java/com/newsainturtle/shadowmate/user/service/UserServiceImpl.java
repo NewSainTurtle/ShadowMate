@@ -57,6 +57,15 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
+    public void deleteUser(Long userId) {
+        Optional<User> delUser = userRepository.findById(userId);
+        if(!delUser.isPresent()) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        delUser.ifPresent(user -> user.deleteUser());
+    }
+
     private FollowStatus isFollow(final User user, final User searchUser) {
         Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
         if (follow == null) {
