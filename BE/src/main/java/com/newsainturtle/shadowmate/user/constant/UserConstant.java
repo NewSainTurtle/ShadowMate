@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 public class UserConstant {
 
     public static final String SUCCESS_PROFILE = "프로필 조회를 완료했습니다.";
-
     public static final String SUCCESS_SEARCH_NICKNAME = "닉네임 조회를 완료했습니다.";
+    public static final String SUCCESS_UPDATE_PROFILEIMAGE = "프로필사진 수정을 완료했습니다.";
 }
