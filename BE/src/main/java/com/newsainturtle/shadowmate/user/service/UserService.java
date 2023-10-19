@@ -12,4 +12,6 @@ public interface UserService {
 
     UserResponse searchNickname(final User user, final String nickname);
 
+    void updateProfileImage(final Long userId, final String newProfileImage);
+
 }

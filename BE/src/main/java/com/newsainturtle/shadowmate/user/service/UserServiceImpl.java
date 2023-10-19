@@ -13,11 +13,13 @@ import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -55,6 +57,16 @@ public class UserServiceImpl implements UserService {
                 .plannerAccessScope(searchUser.getPlannerAccessScope())
                 .isFollow(isFollow(user, searchUser))
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void updateProfileImage(final Long userId, final String newProfileImage) {
+        Optional<User> oldUser = userRepository.findById(userId);
+        if(!oldUser.isPresent()) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        oldUser.ifPresent(user -> user.updateProfileImage(newProfileImage));
     }
 
     private FollowStatus isFollow(final User user, final User searchUser) {
