@@ -1004,9 +1004,9 @@ class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isNull();
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isNull();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
-            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isZero();
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isZero();
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isZero();
             assertThat(searchDailyPlannerResponse.getDailyTodos()).isNull();
         }
 
@@ -1046,9 +1046,9 @@ class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isNull();
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isNull();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
-            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isZero();
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isZero();
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isZero();
             assertThat(searchDailyPlannerResponse.getDailyTodos()).isNull();
         }
 
@@ -1089,9 +1089,9 @@ class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isNull();
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isNull();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
-            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(0);
-            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(0);
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isZero();
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isZero();
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isZero();
             assertThat(searchDailyPlannerResponse.getDailyTodos()).isNull();
         }
 
@@ -1305,7 +1305,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(0);
+            assertThat(searchCalendarResponse.getDayList().size()).isZero();
         }
 
         @Test
@@ -1329,7 +1329,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(0);
+            assertThat(searchCalendarResponse.getDayList().size()).isZero();
         }
 
         @Test
@@ -1400,8 +1400,8 @@ class DailyPlannerServiceTest {
             assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
-            assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(0);
-            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(0);
+            assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isZero();
+            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isZero();
         }
 
         @Test
@@ -1509,7 +1509,7 @@ class DailyPlannerServiceTest {
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(3);
-            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(0);
+            assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isZero();
         }
 
 

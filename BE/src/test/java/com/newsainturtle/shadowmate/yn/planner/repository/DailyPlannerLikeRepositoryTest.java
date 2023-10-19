@@ -132,7 +132,7 @@ class DailyPlannerLikeRepositoryTest {
             final long count = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
 
             //then
-            assertThat(count).isEqualTo(0);
+            assertThat(count).isZero();
         }
 
         @Test

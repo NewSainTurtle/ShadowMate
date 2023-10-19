@@ -156,7 +156,7 @@ class WeeklyTodoRepositoryTest {
 
             //then
             assertThat(weeklyTodoList).isNotNull();
-            assertThat(weeklyTodoList.size()).isEqualTo(0);
+            assertThat(weeklyTodoList.size()).isZero();
         }
 
         @Test
