@@ -96,5 +96,19 @@ public class UserRepositoryTest {
             // then
             assertThat(result.getNickname()).isEqualTo(user.getNickname());
         }
+
+        @Test
+        void 성공_회원탈퇴() {
+            //given
+            final User delUser = user.deleteUser();
+
+            //when
+            userRepository.save(delUser);
+            final User result = userRepository.findByNickname(user.getNickname());
+
+            //then
+            assertThat(result.getWithdrawal()).isTrue();
+        }
+
     }
 }
