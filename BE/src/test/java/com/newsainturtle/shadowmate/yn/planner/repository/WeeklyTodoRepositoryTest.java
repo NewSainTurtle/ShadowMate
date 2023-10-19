@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class WeeklyTodoRepositoryTest {
+class WeeklyTodoRepositoryTest {
 
     @Autowired
     private WeeklyTodoRepository weeklyTodoRepository;
@@ -38,7 +38,7 @@ public class WeeklyTodoRepositoryTest {
     private Weekly weekly;
 
     @BeforeEach
-    public void init() {
+    void init() {
         User user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
@@ -55,7 +55,7 @@ public class WeeklyTodoRepositoryTest {
     }
 
     @Test
-    public void 주차별할일등록() {
+    void 주차별할일등록() {
         //given
 
         //when
@@ -74,7 +74,7 @@ public class WeeklyTodoRepositoryTest {
     }
 
     @Test
-    public void 주차별할일내용수정() {
+    void 주차별할일내용수정() {
         //given
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
                 .weekly(weekly)
@@ -102,7 +102,7 @@ public class WeeklyTodoRepositoryTest {
     }
 
     @Test
-    public void 주차별할일상태수정() {
+    void 주차별할일상태수정() {
         //given
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
                 .weekly(weekly)
@@ -130,7 +130,7 @@ public class WeeklyTodoRepositoryTest {
     }
 
     @Test
-    public void 주차별할일삭제() {
+    void 주차별할일삭제() {
         //given
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
                 .weekly(weekly)
@@ -148,7 +148,7 @@ public class WeeklyTodoRepositoryTest {
     @Nested
     class 주차별할일목록조회 {
         @Test
-        public void 주차별할일데이터없음() {
+        void 주차별할일데이터없음() {
             //given
 
             //when
@@ -160,7 +160,7 @@ public class WeeklyTodoRepositoryTest {
         }
 
         @Test
-        public void 주차별할일데이터있음() {
+        void 주차별할일데이터있음() {
             //given
             weeklyTodoRepository.save(WeeklyTodo.builder()
                     .weekly(weekly)

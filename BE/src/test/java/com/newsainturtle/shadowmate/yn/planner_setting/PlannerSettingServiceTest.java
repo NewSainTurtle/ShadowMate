@@ -85,7 +85,7 @@ class PlannerSettingServiceTest {
                     .build();
 
             @Test
-            public void 실패_없는카테고리색상() {
+            void 실패_없는카테고리색상() {
                 //given
                 doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
 
@@ -97,7 +97,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 성공_카테고리등록_이모티콘없음() {
+            void 성공_카테고리등록_이모티콘없음() {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle("국어")
@@ -121,7 +121,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 성공_카테고리등록_이모티콘있음() {
+            void 성공_카테고리등록_이모티콘있음() {
                 //given
                 doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
                 doReturn(category).when(categoryRepository).save(any(Category.class));
@@ -159,7 +159,7 @@ class PlannerSettingServiceTest {
                     .build();
 
             @Test
-            public void 실패_없는카테고리() {
+            void 실패_없는카테고리() {
                 //given
                 doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
 
@@ -171,7 +171,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 실패_없는카테고리색상() {
+            void 실패_없는카테고리색상() {
                 //given
                 doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
                 doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
@@ -184,7 +184,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 성공_카테고리등록() {
+            void 성공_카테고리등록() {
                 //given
                 doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
                 doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
@@ -216,7 +216,7 @@ class PlannerSettingServiceTest {
                     .build();
 
             @Test
-            public void 카테고리색상목록조회() {
+            void 카테고리색상목록조회() {
                 //given
                 final List<CategoryColor> list = new ArrayList<>();
                 list.add(categoryColor);
@@ -231,7 +231,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 카테고리목록조회() {
+            void 카테고리목록조회() {
                 //given
                 final List<Category> list = new ArrayList<>();
                 list.add(category);
@@ -263,7 +263,7 @@ class PlannerSettingServiceTest {
                     .build();
 
             @Test
-            public void 실패_없는카테고리() {
+            void 실패_없는카테고리() {
                 //given
                 doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
 
@@ -276,7 +276,7 @@ class PlannerSettingServiceTest {
 
 
             @Test
-            public void 성공_카테고리_할일에없음() {
+            void 성공_카테고리_할일에없음() {
                 //given
                 doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
                 doReturn(0L).when(todoRepository).countByCategory(category);
@@ -293,7 +293,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 성공_카테고리_할일에있음() {
+            void 성공_카테고리_할일에있음() {
                 //given
                 doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
                 doReturn(1L).when(todoRepository).countByCategory(category);
@@ -314,7 +314,7 @@ class PlannerSettingServiceTest {
     @Nested
     class 플래너공개여부설정 {
         @Test
-        public void 실패_잘못된범위값() {
+        void 실패_잘못된범위값() {
             //given
             final Long userId = 1L;
             final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
@@ -329,7 +329,7 @@ class PlannerSettingServiceTest {
         }
 
         @Test
-        public void 성공_플래너공개여부설정() {
+        void 성공_플래너공개여부설정() {
             //given
             final Long userId = 1L;
             final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
@@ -347,7 +347,7 @@ class PlannerSettingServiceTest {
     @Nested
     class 디데이 {
         @Test
-        public void 디데이등록_성공() {
+        void 디데이등록_성공() {
             //given
             final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                     .ddayTitle("생일")
@@ -375,7 +375,7 @@ class PlannerSettingServiceTest {
         @Nested
         class 디데이조회 {
             @Test
-            public void 등록된디데이목록이없음() {
+            void 등록된디데이목록이없음() {
                 //given
                 final List<Dday> list = new ArrayList<>();
                 doReturn(list).when(ddayRepository).findByUserOrderByDdayDateDesc(user);
@@ -389,7 +389,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 등록된디데이목록이있음() {
+            void 등록된디데이목록이있음() {
                 //given
                 final List<Dday> list = new ArrayList<>();
                 list.add(Dday.builder()
@@ -414,7 +414,7 @@ class PlannerSettingServiceTest {
         }
 
         @Test
-        public void 디데이삭제_성공() {
+        void 디데이삭제_성공() {
             //given
             final User user = User.builder()
                     .email("test@test.com")
@@ -451,7 +451,7 @@ class PlannerSettingServiceTest {
                     .build();
 
             @Test
-            public void 실패_유효하지않은디데이_권한이없는디데이() {
+            void 실패_유효하지않은디데이_권한이없는디데이() {
                 //given
                 doReturn(null).when(ddayRepository).findByUserAndId(user, 1L);
 
@@ -463,7 +463,7 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 성공() {
+            void 성공() {
                 //given
                 doReturn(dday).when(ddayRepository).findByUserAndId(user, 1L);
 

@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class TimeTableRepositoryTest {
+class TimeTableRepositoryTest {
 
     @Autowired
     private TimeTableRepository timeTableRepository;
@@ -45,7 +45,7 @@ public class TimeTableRepositoryTest {
     final private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
@@ -67,7 +67,7 @@ public class TimeTableRepositoryTest {
     }
 
     @Test
-    public void 타임테이블등록() {
+    void 타임테이블등록() {
         //given
         final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
         final LocalDateTime endTime = LocalDateTime.parse("2023-10-06 18:30", formatter);
@@ -88,7 +88,7 @@ public class TimeTableRepositoryTest {
     }
 
     @Test
-    public void 타임테이블삭제() {
+    void 타임테이블삭제() {
         //given
         final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
         final LocalDateTime endTime = LocalDateTime.parse("2023-10-06 18:30", formatter);

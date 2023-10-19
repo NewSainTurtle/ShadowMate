@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+class AuthServiceTest {
 
     @InjectMocks
     private AuthServiceImpl authServiceImpl;
@@ -61,7 +61,7 @@ public class AuthServiceTest {
     @Nested
     class 이메일인증 {
         @Test
-        public void 실패_이메일중복() {
+        void 실패_이메일중복() {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -76,7 +76,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 실패_이미인증된이메일사용() {
+        void 실패_이미인증된이메일사용() {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -97,7 +97,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_이메일중복아님_인증전() {
+        void 성공_이메일중복아님_인증전() {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -117,7 +117,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_이메일중복아님() {
+        void 성공_이메일중복아님() {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -133,7 +133,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_코드생성() {
+        void 성공_코드생성() {
             //given
 
             //when
@@ -147,7 +147,7 @@ public class AuthServiceTest {
     @Nested
     class 이메일인증코드확인 {
         @Test
-        public void 실패_이메일중복() {
+        void 실패_이메일중복() {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -166,7 +166,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 실패_이메일인증_유효시간지남() {
+        void 실패_이메일인증_유효시간지남() {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -188,7 +188,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 실패_이미인증된이메일사용() {
+        void 실패_이미인증된이메일사용() {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -214,7 +214,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 실패_이메일인증코드틀림() {
+        void 실패_이메일인증코드틀림() {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -240,7 +240,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_이메일인증코드맞춤() {
+        void 성공_이메일인증코드맞춤() {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -269,7 +269,7 @@ public class AuthServiceTest {
     @Nested
     class 회원가입 {
         @Test
-        public void 실패_이메일중복() {
+        void 실패_이메일중복() {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
@@ -290,7 +290,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_회원가입() {
+        void 성공_회원가입() {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
@@ -325,7 +325,7 @@ public class AuthServiceTest {
                 .build();
 
         @Test
-        public void 실패_없는사용자() {
+        void 실패_없는사용자() {
             //given
             final Long userId = 2L;
 
@@ -337,7 +337,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_없는사용자() {
+        void 성공_없는사용자() {
             //given
             final Long userId = 1L;
 

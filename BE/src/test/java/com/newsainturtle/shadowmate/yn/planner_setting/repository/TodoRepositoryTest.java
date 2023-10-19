@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class TodoRepositoryTest {
+class TodoRepositoryTest {
 
     @Autowired
     private TodoRepository todoRepository;
@@ -46,7 +46,7 @@ public class TodoRepositoryTest {
     private Category category;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
@@ -71,7 +71,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 카테고리없음() {
+    void 카테고리없음() {
         //given
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -89,7 +89,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 카테고리있음() {
+    void 카테고리있음() {
         //given
         todoRepository.save(Todo.builder()
                 .category(category)
