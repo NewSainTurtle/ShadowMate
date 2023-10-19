@@ -1172,7 +1172,7 @@ class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
             assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(40);
             assertThat(searchDailyPlannerResponse.getDailyTodos()).isNotNull();
-            assertThat(searchDailyPlannerResponse.getDailyTodos().size()).isEqualTo(1);
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).hasSize(1);
         }
 
         @Test
@@ -1238,7 +1238,7 @@ class DailyPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
             assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(40);
             assertThat(searchDailyPlannerResponse.getDailyTodos()).isNotNull();
-            assertThat(searchDailyPlannerResponse.getDailyTodos().size()).isEqualTo(1);
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).hasSize(1);
         }
     }
 
@@ -1366,7 +1366,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
         }
 
         @Test
@@ -1397,7 +1397,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isZero();
@@ -1433,7 +1433,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(1);
@@ -1469,7 +1469,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(2);
@@ -1505,7 +1505,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isEqualTo(lastDay);
+            assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(3);
