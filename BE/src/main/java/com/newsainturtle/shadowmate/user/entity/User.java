@@ -43,4 +43,9 @@ public class User extends CommonEntity {
     @Column(name = "planner_access_scope")
     @Enumerated(EnumType.STRING)
     private PlannerAccessScope plannerAccessScope;
+
+    public User deleteUser() {
+        this.withdrawal = true;
+        return this;
+    }
 }
