@@ -152,7 +152,7 @@ class AuthServiceTest {
             final String code = authServiceImpl.createRandomCode();
 
             //then
-            assertThat(code.length()).isEqualTo(6);
+            assertThat(code).hasSize(6);
         }
     }
 
