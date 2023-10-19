@@ -101,6 +101,7 @@ public class UserRepositoryTest {
         void 성공_회원탈퇴() {
             //given
             final User delUser = user.deleteUser();
+            delUser.deleteEntity();
 
             //when
             userRepository.save(delUser);
@@ -108,6 +109,7 @@ public class UserRepositoryTest {
 
             //then
             assertThat(result.getWithdrawal()).isTrue();
+            assertThat(result.getDeleteTime()).isNotNull();
         }
 
     }
