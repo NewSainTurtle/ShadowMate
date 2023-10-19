@@ -28,7 +28,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class PlannerSettingControllerTest {
+class PlannerSettingControllerTest {
 
     @InjectMocks
     private PlannerSettingController plannerSettingController;
@@ -45,7 +45,7 @@ public class PlannerSettingControllerTest {
 
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(plannerSettingController)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -59,7 +59,7 @@ public class PlannerSettingControllerTest {
             final String url = "/api/planner-settings/{userId}/categories";
 
             @Test
-            public void 실패_타이틀Null() throws Exception {
+            void 실패_타이틀Null() throws Exception {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle(null)
@@ -79,7 +79,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효길이가아닌타이틀() throws Exception {
+            void 실패_유효길이가아닌타이틀() throws Exception {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle("국")
@@ -98,7 +98,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효길이가아닌이모티콘() throws Exception {
+            void 실패_유효길이가아닌이모티콘() throws Exception {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle(null)
@@ -117,7 +117,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle("국어")
@@ -138,7 +138,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_없는카테고리색상() throws Exception {
+            void 실패_없는카테고리색상() throws Exception {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle("국어")
@@ -159,7 +159,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공_이모티콘Null() throws Exception {
+            void 성공_이모티콘Null() throws Exception {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle("국어")
@@ -178,7 +178,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공_이모티콘Null아님() throws Exception {
+            void 성공_이모티콘Null아님() throws Exception {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle("국어")
@@ -203,7 +203,7 @@ public class PlannerSettingControllerTest {
             final String url = "/api/planner-settings/{userId}/categories";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -226,7 +226,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_없는카테고리() throws Exception {
+            void 실패_없는카테고리() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -248,7 +248,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_카테고리번호Null() throws Exception {
+            void 실패_카테고리번호Null() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(null)
@@ -269,7 +269,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은카테고리타이틀() throws Exception {
+            void 실패_유효하지않은카테고리타이틀() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -290,7 +290,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_카테고리타이틀Null() throws Exception {
+            void 실패_카테고리타이틀Null() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -311,7 +311,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_없는카테고리색상번호() throws Exception {
+            void 실패_없는카테고리색상번호() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -333,7 +333,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_카테고리색상번호Null() throws Exception {
+            void 실패_카테고리색상번호Null() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -354,7 +354,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공_이모티콘Null() throws Exception {
+            void 성공_이모티콘Null() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -375,7 +375,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공_이모티콘있음() throws Exception {
+            void 성공_이모티콘있음() throws Exception {
                 //given
                 final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
                         .categoryId(1L)
@@ -402,7 +402,7 @@ public class PlannerSettingControllerTest {
             final String url = "/api/planner-settings/{userId}/categories";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
                         .categoryId(1L)
@@ -421,7 +421,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_없는카테고리() throws Exception {
+            void 실패_없는카테고리() throws Exception {
                 //given
                 final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
                         .categoryId(1L)
@@ -440,7 +440,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_카테고리번호Null() throws Exception {
+            void 실패_카테고리번호Null() throws Exception {
                 //given
                 final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
                         .categoryId(null)
@@ -458,7 +458,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
                         .categoryId(1L)
@@ -480,7 +480,7 @@ public class PlannerSettingControllerTest {
         @Nested
         class 플래너설정_조회 {
             @Test
-            public void 성공_카테고리색상목록조회() throws Exception {
+            void 성공_카테고리색상목록조회() throws Exception {
                 //given
                 final String url = "/api/planner-settings/{userId}/categories/colors";
 
@@ -494,7 +494,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_카테고리목록조회_사용자없음() throws Exception {
+            void 실패_카테고리목록조회_사용자없음() throws Exception {
                 //given
                 final String url = "/api/planner-settings/{userId}/categories";
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
@@ -509,7 +509,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공_카테고리목록조회() throws Exception {
+            void 성공_카테고리목록조회() throws Exception {
                 //given
                 final String url = "/api/planner-settings/{userId}/categories";
 
@@ -529,7 +529,7 @@ public class PlannerSettingControllerTest {
         final String url = "/api/planner-settings/{userId}/access-scopes";
 
         @Test
-        public void 실패_없는사용자() throws Exception {
+        void 실패_없는사용자() throws Exception {
             //given
             final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("비공개")
@@ -548,7 +548,7 @@ public class PlannerSettingControllerTest {
         }
 
         @Test
-        public void 실패_잘못된범위값() throws Exception {
+        void 실패_잘못된범위값() throws Exception {
             //given
             final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("잘못된범위값")
@@ -567,7 +567,7 @@ public class PlannerSettingControllerTest {
         }
 
         @Test
-        public void 성공_플래너공개여부설정() throws Exception {
+        void 성공_플래너공개여부설정() throws Exception {
             //given
             final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("비공개")
@@ -592,7 +592,7 @@ public class PlannerSettingControllerTest {
         @Nested
         class 디데이등록 {
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                         .ddayTitle("생일")
@@ -612,7 +612,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_타이틀Null() throws Exception {
+            void 실패_타이틀Null() throws Exception {
                 //given
                 final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                         .ddayTitle(null)
@@ -631,7 +631,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효길이가아닌타이틀() throws Exception {
+            void 실패_유효길이가아닌타이틀() throws Exception {
                 //given
                 final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                         .ddayTitle("12345678901234567890123456789012345678901")
@@ -650,7 +650,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                         .ddayTitle("생일")
@@ -669,7 +669,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은날짜() throws Exception {
+            void 실패_유효하지않은날짜() throws Exception {
                 //given
                 final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                         .ddayTitle("생일")
@@ -688,7 +688,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_잘못된날짜포멧() throws Exception {
+            void 실패_잘못된날짜포멧() throws Exception {
                 //given
                 final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                         .ddayTitle("생일")
@@ -707,7 +707,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                         .ddayTitle("생일")
@@ -729,7 +729,7 @@ public class PlannerSettingControllerTest {
         @Nested
         class 디데이조회 {
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
@@ -743,7 +743,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
 
                 //when
@@ -761,7 +761,7 @@ public class PlannerSettingControllerTest {
         class 디데이삭제 {
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(1L).build();
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
@@ -778,7 +778,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_디데이ID_Null() throws Exception {
+            void 실패_디데이ID_Null() throws Exception {
                 //given
                 final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(null).build();
 
@@ -794,7 +794,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(1L).build();
 
@@ -814,7 +814,7 @@ public class PlannerSettingControllerTest {
         @Nested
         class 디데이수정 {
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)
@@ -836,7 +836,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_디데이ID_Null() throws Exception {
+            void 실패_디데이ID_Null() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(null)
@@ -856,7 +856,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_타이틀Null() throws Exception {
+            void 실패_타이틀Null() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)
@@ -876,7 +876,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효길이가아닌타이틀() throws Exception {
+            void 실패_유효길이가아닌타이틀() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)
@@ -896,7 +896,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)
@@ -916,7 +916,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은날짜() throws Exception {
+            void 실패_유효하지않은날짜() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)
@@ -936,7 +936,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_잘못된날짜포멧() throws Exception {
+            void 실패_잘못된날짜포멧() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)
@@ -956,7 +956,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은디데이() throws Exception {
+            void 실패_유효하지않은디데이() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)
@@ -977,7 +977,7 @@ public class PlannerSettingControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                         .ddayId(1L)

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class DailyPlannerLikeRepositoryTest {
+class DailyPlannerLikeRepositoryTest {
 
     @Autowired
     private DailyPlannerLikeRepository dailyPlannerLikeRepository;
@@ -37,7 +37,7 @@ public class DailyPlannerLikeRepositoryTest {
     private DailyPlanner dailyPlanner;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user1 = userRepository.save(User.builder()
                 .email("test1234@test.com")
                 .password("123456")
@@ -61,7 +61,7 @@ public class DailyPlannerLikeRepositoryTest {
     }
 
     @Test
-    public void 좋아요등록() {
+    void 좋아요등록() {
         //given
 
         //when
@@ -77,7 +77,7 @@ public class DailyPlannerLikeRepositoryTest {
     }
 
     @Test
-    public void 좋아요조회_이전에좋아요안누름() {
+    void 좋아요조회_이전에좋아요안누름() {
         //given
 
         //when
@@ -88,7 +88,7 @@ public class DailyPlannerLikeRepositoryTest {
     }
 
     @Test
-    public void 좋아요조회_이전에좋아요누름() {
+    void 좋아요조회_이전에좋아요누름() {
         //given
         dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
                 .dailyPlanner(dailyPlanner)
@@ -106,7 +106,7 @@ public class DailyPlannerLikeRepositoryTest {
     }
 
     @Test
-    public void 좋아요취소() {
+    void 좋아요취소() {
         //given
         dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
                 .dailyPlanner(dailyPlanner)
@@ -125,7 +125,7 @@ public class DailyPlannerLikeRepositoryTest {
     class 좋아요카운트 {
 
         @Test
-        public void 좋아요0() {
+        void 좋아요0() {
             //given
 
             //when
@@ -136,7 +136,7 @@ public class DailyPlannerLikeRepositoryTest {
         }
 
         @Test
-        public void 좋아요1() {
+        void 좋아요1() {
             //given
             dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
                     .dailyPlanner(dailyPlanner)
@@ -151,7 +151,7 @@ public class DailyPlannerLikeRepositoryTest {
         }
 
         @Test
-        public void 좋아요2() {
+        void 좋아요2() {
             //given
             final User user3 = userRepository.save(User.builder()
                     .email("test98765@test.com")

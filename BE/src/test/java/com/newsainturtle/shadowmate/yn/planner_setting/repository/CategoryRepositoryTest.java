@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class CategoryRepositoryTest {
+class CategoryRepositoryTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -38,7 +38,7 @@ public class CategoryRepositoryTest {
     private User user;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
@@ -50,7 +50,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void 카테고리등록() {
+    void 카테고리등록() {
         //given
         final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
 
@@ -76,7 +76,7 @@ public class CategoryRepositoryTest {
     @Nested
     class 카테고리조회 {
         @Test
-        public void 카테고리0개() {
+        void 카테고리0개() {
             //given
 
             //when
@@ -88,7 +88,7 @@ public class CategoryRepositoryTest {
         }
 
         @Test
-        public void 카테고리1개() {
+        void 카테고리1개() {
             //given
             final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
             categoryRepository.save(Category.builder()
@@ -108,7 +108,7 @@ public class CategoryRepositoryTest {
         }
 
         @Test
-        public void 카테고리1개_삭제된카테고리1개() {
+        void 카테고리1개_삭제된카테고리1개() {
             //given
             final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
             categoryRepository.save(Category.builder()
@@ -147,7 +147,7 @@ public class CategoryRepositoryTest {
                 .build();
 
         @Test
-        public void 카테고리_이름수정() {
+        void 카테고리_이름수정() {
             //given
             final String changeTitle = "수학";
             final Category saveCategory = categoryRepository.save(category);
@@ -172,7 +172,7 @@ public class CategoryRepositoryTest {
         }
 
         @Test
-        public void 카테고리_색상수정() {
+        void 카테고리_색상수정() {
             //given
             final Optional<CategoryColor> changeCategoryColor = categoryColorRepository.findById(2L);
             final Category saveCategory = categoryRepository.save(category);
@@ -197,7 +197,7 @@ public class CategoryRepositoryTest {
         }
 
         @Test
-        public void 카테고리_이모티콘수정() {
+        void 카테고리_이모티콘수정() {
             //given
             final String changeEmoticon = "☘️";
             final Category saveCategory = categoryRepository.save(category);
@@ -226,7 +226,7 @@ public class CategoryRepositoryTest {
     class 카테고리삭제 {
 
         @Test
-        public void 카테고리_삭제필드변경() {
+        void 카테고리_삭제필드변경() {
             //given
             final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
             final Category category = categoryRepository.save(Category.builder()
@@ -259,7 +259,7 @@ public class CategoryRepositoryTest {
         }
 
         @Test
-        public void 카테고리_DB삭제() {
+        void 카테고리_DB삭제() {
             //given
             final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
             final Category category = categoryRepository.save(Category.builder()

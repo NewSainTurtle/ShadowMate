@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class CategoryColorRepositoryTest {
+class CategoryColorRepositoryTest {
 
     @Autowired
     private CategoryColorRepository categoryColorRepository;
 
     @Test
-    public void 카테고리색상목록조회() {
+    void 카테고리색상목록조회() {
         //given
 
         //when
