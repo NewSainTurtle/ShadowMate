@@ -70,6 +70,23 @@ public class UserRepositoryTest {
             assertThat(userEntity.getProfileImage()).isEqualTo(user.getProfileImage());
 
         }
+
+        @Test
+        void 성공_프로필사진수정() {
+            //given
+            final String newProfileImage = "NewProfileImage";
+
+            //when
+            Optional<User> oldUser = userRepository.findById(userId);
+            oldUser.ifPresent(user -> user.updateProfileImage(newProfileImage));
+
+            final User result = userRepository.findByNickname(user.getNickname());
+
+            //then
+            assertThat(result.getProfileImage()).isEqualTo(newProfileImage);
+
+        }
+
     }
 
     @Nested
