@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Test
-    public void 탈퇴하지않은사용자조회() {
+    void 탈퇴하지않은사용자조회() {
         //given
         final User user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
@@ -44,7 +44,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void 탈퇴하지않은사용자조회_탈퇴한경우() {
+    void 탈퇴하지않은사용자조회_탈퇴한경우() {
         //given
         final User user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
@@ -61,5 +61,5 @@ public class UserRepositoryTest {
         //then
         assertThat(findUser).isNull();
     }
-    
+
 }

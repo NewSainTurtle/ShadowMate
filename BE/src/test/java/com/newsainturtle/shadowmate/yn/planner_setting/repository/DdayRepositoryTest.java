@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class DdayRepositoryTest {
+class DdayRepositoryTest {
 
     @Autowired
     private DdayRepository ddayRepository;
@@ -32,7 +32,7 @@ public class DdayRepositoryTest {
     private User user;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
@@ -44,7 +44,7 @@ public class DdayRepositoryTest {
     }
 
     @Test
-    public void 디데이등록() {
+    void 디데이등록() {
         //given
         final Dday dday = Dday.builder()
                 .ddayTitle("생일")
@@ -63,7 +63,7 @@ public class DdayRepositoryTest {
     }
 
     @Test
-    public void 디데이목록조회_미래순() {
+    void 디데이목록조회_미래순() {
         //given
         ddayRepository.save(Dday.builder()
                 .ddayTitle("생일")
@@ -88,7 +88,7 @@ public class DdayRepositoryTest {
     @Nested
     class 디데이삭제 {
         @Test
-        public void 실패_나의디데이가아님() {
+        void 실패_나의디데이가아님() {
             //given
             final Dday dday = Dday.builder()
                     .ddayTitle("생일")
@@ -114,7 +114,7 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 실패_없는디데이ID() {
+        void 실패_없는디데이ID() {
             //given
             final Dday dday = Dday.builder()
                     .ddayTitle("생일")
@@ -130,7 +130,7 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 성공() {
+        void 성공() {
             //given
             final Dday dday = Dday.builder()
                     .ddayTitle("생일")
@@ -150,7 +150,7 @@ public class DdayRepositoryTest {
 
 
     @Test
-    public void 디데이수정() {
+    void 디데이수정() {
         //given
         final Dday dday = Dday.builder()
                 .ddayTitle("생일")
@@ -183,7 +183,7 @@ public class DdayRepositoryTest {
         final Date christmas = Date.valueOf(LocalDate.of(LocalDate.now().getYear() + 1, 12, 25));
 
         @Test
-        public void 오늘미래과거_디데이데이터가있는경우() {
+        void 오늘미래과거_디데이데이터가있는경우() {
             //given
             ddayRepository.save(Dday.builder()
                     .ddayTitle("시험")
@@ -215,7 +215,7 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 미래과거_디데이데이터가있는경우() {
+        void 미래과거_디데이데이터가있는경우() {
             //given
             ddayRepository.save(Dday.builder()
                     .ddayTitle("시험")
@@ -242,7 +242,7 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 과거_디데이데이터가있는경우() {
+        void 과거_디데이데이터가있는경우() {
             //given
             ddayRepository.save(Dday.builder()
                     .ddayTitle("시험")
@@ -272,7 +272,7 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 디데이데이터가없는경우() {
+        void 디데이데이터가없는경우() {
             //given
 
             //when

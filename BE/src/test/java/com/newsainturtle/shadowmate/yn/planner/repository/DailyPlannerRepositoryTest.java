@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class DailyPlannerRepositoryTest {
+class DailyPlannerRepositoryTest {
 
     @Autowired
     private DailyPlannerRepository dailyPlannerRepository;
@@ -30,7 +30,7 @@ public class DailyPlannerRepositoryTest {
     private User user;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
                 .email("test1234@naver.com")
                 .password("123456")
@@ -42,7 +42,7 @@ public class DailyPlannerRepositoryTest {
     }
 
     @Test
-    public void 일일플래너등록() {
+    void 일일플래너등록() {
         //given
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
                 .dailyPlannerDay(Date.valueOf("2023-09-25"))
@@ -65,7 +65,7 @@ public class DailyPlannerRepositoryTest {
     @Nested
     class 일일플래너_USER로_조회 {
         @Test
-        public void 일일플래너없음_Null() {
+        void 일일플래너없음_Null() {
             //given
 
             //when
@@ -76,7 +76,7 @@ public class DailyPlannerRepositoryTest {
         }
 
         @Test
-        public void 일일플래너있음() {
+        void 일일플래너있음() {
             //given
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf("2023-09-25"))
@@ -101,7 +101,7 @@ public class DailyPlannerRepositoryTest {
     @Nested
     class 일일플래너수정 {
         @Test
-        public void 오늘의다짐편집() {
+        void 오늘의다짐편집() {
             //given
             dailyPlannerRepository.save(DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf("2023-09-25"))
@@ -134,7 +134,7 @@ public class DailyPlannerRepositoryTest {
         }
 
         @Test
-        public void 내일의다짐편집() {
+        void 내일의다짐편집() {
             //given
             dailyPlannerRepository.save(DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf("2023-09-25"))
@@ -167,7 +167,7 @@ public class DailyPlannerRepositoryTest {
         }
 
         @Test
-        public void 오늘의회고편집() {
+        void 오늘의회고편집() {
             //given
             dailyPlannerRepository.save(DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf("2023-09-25"))
@@ -200,7 +200,7 @@ public class DailyPlannerRepositoryTest {
         }
 
         @Test
-        public void 오늘의회고사진업로드_null() {
+        void 오늘의회고사진업로드_null() {
             //given
             dailyPlannerRepository.save(DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf("2023-09-25"))
@@ -234,7 +234,7 @@ public class DailyPlannerRepositoryTest {
         }
 
         @Test
-        public void 오늘의회고사진업로드() {
+        void 오늘의회고사진업로드() {
             //given
             dailyPlannerRepository.save(DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf("2023-09-25"))

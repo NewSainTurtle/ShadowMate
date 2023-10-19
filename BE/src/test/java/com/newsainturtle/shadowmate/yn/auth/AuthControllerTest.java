@@ -39,7 +39,7 @@ class AuthControllerTest {
     private Gson gson;
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -51,7 +51,7 @@ class AuthControllerTest {
         final String url = "/api/auth/email-authentication";
 
         @Test
-        public void 실패_이메일중복() throws Exception {
+        void 실패_이메일중복() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@naver.com")
@@ -70,7 +70,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이메일Null() throws Exception {
+        void 실패_이메일Null() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(null)
@@ -88,7 +88,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이메일형식아님() throws Exception {
+        void 실패_이메일형식아님() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@")
@@ -106,7 +106,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이미인증된이메일() throws Exception {
+        void 실패_이미인증된이메일() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@test.com")
@@ -125,7 +125,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이메일전송실패() throws Exception {
+        void 실패_이메일전송실패() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@test.com")
@@ -144,7 +144,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 성공_이메일중복아님() throws Exception {
+        void 성공_이메일중복아님() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email("test1234@naver.com")
@@ -169,7 +169,7 @@ class AuthControllerTest {
         final String code = "code127";
 
         @Test
-        public void 실패_이메일중복() throws Exception {
+        void 실패_이메일중복() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -189,7 +189,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이메일Null() throws Exception {
+        void 실패_이메일Null() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(null)
@@ -208,7 +208,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_코드Null() throws Exception {
+        void 실패_코드Null() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -227,7 +227,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이메일형식아님() throws Exception {
+        void 실패_이메일형식아님() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email("test1234@")
@@ -246,7 +246,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이메일인증_유효시간지남() throws Exception {
+        void 실패_이메일인증_유효시간지남() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -266,7 +266,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_이미인증된이메일사용() throws Exception {
+        void 실패_이미인증된이메일사용() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -286,7 +286,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_인증코드틀림() throws Exception {
+        void 실패_인증코드틀림() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -306,7 +306,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 성공_이메일인증코드확인() throws Exception {
+        void 성공_이메일인증코드확인() throws Exception {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
@@ -330,7 +330,7 @@ class AuthControllerTest {
         final String url = "/api/auth/join";
 
         @Test
-        public void 실패_잘못된이메일형식_null() throws Exception {
+        void 실패_잘못된이메일형식_null() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(null)
@@ -351,7 +351,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_잘못된이메일형식() throws Exception {
+        void 실패_잘못된이메일형식() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234")
@@ -371,7 +371,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_잘못된비밀번호형식_null() throws Exception {
+        void 실패_잘못된비밀번호형식_null() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234@naver.com")
@@ -390,7 +390,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_잘못된비밀번호형식_길이() throws Exception {
+        void 실패_잘못된비밀번호형식_길이() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234@naver.com")
@@ -409,7 +409,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_잘못된닉네임형식_null() throws Exception {
+        void 실패_잘못된닉네임형식_null() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234@naver.com")
@@ -428,7 +428,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_잘못된닉네임형식_길이() throws Exception {
+        void 실패_잘못된닉네임형식_길이() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234@naver.com")
@@ -447,7 +447,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 실패_중복이메일() throws Exception {
+        void 실패_중복이메일() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234@naver.com")
@@ -468,7 +468,7 @@ class AuthControllerTest {
         }
 
         @Test
-        public void 성공_회원가입() throws Exception {
+        void 성공_회원가입() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234@naver.com")

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class PlannerControllerTest {
+class PlannerControllerTest {
 
     @InjectMocks
     private PlannerController plannerController;
@@ -49,7 +49,7 @@ public class PlannerControllerTest {
 
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(plannerController)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -63,7 +63,7 @@ public class PlannerControllerTest {
         @Nested
         class 할일등록 {
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent("수능완성 수학 과목별 10문제")
@@ -84,7 +84,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent("수능완성 수학 과목별 10문제")
@@ -104,7 +104,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용_길이초과() throws Exception {
+            void 실패_할일내용_길이초과() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent("012345678901234567890123456789012345678901234567891")
@@ -124,7 +124,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent("수능완성 수학 과목별 10문제")
@@ -144,7 +144,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용Null() throws Exception {
+            void 실패_할일내용Null() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent(null)
@@ -164,7 +164,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_카테고리Null() throws Exception {
+            void 실패_카테고리Null() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent("수능완성 수학 과목별 10문제")
@@ -184,7 +184,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은카테고리() throws Exception {
+            void 실패_유효하지않은카테고리() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent("수능완성 수학 과목별 10문제")
@@ -205,7 +205,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
                         .todoContent("수능완성 수학 과목별 10문제")
@@ -228,7 +228,7 @@ public class PlannerControllerTest {
         @Nested
         class 할일수정 {
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -252,7 +252,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023.09.25")
@@ -274,7 +274,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용_길이초과() throws Exception {
+            void 실패_할일내용_길이초과() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -296,7 +296,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜_Null() throws Exception {
+            void 실패_날짜_Null() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date(null)
@@ -318,7 +318,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일ID_Null() throws Exception {
+            void 실패_할일ID_Null() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -340,7 +340,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용_Null() throws Exception {
+            void 실패_할일내용_Null() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -362,7 +362,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_카테고리ID_Null() throws Exception {
+            void 실패_카테고리ID_Null() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -384,7 +384,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일상태_Null() throws Exception {
+            void 실패_할일상태_Null() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -406,7 +406,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일상태_길이초과() throws Exception {
+            void 실패_할일상태_길이초과() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -428,7 +428,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은할일상태값() throws Exception {
+            void 실패_유효하지않은할일상태값() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -451,7 +451,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은일일플래너() throws Exception {
+            void 실패_유효하지않은일일플래너() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -474,7 +474,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은카테고리() throws Exception {
+            void 실패_유효하지않은카테고리() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -497,7 +497,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은할일() throws Exception {
+            void 실패_유효하지않은할일() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -520,7 +520,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
                         .date("2023-09-25")
@@ -546,7 +546,7 @@ public class PlannerControllerTest {
         @Nested
         class 할일삭제 {
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
                         .todoId(1L)
@@ -566,7 +566,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
                         .todoId(1L)
@@ -585,7 +585,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
                         .todoId(1L)
@@ -604,7 +604,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일ID_Null() throws Exception {
+            void 실패_할일ID_Null() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
                         .todoId(null)
@@ -623,7 +623,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은플래너() throws Exception {
+            void 실패_유효하지않은플래너() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
                         .todoId(1L)
@@ -643,7 +643,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은할일() throws Exception {
+            void 실패_유효하지않은할일() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
                         .todoId(1L)
@@ -663,7 +663,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
                         .todoId(1L)
@@ -690,7 +690,7 @@ public class PlannerControllerTest {
             final String url = "/api/planners/{userId}/daily/today-goals";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
                         .date("2023-09-26")
@@ -710,7 +710,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
                         .date("2023.09.26")
@@ -729,7 +729,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_오늘의다짐_길이초과() throws Exception {
+            void 실패_오늘의다짐_길이초과() throws Exception {
                 //given
                 final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
                         .date("2023-09-26")
@@ -748,7 +748,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
                         .date(null)
@@ -767,7 +767,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_오늘의다짐Null() throws Exception {
+            void 실패_오늘의다짐Null() throws Exception {
                 //given
                 final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
                         .date("2023-09-26")
@@ -786,7 +786,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
                         .date("2023-09-26")
@@ -810,7 +810,7 @@ public class PlannerControllerTest {
             final String url = "/api/planners/{userId}/daily/tomorrow-goals";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
                         .date("2023-09-26")
@@ -830,7 +830,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
                         .date("2023.09.26")
@@ -848,7 +848,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_내일의다짐_길이초과() throws Exception {
+            void 실패_내일의다짐_길이초과() throws Exception {
                 //given
                 final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
                         .date("2023-09-26")
@@ -867,7 +867,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
                         .date(null)
@@ -886,7 +886,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_내일의다짐Null() throws Exception {
+            void 실패_내일의다짐Null() throws Exception {
                 //given
                 final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
                         .date("2023-09-26")
@@ -905,7 +905,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
                         .date("2023-09-26")
@@ -929,7 +929,7 @@ public class PlannerControllerTest {
             final String url = "/api/planners/{userId}/daily/retrospections";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
                         .date("2023-09-26")
@@ -949,7 +949,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
                         .date("2023.09.26")
@@ -967,7 +967,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_오늘의회고_길이초과() throws Exception {
+            void 실패_오늘의회고_길이초과() throws Exception {
                 //given
                 final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
                         .date("2023-09-26")
@@ -986,7 +986,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
                         .date(null)
@@ -1005,7 +1005,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_오늘의회고Null() throws Exception {
+            void 실패_오늘의회고Null() throws Exception {
                 //given
                 final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
                         .date("2023-09-26")
@@ -1024,7 +1024,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
                         .date("2023-09-26")
@@ -1049,7 +1049,7 @@ public class PlannerControllerTest {
             final String imageUrl = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
                         .date("2023-09-26")
@@ -1069,7 +1069,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
                         .date("2023.09.26")
@@ -1087,7 +1087,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
                         .date(null)
@@ -1106,7 +1106,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공_오늘의회고사진Null() throws Exception {
+            void 성공_오늘의회고사진Null() throws Exception {
                 //given
                 final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
                         .date("2023-09-26")
@@ -1125,7 +1125,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
                         .date("2023-09-26")
@@ -1153,7 +1153,7 @@ public class PlannerControllerTest {
         class 좋아요등록 {
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023.09.28")
@@ -1171,7 +1171,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date(null)
@@ -1189,7 +1189,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_자신플래너에좋아요() throws Exception {
+            void 실패_자신플래너에좋아요() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1209,7 +1209,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은사용자() throws Exception {
+            void 실패_유효하지않은사용자() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1229,7 +1229,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은플래너() throws Exception {
+            void 실패_유효하지않은플래너() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1249,7 +1249,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_이전에좋아요를이미누름() throws Exception {
+            void 실패_이전에좋아요를이미누름() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1269,7 +1269,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1292,7 +1292,7 @@ public class PlannerControllerTest {
         class 좋아요취소 {
 
             @Test
-            public void 실패_올바르지않은날짜형식() throws Exception {
+            void 실패_올바르지않은날짜형식() throws Exception {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023.09.28")
@@ -1310,7 +1310,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_날짜Null() throws Exception {
+            void 실패_날짜Null() throws Exception {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date(null)
@@ -1328,7 +1328,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_자신플래너에좋아요취소() throws Exception {
+            void 실패_자신플래너에좋아요취소() throws Exception {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1348,7 +1348,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은사용자() throws Exception {
+            void 실패_유효하지않은사용자() throws Exception {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1368,7 +1368,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은플래너() throws Exception {
+            void 실패_유효하지않은플래너() throws Exception {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1388,7 +1388,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
                         .date("2023-09-28")
@@ -1419,7 +1419,7 @@ public class PlannerControllerTest {
             private final String weeklyTodoContent = "자기소개서 제출하기";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -1441,7 +1441,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은시작날짜형식() throws Exception {
+            void 실패_올바르지않은시작날짜형식() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate("2023.10.09")
@@ -1462,7 +1462,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은끝날짜형식() throws Exception {
+            void 실패_올바르지않은끝날짜형식() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -1483,7 +1483,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용_길이초과() throws Exception {
+            void 실패_할일내용_길이초과() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -1504,7 +1504,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_시작날짜Null() throws Exception {
+            void 실패_시작날짜Null() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(null)
@@ -1525,7 +1525,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_끝날짜Null() throws Exception {
+            void 실패_끝날짜Null() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -1546,7 +1546,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용Null() throws Exception {
+            void 실패_할일내용Null() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -1567,7 +1567,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
+            void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate("2023-10-10")
@@ -1588,7 +1588,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
+            void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -1609,7 +1609,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -1638,7 +1638,7 @@ public class PlannerControllerTest {
             final Long weeklyTodoId = 1L;
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1661,7 +1661,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은시작날짜형식() throws Exception {
+            void 실패_올바르지않은시작날짜형식() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate("2023.10.09")
@@ -1682,7 +1682,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은끝날짜형식() throws Exception {
+            void 실패_올바르지않은끝날짜형식() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1703,7 +1703,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용_길이초과() throws Exception {
+            void 실패_할일내용_길이초과() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1724,7 +1724,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_시작날짜Null() throws Exception {
+            void 실패_시작날짜Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(null)
@@ -1745,7 +1745,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_끝날짜Null() throws Exception {
+            void 실패_끝날짜Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1766,7 +1766,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일내용Null() throws Exception {
+            void 실패_할일내용Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1787,7 +1787,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일ID_Null() throws Exception {
+            void 실패_할일ID_Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1808,7 +1808,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
+            void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate("2023-10-10")
@@ -1831,7 +1831,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
+            void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1854,7 +1854,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은위클리할일() throws Exception {
+            void 실패_유효하지않은위클리할일() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1877,7 +1877,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                         .startDate(startDay)
@@ -1906,7 +1906,7 @@ public class PlannerControllerTest {
             final Long weeklyTodoId = 1L;
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -1929,7 +1929,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은시작날짜형식() throws Exception {
+            void 실패_올바르지않은시작날짜형식() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate("2023.10.09")
@@ -1950,7 +1950,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은끝날짜형식() throws Exception {
+            void 실패_올바르지않은끝날짜형식() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -1971,7 +1971,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_시작날짜Null() throws Exception {
+            void 실패_시작날짜Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(null)
@@ -1992,7 +1992,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_끝날짜Null() throws Exception {
+            void 실패_끝날짜Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -2013,7 +2013,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일ID_Null() throws Exception {
+            void 실패_할일ID_Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -2034,7 +2034,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_할일상태Null() throws Exception {
+            void 실패_할일상태Null() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -2055,7 +2055,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
+            void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate("2023-10-10")
@@ -2078,7 +2078,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
+            void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -2101,7 +2101,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은위클리할일() throws Exception {
+            void 실패_유효하지않은위클리할일() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -2124,7 +2124,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                         .startDate(startDay)
@@ -2151,7 +2151,7 @@ public class PlannerControllerTest {
             private final String endDay = "2023-10-15";
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -2173,7 +2173,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은시작날짜형식() throws Exception {
+            void 실패_올바르지않은시작날짜형식() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate("2023.10.09")
@@ -2193,7 +2193,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은끝날짜형식() throws Exception {
+            void 실패_올바르지않은끝날짜형식() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -2213,7 +2213,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_시작날짜Null() throws Exception {
+            void 실패_시작날짜Null() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate(null)
@@ -2234,7 +2234,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_끝날짜Null() throws Exception {
+            void 실패_끝날짜Null() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -2255,7 +2255,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_주차별할일ID_Null() throws Exception {
+            void 실패_주차별할일ID_Null() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -2275,7 +2275,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
+            void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate("2023-10-10")
@@ -2296,7 +2296,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
+            void 실패_올바르지않은날짜_일주일간격이아님() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -2317,7 +2317,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                         .startDate(startDay)
@@ -2349,7 +2349,7 @@ public class PlannerControllerTest {
         class 타임테이블등록 {
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2371,7 +2371,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식_date() throws Exception {
+            void 실패_올바르지않은날짜형식_date() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date("2023.10.06")
@@ -2392,7 +2392,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식_startTime() throws Exception {
+            void 실패_올바르지않은날짜형식_startTime() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2413,7 +2413,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식_endTime() throws Exception {
+            void 실패_올바르지않은날짜형식_endTime() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2434,7 +2434,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_date_null() throws Exception {
+            void 실패_date_null() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(null)
@@ -2455,7 +2455,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_startTime_null() throws Exception {
+            void 실패_startTime_null() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2476,7 +2476,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_endTime_null() throws Exception {
+            void 실패_endTime_null() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2497,7 +2497,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_todoId_null() throws Exception {
+            void 실패_todoId_null() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2518,7 +2518,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_잘못된시간값() throws Exception {
+            void 실패_잘못된시간값() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2540,7 +2540,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은플래너() throws Exception {
+            void 실패_유효하지않은플래너() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2562,7 +2562,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은할일() throws Exception {
+            void 실패_유효하지않은할일() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2584,7 +2584,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_이미타임테이블시간이존재() throws Exception {
+            void 실패_이미타임테이블시간이존재() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2606,7 +2606,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
@@ -2632,7 +2632,7 @@ public class PlannerControllerTest {
         class 타임테이블삭제 {
 
             @Test
-            public void 실패_없는사용자() throws Exception {
+            void 실패_없는사용자() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
@@ -2652,7 +2652,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_올바르지않은날짜형식_date() throws Exception {
+            void 실패_올바르지않은날짜형식_date() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date("2023.10.06")
@@ -2670,7 +2670,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_date_null() throws Exception {
+            void 실패_date_null() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(null)
@@ -2689,7 +2689,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_todoId_null() throws Exception {
+            void 실패_todoId_null() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
@@ -2708,7 +2708,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은타임테이블() throws Exception {
+            void 실패_유효하지않은타임테이블() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
@@ -2728,7 +2728,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은플래너() throws Exception {
+            void 실패_유효하지않은플래너() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
@@ -2748,7 +2748,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 실패_유효하지않은할일() throws Exception {
+            void 실패_유효하지않은할일() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
@@ -2768,7 +2768,7 @@ public class PlannerControllerTest {
             }
 
             @Test
-            public void 성공() throws Exception {
+            void 성공() throws Exception {
                 //given
                 final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                         .date(date)
@@ -2795,7 +2795,7 @@ public class PlannerControllerTest {
         final String today = "2023-10-10";
 
         @Test
-        public void 실패_올바르지않은날짜형식() throws Exception {
+        void 실패_올바르지않은날짜형식() throws Exception {
             //given
             doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(dailyPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
@@ -2810,7 +2810,7 @@ public class PlannerControllerTest {
         }
 
         @Test
-        public void 실패_유효하지않은플래너작성자() throws Exception {
+        void 실패_유효하지않은플래너작성자() throws Exception {
             //given
             doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
@@ -2825,7 +2825,7 @@ public class PlannerControllerTest {
         }
 
         @Test
-        public void 성공() throws Exception {
+        void 성공() throws Exception {
             //given
 
             //when
@@ -2846,7 +2846,7 @@ public class PlannerControllerTest {
         private final String endDate = "2023-10-15";
 
         @Test
-        public void 실패_올바르지않은날짜형식() throws Exception {
+        void 실패_올바르지않은날짜형식() throws Exception {
             //given
             doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
@@ -2862,7 +2862,7 @@ public class PlannerControllerTest {
         }
 
         @Test
-        public void 실패_유효하지않은플래너작성자() throws Exception {
+        void 실패_유효하지않은플래너작성자() throws Exception {
             //given
             doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
@@ -2878,7 +2878,7 @@ public class PlannerControllerTest {
         }
 
         @Test
-        public void 실패_올바르지않은날짜() throws Exception {
+        void 실패_올바르지않은날짜() throws Exception {
             //given
             doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
@@ -2894,7 +2894,7 @@ public class PlannerControllerTest {
         }
 
         @Test
-        public void 성공() throws Exception {
+        void 성공() throws Exception {
             //given
 
             //when
@@ -2915,7 +2915,7 @@ public class PlannerControllerTest {
         private final String date = "2023-10-01";
 
         @Test
-        public void 실패_올바르지않은날짜형식() throws Exception {
+        void 실패_올바르지않은날짜형식() throws Exception {
             //given
             doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(dailyPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
 
@@ -2930,7 +2930,7 @@ public class PlannerControllerTest {
         }
 
         @Test
-        public void 실패_유효하지않은플래너작성자() throws Exception {
+        void 실패_유효하지않은플래너작성자() throws Exception {
             //given
             doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
 
@@ -2945,7 +2945,7 @@ public class PlannerControllerTest {
         }
 
         @Test
-        public void 성공() throws Exception {
+        void 성공() throws Exception {
             //given
 
             //when
