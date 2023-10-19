@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
+import com.newsainturtle.shadowmate.auth.service.RedisService;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -27,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
@@ -36,10 +37,13 @@ public class AuthServiceTest {
     private AuthServiceImpl authServiceImpl;
 
     @Mock
+    private RedisService redisService;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
-    private JavaMailSender emailSender;
+    private JavaMailSender mailSender;
 
     @Mock
     private MimeMessage message;
@@ -77,13 +81,17 @@ public class AuthServiceTest {
         public void 성공_이메일중복아님() {
             //given
             doReturn(null).when(userRepository).findByEmail(email);
-            doReturn(message).when(emailSender).createMimeMessage();
+            doReturn(null).when(redisService).getHashEmailData(email);
+            doReturn(message).when(mailSender).createMimeMessage();
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("test1234@naver.com").build();
 
             //when
             authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
 
             //then
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisService, times(1)).getHashEmailData(any(String.class));
+            verify(mailSender, times(1)).createMimeMessage();
 
         }
 
