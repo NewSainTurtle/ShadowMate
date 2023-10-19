@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,5 +116,31 @@ public class UserServiceTest {
             // then
             assertThat(result.getNickname()).isEqualTo(user2.getNickname());
         }
+
+        @Test
+        void 실패_회원탈퇴_유저없음() {
+            //given
+            doReturn(Optional.empty()).when(userRepository).findById(user1.getId());
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.deleteUser(user1.getId()));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+
+        }
+
+        @Test
+        void 성공_회원탈퇴() {
+            //given
+            given(userRepository.findById(user1.getId())).willReturn(Optional.of(user1));
+
+            //when
+            userService.deleteUser(user1.getId());
+
+            //then
+            assertThat(user1.getWithdrawal()).isTrue();
+        }
+
     }
 }
