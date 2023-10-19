@@ -3,24 +3,41 @@ import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/TodoItem";
 import { todoType } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
+import { useDispatch } from "react-redux";
+import { setDoneTodoList } from "@store/planner/daySlice";
+import TodoItemChoice from "./TodoItemChoice";
 
-const TodoList = () => {
+export const TodoDataDefalut: todoType = {
+  todoId: 0,
+  categoryTitle: "",
+  categoryColorCode: "#E9E9EB",
+  todoContent: "",
+  todoStatus: 0,
+};
+
+interface Props {
+  clicked: boolean;
+}
+
+const TodoList = ({ clicked }: Props) => {
+  const dispatch = useDispatch();
   const [todos, setTodos] = useState<todoType[]>(todoData_list);
+  const listSize = 11;
   const todoListSize = useMemo(() => {
-    return todos.length + 1 >= 12 ? todos.length + 1 : 12;
+    return todos.length + 1 >= listSize ? todos.length + 1 : listSize;
   }, [todos]);
   const todoEndRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(todos.length + 1);
 
   useEffect(() => {
-    if (todos.length + 1 >= 12 && todoEndRef.current) {
+    if (todos.length + 1 >= listSize && todoEndRef.current) {
       todoEndRef.current.scrollTop = todoEndRef.current.scrollHeight;
     }
   }, [todos.length]);
 
   useEffect(() => {
-    console.log(todos);
-  }, [todos]);
+    if (clicked) dispatch(setDoneTodoList(todos));
+  }, [clicked]);
 
   const todoModule = (() => {
     const insertTodo = (props: todoType) => {
@@ -50,15 +67,28 @@ const TodoList = () => {
     <div
       ref={todoEndRef}
       className={styles["todo-list"]}
-      style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/12)` }}
+      style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/${listSize})` }}
     >
-      {todos.map((todo, idx) => (
-        <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
-      ))}
-      <TodoItem addTodo todoModule={todoModule} />
-      {Array.from({ length: 11 - todos.length }).map((item, idx) => (
-        <TodoItem key={idx} disable todoModule={todoModule} />
-      ))}
+      {!clicked ? (
+        <>
+          {todos.map((todo, idx) => (
+            <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
+          ))}
+          <TodoItem addTodo item={TodoDataDefalut} todoModule={todoModule} />
+          {Array.from({ length: listSize - todos.length - 1 }).map((item, idx) => (
+            <TodoItem key={idx} disable item={TodoDataDefalut} todoModule={todoModule} />
+          ))}
+        </>
+      ) : (
+        <>
+          {todos.map((todo, idx) => (
+            <TodoItemChoice key={todo.todoId} idx={idx} item={todo} possible={todo.todoStatus === 1} />
+          ))}
+          {Array.from({ length: listSize - todos.length }).map((item, idx) => (
+            <TodoItemChoice key={idx} item={TodoDataDefalut} possible={false} />
+          ))}
+        </>
+      )}
     </div>
   );
 };
