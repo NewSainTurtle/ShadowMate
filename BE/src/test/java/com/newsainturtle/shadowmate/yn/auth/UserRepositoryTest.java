@@ -40,8 +40,8 @@ class UserRepositoryTest {
             final User result = userRepository.findByEmail(email);
 
             //then
-            assertThat(result).isNotNull();
-            assertThat(result).isEqualTo(user);
+            assertThat(result).isNotNull()
+                    .isEqualTo(user);
         }
 
         @Test

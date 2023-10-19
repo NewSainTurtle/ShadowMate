@@ -512,9 +512,9 @@ class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isNull();
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(0);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isZero();
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
@@ -549,9 +549,9 @@ class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isNull();
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(0);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isZero();
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
@@ -587,9 +587,9 @@ class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isNull();
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(0);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isZero();
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
@@ -643,9 +643,9 @@ class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isEqualTo(birthday.toString());
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(1);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos()).hasSize(1);
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
@@ -684,9 +684,9 @@ class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isEqualTo(birthday.toString());
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(1);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos()).hasSize(1);
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
     }

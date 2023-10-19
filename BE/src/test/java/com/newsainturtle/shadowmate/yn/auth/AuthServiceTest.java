@@ -1,8 +1,8 @@
 package com.newsainturtle.shadowmate.yn.auth;
 
-import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
@@ -113,7 +113,13 @@ class AuthServiceTest {
 
             //when
             authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
+
             //then
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(mailSender, times(1)).createMimeMessage();
         }
 
         @Test
@@ -129,7 +135,13 @@ class AuthServiceTest {
 
             //when
             authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
+
             //then
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(mailSender, times(1)).createMimeMessage();
         }
 
         @Test
@@ -140,7 +152,7 @@ class AuthServiceTest {
             final String code = authServiceImpl.createRandomCode();
 
             //then
-            assertThat(code.length()).isEqualTo(6);
+            assertThat(code).hasSize(6);
         }
     }
 
@@ -335,17 +347,7 @@ class AuthServiceTest {
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNREGISTERED_USER);
         }
-
-        @Test
-        void 성공_없는사용자() {
-            //given
-            final Long userId = 1L;
-
-            //when
-            authServiceImpl.certifyUser(userId, user);
-
-            //then
-        }
+        
     }
 
 }
