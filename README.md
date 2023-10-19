@@ -1,1 +1,1 @@
-# Shadow-Mate
+# ShadowMate
