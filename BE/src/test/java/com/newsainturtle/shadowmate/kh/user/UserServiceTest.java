@@ -140,6 +140,7 @@ public class UserServiceTest {
 
             //then
             assertThat(user1.getWithdrawal()).isTrue();
+            assertThat(user1.getDeleteTime()).isNotNull();
         }
 
     }
