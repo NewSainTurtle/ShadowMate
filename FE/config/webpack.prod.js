@@ -11,7 +11,7 @@ module.exports = merge(common, {
   devtool: "hidden-source-map",
   devServer: {
     historyApiFallback: true,
-    allowedHosts: "all",
+    allowedHosts: "auto",
   },
   performance: {
     hints: false,
