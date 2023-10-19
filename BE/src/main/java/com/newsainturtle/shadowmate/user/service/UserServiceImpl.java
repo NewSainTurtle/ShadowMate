@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
         }
         delUser.ifPresent(user -> user.deleteUser());
+        delUser.ifPresent(user -> user.deleteEntity());
     }
 
     private FollowStatus isFollow(final User user, final User searchUser) {
