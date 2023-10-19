@@ -78,9 +78,7 @@ const TimeTable = ({ date, clicked, setClicked }: Props) => {
     if (selectTime.startTime != "" && selectTime.endTime != "") {
       let { startTime, endTime } = selectTime;
       if (startTime > endTime) {
-        const temp = startTime;
-        startTime = endTime;
-        endTime = temp;
+        [startTime, endTime] = [endTime, startTime];
       }
 
       const dragTime: tableTimeType[] = timeArr.reduce((updateArr: tableTimeType[], obj) => {
