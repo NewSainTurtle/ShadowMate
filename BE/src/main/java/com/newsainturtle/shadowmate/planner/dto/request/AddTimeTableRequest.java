@@ -20,11 +20,11 @@ public class AddTimeTableRequest {
     private Long todoId;
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) (0[1-9]|1[0-9]|2[0-3]):(00|10|20|30|40|50)$", message = "yyyy-MM-dd HH:mm 형식의 올바른값이 아닙니다.")
+    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) (0[1-9]|1\\d|2[0-3]):([0-5]0)$", message = "yyyy-MM-dd HH:mm 형식의 올바른값이 아닙니다.")
     private String startTime;
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) (0[1-9]|1[0-9]|2[0-3]):(00|10|20|30|40|50)$", message = "yyyy-MM-dd HH:mm 형식의 올바른값이 아닙니다.")
+    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) (0[1-9]|1\\d|2[0-3]):([0-5]0)$", message = "yyyy-MM-dd HH:mm 형식의 올바른값이 아닙니다.")
     private String endTime;
 
     @Builder
