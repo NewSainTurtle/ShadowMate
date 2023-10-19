@@ -1,3 +1,4 @@
+import { rootState } from "@hooks/configStore";
 import { createSlice } from "@reduxjs/toolkit";
 import { WeekTodoItemConfig, categoryType } from "@util/planner.interface";
 
@@ -38,12 +39,12 @@ const weekSlice = createSlice({
   initialState,
   reducers: {
     setWeekInfo: (state, { payload: { weekInfo } }) => {
-      console.log(weekInfo);
       state.weekInfo = weekInfo;
     },
   },
 });
 
 export const { setWeekInfo } = weekSlice.actions;
+export const selectWeekInfo = (state: rootState) => state.week.weekInfo;
 
 export default weekSlice.reducer;
