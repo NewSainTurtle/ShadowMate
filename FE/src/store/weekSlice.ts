@@ -2,49 +2,48 @@ import { rootState } from "@hooks/configStore";
 import { createSlice } from "@reduxjs/toolkit";
 import { WeekTodoItemConfig, categoryType } from "@util/planner.interface";
 
-interface DailyTodoConfig {
+export interface DailyTodoConfig {
   todoId: number;
-  category: categoryType;
+  category: categoryType | null;
   todoContent: string;
   todoStatus: string;
   todoUpdate?: boolean;
 }
 
-interface DayListConfig {
+export interface DayListConfig {
   date: string;
   retrospection: string;
   dailyTodo: DailyTodoConfig[];
 }
 
-interface WeekConfig {
-  weekInfo: {
-    plannerAccessScope: string;
-    dday: string;
-    weeklyTodo?: WeekTodoItemConfig[];
-    dayList: DayListConfig[];
-  };
+export interface WeekConfig {
+  plannerAccessScope: string;
+  dday: string;
+  weeklyTodo?: WeekTodoItemConfig[];
+  dayList: DayListConfig[];
 }
 
 const initialState: WeekConfig = {
-  weekInfo: {
-    plannerAccessScope: "",
-    dday: "",
-    weeklyTodo: [],
-    dayList: [],
-  },
+  plannerAccessScope: "",
+  dday: "",
+  weeklyTodo: [],
+  dayList: [],
 };
 
 const weekSlice = createSlice({
   name: "week",
   initialState,
   reducers: {
-    setWeekInfo: (state, { payload: { weekInfo } }) => {
-      state.weekInfo = weekInfo;
+    setWeekInfo: (state, { payload: { plannerAccessScope, dday, weeklyTodo, dayList } }) => {
+      state.plannerAccessScope = plannerAccessScope;
+      state.dday = dday;
+      state.weeklyTodo = weeklyTodo;
+      state.dayList = dayList;
     },
   },
 });
 
 export const { setWeekInfo } = weekSlice.actions;
-export const selectWeekInfo = (state: rootState) => state.week.weekInfo;
+export const selectDayList = (state: rootState) => state.week.dayList;
 
 export default weekSlice.reducer;
