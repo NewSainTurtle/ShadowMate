@@ -5,30 +5,22 @@ import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
 import { profileInfo } from "@pages/commonPage";
 import WeekTodo from "./WeekTodo";
-import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
-import { useDispatch } from "react-redux";
-import { TODO_ITEMS_RESPONSE } from "@util/data/WeekTodos";
-import { setWeekInfo } from "@store/weekSlice";
+import { getThisWeekCnt } from "@util/getThisWeek";
+import { useAppSelector } from "@hooks/hook";
+import { selectDayList } from "@store/weekSlice";
 
 const Week = () => {
-  const dispatch = useDispatch();
   const today = new Date();
   const [week, setWeek] = useState(today);
-
-  const thisWeek = getThisWeek({ date: week });
   const thisWeekCnt = getThisWeekCnt({ date: week });
   const [isMine, setIsMine] = useState<boolean>(true);
+  const dayList = useAppSelector(selectDayList);
 
   const handleButton = (to: string) => {
     const date = week.getDate();
     if (to === "forward") setWeek(new Date(week.setDate(date - 7)));
     else if (to === "backward") setWeek(new Date(week.setDate(date + 7)));
   };
-
-  useEffect(() => {
-    const response = TODO_ITEMS_RESPONSE;
-    dispatch(setWeekInfo({ weekInfo: response }));
-  }, []);
 
   return (
     <div className={styles["week"]}>
@@ -61,7 +53,7 @@ const Week = () => {
       </div>
       <div className={styles["week__list"]}>
         <WeekTodo />
-        {thisWeek?.map((today, key) => <WeekItem date={today} key={key} />)}
+        {dayList?.map((today, key) => <WeekItem dayInfo={today} key={key} />)}
       </div>
     </div>
   );

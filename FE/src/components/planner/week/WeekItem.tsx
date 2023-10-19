@@ -2,27 +2,31 @@ import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
-import { TodoItemConfig } from "@util/planner.interface";
-import { TODO_ITEMS } from "@util/data/WeekTodos";
-import { DayInfoConfig } from "@util/getThisWeek";
+import { dateFormat } from "@util/getThisWeek";
 import { DeleteOutlined } from "@mui/icons-material";
+import { DailyTodoConfig, DayListConfig, selectDayList } from "@store/weekSlice";
 
 interface Props {
-  date: DayInfoConfig;
+  dayInfo: DayListConfig;
 }
 
-const WeekItem = ({ date }: Props) => {
+const WeekItem = ({ dayInfo }: Props) => {
   const todoEndRef = useRef<HTMLDivElement | null>(null);
   const [newTodo, setNewTodo] = useState<string>("");
   const [oldTodo, setOldTodo] = useState<string>("");
-  const [todoItems, setTodoItems] = useState<TodoItemConfig[]>(TODO_ITEMS);
+  const [todoItems, setTodoItems] = useState<DailyTodoConfig[]>(dayInfo.dailyTodo ? dayInfo.dailyTodo : []);
+  const nextId = useRef(todoItems.length + 1);
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (newTodo === "") return;
     if (e.key == "Enter") {
       if (e.nativeEvent.isComposing) return;
-      setTodoItems([...todoItems, { todoContents: newTodo, todoStatus: false, todoUpdate: false }]);
+      setTodoItems([
+        ...todoItems,
+        { todoId: nextId.current, category: null, todoContent: newTodo, todoStatus: "O", todoUpdate: false },
+      ]);
       setNewTodo("");
+      nextId.current += 1;
     }
   };
 
@@ -30,7 +34,7 @@ const WeekItem = ({ date }: Props) => {
     setTodoItems(
       todoItems.map((item, key) => {
         if (key === idx) {
-          setOldTodo(item.todoContents);
+          setOldTodo(item.todoContent);
           return { ...item, todoUpdate: !item.todoUpdate };
         }
         return item;
@@ -68,13 +72,11 @@ const WeekItem = ({ date }: Props) => {
   return (
     <div className={styles["item"]}>
       <div className={styles["item__title"]}>
-        <Text>
-          {date.month + 1}월 {date.day}일 ({date.dayOfWeek})
-        </Text>
-        <Dday comparedDate={new Date(date.year, date.month, date.day)} />
+        <Text>{dateFormat(dayInfo.date)}</Text>
+        <Dday comparedDate={dateFormat(dayInfo.date)} />
       </div>
       <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, 20%` }}>
-        {todoItems.map((item: TodoItemConfig, key: number) => (
+        {todoItems.map((item, key) => (
           <div className={styles["item__todo-item"]} key={key}>
             <div>💻</div>
             {item.todoUpdate ? (
@@ -82,13 +84,13 @@ const WeekItem = ({ date }: Props) => {
                 className={styles["item__edit-input"]}
                 autoFocus
                 type="text"
-                defaultValue={item.todoContents}
+                defaultValue={item.todoContent}
                 onKeyDown={(e) => handleEnter(e)}
                 onBlur={(e) => handleEditSave(key, e)}
               />
             ) : (
               <div onClick={() => handleEditState(key)}>
-                <Text types="small">{item.todoContents}</Text>
+                <Text types="small">{item.todoContent}</Text>
               </div>
             )}
             <DeleteOutlined onClick={() => handleDelete(key)} />
@@ -110,7 +112,7 @@ const WeekItem = ({ date }: Props) => {
         </div>
       </div>
       <div className={`${styles["item__memo"]} ${todoItems.length < 4 && styles["top_border"]}`}>
-        <textarea placeholder="💡 오늘의 메모를 입력하세요." />
+        <textarea value={dayInfo.retrospection} placeholder="💡 오늘의 메모를 입력하세요." readOnly />
       </div>
     </div>
   );
