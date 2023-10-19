@@ -389,6 +389,7 @@ $color-btn-blue: var(--color-btn-blue);
       @extend %set-input;
       @extend .text-default;
       height: 100%;
+      padding: 0;
 
       &::placeholder {
         @extend .text-small;
