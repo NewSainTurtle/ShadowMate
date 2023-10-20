@@ -51,7 +51,9 @@ const TodoItemChoice = ({ todoItem, possible }: Props) => {
         </div>
       </div>
       <div className={styles[`todo-item__checked`]}>
-        <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
+        <div>
+          <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
+        </div>
       </div>
     </div>
   );

@@ -303,10 +303,8 @@ $color-btn-blue: var(--color-btn-blue);
   }
 
   &.--impossible {
-    > div {
-      span {
-        color: $color-gray_3;
-      }
+    > div div {
+      opacity: 0.3;
     }
   }
 
