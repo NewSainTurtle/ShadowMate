@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
+import dayjs from "dayjs";
 
 interface todoConfig {
   todoId: number;
@@ -15,11 +16,13 @@ interface doneTimeConfig {
 }
 
 interface dayConfig {
+  date: string | Date | dayjs.Dayjs;
   todo: todoConfig;
   doneTodoList: { todo: todoConfig; time: doneTimeConfig }[];
 }
 
 const initialState: dayConfig = {
+  date: new Date(),
   todo: {
     todoId: 0,
     categoryTitle: "",
@@ -34,6 +37,9 @@ const daySlice = createSlice({
   name: "plannerDay",
   initialState,
   reducers: {
+    setDate: (state, action: PayloadAction<dayConfig["date"]>) => {
+      state.date = action.payload;
+    },
     setTodo: (state, action: PayloadAction<dayConfig["todo"]>) => {
       state.todo = action.payload;
     },
@@ -52,7 +58,8 @@ const daySlice = createSlice({
   },
 });
 
-export const { setTodo, removeTodo, setDoneTodoList, setDoneTodoTime } = daySlice.actions;
+export const { setDate, setTodo, removeTodo, setDoneTodoList, setDoneTodoTime } = daySlice.actions;
+export const selectDate = (state: rootState) => state.day.date;
 export const selectTodo = (state: rootState) => state.day.todo;
 
 export default daySlice.reducer;
