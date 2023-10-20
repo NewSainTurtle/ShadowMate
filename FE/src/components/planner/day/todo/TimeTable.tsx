@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate } from "@store/planner/daySlice";
-import { removeTodo, selectTodoItem } from "@store/planner/daySlice";
+import { selectDate, selectTodoItem, removeTodo } from "@store/planner/daySlice";
 
 interface Props {
   clicked: boolean;
@@ -107,7 +106,6 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   };
 
   const deleteTimeUpdate = (todoId: number) => {
-    // const copyTimeArr: tableTimeType[] = [...timeArr];
     const copyTimeArr: tableTimeType[] = timeArr.map((item) =>
       item.todoId == todoId ? { todoId: 0, categoryColorCode: "", time: item.time } : item,
     );

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
-import { useAppDispatch } from "@hooks/hook";
-import { BASIC_TODO_ITEM, todoType, setTodoList } from "@store/planner/daySlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { BASIC_TODO_ITEM, todoType, setTodoList, selectTodoList } from "@store/planner/daySlice";
 import TodoItemChoice from "./TodoItemChoice";
 
 interface Props {
@@ -11,13 +11,14 @@ interface Props {
 
 const TodoList = ({ clicked }: Props) => {
   const dispatch = useAppDispatch();
-  const [todoArr, setTodoArr] = useState<todoType[]>([]);
+  const todoArr = useAppSelector(selectTodoList);
   const listSize = 11;
   const todoListSize = useMemo(() => {
     return todoArr.length + 1 >= listSize ? todoArr.length + 1 : listSize;
   }, [todoArr]);
   const todoEndRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(todoArr.length + 1);
+  const copyTodos = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
 
   useEffect(() => {
     if (todoArr.length + 1 >= listSize && todoEndRef.current) {
@@ -25,25 +26,21 @@ const TodoList = ({ clicked }: Props) => {
     }
   }, [todoArr.length]);
 
-  useEffect(() => {
-    if (clicked) dispatch(setTodoList(todoArr));
-  }, [clicked]);
-
   const todoModule = (() => {
     const insertTodo = (props: todoType) => {
-      setTodoArr([...todoArr, { ...props, todoId: nextId.current }]);
+      copyTodos.push({ ...props, todoId: nextId.current });
+      dispatch(setTodoList(copyTodos));
       nextId.current += 1;
     };
 
     const updateTodo = (idx: number, props: todoType) => {
-      let copyTodos = [...todoArr];
       copyTodos[idx] = { ...props };
-      setTodoArr(copyTodos);
+      dispatch(setTodoList(copyTodos));
     };
 
     const deleteTodo = (idx: number) => {
-      let newTodos = todoArr.filter((item, i) => idx != i);
-      setTodoArr(newTodos);
+      copyTodos.splice(idx, 1);
+      dispatch(setTodoList(copyTodos));
     };
 
     return {
@@ -74,7 +71,7 @@ const TodoList = ({ clicked }: Props) => {
           {todoArr.map((item, idx) => (
             <TodoItemChoice key={item.todoId} idx={idx} item={item} possible={item.todoStatus === "완료"} />
           ))}
-          {Array.from({ length: listSize - todoArr.length }).map((item, idx) => (
+          {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
             <TodoItemChoice key={idx} item={BASIC_TODO_ITEM} possible={false} />
           ))}
         </>
