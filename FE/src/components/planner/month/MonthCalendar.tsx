@@ -4,6 +4,9 @@ import Text from "@components/common/Text";
 import dayjs from "dayjs";
 import { MonthType } from "@util/planner.interface";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import { useDispatch } from "react-redux";
+import { setDate } from "@store/planner/daySlice";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   selectedDay: string;
@@ -19,6 +22,8 @@ const statusColor = [
 ];
 
 const MonthCalendar = ({ selectedDay }: Props) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isNotFriend, setIsNotFriend] = useState<boolean>(false);
   const [ItemList, setItemList] = useState<(MonthType | null)[]>([]);
 
@@ -35,6 +40,11 @@ const MonthCalendar = ({ selectedDay }: Props) => {
             dayStatus: i % 4,
           },
     );
+  };
+
+  const itemClickHandler = (date: string) => {
+    dispatch(setDate(date));
+    navigate("/day");
   };
 
   useEffect(() => {
@@ -62,7 +72,7 @@ const MonthCalendar = ({ selectedDay }: Props) => {
                 )}
                 <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>
                   {item ? (
-                    <div className={styles["calendar__item"]}>
+                    <div className={styles["calendar__item"]} onClick={() => itemClickHandler(item.date)}>
                       <div style={{ backgroundColor: statusColor[item.dayStatus] }}>
                         <Text types="small">{item.dayStatus === 3 ? <CheckRoundedIcon /> : item.todoCount}</Text>
                       </div>
