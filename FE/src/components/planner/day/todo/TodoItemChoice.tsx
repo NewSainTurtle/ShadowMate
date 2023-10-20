@@ -1,9 +1,8 @@
 import React from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
-import { todoType } from "@store/planner/daySlice";
 import { useAppDispatch } from "@hooks/hook";
-import { setTodo } from "@store/planner/daySlice";
+import { todoType, setTodo } from "@store/planner/daySlice";
 
 interface Props {
   idx?: number;

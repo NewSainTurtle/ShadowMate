@@ -12,19 +12,19 @@ export const todoData_category: CategoryConfig[] = [
     categoryId: 1,
     categoryTitle: "국어",
     categoryColorCode: "#FFCBE1",
-    categoryEmoticon: "🌈",
+    categoryEmoticon: "📓",
   },
   {
     categoryId: 2,
     categoryTitle: "수학",
     categoryColorCode: "#B6F7E1",
-    categoryEmoticon: "🎠",
+    categoryEmoticon: "📐",
   },
   {
     categoryId: 3,
     categoryTitle: "과학 뿌셔뿌셔 대항전",
     categoryColorCode: "#B6DEF7",
-    categoryEmoticon: "🧤",
+    categoryEmoticon: "🧪",
   },
 ];
 
@@ -34,7 +34,7 @@ export const todoData_list: todoType[] = [
     todoContent: "수능완성 수학 과목별 10문제",
     todoStatus: "미완료",
     category: {
-      categoryId: 1,
+      categoryId: 2,
       categoryTitle: "수학",
       categoryColorCode: "#B6F7E1",
       categoryEmoticon: "📐",
@@ -50,7 +50,7 @@ export const todoData_list: todoType[] = [
     todoContent: "초고난도 독서 02 (사회·경제)",
     todoStatus: "완료",
     category: {
-      categoryId: 2,
+      categoryId: 1,
       categoryTitle: "국어",
       categoryColorCode: "#FFCBE1",
       categoryEmoticon: "📓",
@@ -66,7 +66,7 @@ export const todoData_list: todoType[] = [
     todoContent: "매3비 DAY6",
     todoStatus: "완료",
     category: {
-      categoryId: 2,
+      categoryId: 1,
       categoryTitle: "국어",
       categoryColorCode: "#FFCBE1",
       categoryEmoticon: "📓",
@@ -98,7 +98,7 @@ export const todoData_list: todoType[] = [
     todoContent: "산화환원 반응 실험하기",
     todoStatus: "완료",
     category: {
-      categoryId: 0,
+      categoryId: 3,
       categoryTitle: "과학 뿌셔뿌셔 대항전",
       categoryColorCode: "#B6DEF7",
       categoryEmoticon: "🧪",
@@ -114,7 +114,7 @@ export const todoData_list: todoType[] = [
     todoContent: "유전과 진화 체험학습 - 타임머신타고 30만년 전으로 가서 호모 사피엔스 싸인 받기",
     todoStatus: "완료",
     category: {
-      categoryId: 0,
+      categoryId: 3,
       categoryTitle: "과학 뿌셔뿌셔 대항전",
       categoryColorCode: "#B6DEF7",
       categoryEmoticon: "🧪",
@@ -130,7 +130,7 @@ export const todoData_list: todoType[] = [
     todoContent: "함수의 미분 인강",
     todoStatus: "미완료",
     category: {
-      categoryId: 1,
+      categoryId: 2,
       categoryTitle: "수학",
       categoryColorCode: "#B6F7E1",
       categoryEmoticon: "📐",
