@@ -3,7 +3,7 @@ import styles from "@styles/planner/day.module.scss";
 import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate, selectTodoItem, removeTodo } from "@store/planner/daySlice";
+import { selectDate, selectTodoItem, selectTodoList, removeTodoItem } from "@store/planner/daySlice";
 
 interface Props {
   clicked: boolean;
@@ -21,21 +21,20 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
   const { todoId, category } = useAppSelector(selectTodoItem);
+  const todoList = useAppSelector(selectTodoList);
   const { categoryColorCode } = category;
   const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
-  const plannerTime = {
-    // 오전 4시 ~ 익일 4시
-    start: dayjs(plannerDate).set("h", 4).format("YYYY-MM-DD HH:mm"),
-    end: dayjs(plannerDate).add(1, "day").set("h", 4).format("YYYY-MM-DD HH:mm"),
-  };
   const makeTimeArr: tableTimeType[] = (() => {
-    const time: tableTimeType[] = [];
-    let tempTime = plannerTime.start;
-    while (tempTime != plannerTime.end) {
+    // 오전 4시 ~ 익일 4시
+    const dayStartTime = dayjs(plannerDate).set("h", 4).format("YYYY-MM-DD HH:mm");
+    const dayEndTime = dayjs(plannerDate).add(1, "day").set("h", 4).format("YYYY-MM-DD HH:mm");
+    const tempArr: tableTimeType[] = [];
+    let tempTime = dayStartTime;
+    while (tempTime != dayEndTime) {
       tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
-      time.push({ todoId: 0, categoryColorCode: "", time: tempTime });
+      tempArr.push({ todoId: 0, categoryColorCode: "", time: tempTime });
     }
-    return time;
+    return tempArr;
   })();
 
   const [timeArr, setTimeArr] = useState<tableTimeType[]>(makeTimeArr);
@@ -65,7 +64,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       setTimeClicked(false);
       setCloseTime({ todoId, endTime });
       setSelectTime({ startTime: "", endTime: "" });
-      dispatch(removeTodo());
+      dispatch(removeTodoItem());
     };
     return {
       mouseDown,
@@ -74,9 +73,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     };
   })();
 
-  const dragTimeUpdate = () => {
-    if (selectTime.startTime != "" && selectTime.endTime != "") {
-      let { startTime, endTime } = selectTime;
+  const timeTableUpdate = (todoId: number, categoryColorCode: string, startTime: string, endTime: string) => {
+    if (startTime != "" && endTime != "") {
       if (startTime > endTime) {
         [startTime, endTime] = [endTime, startTime];
       }
@@ -95,7 +93,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     }
   };
 
-  const closeTimeUpdate = () => {
+  const closeButtonUpdate = () => {
     let { todoId, endTime } = closeTime;
     if (todoId != 0 && endTime != "") {
       const closeIndex = timeArr.findIndex((e) => e.time == endTime);
@@ -105,7 +103,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     }
   };
 
-  const deleteTimeUpdate = (todoId: number) => {
+  const deleteTimeTable = (todoId: number) => {
     const copyTimeArr: tableTimeType[] = timeArr.map((item) =>
       item.todoId == todoId ? { todoId: 0, categoryColorCode: "", time: item.time } : item,
     );
@@ -113,11 +111,18 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   };
 
   useEffect(() => {
-    dragTimeUpdate();
+    todoList.map((item) => {
+      const startTime = dayjs(item.timeTable.startTime).add(10, "m").format("YYYY-MM-DD HH:mm");
+      timeTableUpdate(item.todoId, item.category.categoryColorCode, startTime, item.timeTable.endTime);
+    });
+  }, [todoList]);
+
+  useEffect(() => {
+    timeTableUpdate(todoId, categoryColorCode, selectTime.startTime, selectTime.endTime);
   }, [selectTime]);
 
   useEffect(() => {
-    closeTimeUpdate();
+    closeButtonUpdate();
   }, [closeTime]);
 
   const clickedStyle = clicked ? "--clicked" : "";
@@ -141,7 +146,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
               style={{ backgroundColor: item.categoryColorCode }}
             >
               {item.closeButton && (
-                <div onClick={() => deleteTimeUpdate(item.todoId)}>
+                <div onClick={() => deleteTimeTable(item.todoId)}>
                   <DoDisturbOnIcon />
                 </div>
               )}

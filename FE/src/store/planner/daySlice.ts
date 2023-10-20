@@ -43,10 +43,10 @@ const daySlice = createSlice({
     setDate: (state, action: PayloadAction<dayConfig["date"]>) => {
       state.date = action.payload;
     },
-    setTodo: (state, action: PayloadAction<dayConfig["todoItem"]>) => {
+    setTodoItem: (state, action: PayloadAction<dayConfig["todoItem"]>) => {
       state.todoItem = action.payload;
     },
-    removeTodo: (state) => {
+    removeTodoItem: (state) => {
       state.todoItem = initialState.todoItem;
     },
     setTodoList: (state, action: PayloadAction<dayConfig["todoList"]>) => {
@@ -57,7 +57,7 @@ const daySlice = createSlice({
 
 export const BASIC_TODO_ITEM = initialState.todoItem;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category;
-export const { setDate, setTodo, removeTodo, setTodoList } = daySlice.actions;
+export const { setDate, setTodoItem, removeTodoItem, setTodoList } = daySlice.actions;
 export const selectDate = (state: rootState) => state.day.date;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;
 export const selectTodoList = (state: rootState) => state.day.todoList;

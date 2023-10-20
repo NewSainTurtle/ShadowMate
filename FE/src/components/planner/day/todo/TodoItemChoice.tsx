@@ -2,7 +2,7 @@ import React from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { useAppDispatch } from "@hooks/hook";
-import { todoType, setTodo } from "@store/planner/daySlice";
+import { todoType, setTodoItem } from "@store/planner/daySlice";
 
 interface Props {
   idx?: number;
@@ -35,7 +35,7 @@ const TodoItemChoice = ({ todoItem, possible }: Props) => {
   const possibility = possible ? "--possible" : "--impossible";
 
   function handleClickTodo() {
-    if (possible) dispatch(setTodo(todoItem));
+    if (possible) dispatch(setTodoItem(todoItem));
   }
 
   return (

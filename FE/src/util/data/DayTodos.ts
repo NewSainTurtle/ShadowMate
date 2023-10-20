@@ -57,8 +57,8 @@ export const todoData_list: todoType[] = [
     },
     timeTable: {
       timeTableId: 0,
-      startTime: "",
-      endTime: "",
+      startTime: "2023-10-21 11:00",
+      endTime: "2023-10-21 12:00",
     },
   },
   {

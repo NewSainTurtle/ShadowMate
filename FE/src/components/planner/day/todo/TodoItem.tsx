@@ -76,7 +76,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
     });
   };
 
-  const removeTodo = () => {
+  const clickDeleteTodo = () => {
     deleteTodo(idx);
   };
 
@@ -149,7 +149,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
               onBlur={handleSaveTextTodo}
             />
             {!addTodo && (
-              <div onClick={removeTodo}>
+              <div onClick={clickDeleteTodo}>
                 <DeleteOutlined />
               </div>
             )}
