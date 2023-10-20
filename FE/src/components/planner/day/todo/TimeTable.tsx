@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import styles from "@styles/planner/day.module.scss";
 import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDate } from "@store/planner/daySlice";
 import { removeTodo, selectTodoItem } from "@store/planner/daySlice";
 
@@ -20,7 +19,7 @@ interface tableTimeType {
 }
 
 const TimeTable = ({ clicked, setClicked }: Props) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
   const { todoId, category } = useAppSelector(selectTodoItem);
   const { categoryColorCode } = category;

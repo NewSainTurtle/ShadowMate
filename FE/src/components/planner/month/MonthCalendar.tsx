@@ -4,7 +4,7 @@ import Text from "@components/common/Text";
 import dayjs from "dayjs";
 import { MonthType } from "@util/planner.interface";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@hooks/hook";
 import { setDate } from "@store/planner/daySlice";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +23,7 @@ const statusColor = [
 
 const MonthCalendar = ({ selectedDay }: Props) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [isNotFriend, setIsNotFriend] = useState<boolean>(false);
   const [ItemList, setItemList] = useState<(MonthType | null)[]>([]);
 

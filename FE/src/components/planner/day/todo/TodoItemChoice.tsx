@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { todoType } from "@store/planner/daySlice";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@hooks/hook";
 import { setTodo } from "@store/planner/daySlice";
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const TodoItemChoice = ({ item, possible }: Props) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { category, todoContent, todoStatus } = item;
   const { categoryTitle, categoryColorCode } = category;
 

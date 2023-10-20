@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
-import { todoData_list } from "@util/data/DayTodos";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@hooks/hook";
 import { BASIC_TODO_ITEM, todoType, setTodoList } from "@store/planner/daySlice";
 import TodoItemChoice from "./TodoItemChoice";
 
@@ -11,8 +10,8 @@ interface Props {
 }
 
 const TodoList = ({ clicked }: Props) => {
-  const dispatch = useDispatch();
-  const [todoArr, setTodoArr] = useState<todoType[]>(todoData_list);
+  const dispatch = useAppDispatch();
+  const [todoArr, setTodoArr] = useState<todoType[]>([]);
   const listSize = 11;
   const todoListSize = useMemo(() => {
     return todoArr.length + 1 >= listSize ? todoArr.length + 1 : listSize;

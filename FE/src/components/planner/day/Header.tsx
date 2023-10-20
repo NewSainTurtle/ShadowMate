@@ -6,8 +6,7 @@ import Dday from "@components/common/Dday";
 import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { setDate, selectDate } from "@store/planner/daySlice";
 import { todoData_friend } from "@util/data/DayTodos";
 import dayjs from "dayjs";
@@ -66,7 +65,7 @@ const MyHeader = ({ heart }: { heart: number }) => {
 };
 
 const Header = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
   const heartNum = 50; // 임시 좋아요 수
