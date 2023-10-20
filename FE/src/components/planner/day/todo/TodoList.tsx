@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
-import TodoItem from "@components/planner/day/TodoItem";
+import TodoItem from "@components/planner/day/todo/TodoItem";
 import { todoType } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
 import { useDispatch } from "react-redux";
