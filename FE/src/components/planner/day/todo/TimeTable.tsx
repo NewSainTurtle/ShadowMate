@@ -4,10 +4,10 @@ import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@hooks/hook";
+import { selectDate } from "@store/planner/daySlice";
 import { removeTodo, selectTodo } from "@store/planner/daySlice";
 
 interface Props {
-  date: string | Date | dayjs.Dayjs;
   clicked: boolean;
   setClicked: (props: boolean) => void;
 }
@@ -19,8 +19,9 @@ interface tableTimeType {
   closeButton?: boolean;
 }
 
-const TimeTable = ({ date, clicked, setClicked }: Props) => {
+const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useDispatch();
+  const date = useAppSelector(selectDate);
   const { todoId, categoryColorCode } = useAppSelector(selectTodo);
   const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
   const plannerTime = {

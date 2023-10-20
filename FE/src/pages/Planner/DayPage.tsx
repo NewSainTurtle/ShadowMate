@@ -9,8 +9,6 @@ import dayjs from "dayjs";
 import CustomCursor from "@components/planner/day/CustomCursor";
 
 const DayPage = () => {
-  const { state } = useLocation();
-  const [date, setDate] = useState<string | Date | dayjs.Dayjs>(state?.date || new Date());
   const [ment, setMent] = useState({
     todayGoals: "",
     tomorrowGoals: "",
@@ -18,11 +16,6 @@ const DayPage = () => {
   });
   const [isClickTimeTable, setIsClickTimeTable] = useState(false);
   const todoDivRef = useRef<HTMLDivElement>(null);
-
-  const moveDate = (n: -1 | 0 | 1) => {
-    const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
-    setDate(newDate);
-  };
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMent({
@@ -58,7 +51,7 @@ const DayPage = () => {
 
   return (
     <div className={styles["page-container"]}>
-      <Header date={date} moveDate={moveDate} />
+      <Header />
       <div className={styles["page-content"]}>
         <Ment
           title={"오늘의 다짐"}
@@ -82,7 +75,7 @@ const DayPage = () => {
             <TodoList clicked={isClickTimeTable} />
           </div>
           <div className={styles["item__timetable"]}>
-            <TimeTable date={date} clicked={isClickTimeTable} setClicked={handleClickTimeTable} />
+            <TimeTable clicked={isClickTimeTable} setClicked={handleClickTimeTable} />
           </div>
         </div>
 
