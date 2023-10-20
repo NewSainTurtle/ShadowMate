@@ -22,7 +22,8 @@ interface tableTimeType {
 const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useDispatch();
   const date = useAppSelector(selectDate);
-  const { todoId, categoryColorCode } = useAppSelector(selectTodo);
+  const { todoId, category } = useAppSelector(selectTodo);
+  const { categoryColorCode } = category;
   const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
   const plannerTime = {
     // 오전 4시 ~ 익일 4시

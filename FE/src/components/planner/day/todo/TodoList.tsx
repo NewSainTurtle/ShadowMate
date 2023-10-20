@@ -1,19 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
-import { todoType } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
 import { useDispatch } from "react-redux";
-import { setDoneTodoList } from "@store/planner/daySlice";
+import { BASIC_TODO_ITEM, todoType, setTodoList } from "@store/planner/daySlice";
 import TodoItemChoice from "./TodoItemChoice";
-
-export const TodoDataDefalut: todoType = {
-  todoId: 0,
-  categoryTitle: "",
-  categoryColorCode: "#E9E9EB",
-  todoContent: "",
-  todoStatus: 0,
-};
 
 interface Props {
   clicked: boolean;
@@ -21,39 +12,39 @@ interface Props {
 
 const TodoList = ({ clicked }: Props) => {
   const dispatch = useDispatch();
-  const [todos, setTodos] = useState<todoType[]>(todoData_list);
+  const [todoArr, setTodoArr] = useState<todoType[]>(todoData_list);
   const listSize = 11;
   const todoListSize = useMemo(() => {
-    return todos.length + 1 >= listSize ? todos.length + 1 : listSize;
-  }, [todos]);
+    return todoArr.length + 1 >= listSize ? todoArr.length + 1 : listSize;
+  }, [todoArr]);
   const todoEndRef = useRef<HTMLDivElement>(null);
-  const nextId = useRef(todos.length + 1);
+  const nextId = useRef(todoArr.length + 1);
 
   useEffect(() => {
-    if (todos.length + 1 >= listSize && todoEndRef.current) {
+    if (todoArr.length + 1 >= listSize && todoEndRef.current) {
       todoEndRef.current.scrollTop = todoEndRef.current.scrollHeight;
     }
-  }, [todos.length]);
+  }, [todoArr.length]);
 
   useEffect(() => {
-    if (clicked) dispatch(setDoneTodoList(todos));
+    if (clicked) dispatch(setTodoList(todoArr));
   }, [clicked]);
 
   const todoModule = (() => {
     const insertTodo = (props: todoType) => {
-      setTodos([...todos, { ...props, todoId: nextId.current }]);
+      setTodoArr([...todoArr, { ...props, todoId: nextId.current }]);
       nextId.current += 1;
     };
 
     const updateTodo = (idx: number, props: todoType) => {
-      let copyTodos = [...todos];
+      let copyTodos = [...todoArr];
       copyTodos[idx] = { ...props };
-      setTodos(copyTodos);
+      setTodoArr(copyTodos);
     };
 
     const deleteTodo = (idx: number) => {
-      let newTodos = todos.filter((item, i) => idx != i);
-      setTodos(newTodos);
+      let newTodos = todoArr.filter((item, i) => idx != i);
+      setTodoArr(newTodos);
     };
 
     return {
@@ -71,21 +62,21 @@ const TodoList = ({ clicked }: Props) => {
     >
       {!clicked ? (
         <>
-          {todos.map((todo, idx) => (
-            <TodoItem key={todo.todoId} idx={idx} item={todo} todoModule={todoModule} />
+          {todoArr.map((item, idx) => (
+            <TodoItem key={item.todoId} idx={idx} item={item} todoModule={todoModule} />
           ))}
-          <TodoItem addTodo item={TodoDataDefalut} todoModule={todoModule} />
-          {Array.from({ length: listSize - todos.length - 1 }).map((item, idx) => (
-            <TodoItem key={idx} disable item={TodoDataDefalut} todoModule={todoModule} />
+          <TodoItem addTodo item={BASIC_TODO_ITEM} todoModule={todoModule} />
+          {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (
+            <TodoItem key={idx} disable item={BASIC_TODO_ITEM} todoModule={todoModule} />
           ))}
         </>
       ) : (
         <>
-          {todos.map((todo, idx) => (
-            <TodoItemChoice key={todo.todoId} idx={idx} item={todo} possible={todo.todoStatus === 1} />
+          {todoArr.map((item, idx) => (
+            <TodoItemChoice key={item.todoId} idx={idx} item={item} possible={item.todoStatus === "완료"} />
           ))}
-          {Array.from({ length: listSize - todos.length }).map((item, idx) => (
-            <TodoItemChoice key={idx} item={TodoDataDefalut} possible={false} />
+          {Array.from({ length: listSize - todoArr.length }).map((item, idx) => (
+            <TodoItemChoice key={idx} item={BASIC_TODO_ITEM} possible={false} />
           ))}
         </>
       )}

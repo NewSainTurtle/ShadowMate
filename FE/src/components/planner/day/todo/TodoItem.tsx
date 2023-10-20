@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
-import { todoType, categoryType } from "@util/planner.interface";
+import { todoType } from "@store/planner/daySlice";
+import { CategoryConfig } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
 
-const categoryDefault: categoryType = {
+const categoryDefault: CategoryConfig = {
   categoryId: 0,
   categoryTitle: "",
   categoryColorCode: "#E9E9EB",
@@ -25,9 +26,10 @@ interface Props {
 }
 
 const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
-  const { categoryTitle, categoryColorCode, todoContent, todoStatus } = item;
+  const { category, todoContent, todoStatus } = item;
+  const { categoryTitle, categoryColorCode } = category;
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
-  const categoryList: categoryType[] = todoData_category;
+  const categoryList: CategoryConfig[] = todoData_category;
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
   const [isDropdownView, setDropdownView] = useState(false);
@@ -61,9 +63,9 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
 
   const handleClickCategory = (title: string, bgColor: string) => {
     if (addTodo) {
-      insertTodo({ ...item, categoryTitle: title, categoryColorCode: bgColor });
+      insertTodo({ ...item, category: { ...item.category, categoryTitle: title, categoryColorCode: bgColor } });
     } else {
-      updateTodo(idx, { ...item, categoryTitle: title, categoryColorCode: bgColor });
+      updateTodo(idx, { ...item, category: { ...item.category, categoryTitle: title, categoryColorCode: bgColor } });
     }
   };
 
@@ -74,7 +76,7 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
 
   const handleSaveStatusTodo = () => {
     if (text === "") return;
-    updateTodo(idx, { ...item, todoStatus: todoStatus == 0 ? 1 : todoStatus == 1 ? 2 : 0 });
+    updateTodo(idx, { ...item, todoStatus: todoStatus == "공백" ? "완료" : todoStatus == "완료" ? "미완료" : "공백" });
   };
 
   const removeTodo = () => {
@@ -160,7 +162,7 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
       </div>
 
       <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
-        <Text types="semi-medium">{[" ", "O", "X"][todoStatus]}</Text>
+        <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
       </div>
     </div>
   );

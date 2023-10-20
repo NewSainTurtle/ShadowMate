@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
-import { todoType } from "@util/planner.interface";
+import { todoType } from "@store/planner/daySlice";
 import { useDispatch } from "react-redux";
 import { setTodo } from "@store/planner/daySlice";
 
@@ -13,7 +13,8 @@ interface Props {
 
 const TodoItemChoice = ({ item, possible }: Props) => {
   const dispatch = useDispatch();
-  const { categoryTitle, categoryColorCode, todoContent, todoStatus } = item;
+  const { category, todoContent, todoStatus } = item;
+  const { categoryTitle, categoryColorCode } = category;
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
     const rgb = parseInt(hexColor, 16);
@@ -51,7 +52,7 @@ const TodoItemChoice = ({ item, possible }: Props) => {
         </div>
       </div>
       <div className={styles[`todo-item__checked`]}>
-        <Text types="semi-medium">{[" ", "O", "X"][todoStatus]}</Text>
+        <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
       </div>
     </div>
   );

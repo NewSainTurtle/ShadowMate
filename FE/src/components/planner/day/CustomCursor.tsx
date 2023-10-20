@@ -5,7 +5,8 @@ import { selectTodo } from "@store/planner/daySlice";
 
 const CustomCursor = () => {
   const cursorRef = useRef<SVGSVGElement>(null);
-  const { categoryColorCode } = useAppSelector(selectTodo);
+  const { category } = useAppSelector(selectTodo);
+  const { categoryColorCode } = category;
 
   const moveCursor = (e: { clientY: any; clientX: any }) => {
     const mouseY = e.clientY;
