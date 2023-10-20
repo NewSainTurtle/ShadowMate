@@ -81,7 +81,7 @@ class DdayRepositoryTest {
 
         //then
         assertThat(ddayList).isNotNull();
-        assertThat(ddayList.size()).isEqualTo(2);
+        assertThat(ddayList).hasSize(2);
         assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("시험");
     }
 
