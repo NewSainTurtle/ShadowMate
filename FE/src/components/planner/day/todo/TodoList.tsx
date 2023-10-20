@@ -59,20 +59,20 @@ const TodoList = ({ clicked }: Props) => {
       {!clicked ? (
         <>
           {todoArr.map((item, idx) => (
-            <TodoItem key={item.todoId} idx={idx} item={item} todoModule={todoModule} />
+            <TodoItem key={item.todoId} idx={idx} todoItem={item} todoModule={todoModule} />
           ))}
-          <TodoItem addTodo item={BASIC_TODO_ITEM} todoModule={todoModule} />
+          <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
           {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (
-            <TodoItem key={idx} disable item={BASIC_TODO_ITEM} todoModule={todoModule} />
+            <TodoItem key={idx} disable todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
           ))}
         </>
       ) : (
         <>
           {todoArr.map((item, idx) => (
-            <TodoItemChoice key={item.todoId} idx={idx} item={item} possible={item.todoStatus === "완료"} />
+            <TodoItemChoice key={item.todoId} idx={idx} todoItem={item} possible={item.todoStatus === "완료"} />
           ))}
           {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
-            <TodoItemChoice key={idx} item={BASIC_TODO_ITEM} possible={false} />
+            <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} />
           ))}
         </>
       )}

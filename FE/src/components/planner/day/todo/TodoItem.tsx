@@ -2,20 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
-import { todoType } from "@store/planner/daySlice";
+import { todoType, BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { CategoryConfig } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
 
-const categoryDefault: CategoryConfig = {
-  categoryId: 0,
-  categoryTitle: "",
-  categoryColorCode: "#E9E9EB",
-  categoryEmoticon: "",
-};
-
 interface Props {
   idx?: number;
-  item: todoType;
+  todoItem: todoType;
   addTodo?: boolean;
   disable?: boolean;
   todoModule: {
@@ -25,8 +18,8 @@ interface Props {
   };
 }
 
-const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
-  const { category, todoContent, todoStatus } = item;
+const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
+  const { category, todoContent, todoStatus } = todoItem;
   const { categoryTitle, categoryColorCode } = category;
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
   const categoryList: CategoryConfig[] = todoData_category;
@@ -55,28 +48,32 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
       if (e.nativeEvent.isComposing) return;
       if (addTodo) {
         if (text === "") return;
-        insertTodo({ ...item, todoContent: text });
+        insertTodo({ ...todoItem, todoContent: text });
         setText("");
       } else (document.activeElement as HTMLElement).blur();
     }
   };
 
-  const handleClickCategory = (title: string, bgColor: string) => {
+  const handleClickCategory = (props: CategoryConfig) => {
+    const newCategory = { ...todoItem, category: props };
     if (addTodo) {
-      insertTodo({ ...item, category: { ...item.category, categoryTitle: title, categoryColorCode: bgColor } });
+      insertTodo(newCategory);
     } else {
-      updateTodo(idx, { ...item, category: { ...item.category, categoryTitle: title, categoryColorCode: bgColor } });
+      updateTodo(idx, newCategory);
     }
   };
 
   const handleSaveTextTodo = () => {
     if (text === "") return;
-    updateTodo(idx, { ...item, todoContent: text });
+    updateTodo(idx, { ...todoItem, todoContent: text });
   };
 
   const handleSaveStatusTodo = () => {
     if (text === "") return;
-    updateTodo(idx, { ...item, todoStatus: todoStatus == "공백" ? "완료" : todoStatus == "완료" ? "미완료" : "공백" });
+    updateTodo(idx, {
+      ...todoItem,
+      todoStatus: todoStatus == "공백" ? "완료" : todoStatus == "완료" ? "미완료" : "공백",
+    });
   };
 
   const removeTodo = () => {
@@ -95,7 +92,7 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
 
   const categoryStyle = (bgColor: string) => {
     return {
-      backgroundColor: `${bgColor == categoryDefault.categoryColorCode ? "transparent" : bgColor}`,
+      backgroundColor: `${bgColor == BASIC_CATEGORY_ITEM.categoryColorCode ? "transparent" : bgColor}`,
       color: `${getTextColorByBackgroundColor(bgColor.slice(1))}`,
     };
   };
@@ -116,16 +113,15 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, todoModule }: Props) => {
         </div>
         {isDropdownView && (
           <div className={styles["todo-item__category-menu"]}>
-            <span onClick={() => handleClickCategory("", categoryDefault.categoryColorCode)}>&emsp;&emsp;</span>
-            {categoryList.map((item, idx) => {
-              const { categoryId, categoryColorCode, categoryTitle } = item;
+            <span onClick={() => handleClickCategory(BASIC_CATEGORY_ITEM)}>&emsp;&emsp;</span>
+            {categoryList.map((item) => {
               return (
                 <span
-                  key={categoryId}
-                  style={categoryStyle(categoryColorCode)}
-                  onClick={() => handleClickCategory(categoryTitle, categoryColorCode)}
+                  key={item.categoryId}
+                  style={categoryStyle(item.categoryColorCode)}
+                  onClick={() => handleClickCategory(item)}
                 >
-                  {categoryTitle}
+                  {item.categoryTitle}
                 </span>
               );
             })}

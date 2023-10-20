@@ -6,13 +6,13 @@ import { todoType, setTodo } from "@store/planner/daySlice";
 
 interface Props {
   idx?: number;
-  item: todoType;
+  todoItem: todoType;
   possible: boolean;
 }
 
-const TodoItemChoice = ({ item, possible }: Props) => {
+const TodoItemChoice = ({ todoItem, possible }: Props) => {
   const dispatch = useAppDispatch();
-  const { category, todoContent, todoStatus } = item;
+  const { category, todoContent, todoStatus } = todoItem;
   const { categoryTitle, categoryColorCode } = category;
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
@@ -35,7 +35,7 @@ const TodoItemChoice = ({ item, possible }: Props) => {
   const possibility = possible ? "--possible" : "--impossible";
 
   function handleClickTodo() {
-    if (possible) dispatch(setTodo(item));
+    if (possible) dispatch(setTodo(todoItem));
   }
 
   return (
