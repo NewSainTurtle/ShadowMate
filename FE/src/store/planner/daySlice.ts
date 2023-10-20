@@ -1,36 +1,39 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
+import { CategoryConfig, DayTodoConfig, TimeTableConfig } from "@util/planner.interface";
+import { todoData_list } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 
-interface todoConfig {
-  todoId: number;
-  categoryColorCode: string;
-  categoryTitle: string;
-  todoContent: string;
-  todoStatus: 0 | 1 | 2;
-}
-
-interface doneTimeConfig {
-  startTime: string;
-  endTime: string;
+export interface todoType extends DayTodoConfig {
+  category: CategoryConfig;
+  timeTable: TimeTableConfig;
 }
 
 interface dayConfig {
   date: string | Date | dayjs.Dayjs;
-  todo: todoConfig;
-  doneTodoList: { todo: todoConfig; time: doneTimeConfig }[];
+  todoItem: todoType;
+  todoList: todoType[];
 }
 
 const initialState: dayConfig = {
   date: new Date(),
-  todo: {
+  todoItem: {
     todoId: 0,
-    categoryTitle: "",
-    categoryColorCode: "#E9E9EB",
     todoContent: "",
-    todoStatus: 0,
+    todoStatus: "공백",
+    category: {
+      categoryId: 0,
+      categoryTitle: "",
+      categoryColorCode: "#E9E9EB",
+      categoryEmoticon: "",
+    },
+    timeTable: {
+      timeTableId: 0,
+      startTime: "",
+      endTime: "",
+    },
   },
-  doneTodoList: [],
+  todoList: todoData_list,
 };
 
 const daySlice = createSlice({
@@ -40,26 +43,22 @@ const daySlice = createSlice({
     setDate: (state, action: PayloadAction<dayConfig["date"]>) => {
       state.date = action.payload;
     },
-    setTodo: (state, action: PayloadAction<dayConfig["todo"]>) => {
-      state.todo = action.payload;
+    setTodo: (state, action: PayloadAction<dayConfig["todoItem"]>) => {
+      state.todoItem = action.payload;
     },
     removeTodo: (state) => {
-      state.todo = initialState.todo;
+      state.todoItem = initialState.todoItem;
     },
-    setDoneTodoList: (state, action: PayloadAction<todoConfig[]>) => {
-      state.doneTodoList = action.payload
-        .filter((todo) => todo.todoStatus == 1)
-        .map((todo) => ({ todo, time: { startTime: "", endTime: "" } }));
-    },
-    setDoneTodoTime: (state, action: PayloadAction<{ index: number; time: doneTimeConfig }>) => {
-      const changedIdx = action.payload.index;
-      state.doneTodoList[changedIdx].time = action.payload.time;
+    setTodoList: (state, action: PayloadAction<dayConfig["todoList"]>) => {
+      state.todoList = action.payload;
     },
   },
 });
 
-export const { setDate, setTodo, removeTodo, setDoneTodoList, setDoneTodoTime } = daySlice.actions;
+export const BASIC_TODO_ITEM = initialState.todoItem;
+export const { setDate, setTodo, removeTodo, setTodoList } = daySlice.actions;
 export const selectDate = (state: rootState) => state.day.date;
-export const selectTodo = (state: rootState) => state.day.todo;
+export const selectTodoItem = (state: rootState) => state.day.todoItem;
+export const selectTodoList = (state: rootState) => state.day.todoList;
 
 export default daySlice.reducer;

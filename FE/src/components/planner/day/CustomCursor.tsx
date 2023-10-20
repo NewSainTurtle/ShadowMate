@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
 import styles from "@styles/planner/day.module.scss";
 import { useAppSelector } from "@hooks/hook";
-import { selectTodo } from "@store/planner/daySlice";
+import { selectTodoItem } from "@store/planner/daySlice";
 
 const CustomCursor = () => {
   const cursorRef = useRef<SVGSVGElement>(null);
-  const { category } = useAppSelector(selectTodo);
+  const { category } = useAppSelector(selectTodoItem);
   const { categoryColorCode } = category;
 
   const moveCursor = (e: { clientY: any; clientX: any }) => {

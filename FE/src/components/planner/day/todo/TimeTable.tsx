@@ -5,7 +5,7 @@ import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@hooks/hook";
 import { selectDate } from "@store/planner/daySlice";
-import { removeTodo, selectTodo } from "@store/planner/daySlice";
+import { removeTodo, selectTodoItem } from "@store/planner/daySlice";
 
 interface Props {
   clicked: boolean;
@@ -22,7 +22,7 @@ interface tableTimeType {
 const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useDispatch();
   const date = useAppSelector(selectDate);
-  const { todoId, category } = useAppSelector(selectTodo);
+  const { todoId, category } = useAppSelector(selectTodoItem);
   const { categoryColorCode } = category;
   const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
   const plannerTime = {
