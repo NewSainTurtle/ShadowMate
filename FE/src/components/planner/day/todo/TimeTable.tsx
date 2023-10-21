@@ -17,6 +17,18 @@ interface tableTimeType {
   closeButton?: boolean;
 }
 
+const debouncing = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
+  let timeId: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>): ReturnType<T> => {
+    let result: any;
+    if (timeId) clearTimeout(timeId);
+    timeId = setTimeout(() => {
+      result = fn(...args);
+    }, delay);
+    return result;
+  };
+};
+
 const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
@@ -67,10 +79,11 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
         dispatch(removeTodoItem());
       }
     };
+    const debounceMoseEnter = debouncing(mouseEnter, 50);
 
     return {
       mouseDown,
-      mouseEnter,
+      debounceMoseEnter,
       mouseUp,
     };
   })();
@@ -135,7 +148,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
               key={idx}
               className={styles["timetable__minutes__item"]}
               onMouseDown={(e) => mouseModule.mouseDown(e, item.time)}
-              onMouseEnter={() => mouseModule.mouseEnter(item.time)}
+              onMouseEnter={() => mouseModule.debounceMoseEnter(item.time)}
               onMouseUp={() => mouseModule.mouseUp(item.time)}
               style={{ backgroundColor: item.categoryColorCode }}
             >
