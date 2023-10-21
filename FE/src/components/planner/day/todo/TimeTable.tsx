@@ -79,11 +79,11 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
         dispatch(removeTodoItem());
       }
     };
-    const debounceMoseEnter = debouncing(mouseEnter, 50);
+    const debounceMouseEnter = debouncing(mouseEnter, 50);
 
     return {
       mouseDown,
-      debounceMoseEnter,
+      debounceMouseEnter,
       mouseUp,
     };
   })();
@@ -148,7 +148,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
               key={idx}
               className={styles["timetable__minutes__item"]}
               onMouseDown={(e) => mouseModule.mouseDown(e, item.time)}
-              onMouseEnter={() => mouseModule.debounceMoseEnter(item.time)}
+              onMouseEnter={() => mouseModule.debounceMouseEnter(item.time)}
               onMouseUp={() => mouseModule.mouseUp(item.time)}
               style={{ backgroundColor: item.categoryColorCode }}
             >
