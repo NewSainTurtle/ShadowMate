@@ -3,7 +3,7 @@ import styles from "@styles/planner/day.module.scss";
 import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate, selectTodoItem, selectTodoList, removeTodoItem } from "@store/planner/daySlice";
+import { selectDate, selectTodoItem, selectTodoList, removeTodoItem, setTimeTable } from "@store/planner/daySlice";
 
 interface Props {
   clicked: boolean;
@@ -23,8 +23,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const { todoId, category } = useAppSelector(selectTodoItem);
   const todoList = useAppSelector(selectTodoList);
   const { categoryColorCode } = category;
-  const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
   const makeTimeArr: tableTimeType[] = (() => {
+    const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
     // 오전 4시 ~ 익일 4시
     const dayStartTime = dayjs(plannerDate).set("h", 4).format("YYYY-MM-DD HH:mm");
     const dayEndTime = dayjs(plannerDate).add(1, "day").set("h", 4).format("YYYY-MM-DD HH:mm");
@@ -38,13 +38,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   })();
 
   const [timeArr, setTimeArr] = useState<tableTimeType[]>(makeTimeArr);
+  const [copyTimeArr, setCopyTimeArr] = useState<tableTimeType[]>(makeTimeArr);
   const [timeClick, setTimeClicked] = useState(false);
   const [selectTime, setSelectTime] = useState({
     startTime: "",
-    endTime: "",
-  });
-  const [closeTime, setCloseTime] = useState({
-    todoId: 0,
     endTime: "",
   });
 
@@ -52,20 +49,25 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     const mouseDown = (e: React.MouseEvent<HTMLDivElement>, startTime: string) => {
       if (e.button != 2 && todoId != 0) {
         setTimeClicked(true);
-        setSelectTime({ ...selectTime, startTime, endTime: startTime });
+        setSelectTime({ startTime, endTime: startTime });
       }
     };
     const mouseEnter = (endTime: string) => {
-      if (timeClick) {
+      if (timeClick && selectTime.endTime != endTime) {
         setSelectTime({ ...selectTime, endTime });
       }
     };
     const mouseUp = (endTime: string) => {
-      setTimeClicked(false);
-      setCloseTime({ todoId, endTime });
-      setSelectTime({ startTime: "", endTime: "" });
-      dispatch(removeTodoItem());
+      if (todoId != 0) {
+        setTimeClicked(false);
+        const startTime = dayjs(selectTime.startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
+        dispatch(setTimeTable({ todoId, startTime, endTime }));
+
+        setSelectTime({ startTime: "", endTime: "" });
+        dispatch(removeTodoItem());
+      }
     };
+
     return {
       mouseDown,
       mouseEnter,
@@ -73,57 +75,49 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     };
   })();
 
-  const timeTableUpdate = (todoId: number, categoryColorCode: string, startTime: string, endTime: string) => {
-    if (startTime != "" && endTime != "") {
-      if (startTime > endTime) {
-        [startTime, endTime] = [endTime, startTime];
-      }
-
-      const dragTime: tableTimeType[] = timeArr.reduce((updateArr: tableTimeType[], obj) => {
-        if (obj.time >= startTime && obj.time <= endTime) {
-          updateArr.push({ time: obj.time, todoId, categoryColorCode });
-        }
-        return updateArr;
-      }, []);
-
-      const startIndex = timeArr.findIndex((e) => e.time == startTime);
-      const copyTimeArr = [...timeArr];
-      copyTimeArr.splice(startIndex, dragTime.length, ...dragTime);
-      setTimeArr(copyTimeArr);
-    }
-  };
-
-  const closeButtonUpdate = () => {
-    let { todoId, endTime } = closeTime;
-    if (todoId != 0 && endTime != "") {
-      const closeIndex = timeArr.findIndex((e) => e.time == endTime);
-      const copyTimeArr = [...timeArr];
-      copyTimeArr[closeIndex].closeButton = true;
-      setTimeArr(copyTimeArr);
-    }
-  };
-
   const deleteTimeTable = (todoId: number) => {
-    const copyTimeArr: tableTimeType[] = timeArr.map((item) =>
-      item.todoId == todoId ? { todoId: 0, categoryColorCode: "", time: item.time } : item,
-    );
-    setTimeArr(copyTimeArr);
+    dispatch(setTimeTable({ todoId, startTime: "", endTime: "" }));
   };
 
   useEffect(() => {
-    todoList.map((item) => {
-      const startTime = dayjs(item.timeTable.startTime).add(10, "m").format("YYYY-MM-DD HH:mm");
-      timeTableUpdate(item.todoId, item.category.categoryColorCode, startTime, item.timeTable.endTime);
-    });
+    let tempArr = [...makeTimeArr];
+    todoList
+      .filter((ele) => ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
+      .map((item) => {
+        const { todoId, category } = item;
+        let { startTime, endTime } = item.timeTable;
+        const miniArr: tableTimeType[] = [];
+        let tempTime = startTime;
+        while (tempTime != endTime) {
+          tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
+          miniArr.push({
+            todoId,
+            categoryColorCode: category.categoryColorCode,
+            time: tempTime,
+            closeButton: tempTime == endTime,
+          });
+        }
+        startTime = dayjs(startTime).add(10, "m").format("YYYY-MM-DD HH:mm");
+        const startIndex = tempArr.findIndex((e) => e.time == startTime);
+        tempArr.splice(startIndex, miniArr.length, ...miniArr);
+      });
+    setTimeArr(tempArr);
+    setCopyTimeArr(tempArr);
   }, [todoList]);
 
   useEffect(() => {
-    timeTableUpdate(todoId, categoryColorCode, selectTime.startTime, selectTime.endTime);
-  }, [selectTime]);
+    let { startTime, endTime } = selectTime;
+    if (startTime != "" && endTime != "") {
+      if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
+      const dragArr: tableTimeType[] = copyTimeArr.map((obj) => {
+        if (obj.time >= startTime && obj.time <= endTime) {
+          return { todoId, categoryColorCode, time: obj.time };
+        } else return obj;
+      });
 
-  useEffect(() => {
-    closeButtonUpdate();
-  }, [closeTime]);
+      setTimeArr(dragArr);
+    }
+  }, [selectTime]);
 
   const clickedStyle = clicked ? "--clicked" : "";
 

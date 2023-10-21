@@ -1,5 +1,6 @@
 import { CategoryConfig } from "@util/planner.interface";
 import { todoType } from "@store/planner/daySlice";
+import dayjs from "dayjs";
 
 export const todoData_friend = {
   nickname: "토롱이",
@@ -57,8 +58,8 @@ export const todoData_list: todoType[] = [
     },
     timeTable: {
       timeTableId: 0,
-      startTime: "2023-10-21 11:00",
-      endTime: "2023-10-21 12:00",
+      startTime: dayjs().set("h", 11).set("m", 0).format("YYYY-MM-DD HH:mm"),
+      endTime: dayjs().set("h", 12).set("m", 0).format("YYYY-MM-DD HH:mm"),
     },
   },
   {
