@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
-import WeekItem from "./WeekItem";
 import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
 import { profileInfo } from "@pages/commonPage";
@@ -8,6 +7,7 @@ import WeekTodo from "./WeekTodo";
 import { getThisWeekCnt } from "@util/getThisWeek";
 import { useAppSelector } from "@hooks/hook";
 import { selectDayList } from "@store/weekSlice";
+import WeekList from "./WeekList";
 
 const Week = () => {
   const today = new Date();
@@ -53,7 +53,7 @@ const Week = () => {
       </div>
       <div className={styles["week__list"]}>
         <WeekTodo />
-        {dayList?.map((today, key) => <WeekItem dayInfo={today} key={key} />)}
+        {dayList?.map((today, key) => <WeekList dayInfo={today} key={key} />)}
       </div>
     </div>
   );
