@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.config.oauth;
 
-import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -23,13 +22,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("구글 로그인");
-        System.out.println("userRequest.getClientRegistration() = " + userRequest.getClientRegistration());
-        System.out.println("userRequest.getAccessToken() = " + userRequest.getAccessToken());
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println("oAuth2User.getAttributes() = " + oAuth2User.getAttributes());
-        //return super.loadUser(userRequest);
         String userEmail = oAuth2User.getAttribute("email");
         User user = findByEmailAndSocialLogin(userEmail);
         if(user == null) {
