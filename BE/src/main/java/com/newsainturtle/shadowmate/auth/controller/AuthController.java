@@ -38,8 +38,8 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_NICKNAME_CHECK));
     }
 
-    @GetMapping("/google")
-    public String test() {
-        return "구글로그인성공";
+    @GetMapping("/social-login")
+    public ResponseEntity<BaseResponse> joinGoogle() {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_LOGIN));
     }
 }
