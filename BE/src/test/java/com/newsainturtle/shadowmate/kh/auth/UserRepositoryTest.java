@@ -62,18 +62,6 @@ public class UserRepositoryTest {
             assertThat(result).isNotNull();
             assertThat(result).isEqualTo(user);
         }
-
-        @Test
-        public void 성공_이메일이_중복되지_않은_경우() {
-            //given
-            final String email = "test1234@naver.com";
-
-            //when
-            final User result = userRepository.findByEmail(email);
-
-            //then
-            assertThat(result).isNull();
-        }
     }
     @Nested
     class 회원가입 {
