@@ -274,7 +274,7 @@ class TodoRepositoryTest {
 
         //then
         assertThat(todoList).isNotNull();
-        assertThat(todoList.size()).isEqualTo(4);
+        assertThat(todoList).hasSize(4);
     }
 
     @Test

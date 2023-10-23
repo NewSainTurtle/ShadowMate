@@ -6,7 +6,7 @@ import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/diary/Category";
 import MyPageDday from "./details/diary/Dday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
-import { categoryType, ddayType } from "@util/planner.interface";
+import { CategoryConfig, ddayType } from "@util/planner.interface";
 import { CATEGORY_LIST, CATEGORY_COLORS } from "@util/data/CategoryData";
 import { DDAY_LIST } from "@util/data/DdayData";
 
@@ -16,14 +16,14 @@ interface Props {
 
 export interface EditInfoConfig {
   type: string;
-  info: categoryType | ddayType | null;
+  info: CategoryConfig | ddayType | null;
   clicked: number;
 }
 
 const MyPageFrame = ({ title }: Props) => {
   /* 카테고리 관련 변수 */
-  const [categoryList, setCategoryList] = useState<categoryType[]>(CATEGORY_LIST);
-  const [categoryInput, setCategoryInput] = useState<categoryType>({
+  const [categoryList, setCategoryList] = useState<CategoryConfig[]>(CATEGORY_LIST);
+  const [categoryInput, setCategoryInput] = useState<CategoryConfig>({
     categoryId: 0,
     categoryTitle: categoryList[0].categoryTitle,
     categoryEmoticon: categoryList[0].categoryEmoticon,
@@ -49,7 +49,7 @@ const MyPageFrame = ({ title }: Props) => {
 
   const handleAdd = (title: string) => {
     if (title === "카테고리") {
-      const newCategory: categoryType = {
+      const newCategory: CategoryConfig = {
         categoryId: category_nextId.current,
         categoryTitle: "새 카테고리",
         categoryEmoticon: "",

@@ -4,6 +4,8 @@ import com.newsainturtle.shadowmate.config.jwt.JwtException;
 import com.newsainturtle.shadowmate.config.jwt.JwtAuthenticationFilter;
 import com.newsainturtle.shadowmate.config.jwt.JwtAuthorizationFilter;
 import com.newsainturtle.shadowmate.config.jwt.JwtProvider;
+import com.newsainturtle.shadowmate.config.oauth.OAuth2LoginSuccessHandler;
+import com.newsainturtle.shadowmate.config.oauth.PrincipalOauth2UserService;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +31,13 @@ public class SecurityConfig {
 
     private final JwtException jwtException;
 
+    private final PrincipalOauth2UserService principalOauth2UserService;
+
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
     private static final String[] PERMIT_ALL_URL_ARRAY = {
-            "/api/auth/**"
+            "/api/auth/**",
+            "/api/oauth/**"
     };
 
     @Bean
@@ -43,6 +50,14 @@ public class SecurityConfig {
                 .apply(new CustomFilter())
                 .and()
                 .exceptionHandling().authenticationEntryPoint(jwtException)
+                .and()
+                .oauth2Login()
+                .authorizationEndpoint()
+                .baseUri("/api/oauth/")
+                .and()
+                .userInfoEndpoint().userService(principalOauth2UserService)
+                .and()
+                .successHandler(oAuth2LoginSuccessHandler)
                 .and()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(PERMIT_ALL_URL_ARRAY).permitAll()
@@ -61,7 +76,7 @@ public class SecurityConfig {
             jwtAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
             http.addFilter(corsFilter)
                     .addFilter(jwtAuthenticationFilter)
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository,jwtProvider));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, jwtProvider));
         }
     }
 }

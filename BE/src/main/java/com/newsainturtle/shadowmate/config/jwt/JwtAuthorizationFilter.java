@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -28,7 +29,20 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String[] excludePath = {
+                "/api/auth/join",
+                "/api/auth/login",
+        };
+        String path = request.getRequestURI();
+        return Arrays.stream(excludePath).anyMatch(path::startsWith);
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if(request.getRequestURI().equals("/favicon.ico")) {
+            return;
+        }
         if(!jwtProvider.validateHeader(request)) {
             chain.doFilter(request, response);
             return;
@@ -36,9 +50,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String email = jwtProvider.validateToken(request);
         if (email != null) {
             User userEntity = userRepository.findByEmail(email);
-
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
-
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
