@@ -81,7 +81,7 @@ class TodoRepositoryTest {
                 .build());
 
         //when
-        final long count = todoRepository.countByCategory(category);
+        final Long count = todoRepository.countByCategory(category);
 
         //then
         assertThat(count).isNotNull();
@@ -105,7 +105,7 @@ class TodoRepositoryTest {
                 .build());
 
         //when
-        final long count = todoRepository.countByCategory(category);
+        final Long count = todoRepository.countByCategory(category);
 
         //then
         assertThat(count).isNotNull();
