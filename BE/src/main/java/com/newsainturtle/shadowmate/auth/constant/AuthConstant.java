@@ -10,4 +10,6 @@ public class AuthConstant {
     public static final String SUCCESS_JOIN = "회원가입이 완료되었습니다.";
 
     public static final String SUCCESS_NICKNAME_CHECK = "닉네임이 사용가능합니다.";
+
+    public static final String SUCCESS_LOGIN = "로그인이 완료되었습니다.";
 }
