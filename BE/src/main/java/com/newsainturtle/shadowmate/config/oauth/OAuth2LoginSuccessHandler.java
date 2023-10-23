@@ -27,52 +27,25 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     @Override
     protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        //super.handle(request, response, authentication);
-
-        String tagetUrl = request.getServletPath();
-        System.out.println("tagetUrl = " + tagetUrl);
-
-//        RequestDispatcher requestDispatcher = request.getRequestDispatcher(tagetUrl);
-
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(determineTargetUrl(request, response, authentication));
         request.setCharacterEncoding("UTF-8");
-        request.setAttribute("name","test");
-
-        System.out.println("response = " + response.getHeader("Authorization"));
         response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
-
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/api/auth/google");
         requestDispatcher.forward(request,response);
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("request = " + request);
-        System.out.println("response = " + response);
-        System.out.println("authentication = " + authentication.getDetails());
-        System.out.println("authentication = " + authentication.getPrincipal());
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        System.out.println("principalDetails.getUser().getEmail() = " + principalDetails.getUser().getEmail());
-
-
-        String jwtToken = jwtProvider.createToken(principalDetails);
-        jwtProvider.addTokenHeader(response, jwtToken);
-        System.out.println("ADDTK_response = " + response.getHeader("Authorization"));
-
-        //RedirectAttributes redirect = null;
-        //Map<String, String> map = new HashMap<>();
-        //map.put("Authorization", "test");
-        //redirect = redirect.addFlashAttribute("map", map);
-        //getRedirectStrategy().sendRedirect(request,response,"/api/auth/google");
-
-        //this.handle(request,response,authentication);
-        //super.clearAuthenticationAttributes(request);
-        getRedirectStrategy().sendRedirect(request,response,determineTargetUrl(request,response,authentication));
+    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        String tartget = "/api/auth/social-login";
+        return UriComponentsBuilder.fromUriString(tartget)
+                .queryParam("token", response.getHeader("Authorization"))
+                .build().toUriString();
     }
 
-    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String tartget = "/api/auth/google";
-        return UriComponentsBuilder.fromUriString(tartget)
-                .queryParam("token", "1")
-                .build().toUriString();
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        String jwtToken = jwtProvider.createToken(principalDetails);
+        jwtProvider.addTokenHeader(response, jwtToken);
+        this.handle(request,response,authentication);
     }
 }
