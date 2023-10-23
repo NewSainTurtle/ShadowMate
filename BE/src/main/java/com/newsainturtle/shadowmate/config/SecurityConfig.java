@@ -58,7 +58,6 @@ public class SecurityConfig {
                 .userInfoEndpoint().userService(principalOauth2UserService)
                 .and()
                 .successHandler(oAuth2LoginSuccessHandler)
-                //.defaultSuccessUrl("/api/auth/login/google")
                 .and()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(PERMIT_ALL_URL_ARRAY).permitAll()
