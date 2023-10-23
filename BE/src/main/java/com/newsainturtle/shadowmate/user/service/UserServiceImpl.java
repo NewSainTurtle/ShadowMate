@@ -14,6 +14,7 @@ import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -58,13 +59,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        Optional<User> delUser = userRepository.findById(userId);
-        if(!delUser.isPresent()) {
+    public void deleteUser(final Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
         }
-        delUser.ifPresent(user -> user.deleteUser());
-        delUser.ifPresent(user -> user.deleteEntity());
+        User deleteUser = User.builder()
+                .id(user.get().getId())
+                .email(user.get().getEmail())
+                .password(user.get().getPassword())
+                .socialLogin(user.get().getSocialLogin())
+                .profileImage(user.get().getProfileImage())
+                .nickname(user.get().getNickname())
+                .statusMessage(user.get().getStatusMessage())
+                .withdrawal(true)
+                .plannerAccessScope(user.get().getPlannerAccessScope())
+                .createTime(user.get().getCreateTime())
+                .updateTime(user.get().getUpdateTime())
+                .deleteTime(LocalDateTime.now())
+                .build();
+        userRepository.save(deleteUser);
     }
 
     private FollowStatus isFollow(final User user, final User searchUser) {
