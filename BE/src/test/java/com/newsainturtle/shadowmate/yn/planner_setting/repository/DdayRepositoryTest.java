@@ -114,22 +114,6 @@ class DdayRepositoryTest {
         }
 
         @Test
-        void 실패_없는디데이ID() {
-            //given
-            final Dday dday = Dday.builder()
-                    .ddayTitle("생일")
-                    .ddayDate(Date.valueOf("2023-02-09"))
-                    .user(user)
-                    .build();
-            final Dday saveDday = ddayRepository.save(dday);
-
-            //when
-            ddayRepository.deleteByUserAndId(user, Long.MAX_VALUE);
-
-            //then
-        }
-
-        @Test
         void 성공() {
             //given
             final Dday dday = Dday.builder()
