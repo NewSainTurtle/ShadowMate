@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 import { CategoryConfig, DayTodoConfig, TimeTableConfig } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
@@ -54,8 +54,14 @@ const daySlice = createSlice({
     },
     setTimeTable: (state, action: PayloadAction<{ todoId: number; startTime: string; endTime: string }>) => {
       const { todoId, startTime, endTime } = action.payload;
+
+      const tempArr = state.todoList.map((item) => {
+        if (startTime != "" && startTime >= item.timeTable.startTime && endTime <= item.timeTable.endTime) {
+          return { ...item, timeTable: initialState.todoItem.timeTable };
+        } else return item;
+      });
+
       const findIndex = state.todoList.findIndex((item) => item.todoId == todoId);
-      const tempArr = [...state.todoList];
       tempArr[findIndex].timeTable = { ...tempArr[findIndex].timeTable, startTime, endTime };
       state.todoList = tempArr;
     },
