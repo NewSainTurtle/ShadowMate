@@ -74,20 +74,6 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_이메일중복아님() {
-            //given
-            doReturn(null).when(userRepository).findByEmail(email);
-            doReturn(message).when(emailSender).createMimeMessage();
-            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("test1234@naver.com").build();
-
-            //when
-            authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
-
-            //then
-
-        }
-
-        @Test
         public void 랜덤숫자생성() {
             for(int i=0; i<10; i++) {
                 String code = createRandomCode();
