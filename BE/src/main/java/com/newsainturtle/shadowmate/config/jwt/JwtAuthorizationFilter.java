@@ -29,6 +29,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if(request.getRequestURI().equals("/favicon.ico")) {
+            return;
+        }
         if(!jwtProvider.validateHeader(request)) {
             chain.doFilter(request, response);
             return;
@@ -36,9 +39,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String email = jwtProvider.validateToken(request);
         if (email != null) {
             User userEntity = userRepository.findByEmail(email);
-
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
-
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 

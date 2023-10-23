@@ -44,4 +44,9 @@ public class AuthController {
         authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_NICKNAME_CHECK));
     }
+
+    @GetMapping("/social-login")
+    public ResponseEntity<BaseResponse> joinGoogle() {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_LOGIN));
+    }
 }
