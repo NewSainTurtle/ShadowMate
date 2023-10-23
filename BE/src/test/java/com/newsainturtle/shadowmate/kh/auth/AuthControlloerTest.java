@@ -2,7 +2,7 @@ package com.newsainturtle.shadowmate.kh.auth;
 
 import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.controller.AuthController;
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
@@ -66,15 +66,15 @@ public class AuthControlloerTest {
     @Test
     public void 실패_이메일중복() throws Exception {
         //given
-        final String url = "/api/auth/email-certificated";
+        final String url = "/api/auth/email-authentication";
 
-        final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("test1234@naver.com").build();
-        doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL)).when(authServiceImpl).certifyEmail(any());
+        final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("test1234@naver.com").build();
+        doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL)).when(authServiceImpl).sendEmailAuthenticationCode(any());
 
         //when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
-                        .content(gson.toJson(certifyEmailRequest))
+                        .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -85,14 +85,14 @@ public class AuthControlloerTest {
     @Test
     public void 실패_이메일Null() throws Exception {
         //given
-        final String url = "/api/auth/email-certificated";
+        final String url = "/api/auth/email-authentication";
 
-        final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email(null).build();
+        final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email(null).build();
 
         //when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
-                        .content(gson.toJson(certifyEmailRequest))
+                        .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -103,14 +103,14 @@ public class AuthControlloerTest {
     @Test
     public void 실패_이메일형식이아님() throws Exception {
         //given
-        final String url = "/api/auth/email-certificated";
+        final String url = "/api/auth/email-authentication";
 
-        final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("Hi").build();
+        final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("Hi").build();
 
         //when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
-                        .content(gson.toJson(certifyEmailRequest))
+                        .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -121,14 +121,14 @@ public class AuthControlloerTest {
     @Test
     public void 성공_이메일중복아님() throws Exception {
         //given
-        final String url = "/api/auth/email-certificated";
+        final String url = "/api/auth/email-authentication";
 
-        final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("test1234@naver.com").build();
+        final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("test1234@naver.com").build();
 
         //when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
-                        .content(gson.toJson(certifyEmailRequest))
+                        .content(gson.toJson(sendEmailAuthenticationCodeRequest))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 

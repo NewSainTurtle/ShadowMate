@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Test
-    public void 플래너공개여부설정() {
+    void 플래너공개여부설정() {
         //given
         final User user = userRepository.save(User.builder()
                 .email("test@test.com")

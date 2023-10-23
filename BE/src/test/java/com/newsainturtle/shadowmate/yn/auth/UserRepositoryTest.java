@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -32,7 +32,7 @@ public class UserRepositoryTest {
     @Nested
     class 이메일인증 {
         @Test
-        public void 실패_이메일이_중복된_경우() {
+        void 실패_이메일이_중복된_경우() {
             //given
             userRepository.save(user);
 
@@ -40,12 +40,12 @@ public class UserRepositoryTest {
             final User result = userRepository.findByEmail(email);
 
             //then
-            assertThat(result).isNotNull();
-            assertThat(result).isEqualTo(user);
+            assertThat(result).isNotNull()
+                    .isEqualTo(user);
         }
 
         @Test
-        public void 성공_이메일이_중복되지_않은_경우() {
+        void 성공_이메일이_중복되지_않은_경우() {
             //given
 
             //when
@@ -57,9 +57,9 @@ public class UserRepositoryTest {
     }
 
     @Nested
-    class 회원가입{
+    class 회원가입 {
         @Test
-        public void 사용자등록(){
+        void 사용자등록() {
             //given
             userRepository.save(user);
 

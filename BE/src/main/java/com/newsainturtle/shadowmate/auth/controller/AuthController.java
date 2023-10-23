@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.auth.controller;
 
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
+import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
@@ -20,10 +21,16 @@ public class AuthController {
 
     private final AuthService authServiceImpl;
 
-    @PostMapping("/email-certificated")
-    public ResponseEntity<BaseResponse> sendCertificationCode(@RequestBody @Valid final CertifyEmailRequest certifyEmailRequest) {
-        authServiceImpl.certifyEmail(certifyEmailRequest);
-        return ResponseEntity.ok(BaseResponse.from(SEND_CERTIFICATION_CODE));
+    @PostMapping("/email-authentication")
+    public ResponseEntity<BaseResponse> sendEmailAuthenticationCode(@RequestBody @Valid final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest) {
+        authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEND_EMAIL_AUTHENTICATION_CODE));
+    }
+
+    @PostMapping("/email-authentication/check")
+    public ResponseEntity<BaseResponse> checkEmailAuthenticationCode(@RequestBody @Valid final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest) {
+        authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_CHECK_EMAIL_AUTHENTICATION_CODE));
     }
 
     @PostMapping("/join")

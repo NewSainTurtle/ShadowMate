@@ -13,7 +13,6 @@ $color-white: var(--color-white);
 .profile_container {
   height: 7em;
   border: 0.5px solid $color-gray_4;
-  background-color: $color-white;
 }
 
 .fprofile_container {
@@ -29,6 +28,11 @@ $color-white: var(--color-white);
   box-sizing: border-box;
   border-radius: 50%;
   cursor: pointer;
+
+  > div {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .profile_content,

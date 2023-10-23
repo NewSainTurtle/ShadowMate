@@ -1,10 +1,13 @@
 package com.newsainturtle.shadowmate.yn.auth;
 
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
+import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
+import com.newsainturtle.shadowmate.auth.service.RedisService;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -25,13 +28,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+class AuthServiceTest {
 
     @InjectMocks
     private AuthServiceImpl authServiceImpl;
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RedisService redisServiceImpl;
 
     @Mock
     private JavaMailSender mailSender;
@@ -55,51 +61,227 @@ public class AuthServiceTest {
     @Nested
     class 이메일인증 {
         @Test
-        public void 실패_이메일중복() {
+        void 실패_이메일중복() {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
             doReturn(user).when(userRepository).findByEmail(email);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.certifyEmail(certifyEmailRequest));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
         }
 
         @Test
-        public void 성공_이메일중복아님() {
+        void 실패_이미인증된이메일사용() {
             //given
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder()
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
+                    .email(email)
+                    .build();
+            final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                    .code("code127")
+                    .authStatus(true)
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
+        }
+
+        @Test
+        void 성공_이메일중복아님_인증전() {
+            //given
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
+                    .email(email)
+                    .build();
+            final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                    .code("code127")
+                    .authStatus(false)
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(message).when(mailSender).createMimeMessage();
+
+            //when
+            authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
+
+            //then
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(mailSender, times(1)).createMimeMessage();
+        }
+
+        @Test
+        void 성공_이메일중복아님() {
+            //given
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
 
             doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(null).when(redisServiceImpl).getHashEmailData(email);
             doReturn(message).when(mailSender).createMimeMessage();
 
             //when
-            authServiceImpl.certifyEmail(certifyEmailRequest);
+            authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
+
             //then
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(mailSender, times(1)).createMimeMessage();
         }
 
         @Test
-        public void 성공_코드생성() {
+        void 성공_코드생성() {
             //given
 
             //when
             final String code = authServiceImpl.createRandomCode();
 
             //then
-            assertThat(code.length()).isEqualTo(6);
+            assertThat(code).hasSize(6);
         }
+    }
+
+    @Nested
+    class 이메일인증코드확인 {
+        @Test
+        void 실패_이메일중복() {
+            //given
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
+                    .email(email)
+                    .code("code127")
+                    .build();
+            doReturn(user).when(userRepository).findByEmail(email);
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+        }
+
+        @Test
+        void 실패_이메일인증_유효시간지남() {
+            //given
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
+                    .email(email)
+                    .code("code127")
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(null).when(redisServiceImpl).getHashEmailData(email);
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+        }
+
+        @Test
+        void 실패_이미인증된이메일사용() {
+            //given
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
+                    .email(email)
+                    .code("code127")
+                    .build();
+            final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                    .code("code127")
+                    .authStatus(true)
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+        }
+
+        @Test
+        void 실패_이메일인증코드틀림() {
+            //given
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
+                    .email(email)
+                    .code("code1234")
+                    .build();
+            final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                    .code("code127")
+                    .authStatus(false)
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.INVALID_EMAIL_AUTHENTICATION_CODE);
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+        }
+
+        @Test
+        void 성공_이메일인증코드맞춤() {
+            //given
+            final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
+                    .email(email)
+                    .code("code127")
+                    .build();
+            final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                    .code("code127")
+                    .authStatus(false)
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+
+            //when
+            authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest);
+
+            //then
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(any(String.class));
+            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+        }
+
     }
 
     @Nested
     class 회원가입 {
         @Test
-        public void 실패_이메일중복() {
+        void 실패_이메일중복() {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
@@ -120,7 +302,7 @@ public class AuthServiceTest {
         }
 
         @Test
-        public void 성공_회원가입() {
+        void 성공_회원가입() {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
@@ -155,7 +337,7 @@ public class AuthServiceTest {
                 .build();
 
         @Test
-        public void 실패_없는사용자() {
+        void 실패_없는사용자() {
             //given
             final Long userId = 2L;
 
@@ -165,17 +347,7 @@ public class AuthServiceTest {
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNREGISTERED_USER);
         }
-
-        @Test
-        public void 성공_없는사용자() {
-            //given
-            final Long userId = 1L;
-
-            //when
-            authServiceImpl.certifyUser(userId, user);
-
-            //then
-        }
+        
     }
 
 }

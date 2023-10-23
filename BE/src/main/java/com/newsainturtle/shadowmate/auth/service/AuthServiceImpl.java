@@ -1,12 +1,12 @@
 package com.newsainturtle.shadowmate.auth.service;
 
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
+import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
+import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
-import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
-import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -33,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RedisService redisServiceImpl;
 
     @Value("${spring.mail.username}")
     private String serverEmail;
@@ -45,15 +46,52 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void certifyEmail(final CertifyEmailRequest certifyEmailRequest) {
-        String email = certifyEmailRequest.getEmail();
+    @Transactional
+    public void sendEmailAuthenticationCode(final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest) {
+        final String email = sendEmailAuthenticationCodeRequest.getEmail();
         checkDuplicatedEmail(email);
 
+        final String code = createRandomCode();
+        final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                .code(code)
+                .authStatus(false)
+                .build();
+
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        if (findEmailAuth != null && findEmailAuth.isAuthStatus()) {
+            throw new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
+        }
+        redisServiceImpl.setHashEmailData(email, emailAuth);
+
         try {
-            mailSender.send(createMessage(email));
+            mailSender.send(createMessage(email, code));
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new AuthException(AuthErrorResult.FAIL_SEND_EMAIL);
         }
+    }
+
+    @Override
+    @Transactional
+    public void checkEmailAuthenticationCode(final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest) {
+        final String email = checkEmailAuthenticationCodeRequest.getEmail();
+        checkDuplicatedEmail(email);
+
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        if (findEmailAuth == null) {
+            throw new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
+        } else if (findEmailAuth.isAuthStatus()) {
+            throw new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
+        }
+
+        if (!findEmailAuth.getCode().equals(checkEmailAuthenticationCodeRequest.getCode())) {
+            throw new AuthException(AuthErrorResult.INVALID_EMAIL_AUTHENTICATION_CODE);
+        }
+
+        final EmailAuthentication emailAuth = EmailAuthentication.builder()
+                .code(findEmailAuth.getCode())
+                .authStatus(true)
+                .build();
+        redisServiceImpl.setHashEmailData(email, emailAuth);
     }
 
     @Override
@@ -89,8 +127,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    public MimeMessage createMessage(final String email) throws MessagingException, UnsupportedEncodingException {
-        String code = createRandomCode();
+    public MimeMessage createMessage(final String email, final String code) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(Message.RecipientType.TO, email);
         message.setSubject("ShadowMate 회원가입 인증 코드");
