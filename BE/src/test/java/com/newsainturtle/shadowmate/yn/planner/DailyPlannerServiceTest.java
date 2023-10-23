@@ -1305,7 +1305,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isZero();
+            assertThat(searchCalendarResponse.getDayList()).isEmpty();
         }
 
         @Test
@@ -1329,7 +1329,7 @@ class DailyPlannerServiceTest {
             //then
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
-            assertThat(searchCalendarResponse.getDayList().size()).isZero();
+            assertThat(searchCalendarResponse.getDayList()).isEmpty();
         }
 
         @Test
