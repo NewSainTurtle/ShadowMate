@@ -1,3 +1,9 @@
+export interface MonthType {
+  date: string;
+  todoCount: number;
+  dayStatus: number;
+}
+
 export interface categoryType {
   categoryId: number;
   categoryColorCode: string;
@@ -13,10 +19,6 @@ export interface todoType {
   todoStatus: 0 | 1 | 2; // none, O, X
 }
 
-export interface todoListType extends todoType {
-  isPossible?: boolean;
-}
-
 /* --- Week Interfaces --- */
 
 export interface WeekTodoItemConfig {
@@ -30,4 +32,10 @@ export interface TodoItemConfig {
   todoStatus: boolean;
   categoryEmoticon?: string;
   todoUpdate: boolean;
+}
+
+export interface ddayType {
+  ddayId: number;
+  ddayDate: Date | string;
+  ddayTitle: string;
 }

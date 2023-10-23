@@ -1,0 +1,491 @@
+$color-text: var(--color-text);
+$color-background: var(--color-background);
+$color-gray-1: var(--color-gray-1);
+$color-gray-2: var(--color-gray-2);
+$color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
+$color-blue: var(--color-btn-blue);
+$color-warning: var(--color-warning);
+
+.mypage {
+  &__container {
+    display: grid;
+    grid-template-rows: 2fr 8fr;
+    height: 100%;
+  }
+
+  &__profile {
+    margin: auto 2em;
+  }
+
+  &__setting {
+    display: inline-flex;
+    margin: 0 1em 1em 1em;
+    overflow: auto;
+  }
+
+  &__contents {
+    width: 100%;
+    overflow: auto;
+  }
+}
+
+.frame {
+  display: grid;
+  grid-template-columns: 3.5fr 7.5fr;
+  gap: 1em;
+  height: 100%;
+
+  &__container {
+    position: relative;
+    height: 100%;
+  }
+
+  &__title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    border-bottom: 1px solid $color-text;
+  }
+
+  &__list {
+    position: absolute;
+    height: calc(100% - 120px - 1px);
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  &__button {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 60px;
+    border-top: 1px solid $color-text;
+    > div {
+      display: flex;
+      align-items: center;
+      > svg {
+        font-size: medium;
+        padding: 0.5em;
+      }
+    }
+
+    &--add,
+    &--save,
+    &--delete {
+      cursor: pointer;
+    }
+
+    &--delete {
+      color: $color-warning;
+      &--disable {
+        @extend .frame__button--delete;
+        color: $color-gray-4;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &__contents {
+    position: relative;
+    padding: 3em;
+    box-sizing: border-box;
+  }
+
+  &__line {
+    display: grid;
+    grid-template-columns: 2fr 8fr;
+    align-items: center;
+    margin-bottom: 2em;
+
+    > input {
+      height: 100%;
+    }
+
+    & + #date {
+      display: grid;
+      grid-template-columns: 2fr 7.5fr 0.5fr;
+
+      > svg {
+        justify-self: center;
+        font-size: medium;
+        fill: $color-text;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.date {
+  &__picker {
+    position: absolute;
+    right: 2em;
+    top: 10em;
+    > svg,
+    span,
+    button {
+      color: $color-text;
+    }
+  }
+}
+
+.diary {
+  &__container {
+    height: 100%;
+    padding: 0 1em;
+    box-sizing: border-box;
+  }
+
+  &__contents {
+    position: relative;
+    height: 100%;
+  }
+
+  &__line {
+    display: inline-flex;
+    margin-left: 3em;
+    padding-top: 1em;
+    > span:nth-child(1) {
+      margin-right: 6em;
+    }
+    > div:nth-child(2) > span {
+      color: $color-gray-5;
+    }
+  }
+
+  &__button {
+    @extend .frame__button;
+
+    &--save {
+      @extend .frame__button--save;
+    }
+  }
+
+  &__modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2em;
+    > :nth-child(1),
+    > :nth-child(2) {
+      color: $color-warning;
+    }
+    > :nth-child(2) {
+      margin-top: 0.5em;
+      text-align: center;
+    }
+    > :nth-child(3) {
+      margin-top: 1.5em;
+    }
+    > div:nth-child(4) {
+      display: flex;
+      width: 100%;
+      margin-top: 2em;
+      background-color: $color-gray-1;
+      > div {
+        width: 100%;
+        height: 100%;
+        padding: 1em 0;
+        box-sizing: border-box;
+        text-align: center;
+        cursor: pointer;
+        &:nth-child(2) {
+          background-color: $color-blue;
+        }
+      }
+    }
+  }
+}
+
+.category {
+  &__item {
+    display: grid;
+    grid-template-columns: 1fr 8fr 1fr;
+    align-items: center;
+    height: 3.5em;
+    padding: 0 1em;
+    box-sizing: border-box;
+    border-bottom: 0.5px solid $color-gray-2;
+    cursor: pointer;
+    > div:nth-child(1) {
+      justify-items: center;
+    }
+    > div:nth-child(3) {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+    }
+
+    &--clicked {
+      @extend .category__item;
+      background-color: $color-gray-1;
+    }
+  }
+}
+
+.color {
+  &__container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    justify-items: center;
+    gap: 1em;
+  }
+
+  &__item {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    padding: 1px;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &--clicked {
+      @extend .color__item;
+      outline: 1px solid $color-text;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.emoji {
+  position: absolute;
+  bottom: 90;
+  height: 22em;
+  z-index: 100;
+}
+
+.dday {
+  &__item {
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    align-items: center;
+    height: 4em;
+    padding: 0 1em;
+    box-sizing: border-box;
+    border-bottom: 0.5px solid $color-gray-2;
+    cursor: pointer;
+
+    > div:nth-child(2) {
+      text-align: end;
+    }
+
+    &--today {
+      > span {
+        color: $color-warning;
+      }
+    }
+
+    &--plus {
+      > span {
+        color: $color-gray-4;
+      }
+    }
+
+    &__title {
+      display: flex;
+      flex-direction: column;
+      > span:nth-child(2) {
+        color: $color-gray-4;
+      }
+    }
+
+    &--clicked {
+      @extend .dday__item;
+      background-color: $color-gray-1;
+    }
+  }
+}
+
+.tab {
+  height: 100%;
+  width: 10em;
+  margin-right: 1em;
+
+  &__title {
+    > input {
+      display: none;
+      & + label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 3em;
+        padding-left: 1em;
+        box-sizing: border-box;
+        background-color: $color-gray-2;
+        & + div {
+          margin: 0.2em 0;
+          // 탭 아코디언 동작 시 사용됨.
+          // max-height: 0;
+          // transition: all 0.25s;
+          overflow: hidden;
+          cursor: pointer;
+        }
+      }
+
+      &:checked + label + div {
+        max-height: 6.2em;
+      }
+    }
+
+    &--clicked {
+      @extend .tab__title;
+      > input + label {
+        background-color: $color-blue;
+      }
+    }
+  }
+
+  &__contents {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: $color-background;
+    > div {
+      padding: 0.5em 1.5em;
+      box-sizing: border-box;
+      &:hover {
+        font-weight: 800; // 왜 안먹지
+      }
+    }
+  }
+}
+
+.radio {
+  margin: 1em 0.2em;
+
+  &__label > span {
+    display: flex;
+    align-items: center;
+    > svg {
+      margin-right: 0.2em;
+    }
+  }
+}
+
+.info {
+  &__cantainer {
+    display: grid;
+    height: 100%;
+    grid-template-rows: 1fr min-content;
+    padding: 1em;
+    box-sizing: border-box;
+  }
+
+  &__contents {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 3em;
+    padding: 0.5em 0em 2em 0em;
+    box-sizing: border-box;
+
+    > :last-child {
+      color: $color-warning;
+      > span {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__line {
+    display: grid;
+    grid-template-columns: 2fr 8fr;
+    column-gap: 5em;
+    align-items: center;
+
+    > div:nth-child(1) {
+      height: 100%;
+      padding-top: 0.5em;
+      box-sizing: border-box;
+    }
+  }
+
+  &__button {
+    @extend .frame__button;
+    position: static;
+
+    &--save {
+      @extend .frame__button--save;
+    }
+  }
+
+  &__profile {
+    &--nickname {
+      display: flex;
+      width: 100%;
+      gap: 0.1em;
+      align-items: baseline;
+
+      > :nth-child(2) {
+        width: 20%;
+      }
+    }
+
+    &--img {
+      > input[type="file"] {
+        display: none;
+      }
+
+      > label {
+        display: inline-block;
+        > :nth-child(1) {
+          width: 60px;
+          height: 60px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    &--password {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+  }
+}
+
+.friend {
+  &__cantainer {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-right: 1em;
+    overflow-y: auto;
+  }
+
+  &__content {
+    overflow-y: auto;
+    padding-right: 1em;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+  }
+
+  &__frame {
+    &__title {
+      padding: 1em;
+      box-sizing: border-box;
+      border-bottom: 1px solid $color-text;
+      margin-bottom: 1em;
+    }
+
+    &__list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 1em;
+      > span {
+        margin: 3em 0em;
+        text-align: center;
+        color: $color-gray-4;
+      }
+    }
+  }
+}

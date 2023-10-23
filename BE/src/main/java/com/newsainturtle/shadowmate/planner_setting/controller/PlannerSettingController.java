@@ -3,7 +3,7 @@ package com.newsainturtle.shadowmate.planner_setting.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.planner_setting.dto.*;
+import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +28,15 @@ public class PlannerSettingController {
                                                     @RequestBody @Valid final AddCategoryRequest addCategoryRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY, plannerSettingServiceImpl.addCategory(principalDetails.getUser(), addCategoryRequest)));
+    }
+
+    @DeleteMapping("/{userId}/categories")
+    public ResponseEntity<BaseResponse> removeCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final RemoveCategoryRequest removeCategoryRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.removeCategory(principalDetails.getUser(), removeCategoryRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_CATEGORY));
     }
 
     @PutMapping("/{userId}/categories")

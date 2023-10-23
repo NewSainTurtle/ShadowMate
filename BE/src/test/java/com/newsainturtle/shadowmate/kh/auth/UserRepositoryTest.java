@@ -31,10 +31,10 @@ public class UserRepositoryTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final User user = User.builder()
-            .email("aa@test.com")
+            .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
-            .nickname("닉네임임")
+            .nickname("거북이1")
             .withdrawal(false)
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
@@ -53,7 +53,7 @@ public class UserRepositoryTest {
             //given
             userRepository.save(user);
 
-            final String email = "aa@test.com";
+            final String email = "test1@test.com";
 
             //when
             final User result = userRepository.findByEmail(email);

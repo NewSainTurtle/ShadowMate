@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +23,29 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     final User user = User.builder()
-            .email("aa@test.com")
+            .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
-            .nickname("닉네임임")
+            .nickname("거북이1")
             .withdrawal(false)
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
+    Long userId;
+
+
+    @BeforeEach
+    public void init() {
+        userId = userRepository.save(user).getId();
+    }
 
     @Nested
     class 프로필TEST {
 
         @Test
         void 실패_프로필조회() {
-            final Long userId = 1L;
             // given
+            userId += 1L;
 
             // when
             final Optional<User> userEntity = userRepository.findById(userId);
@@ -49,8 +57,6 @@ public class UserRepositoryTest {
         @Test
         void 성공_프로필조회() {
             // given
-            final User userResponse = userRepository.save(user);
-            final Long userId = userResponse.getId();
 
             // when
             final User userEntity = userRepository.findById(userId).get();
@@ -63,6 +69,32 @@ public class UserRepositoryTest {
             assertThat(userEntity.getStatusMessage()).isEqualTo(user.getStatusMessage());
             assertThat(userEntity.getProfileImage()).isEqualTo(user.getProfileImage());
 
+        }
+    }
+
+    @Nested
+    class 회원TEST {
+
+        @Test
+        void 실패_회원없음() {
+            // given
+
+            // when
+            final User result = userRepository.findByNickname("거북이234567");
+
+            // then
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void 성공_회원검색() {
+            // given
+
+            // when
+            final User result = userRepository.findByNickname(user.getNickname());
+
+            // then
+            assertThat(result.getNickname()).isEqualTo(user.getNickname());
         }
     }
 }
