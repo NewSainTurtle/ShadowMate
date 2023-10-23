@@ -1,9 +1,12 @@
 package com.newsainturtle.shadowmate.kh.user;
 
 import com.google.gson.Gson;
+import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
+import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
+import com.newsainturtle.shadowmate.user.constant.UserConstant;
 import com.newsainturtle.shadowmate.user.controller.UserController;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -24,9 +27,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.newsainturtle.shadowmate.user.constant.UserConstant.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -148,5 +153,34 @@ public class UserControllerTest {
             // then
             resultActions.andExpect(status().isOk());
         }
+
+        @Test
+        void 실패_회원탈퇴_유저틀림() throws Exception {
+            //given
+            final String url = "/api/users/{userId}";
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId));
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 성공_회원탈퇴() throws Exception {
+            //given
+            final String url = "/api/users/{userId}";
+            
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId));
+            
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(SUCCESS_DELETE_USER));
+        }
+        
     }
 }

@@ -36,4 +36,12 @@ public class UserController {
         return ResponseEntity.ok(BaseResponse.from(
                 SUCCESS_SEARCH_NICKNAME, userService.searchNickname(principalDetails.getUser(), nickname)));
     }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<BaseResponse> deleteUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        userService.deleteUser(userId);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_USER));
+    }
 }
