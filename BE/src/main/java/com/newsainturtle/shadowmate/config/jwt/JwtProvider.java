@@ -46,7 +46,6 @@ public class JwtProvider {
         if (jwtHeader == null || !jwtHeader.startsWith(PREFIX)) {
             request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN);
-            //return false;
         }
         return true;
     }
