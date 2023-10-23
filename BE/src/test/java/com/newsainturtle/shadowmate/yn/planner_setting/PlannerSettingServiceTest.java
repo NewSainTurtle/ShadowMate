@@ -385,7 +385,7 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(ddayListResponse.getDdayList()).isNotNull();
-                assertThat(ddayListResponse.getDdayList().size()).isEqualTo(0);
+                assertThat(ddayListResponse.getDdayList()).isEmpty();
             }
 
             @Test

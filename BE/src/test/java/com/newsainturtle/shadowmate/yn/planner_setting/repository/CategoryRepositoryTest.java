@@ -84,7 +84,7 @@ class CategoryRepositoryTest {
 
             //then
             assertThat(categoryList).isNotNull();
-            assertThat(categoryList.size()).isEqualTo(0);
+            assertThat(categoryList).isEmpty();
         }
 
         @Test
