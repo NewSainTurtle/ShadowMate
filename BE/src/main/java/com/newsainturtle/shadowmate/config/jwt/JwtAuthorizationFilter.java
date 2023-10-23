@@ -29,40 +29,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("JwtAuthorizationFilter.doFilterInternal");
-        System.out.println("request = " + request.getHeader("Authorization"));
-        System.out.println("response = " + response.getHeader("Authorization"));
-        System.out.println(response);
-
-        System.out.println("request Test = " + request.getParameter("token"));
-
-
-        if(request.getRequestURI().equals("/api/auth/google")) {
-            System.out.println(" = " + "여기");
+        if(request.getRequestURI().equals("/favicon.ico")) {
+            return;
+        }
+        if(!jwtProvider.validateHeader(request)) {
             chain.doFilter(request, response);
             return;
-            //super.doFilterInternal(request, response, chain);
         }
-        else {
-            System.out.println("?여긴?");
-            if(!jwtProvider.validateHeader(request)) {
-                System.out.println("?여긴?request");
-                chain.doFilter(request, response);
-                return;
-            }
-            String email = jwtProvider.validateToken(request);
-            System.out.println("email = " + email);
-            if (email != null) {
-                User userEntity = userRepository.findByEmail(email);
+        String email = jwtProvider.validateToken(request);
+        if (email != null) {
+            User userEntity = userRepository.findByEmail(email);
+            PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
-
-                Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                chain.doFilter(request, response);
-            }
+            chain.doFilter(request, response);
         }
-        System.out.println("다시실행?");
     }
 }
