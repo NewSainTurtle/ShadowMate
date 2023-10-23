@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum PlannerErrorResult implements BaseErrorResult {
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리가 유효하지 않습니다."),
-    INVALID_DAILY_PLANNER(HttpStatus.BAD_REQUEST, "플래너가 유효하지 않습니다."),
+    INVALID_DAILY_PLANNER(HttpStatus.BAD_REQUEST, "일일 플래너가 유효하지 않습니다."),
+    INVALID_WEEKLY_PLANNER(HttpStatus.BAD_REQUEST, "주간 플래너가 유효하지 않습니다."),
     INVALID_TODO(HttpStatus.BAD_REQUEST, "플래너의 할일이 유효하지 않습니다."),
     INVALID_TODO_STATUS(HttpStatus.BAD_REQUEST, "플래너의 할일 상태가 유효하지 않습니다."),
     ALREADY_ADDED_LIKE(HttpStatus.BAD_REQUEST, "이미 좋아요를 눌렀습니다."),
