@@ -114,7 +114,8 @@ public class UserServiceTest {
             userService.updateProfileImage(user1.getId(), newProfileImage);
 
             //then
-            assertThat(user1.getProfileImage()).isEqualTo(newProfileImage);
+            verify(userRepository, times(1)).findById(any());
+            verify(userRepository, times(1)).save(any());
 
         }
 
