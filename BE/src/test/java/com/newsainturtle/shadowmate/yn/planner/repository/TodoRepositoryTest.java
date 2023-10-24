@@ -52,8 +52,8 @@ class TodoRepositoryTest {
     @BeforeEach
     void init() {
         user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)

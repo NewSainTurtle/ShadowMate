@@ -48,25 +48,32 @@ class AuthServiceTest {
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private final String email = "test@test.com";
+    private final String email = "yntest@shadowmate.com";
+    private final String password = "yntest1234";
+    private final String nickname = "거북이";
+    private final SocialType socialType = SocialType.BASIC;
+    private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
+    private final String code = "code127";
     private final User user = User.builder()
-            .email("test@test.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
-            .nickname("거북이")
-            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .id(1L)
+            .email(email)
+            .password(password)
+            .socialLogin(socialType)
+            .nickname(nickname)
+            .plannerAccessScope(plannerAccessScope)
             .withdrawal(false)
             .build();
 
     @Nested
     class 이메일인증 {
+
         @Test
         void 실패_이메일중복() {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
-            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
@@ -82,11 +89,11 @@ class AuthServiceTest {
                     .email(email)
                     .build();
             final EmailAuthentication emailAuth = EmailAuthentication.builder()
-                    .code("code127")
+                    .code(code)
                     .authStatus(true)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -103,7 +110,7 @@ class AuthServiceTest {
                     .email(email)
                     .build();
             final EmailAuthentication emailAuth = EmailAuthentication.builder()
-                    .code("code127")
+                    .code(code)
                     .authStatus(false)
                     .build();
 
@@ -163,9 +170,9 @@ class AuthServiceTest {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
-                    .code("code127")
+                    .code(code)
                     .build();
-            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
@@ -182,10 +189,10 @@ class AuthServiceTest {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
-                    .code("code127")
+                    .code(code)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
             doReturn(null).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -204,14 +211,14 @@ class AuthServiceTest {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
-                    .code("code127")
+                    .code(code)
                     .build();
             final EmailAuthentication emailAuth = EmailAuthentication.builder()
-                    .code("code127")
+                    .code(code)
                     .authStatus(true)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -233,7 +240,7 @@ class AuthServiceTest {
                     .code("code1234")
                     .build();
             final EmailAuthentication emailAuth = EmailAuthentication.builder()
-                    .code("code127")
+                    .code(code)
                     .authStatus(false)
                     .build();
 
@@ -256,14 +263,14 @@ class AuthServiceTest {
             //given
             final CheckEmailAuthenticationCodeRequest checkEmailAuthenticationCodeRequest = CheckEmailAuthenticationCodeRequest.builder()
                     .email(email)
-                    .code("code127")
+                    .code(code)
                     .build();
             final EmailAuthentication emailAuth = EmailAuthentication.builder()
-                    .code("code127")
+                    .code(code)
                     .authStatus(false)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -285,10 +292,10 @@ class AuthServiceTest {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
-                    .nickname("테스트중")
-                    .password("test1234")
+                    .nickname(nickname)
+                    .password(password)
                     .build();
-            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.join(joinRequest));
@@ -306,11 +313,11 @@ class AuthServiceTest {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
-                    .nickname("테스트중")
-                    .password("test1234")
+                    .nickname(nickname)
+                    .password(password)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
             doReturn(null).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -329,15 +336,15 @@ class AuthServiceTest {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
-                    .nickname("테스트중")
-                    .password("test1234")
+                    .nickname(nickname)
+                    .password(password)
                     .build();
             final EmailAuthentication emailAuthentication = EmailAuthentication.builder()
                     .authStatus(false)
-                    .code("123456")
+                    .code(code)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
             doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -356,15 +363,15 @@ class AuthServiceTest {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
-                    .nickname("테스트중")
-                    .password("test1234")
+                    .nickname(nickname)
+                    .password(password)
                     .build();
             final EmailAuthentication emailAuthentication = EmailAuthentication.builder()
                     .authStatus(true)
-                    .code("123456")
+                    .code(code)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
             doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
             doReturn(user).when(userRepository).save(any(User.class));
 
@@ -383,15 +390,6 @@ class AuthServiceTest {
 
     @Nested
     class 사용자인증 {
-        private final User user = User.builder()
-                .id(1L)
-                .email("test@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
-                .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                .withdrawal(false)
-                .build();
 
         @Test
         void 실패_없는사용자() {

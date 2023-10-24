@@ -42,13 +42,13 @@ class TimeTableRepositoryTest {
     private User user;
     private DailyPlanner dailyPlanner;
     private Todo todo;
-    final private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @BeforeEach
     void init() {
         user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)

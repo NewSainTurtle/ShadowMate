@@ -22,24 +22,23 @@ class UserRepositoryTest {
     void 플래너공개여부설정() {
         //given
         final User user = userRepository.save(User.builder()
-                .email("test@test.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
                 .withdrawal(false)
                 .build());
 
-        final User findUser = userRepository.findById(user.getId()).orElse(null);
         final User changeUser = User.builder()
-                .id(findUser.getId())
-                .email(findUser.getEmail())
-                .password(findUser.getPassword())
-                .socialLogin(findUser.getSocialLogin())
-                .nickname(findUser.getNickname())
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .socialLogin(user.getSocialLogin())
+                .nickname(user.getNickname())
                 .plannerAccessScope(PlannerAccessScope.FOLLOW)
-                .withdrawal(findUser.getWithdrawal())
-                .createTime(findUser.getCreateTime())
+                .withdrawal(user.getWithdrawal())
+                .createTime(user.getCreateTime())
                 .build();
         userRepository.save(changeUser);
 
