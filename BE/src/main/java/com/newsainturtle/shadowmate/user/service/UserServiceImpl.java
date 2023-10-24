@@ -66,7 +66,21 @@ public class UserServiceImpl implements UserService {
         if(!oldUser.isPresent()) {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
         }
-        oldUser.ifPresent(user -> user.updateProfileImage(newProfileImage));
+        User newUser = User.builder()
+                .id(oldUser.get().getId())
+                .email(oldUser.get().getEmail())
+                .password(oldUser.get().getPassword())
+                .socialLogin(oldUser.get().getSocialLogin())
+                .profileImage(newProfileImage)
+                .nickname(oldUser.get().getNickname())
+                .statusMessage(oldUser.get().getStatusMessage())
+                .withdrawal(oldUser.get().getWithdrawal())
+                .plannerAccessScope(oldUser.get().getPlannerAccessScope())
+                .createTime(oldUser.get().getCreateTime())
+                .updateTime(oldUser.get().getUpdateTime())
+                .deleteTime(oldUser.get().getDeleteTime())
+                .build();
+        userRepository.save(newUser);
     }
 
     private FollowStatus isFollow(final User user, final User searchUser) {
