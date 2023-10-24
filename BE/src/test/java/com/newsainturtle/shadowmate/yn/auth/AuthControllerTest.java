@@ -468,6 +468,48 @@ class AuthControllerTest {
         }
 
         @Test
+        void 실패_임시이메일_타임아웃() throws Exception {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email("test1234@naver.com")
+                    .password("test1234")
+                    .nickname("테스트중")
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT)).when(authServiceImpl).join(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .content(gson.toJson(joinRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_임시이메일_인증안됨() throws Exception {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email("test1234@naver.com")
+                    .password("test1234")
+                    .nickname("테스트중")
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.UNAUTHENTICATED_EMAIL)).when(authServiceImpl).join(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .content(gson.toJson(joinRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
         void 성공_회원가입() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
