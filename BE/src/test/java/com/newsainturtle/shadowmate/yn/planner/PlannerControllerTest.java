@@ -1116,126 +1116,6 @@ class PlannerControllerTest {
             }
 
             @Test
-            void 실패_올바르지않은시작날짜형식() throws Exception {
-                //given
-                final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
-                        .startDate("2023.10.09")
-                        .endDate(endDay)
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_올바르지않은끝날짜형식() throws Exception {
-                //given
-                final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
-                        .startDate(startDay)
-                        .endDate("2023.10.15")
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_할일내용_길이초과() throws Exception {
-                //given
-                final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoContent("012345678901234567890123456789012345678901234567891")
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_시작날짜Null() throws Exception {
-                //given
-                final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
-                        .startDate(null)
-                        .endDate(endDay)
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_끝날짜Null() throws Exception {
-                //given
-                final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
-                        .startDate(startDay)
-                        .endDate(null)
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_할일내용Null() throws Exception {
-                //given
-                final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoContent(null)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
             void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
                 //given
                 final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
@@ -1322,153 +1202,6 @@ class PlannerControllerTest {
 
                 //then
                 resultActions.andExpect(status().isForbidden());
-            }
-
-            @Test
-            void 실패_올바르지않은시작날짜형식() throws Exception {
-                //given
-                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
-                        .startDate("2023.10.09")
-                        .endDate(endDay)
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .weeklyTodoId(weeklyTodoId)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoContentRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_올바르지않은끝날짜형식() throws Exception {
-                //given
-                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
-                        .startDate(startDay)
-                        .endDate("2023.10.15")
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .weeklyTodoId(weeklyTodoId)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoContentRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_할일내용_길이초과() throws Exception {
-                //given
-                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoContent("012345678901234567890123456789012345678901234567891")
-                        .weeklyTodoId(weeklyTodoId)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoContentRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_시작날짜Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
-                        .startDate(null)
-                        .endDate(endDay)
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .weeklyTodoId(weeklyTodoId)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoContentRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_끝날짜Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
-                        .startDate(startDay)
-                        .endDate(null)
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .weeklyTodoId(weeklyTodoId)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoContentRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_할일내용Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoContent(null)
-                        .weeklyTodoId(weeklyTodoId)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoContentRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_할일ID_Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoContent(weeklyTodoContent)
-                        .weeklyTodoId(null)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoContentRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
             }
 
             @Test
@@ -1580,6 +1313,7 @@ class PlannerControllerTest {
                     .weeklyTodoId(weeklyTodoId)
                     .weeklyTodoStatus(true)
                     .build();
+
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
@@ -1595,132 +1329,6 @@ class PlannerControllerTest {
 
                 //then
                 resultActions.andExpect(status().isForbidden());
-            }
-
-            @Test
-            void 실패_올바르지않은시작날짜형식() throws Exception {
-                //given
-                final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
-                        .startDate("2023.10.09")
-                        .endDate(endDay)
-                        .weeklyTodoId(weeklyTodoId)
-                        .weeklyTodoStatus(true)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoStatusRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_올바르지않은끝날짜형식() throws Exception {
-                //given
-                final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
-                        .startDate(startDay)
-                        .endDate("2023.10.15")
-                        .weeklyTodoId(weeklyTodoId)
-                        .weeklyTodoStatus(true)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoStatusRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_시작날짜Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
-                        .startDate(null)
-                        .endDate(endDay)
-                        .weeklyTodoId(weeklyTodoId)
-                        .weeklyTodoStatus(true)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoStatusRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_끝날짜Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
-                        .startDate(startDay)
-                        .endDate(null)
-                        .weeklyTodoId(weeklyTodoId)
-                        .weeklyTodoStatus(true)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoStatusRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_할일ID_Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoId(null)
-                        .weeklyTodoStatus(true)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoStatusRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_할일상태Null() throws Exception {
-                //given
-                final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoId(weeklyTodoId)
-                        .weeklyTodoStatus(null)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.put(url, userId)
-                                .content(gson.toJson(updateWeeklyTodoStatusRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
             }
 
             @Test
@@ -1847,108 +1455,6 @@ class PlannerControllerTest {
             }
 
             @Test
-            void 실패_올바르지않은시작날짜형식() throws Exception {
-                //given
-                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
-                        .startDate("2023.10.09")
-                        .endDate(endDay)
-                        .weeklyTodoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_올바르지않은끝날짜형식() throws Exception {
-                //given
-                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
-                        .startDate(startDay)
-                        .endDate("2023.10.15")
-                        .weeklyTodoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_시작날짜Null() throws Exception {
-                //given
-                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
-                        .startDate(null)
-                        .endDate(endDay)
-                        .weeklyTodoId(1L)
-                        .build();
-
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_끝날짜Null() throws Exception {
-                //given
-                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
-                        .startDate(startDay)
-                        .endDate(null)
-                        .weeklyTodoId(1L)
-                        .build();
-
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_주차별할일ID_Null() throws Exception {
-                //given
-                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
-                        .startDate(startDay)
-                        .endDate(endDay)
-                        .weeklyTodoId(null)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeWeeklyTodoRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
             void 실패_올바르지않은날짜_시작요일이월요일이아님() throws Exception {
                 //given
                 final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
@@ -2025,6 +1531,259 @@ class PlannerControllerTest {
     }
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class 주간플래너_실패케이스모음_유효하지않은요청값 {
+
+        final String url = "/api/planners/{userId}/weekly/todos";
+        final String startDay = "2023-10-09";
+        final String endDay = "2023-10-15";
+        final Long weeklyTodoId = 1L;
+        final String weeklyTodoContent = "자기소개서 제출하기";
+
+        @ParameterizedTest
+        @MethodSource("invalidAddWeeklyTodoRequest")
+        void 주차별할일등록_실패(final AddWeeklyTodoRequest addWeeklyTodoRequest) throws Exception {
+            // given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addWeeklyTodoRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidAddWeeklyTodoRequest() {
+            return Stream.of(
+                    // 올바르지 않은 시작 날짜 형식
+                    Arguments.of(AddWeeklyTodoRequest.builder()
+                            .startDate("2023.10.09")
+                            .endDate(endDay)
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .build()),
+                    // 올바르지 않은 끝 날짜 형식
+                    Arguments.of(AddWeeklyTodoRequest.builder()
+                            .startDate(startDay)
+                            .endDate("2023.10.15")
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .build()),
+                    // 할일 내용 길이초과
+                    Arguments.of(AddWeeklyTodoRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoContent("012345678901234567890123456789012345678901234567891")
+                            .build()),
+                    // 시작 날짜 Null
+                    Arguments.of(AddWeeklyTodoRequest.builder()
+                            .startDate(null)
+                            .endDate(endDay)
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .build()),
+                    // 끝 날짜 Null
+                    Arguments.of(AddWeeklyTodoRequest.builder()
+                            .startDate(startDay)
+                            .endDate(null)
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .build()),
+                    // 할일 내용 Null
+                    Arguments.of(AddWeeklyTodoRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoContent(null)
+                            .build())
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidUpdateWeeklyTodoContentRequest")
+        void 주차별할일내용수정_실패(final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest) throws Exception {
+            // given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(updateWeeklyTodoContentRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidUpdateWeeklyTodoContentRequest() {
+            return Stream.of(
+                    // 올바르지 않은 시작 날짜 형식
+                    Arguments.of(UpdateWeeklyTodoContentRequest.builder()
+                            .startDate("2023.10.09")
+                            .endDate(endDay)
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 올바르지 않은 끝 날짜 형식
+                    Arguments.of(UpdateWeeklyTodoContentRequest.builder()
+                            .startDate(startDay)
+                            .endDate("2023.10.15")
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 할일 내용 길이초과
+                    Arguments.of(UpdateWeeklyTodoContentRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoContent("012345678901234567890123456789012345678901234567891")
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 시작 날짜 Null
+                    Arguments.of(UpdateWeeklyTodoContentRequest.builder()
+                            .startDate(null)
+                            .endDate(endDay)
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 끝 날짜 Null
+                    Arguments.of(UpdateWeeklyTodoContentRequest.builder()
+                            .startDate(startDay)
+                            .endDate(null)
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 할일 내용 Null
+                    Arguments.of(UpdateWeeklyTodoContentRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoContent(null)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 할일 ID Null
+                    Arguments.of(UpdateWeeklyTodoContentRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoContent(weeklyTodoContent)
+                            .weeklyTodoId(null)
+                            .build())
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidUpdateWeeklyTodoStatusRequest")
+        void 주차별할일상태수정_실패(final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest) throws Exception {
+            // given
+            final String url = "/api/planners/{userId}/weekly/todos-status";
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(updateWeeklyTodoStatusRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidUpdateWeeklyTodoStatusRequest() {
+            return Stream.of(
+                    // 올바르지 않은 시작 날짜 형식
+                    Arguments.of(UpdateWeeklyTodoStatusRequest.builder()
+                            .startDate("2023.10.09")
+                            .endDate(endDay)
+                            .weeklyTodoId(weeklyTodoId)
+                            .weeklyTodoStatus(true)
+                            .build()),
+                    // 올바르지 않은 끝 날짜 형식
+                    Arguments.of(UpdateWeeklyTodoStatusRequest.builder()
+                            .startDate(startDay)
+                            .endDate("2023.10.15")
+                            .weeklyTodoId(weeklyTodoId)
+                            .weeklyTodoStatus(true)
+                            .build()),
+                    // 시작 날짜 Null
+                    Arguments.of(UpdateWeeklyTodoStatusRequest.builder()
+                            .startDate(null)
+                            .endDate(endDay)
+                            .weeklyTodoId(weeklyTodoId)
+                            .weeklyTodoStatus(true)
+                            .build()),
+                    // 끝 날짜 Null
+                    Arguments.of(UpdateWeeklyTodoStatusRequest.builder()
+                            .startDate(startDay)
+                            .endDate(null)
+                            .weeklyTodoId(weeklyTodoId)
+                            .weeklyTodoStatus(true)
+                            .build()),
+                    // 할일 ID Null
+                    Arguments.of(UpdateWeeklyTodoStatusRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoId(null)
+                            .weeklyTodoStatus(true)
+                            .build()),
+                    // 할일 상태 Null
+                    Arguments.of(UpdateWeeklyTodoStatusRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoId(weeklyTodoId)
+                            .weeklyTodoStatus(null)
+                            .build())
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidRemoveWeeklyTodoRequest")
+        void 주차별할일삭제_실패(final RemoveWeeklyTodoRequest removeWeeklyTodoRequest) throws Exception {
+            // given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(removeWeeklyTodoRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidRemoveWeeklyTodoRequest() {
+            return Stream.of(
+                    // 올바르지 않은 시작 날짜 형식
+                    Arguments.of(RemoveWeeklyTodoRequest.builder()
+                            .startDate("2023.10.09")
+                            .endDate(endDay)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 올바르지 않은 끝 날짜 형식
+                    Arguments.of(RemoveWeeklyTodoRequest.builder()
+                            .startDate(startDay)
+                            .endDate("2023.10.15")
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 시작 날짜 Null
+                    Arguments.of(RemoveWeeklyTodoRequest.builder()
+                            .startDate(null)
+                            .endDate(endDay)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 끝 날짜 Null
+                    Arguments.of(RemoveWeeklyTodoRequest.builder()
+                            .startDate(startDay)
+                            .endDate(null)
+                            .weeklyTodoId(weeklyTodoId)
+                            .build()),
+                    // 할일 ID Null
+                    Arguments.of(RemoveWeeklyTodoRequest.builder()
+                            .startDate(startDay)
+                            .endDate(endDay)
+                            .weeklyTodoId(null)
+                            .build())
+            );
+        }
+    }
+
+    @Nested
     class 타임테이블 {
         final String url = "/api/planners/{userId}/daily/timetables";
         final String date = "2023-10-06";
@@ -2056,153 +1815,6 @@ class PlannerControllerTest {
 
                 //then
                 resultActions.andExpect(status().isForbidden());
-            }
-
-            @Test
-            void 실패_올바르지않은날짜형식_date() throws Exception {
-                //given
-                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
-                        .date("2023.10.06")
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .todoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_올바르지않은날짜형식_startTime() throws Exception {
-                //given
-                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime("2023-10-06 23:59")
-                        .endTime(endTime)
-                        .todoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_올바르지않은날짜형식_endTime() throws Exception {
-                //given
-                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(startTime)
-                        .endTime("2023-10-0623:50")
-                        .todoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_date_null() throws Exception {
-                //given
-                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
-                        .date(null)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .todoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_startTime_null() throws Exception {
-                //given
-                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(null)
-                        .endTime(endTime)
-                        .todoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_endTime_null() throws Exception {
-                //given
-                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(startTime)
-                        .endTime(null)
-                        .todoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_todoId_null() throws Exception {
-                //given
-                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .todoId(null)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.post(url, userId)
-                                .content(gson.toJson(addTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
             }
 
             @Test
@@ -2312,62 +1924,6 @@ class PlannerControllerTest {
             }
 
             @Test
-            void 실패_올바르지않은날짜형식_date() throws Exception {
-                //given
-                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
-                        .date("2023.10.06")
-                        .todoId(1L)
-                        .build();
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_date_null() throws Exception {
-                //given
-                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
-                        .date(null)
-                        .todoId(1L)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
-            void 실패_todoId_null() throws Exception {
-                //given
-                final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
-                        .date(date)
-                        .todoId(null)
-                        .build();
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
-            }
-
-            @Test
             void 실패_유효하지않은타임테이블() throws Exception {
                 //given
                 doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
@@ -2430,6 +1986,123 @@ class PlannerControllerTest {
                 resultActions.andExpect(status().isOk());
             }
 
+        }
+    }
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class 타임테이블_실패케이스모음_유효하지않은요청값 {
+
+        final String url = "/api/planners/{userId}/daily/timetables";
+        final String date = "2023-10-06";
+        final String startTime = "2023-10-06 23:50";
+        final String endTime = "2023-10-07 01:30";
+        final long todoId = 1L;
+
+        @ParameterizedTest
+        @MethodSource("invalidAddTimeTableRequest")
+        void 타임테이블등록_실패(final AddTimeTableRequest addTimeTableRequest) throws Exception {
+            // given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(addTimeTableRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidAddTimeTableRequest() {
+            return Stream.of(
+                    // 올바르지 않은 날짜 형식
+                    Arguments.of(AddTimeTableRequest.builder()
+                            .date("2023.10.06")
+                            .startTime(startTime)
+                            .endTime(endTime)
+                            .todoId(todoId)
+                            .build()),
+                    // 올바르지 않은 시작 날짜 시간 형식
+                    Arguments.of(AddTimeTableRequest.builder()
+                            .date(date)
+                            .startTime("2023-10-06 23:59")
+                            .endTime(endTime)
+                            .todoId(todoId)
+                            .build()),
+                    // 올바르지 않은 종료 날짜 시간 형식
+                    Arguments.of(AddTimeTableRequest.builder()
+                            .date(date)
+                            .startTime(startTime)
+                            .endTime("2023-10-0623:50")
+                            .todoId(todoId)
+                            .build()),
+                    // 날짜 Null
+                    Arguments.of(AddTimeTableRequest.builder()
+                            .date(null)
+                            .startTime(startTime)
+                            .endTime(endTime)
+                            .todoId(todoId)
+                            .build()),
+                    // 시작 날짜 시간 Null
+                    Arguments.of(AddTimeTableRequest.builder()
+                            .date(date)
+                            .startTime(null)
+                            .endTime(endTime)
+                            .todoId(todoId)
+                            .build()),
+                    // 종료 날짜 시간 Null
+                    Arguments.of(AddTimeTableRequest.builder()
+                            .date(date)
+                            .startTime(startTime)
+                            .endTime(null)
+                            .todoId(todoId)
+                            .build()),
+                    // 할일 ID Null
+                    Arguments.of(AddTimeTableRequest.builder()
+                            .date(date)
+                            .startTime(startTime)
+                            .endTime(endTime)
+                            .todoId(null)
+                            .build())
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidRemoveTimeTableRequest")
+        void 타임테이블삭제_실패(final RemoveTimeTableRequest removeTimeTableRequest) throws Exception {
+            // given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.delete(url, userId)
+                            .content(gson.toJson(removeTimeTableRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidRemoveTimeTableRequest() {
+            return Stream.of(
+                    // 올바르지 않은 날짜 형식
+                    Arguments.of(RemoveTimeTableRequest.builder()
+                            .date("2023.10.06")
+                            .todoId(todoId)
+                            .build()),
+                    // 날짜 Null
+                    Arguments.of(RemoveTimeTableRequest.builder()
+                            .date(null)
+                            .todoId(todoId)
+                            .build()),
+                    // 할일 ID Null
+                    Arguments.of(RemoveTimeTableRequest.builder()
+                            .date(date)
+                            .todoId(null)
+                            .build())
+            );
         }
     }
 
