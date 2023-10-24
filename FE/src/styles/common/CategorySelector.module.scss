@@ -1,0 +1,43 @@
+$color-background: var(--color-background);
+$color-text: var(--color-text);
+$color-btn-blue: var(--color-btn-blue);
+$color-gray-1: var(--color-gray-1);
+
+.selector {
+  display: flex;
+  flex-direction: column;
+
+  position: absolute;
+
+  min-width: 15em;
+  max-height: 12em;
+  overflow-y: auto;
+  padding: 0.5em;
+  box-sizing: border-box;
+
+  background-color: $color-background;
+  // border-radius: 0.5em;
+  border: 2px solid $color-btn-blue;
+
+  // // gap: 0.5em 1em;
+  z-index: 2000;
+  // cursor: default;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    padding: 0.5em;
+    box-sizing: border-box;
+    &:hover {
+      background-color: $color-gray-1;
+    }
+    > div,
+    span {
+      margin-right: 0.3em;
+    }
+    > div:nth-child(1) {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

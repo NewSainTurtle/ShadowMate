@@ -1,11 +1,20 @@
-import React from "react";
-import styles from "@styles/planner/day.module.scss";
+import React, { RefObject, useEffect, useRef, useState } from "react";
+import styles from "@styles/common/CategorySelector.module.scss";
 import { categoryDefault } from "@components/planner/day/TodoItem";
 import { todoData_category } from "@util/data/DayTodos";
 import { categoryType } from "@util/planner.interface";
+import Text from "@components/common/Text";
+import { createPortal } from "react-dom";
 
 interface Props {
+  target?: RefObject<HTMLDivElement>;
+  position?: PositionConfig;
   handleClick: (title: string, color: string) => void;
+}
+
+export interface PositionConfig {
+  top: number | undefined;
+  left: number;
 }
 
 export const getTextColorByBackgroundColor = (hexColor: string) => {
@@ -25,25 +34,31 @@ export const categoryStyle = (bgColor: string) => {
   };
 };
 
-const CategorySelector = ({ handleClick }: Props) => {
+const CategorySelector = ({ target, position, handleClick }: Props) => {
   const categoryList: categoryType[] = todoData_category;
-  return (
-    <div className={styles["todo-item__category-menu"]}>
-      <span onClick={() => handleClick("", categoryDefault.categoryColorCode)}>&emsp;&emsp;</span>
-      {categoryList.map((item, idx) => {
-        const { categoryId, categoryColorCode, categoryTitle } = item;
-        return (
-          <span
-            key={categoryId}
-            style={categoryStyle(categoryColorCode)}
-            onClick={() => handleClick(categoryTitle, categoryColorCode)}
-          >
-            {categoryTitle}
-          </span>
-        );
-      })}
-    </div>
-  );
+
+  return target?.current
+    ? createPortal(
+        <div className={styles["selector"]}>
+          <span onClick={() => handleClick("", categoryDefault.categoryColorCode)}></span>
+          {categoryList.map((item, idx) => {
+            const { categoryId, categoryEmoticon, categoryColorCode, categoryTitle } = item;
+            return (
+              <div
+                className={styles["selector__item"]}
+                key={categoryId}
+                onClick={() => handleClick(categoryTitle, categoryColorCode)}
+              >
+                <div style={categoryStyle(categoryColorCode)}></div>
+                <Text types="small">{categoryEmoticon}</Text>
+                <Text types="small">{categoryTitle}</Text>
+              </div>
+            );
+          })}
+        </div>,
+        target.current,
+      )
+    : null;
 };
 
 export default CategorySelector;
