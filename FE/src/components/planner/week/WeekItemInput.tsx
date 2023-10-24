@@ -1,13 +1,28 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import React, { Dispatch, KeyboardEvent, MutableRefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
+import { TodoConfig } from "@util/planner.interface";
+import todoModule from "@util/data/TodoModule";
 
 interface Props {
-  newTodo: string;
-  setNewTodo: Dispatch<SetStateAction<string>>;
+  todoItems: TodoConfig[];
+  setTodoItems: Dispatch<SetStateAction<TodoConfig[]>>;
+  nextId: MutableRefObject<number>;
 }
 
-const WeekItemInput = ({ newTodo, setNewTodo }: Props) => {
+const WeekItemInput = ({ todoItems, setTodoItems, nextId }: Props) => {
   const todoEndRef = useRef<HTMLDivElement | null>(null);
+  const { insertTodo } = todoModule(todoItems, setTodoItems);
+  const [newTodo, setNewTodo] = useState<string>("");
+
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (newTodo === "") return;
+    if (e.key == "Enter") {
+      if (e.nativeEvent.isComposing) return;
+      insertTodo({ todoId: nextId.current, todoContent: newTodo, todoStatus: "" });
+      nextId.current += 1;
+      setNewTodo("");
+    }
+  };
 
   useEffect(() => {
     todoEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -22,6 +37,7 @@ const WeekItemInput = ({ newTodo, setNewTodo }: Props) => {
         type="text"
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
+        onKeyDown={(e) => handleOnKeyPress(e)}
         placeholder="💡 할 일을 입력하세요."
       />
       <svg style={{ cursor: "auto", height: "0" }} />
