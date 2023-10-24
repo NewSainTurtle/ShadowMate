@@ -302,7 +302,7 @@ class AuthServiceTest {
         }
 
         @Test
-        void 성공_회원가입() {
+        void 실패_임시이메일_타임아웃() {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(email)
@@ -310,7 +310,62 @@ class AuthServiceTest {
                     .password("test1234")
                     .build();
 
-            doReturn(null).when(userRepository).findByEmail(joinRequest.getEmail());
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(null).when(redisServiceImpl).getHashEmailData(email);
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.join(joinRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(email);
+            verify(redisServiceImpl, times(1)).getHashEmailData(email);
+        }
+
+        @Test
+        void 실패_임시이메일_인증안됨() {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email(email)
+                    .nickname("테스트중")
+                    .password("test1234")
+                    .build();
+            final EmailAuthentication emailAuthentication = EmailAuthentication.builder()
+                    .authStatus(false)
+                    .code("123456")
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.join(joinRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNAUTHENTICATED_EMAIL);
+
+            //verify
+            verify(userRepository, times(1)).findByEmail(email);
+            verify(redisServiceImpl, times(1)).getHashEmailData(email);
+        }
+
+        @Test
+        void 성공_회원가입() {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email(email)
+                    .nickname("테스트중")
+                    .password("test1234")
+                    .build();
+            final EmailAuthentication emailAuthentication = EmailAuthentication.builder()
+                    .authStatus(true)
+                    .code("123456")
+                    .build();
+
+            doReturn(null).when(userRepository).findByEmail(email);
+            doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
             doReturn(user).when(userRepository).save(any(User.class));
 
             //when
@@ -319,8 +374,10 @@ class AuthServiceTest {
             //then
 
             //verify
-            verify(userRepository, times(1)).findByEmail(joinRequest.getEmail());
+            verify(userRepository, times(1)).findByEmail(email);
+            verify(redisServiceImpl, times(1)).getHashEmailData(email);
             verify(userRepository, times(1)).save(any(User.class));
+            verify(redisServiceImpl, times(1)).deleteEmailData(email);
         }
     }
 
