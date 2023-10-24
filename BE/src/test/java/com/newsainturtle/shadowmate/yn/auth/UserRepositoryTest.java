@@ -37,7 +37,7 @@ class UserRepositoryTest {
             userRepository.save(user);
 
             //when
-            final User result = userRepository.findByEmail(email);
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
 
             //then
             assertThat(result).isNotNull()
@@ -49,7 +49,7 @@ class UserRepositoryTest {
             //given
 
             //when
-            final User result = userRepository.findByEmail(email);
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
 
             //then
             assertThat(result).isNull();
@@ -64,7 +64,7 @@ class UserRepositoryTest {
             userRepository.save(user);
 
             //when
-            final User result = userRepository.findByEmail(user.getEmail());
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(user.getEmail(), SocialType.BASIC);
 
             //then
             assertThat(result).isNotNull();
