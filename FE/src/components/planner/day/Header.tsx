@@ -6,41 +6,12 @@ import Dday from "@components/common/Dday";
 import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { setDate, selectDate } from "@store/planner/daySlice";
 import { todoData_friend } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");
-
-interface HeaderDateType {
-  date: string | Date | dayjs.Dayjs;
-  moveDate: (n: -1 | 0 | 1) => void;
-}
-
-const HeaderDate = ({ date, moveDate }: HeaderDateType) => {
-  const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
-
-  return (
-    <div className={styles["planner-header__date"]}>
-      <Dday comparedDate={date} />
-      <div>
-        <Text types="semi-large" bold>
-          {titleDay}
-        </Text>
-        <div className={styles["date-move"]}>
-          <div onClick={() => moveDate(-1)}>
-            <NavigateBefore />
-          </div>
-          <div onClick={() => moveDate(0)}>
-            <Text bold>today</Text>
-          </div>
-          <div onClick={() => moveDate(1)}>
-            <NavigateNext />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const FriendHeader = ({ heart }: { heart: number }) => {
   const navigate = useNavigate();
@@ -93,13 +64,39 @@ const MyHeader = ({ heart }: { heart: number }) => {
   );
 };
 
-const Header = (props: HeaderDateType) => {
+const Header = () => {
+  const dispatch = useAppDispatch();
+  const date = useAppSelector(selectDate);
+  const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
   const heartNum = 50; // 임시 좋아요 수
   const isFriend = false;
 
+  const moveDate = (n: -1 | 0 | 1) => {
+    const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
+    dispatch(setDate(newDate));
+  };
+
   return (
     <div className={styles["planner-header"]}>
-      <HeaderDate {...props} />
+      <div className={styles["planner-header__date"]}>
+        <Dday comparedDate={date} />
+        <div>
+          <Text types="semi-large" bold>
+            {titleDay}
+          </Text>
+          <div className={styles["date-move"]}>
+            <div onClick={() => moveDate(-1)}>
+              <NavigateBefore />
+            </div>
+            <div onClick={() => moveDate(0)}>
+              <Text bold>today</Text>
+            </div>
+            <div onClick={() => moveDate(1)}>
+              <NavigateNext />
+            </div>
+          </div>
+        </div>
+      </div>
       {isFriend ? <FriendHeader heart={heartNum} /> : <MyHeader heart={heartNum} />}
     </div>
   );

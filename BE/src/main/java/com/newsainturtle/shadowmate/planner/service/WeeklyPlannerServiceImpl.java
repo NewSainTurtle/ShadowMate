@@ -47,8 +47,9 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
     private final TodoRepository todoRepository;
 
     private Weekly getOrCreateWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
-        Date startDate = Date.valueOf(startDateStr);
-        Date endDate = Date.valueOf(endDateStr);
+        checkValidDate(startDateStr, endDateStr);
+        final Date startDate = Date.valueOf(startDateStr);
+        final Date endDate = Date.valueOf(endDateStr);
         if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || Period.between(startDate.toLocalDate(), endDate.toLocalDate()).getDays() != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
@@ -63,8 +64,25 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
         return weekly;
     }
 
+    private Weekly getWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
+        checkValidDate(startDateStr, endDateStr);
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, Date.valueOf(startDateStr), Date.valueOf(endDateStr));
+        if (weekly == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER);
+        }
+        return weekly;
+    }
+
+    private void checkValidDate(final String startDateStr, final String endDateStr) {
+        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1
+                || Period.between(Date.valueOf(startDateStr).toLocalDate(), Date.valueOf(endDateStr).toLocalDate()).getDays() != 6) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DATE);
+        }
+    }
+
+
     private WeeklyTodo getWeeklyTodo(final User user, final String startDateStr, final String endDateStr, final Long weeklyTodoId) {
-        final Weekly weekly = getOrCreateWeeklyPlanner(user, startDateStr, endDateStr);
+        final Weekly weekly = getWeeklyPlanner(user, startDateStr, endDateStr);
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.findByIdAndWeekly(weeklyTodoId, weekly);
         if (weeklyTodo == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_TODO);
@@ -115,7 +133,7 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
     @Override
     @Transactional
     public void removeWeeklyTodo(final User user, final RemoveWeeklyTodoRequest removeWeeklyTodoRequest) {
-        final Weekly weekly = getOrCreateWeeklyPlanner(user, removeWeeklyTodoRequest.getStartDate(), removeWeeklyTodoRequest.getEndDate());
+        final Weekly weekly = getWeeklyPlanner(user, removeWeeklyTodoRequest.getStartDate(), removeWeeklyTodoRequest.getEndDate());
         weeklyTodoRepository.deleteByIdAndWeekly(removeWeeklyTodoRequest.getWeeklyTodoId(), weekly);
     }
 
@@ -147,16 +165,19 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
     }
 
     private List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
-        final Weekly weekly = getOrCreateWeeklyPlanner(plannerWriter, startDate, endDate);
-        final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
         final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
-        if (permission) {
-            for (WeeklyTodo weeklyTodo : weeklyTodoList) {
-                weeklyTodos.add(WeeklyPlannerTodoResponse.builder()
-                        .weeklyTodoId(weeklyTodo.getId())
-                        .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
-                        .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
-                        .build());
+        checkValidDate(startDate, endDate);
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, Date.valueOf(startDate), Date.valueOf(endDate));
+        if (weekly != null) {
+            final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
+            if (permission) {
+                for (WeeklyTodo weeklyTodo : weeklyTodoList) {
+                    weeklyTodos.add(WeeklyPlannerTodoResponse.builder()
+                            .weeklyTodoId(weeklyTodo.getId())
+                            .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
+                            .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
+                            .build());
+                }
             }
         }
         return weeklyTodos;

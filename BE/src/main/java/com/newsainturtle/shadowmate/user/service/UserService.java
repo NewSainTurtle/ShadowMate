@@ -14,4 +14,5 @@ public interface UserService {
 
     void updateProfileImage(final Long userId, final String newProfileImage);
 
+    void deleteUser(final Long userId);
 }

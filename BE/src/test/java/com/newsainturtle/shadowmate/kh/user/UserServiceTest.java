@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -147,5 +148,46 @@ public class UserServiceTest {
             // then
             assertThat(result.getNickname()).isEqualTo(user2.getNickname());
         }
+
+        @Test
+        void 실패_회원탈퇴_유저없음() {
+            //given
+            doReturn(Optional.empty()).when(userRepository).findById(user1.getId());
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.deleteUser(user1.getId()));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+
+        }
+
+        @Test
+        void 성공_회원탈퇴() {
+            //given
+            final User deleteUser = User.builder()
+                    .id(user1.getId())
+                    .email(user1.getEmail())
+                    .password(user1.getPassword())
+                    .socialLogin(user1.getSocialLogin())
+                    .profileImage(user1.getProfileImage())
+                    .nickname(user1.getNickname())
+                    .statusMessage(user1.getStatusMessage())
+                    .withdrawal(true)
+                    .plannerAccessScope(user1.getPlannerAccessScope())
+                    .createTime(user1.getCreateTime())
+                    .updateTime(user1.getUpdateTime())
+                    .deleteTime(LocalDateTime.now())
+                    .build();
+            given(userRepository.findById(user1.getId())).willReturn(Optional.of(deleteUser));
+
+            //when
+            userService.deleteUser(user1.getId());
+
+            //then
+            verify(userRepository, times(1)).findById(any());
+            verify(userRepository, times(1)).save(any());
+        }
+
     }
 }

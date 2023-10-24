@@ -227,7 +227,7 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(result.getCategoryColorList()).isNotNull();
-                assertThat(result.getCategoryColorList().size()).isEqualTo(1);
+                assertThat(result.getCategoryColorList()).hasSize(1);
             }
 
             @Test
@@ -242,7 +242,7 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(result.getCategoryList()).isNotNull();
-                assertThat(result.getCategoryList().size()).isEqualTo(1);
+                assertThat(result.getCategoryList()).hasSize(1);
             }
         }
 
@@ -385,7 +385,7 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(ddayListResponse.getDdayList()).isNotNull();
-                assertThat(ddayListResponse.getDdayList().size()).isEqualTo(0);
+                assertThat(ddayListResponse.getDdayList()).isEmpty();
             }
 
             @Test
@@ -409,7 +409,7 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(ddayListResponse.getDdayList()).isNotNull();
-                assertThat(ddayListResponse.getDdayList().size()).isEqualTo(2);
+                assertThat(ddayListResponse.getDdayList()).hasSize(2);
             }
         }
 

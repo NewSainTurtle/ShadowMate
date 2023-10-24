@@ -1609,6 +1609,29 @@ class PlannerControllerTest {
             }
 
             @Test
+            void 실패_유효하지않은위클리() throws Exception {
+                //given
+                final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
+                        .startDate(startDay)
+                        .endDate(endDay)
+                        .weeklyTodoContent(weeklyTodoContent)
+                        .weeklyTodoId(weeklyTodoId)
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerServiceImpl).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateWeeklyTodoContentRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
             void 실패_유효하지않은위클리할일() throws Exception {
                 //given
                 final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
@@ -1856,6 +1879,29 @@ class PlannerControllerTest {
             }
 
             @Test
+            void 실패_유효하지않은위클리() throws Exception {
+                //given
+                final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
+                        .startDate(startDay)
+                        .endDate(endDay)
+                        .weeklyTodoId(weeklyTodoId)
+                        .weeklyTodoStatus(true)
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerServiceImpl).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateWeeklyTodoStatusRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
             void 실패_유효하지않은위클리할일() throws Exception {
                 //given
                 final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
@@ -2059,6 +2105,28 @@ class PlannerControllerTest {
                         .weeklyTodoId(1L)
                         .build();
                 doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeWeeklyTodoRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은위클리() throws Exception {
+                //given
+                final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                        .startDate(startDay)
+                        .endDate(endDay)
+                        .weeklyTodoId(1L)
+                        .build();
+
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerServiceImpl).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(

@@ -81,7 +81,7 @@ class DdayRepositoryTest {
 
         //then
         assertThat(ddayList).isNotNull();
-        assertThat(ddayList.size()).isEqualTo(2);
+        assertThat(ddayList).hasSize(2);
         assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("시험");
     }
 
@@ -111,22 +111,6 @@ class DdayRepositoryTest {
 
             //then
             assertThat(checkDday).isNotNull();
-        }
-
-        @Test
-        void 실패_없는디데이ID() {
-            //given
-            final Dday dday = Dday.builder()
-                    .ddayTitle("생일")
-                    .ddayDate(Date.valueOf("2023-02-09"))
-                    .user(user)
-                    .build();
-            final Dday saveDday = ddayRepository.save(dday);
-
-            //when
-            ddayRepository.deleteByUserAndId(user, Long.MAX_VALUE);
-
-            //then
         }
 
         @Test

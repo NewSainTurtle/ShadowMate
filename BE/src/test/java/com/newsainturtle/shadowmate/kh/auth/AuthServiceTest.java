@@ -92,7 +92,6 @@ public class AuthServiceTest {
             verify(userRepository, times(1)).findByEmail(any(String.class));
             verify(redisService, times(1)).getHashEmailData(any(String.class));
             verify(mailSender, times(1)).createMimeMessage();
-
         }
 
         @Test

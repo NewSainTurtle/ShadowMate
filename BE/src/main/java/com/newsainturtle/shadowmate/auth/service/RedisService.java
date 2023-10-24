@@ -5,7 +5,7 @@ import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 public interface RedisService {
 
     EmailAuthentication getHashEmailData(final String key);
-    void setHashEmailData(final String key, final EmailAuthentication value);
+    void setHashEmailData(final String key, final EmailAuthentication value, final int timeout);
     void deleteEmailData(final String key);
 
 }
