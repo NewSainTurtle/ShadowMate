@@ -102,11 +102,18 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void join(final JoinRequest joinRequest) {
         String email = joinRequest.getEmail();
         checkDuplicatedEmail(email);
+
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        if (findEmailAuth == null) {
+            throw new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
+        } else if (!findEmailAuth.isAuthStatus()) {
+            throw new AuthException(AuthErrorResult.UNAUTHENTICATED_EMAIL);
+        }
 
         User userEntity =
                 User.builder()
@@ -118,6 +125,7 @@ public class AuthServiceImpl implements AuthService {
                         .withdrawal(false)
                         .build();
         userRepository.save(userEntity);
+        redisServiceImpl.deleteEmailData(email);
     }
 
     private void checkDuplicatedEmail(final String email) {
