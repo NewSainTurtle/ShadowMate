@@ -129,7 +129,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void checkDuplicatedEmail(final String email) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
         if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
         }
