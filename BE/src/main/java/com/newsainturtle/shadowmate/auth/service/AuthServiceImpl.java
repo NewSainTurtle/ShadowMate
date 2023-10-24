@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
         if (findEmailAuth != null && findEmailAuth.isAuthStatus()) {
             throw new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
         }
-        redisServiceImpl.setHashEmailData(email, emailAuth);
+        redisServiceImpl.setHashEmailData(email, emailAuth, 3);
 
         try {
             mailSender.send(createMessage(email, code));
@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
                 .code(findEmailAuth.getCode())
                 .authStatus(true)
                 .build();
-        redisServiceImpl.setHashEmailData(email, emailAuth);
+        redisServiceImpl.setHashEmailData(email, emailAuth, 10);
     }
 
     @Override
@@ -102,11 +102,18 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void join(final JoinRequest joinRequest) {
         String email = joinRequest.getEmail();
         checkDuplicatedEmail(email);
+
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        if (findEmailAuth == null) {
+            throw new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
+        } else if (!findEmailAuth.isAuthStatus()) {
+            throw new AuthException(AuthErrorResult.UNAUTHENTICATED_EMAIL);
+        }
 
         User userEntity =
                 User.builder()
@@ -118,10 +125,11 @@ public class AuthServiceImpl implements AuthService {
                         .withdrawal(false)
                         .build();
         userRepository.save(userEntity);
+        redisServiceImpl.deleteEmailData(email);
     }
 
     private void checkDuplicatedEmail(final String email) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
         if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL);
         }
