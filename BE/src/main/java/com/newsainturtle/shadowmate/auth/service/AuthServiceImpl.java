@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
         if (findEmailAuth != null && findEmailAuth.isAuthStatus()) {
             throw new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
         }
-        redisServiceImpl.setHashEmailData(email, emailAuth);
+        redisServiceImpl.setHashEmailData(email, emailAuth, 3);
 
         try {
             mailSender.send(createMessage(email, code));
@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
                 .code(findEmailAuth.getCode())
                 .authStatus(true)
                 .build();
-        redisServiceImpl.setHashEmailData(email, emailAuth);
+        redisServiceImpl.setHashEmailData(email, emailAuth, 10);
     }
 
     @Override
