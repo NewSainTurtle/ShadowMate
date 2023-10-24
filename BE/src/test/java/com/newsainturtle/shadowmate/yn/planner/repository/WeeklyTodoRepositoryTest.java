@@ -36,12 +36,13 @@ class WeeklyTodoRepositoryTest {
     private final Date startDay = Date.valueOf("2023-10-09");
     private final Date endDay = Date.valueOf("2023-10-15");
     private Weekly weekly;
+    private final String weeklyTodoContent = "지원서 작성하기";
 
     @BeforeEach
     void init() {
         User user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -61,7 +62,7 @@ class WeeklyTodoRepositoryTest {
         //when
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
                 .weekly(weekly)
-                .weeklyTodoContent("자기소개서 제출하기")
+                .weeklyTodoContent(weeklyTodoContent)
                 .weeklyTodoStatus(false)
                 .build());
 
@@ -69,16 +70,17 @@ class WeeklyTodoRepositoryTest {
         //then
         assertThat(weeklyTodo).isNotNull();
         assertThat(weeklyTodo.getWeekly()).isEqualTo(weekly);
-        assertThat(weeklyTodo.getWeeklyTodoContent()).isEqualTo("자기소개서 제출하기");
+        assertThat(weeklyTodo.getWeeklyTodoContent()).isEqualTo(weeklyTodoContent);
         assertThat(weeklyTodo.getWeeklyTodoStatus()).isFalse();
     }
 
     @Test
     void 주차별할일내용수정() {
         //given
+        final String changeWeeklyTodoContent = "자기소개서 첨삭하기";
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
                 .weekly(weekly)
-                .weeklyTodoContent("자기소개서 제출하기")
+                .weeklyTodoContent(weeklyTodoContent)
                 .weeklyTodoStatus(false)
                 .build());
         //when
@@ -87,7 +89,7 @@ class WeeklyTodoRepositoryTest {
                         .id(weeklyTodo.getId())
                         .createTime(weeklyTodo.getCreateTime())
                         .weekly(weeklyTodo.getWeekly())
-                        .weeklyTodoContent("자기소개서 첨삭하기")
+                        .weeklyTodoContent(changeWeeklyTodoContent)
                         .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
                         .build()
         );
@@ -97,7 +99,7 @@ class WeeklyTodoRepositoryTest {
         assertThat(changeWeeklyTodo).isNotNull();
         assertThat(changeWeeklyTodo.getWeekly()).isEqualTo(weeklyTodo.getWeekly());
         assertThat(changeWeeklyTodo.getWeeklyTodoStatus()).isFalse();
-        assertThat(changeWeeklyTodo.getWeeklyTodoContent()).isEqualTo("자기소개서 첨삭하기");
+        assertThat(changeWeeklyTodo.getWeeklyTodoContent()).isEqualTo(changeWeeklyTodoContent);
         assertThat(changeWeeklyTodo.getCreateTime()).isNotEqualTo(changeWeeklyTodo.getUpdateTime());
     }
 
@@ -106,7 +108,7 @@ class WeeklyTodoRepositoryTest {
         //given
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
                 .weekly(weekly)
-                .weeklyTodoContent("자기소개서 제출하기")
+                .weeklyTodoContent(weeklyTodoContent)
                 .weeklyTodoStatus(false)
                 .build());
         //when
@@ -134,7 +136,7 @@ class WeeklyTodoRepositoryTest {
         //given
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
                 .weekly(weekly)
-                .weeklyTodoContent("자기소개서 제출하기")
+                .weeklyTodoContent(weeklyTodoContent)
                 .weeklyTodoStatus(false)
                 .build());
         //when
@@ -164,12 +166,12 @@ class WeeklyTodoRepositoryTest {
             //given
             weeklyTodoRepository.save(WeeklyTodo.builder()
                     .weekly(weekly)
-                    .weeklyTodoContent("자기소개서 제출하기")
+                    .weeklyTodoContent(weeklyTodoContent)
                     .weeklyTodoStatus(false)
                     .build());
             weeklyTodoRepository.save(WeeklyTodo.builder()
                     .weekly(weekly)
-                    .weeklyTodoContent("마트에서 장보기")
+                    .weeklyTodoContent(weeklyTodoContent)
                     .weeklyTodoStatus(true)
                     .build());
             //when

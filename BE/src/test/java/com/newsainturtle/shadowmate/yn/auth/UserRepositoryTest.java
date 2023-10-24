@@ -19,11 +19,12 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    final String email = "test1234@naver.com";
-    final User user = User.builder()
-            .email("test1234@naver.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
+    private final String email = "yntest@shadowmate.com";
+    private final SocialType socialType = SocialType.BASIC;
+    private final User user = User.builder()
+            .email(email)
+            .password("yntest1234")
+            .socialLogin(socialType)
             .nickname("거북이")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .withdrawal(false)
@@ -37,7 +38,7 @@ class UserRepositoryTest {
             userRepository.save(user);
 
             //when
-            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
 
             //then
             assertThat(result).isNotNull()
@@ -49,7 +50,7 @@ class UserRepositoryTest {
             //given
 
             //when
-            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
 
             //then
             assertThat(result).isNull();
@@ -64,7 +65,7 @@ class UserRepositoryTest {
             userRepository.save(user);
 
             //when
-            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(user.getEmail(), SocialType.BASIC);
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(user.getEmail(), socialType);
 
             //then
             assertThat(result).isNotNull();

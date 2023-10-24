@@ -36,26 +36,31 @@ class DailyPlannerLikeRepositoryTest {
     private User user2;
     private DailyPlanner dailyPlanner;
 
+    private final String password = "yntest1234";
+    private final SocialType socialType = SocialType.BASIC;
+    private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
+    private final String date = "2023-09-25";
+
     @BeforeEach
     void init() {
         user1 = userRepository.save(User.builder()
-                .email("test1234@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
+                .email("yntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
                 .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .plannerAccessScope(plannerAccessScope)
                 .withdrawal(false)
                 .build());
         user2 = userRepository.save(User.builder()
-                .email("test127@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
+                .email("jntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
                 .nickname("토끼")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .plannerAccessScope(plannerAccessScope)
                 .withdrawal(false)
                 .build());
         dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                .dailyPlannerDay(Date.valueOf(date))
                 .user(user1)
                 .build());
     }
@@ -154,11 +159,11 @@ class DailyPlannerLikeRepositoryTest {
         void 좋아요2() {
             //given
             final User user3 = userRepository.save(User.builder()
-                    .email("test98765@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
+                    .email("titest@shadowmate.com")
                     .nickname("호랑이")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .password(password)
+                    .socialLogin(socialType)
+                    .plannerAccessScope(plannerAccessScope)
                     .withdrawal(false)
                     .build());
             dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
