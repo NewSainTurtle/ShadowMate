@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
-import { todoType } from "@util/planner.interface";
-import { useDispatch } from "react-redux";
-import { setTodo } from "@store/planner/daySlice";
+import { useAppDispatch } from "@hooks/hook";
+import { todoType, setTodoItem } from "@store/planner/daySlice";
 
 interface Props {
   idx?: number;
-  item: todoType;
+  todoItem: todoType;
   possible: boolean;
 }
 
-const TodoItemChoice = ({ item, possible }: Props) => {
-  const dispatch = useDispatch();
-  const { categoryTitle, categoryColorCode, todoContent, todoStatus } = item;
+const TodoItemChoice = ({ todoItem, possible }: Props) => {
+  const dispatch = useAppDispatch();
+  const { category, todoContent, todoStatus } = todoItem;
+  const { categoryTitle, categoryColorCode } = category;
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
     const rgb = parseInt(hexColor, 16);
@@ -35,7 +35,7 @@ const TodoItemChoice = ({ item, possible }: Props) => {
   const possibility = possible ? "--possible" : "--impossible";
 
   function handleClickTodo() {
-    if (possible) dispatch(setTodo(item));
+    if (possible) dispatch(setTodoItem(todoItem));
   }
 
   return (
@@ -51,7 +51,9 @@ const TodoItemChoice = ({ item, possible }: Props) => {
         </div>
       </div>
       <div className={styles[`todo-item__checked`]}>
-        <Text types="semi-medium">{[" ", "O", "X"][todoStatus]}</Text>
+        <div>
+          <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
+        </div>
       </div>
     </div>
   );

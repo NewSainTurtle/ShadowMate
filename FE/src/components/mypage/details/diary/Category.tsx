@@ -3,14 +3,14 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CategoryColorList from "@components/mypage/item/CategoryColorList";
-import { categoryType } from "@util/planner.interface";
+import { CategoryConfig } from "@util/planner.interface";
 import { CATEGORY_COLORS } from "@util/data/CategoryData";
 
 interface Props {
   click: number;
-  categoryList: categoryType[];
-  input: categoryType;
-  setInput: Dispatch<SetStateAction<categoryType>>;
+  categoryList: CategoryConfig[];
+  input: CategoryConfig;
+  setInput: Dispatch<SetStateAction<CategoryConfig>>;
   colorClick: number;
   setColorClick: Dispatch<SetStateAction<number>>;
 }

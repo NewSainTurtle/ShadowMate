@@ -1,9 +1,9 @@
 import React, { Dispatch, Ref, RefObject, SetStateAction, useEffect, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import { categoryType } from "@util/planner.interface";
+import { CategoryConfig } from "@util/planner.interface";
 
 interface Props {
-  item: categoryType;
+  item: CategoryConfig;
   index: number;
   click: number;
   setClick: Dispatch<SetStateAction<number>>;

@@ -46,4 +46,12 @@ public class UserController {
         userService.updateProfileImage(userId, updateProfileImageRequest.getNewProfileImage());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_PROFILEIMAGE));
     }
+  
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<BaseResponse> deleteUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        userService.deleteUser(userId);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_USER));
+    }
 }

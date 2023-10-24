@@ -22,8 +22,8 @@ public class RedisServiceImpl implements RedisService{
 
     @Override
     @Transactional
-    public void setHashEmailData(final String key, final EmailAuthentication value) {
-        redisTemplate.opsForValue().set("email " + key, value, 3, TimeUnit.MINUTES);
+    public void setHashEmailData(final String key, final EmailAuthentication value, final int timeout) {
+        redisTemplate.opsForValue().set("email " + key, value, timeout, TimeUnit.MINUTES);
     }
 
     @Override

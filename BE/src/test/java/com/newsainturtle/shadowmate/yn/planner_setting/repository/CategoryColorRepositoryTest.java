@@ -27,7 +27,7 @@ class CategoryColorRepositoryTest {
 
         //then
         assertThat(result).isNotNull();
-        assertThat(result.size()).isEqualTo(16);
+        assertThat(result).hasSize(16);
     }
 
 }
