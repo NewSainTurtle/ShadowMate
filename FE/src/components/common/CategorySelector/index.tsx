@@ -1,22 +1,15 @@
-import React, { RefObject, useEffect, useRef, useState } from "react";
-import styles from "@styles/common/CategorySelector.module.scss";
+import React from "react";
+import styles from "@styles/mypage/MyPage.module.scss";
+import Text from "@components/common/Text";
 import { categoryDefault } from "@components/planner/day/TodoItem";
 import { todoData_category } from "@util/data/DayTodos";
 import { categoryType } from "@util/planner.interface";
-import Text from "@components/common/Text";
-import { createPortal } from "react-dom";
 
 interface Props {
-  target?: RefObject<HTMLDivElement>;
-  position?: PositionConfig;
-  handleClick: (title: string, color: string) => void;
+  handleClick: (title: string, color: string, emoticon?: string) => void;
 }
 
-export interface PositionConfig {
-  top: number | undefined;
-  left: number;
-}
-
+// 삭제 예정 start
 export const getTextColorByBackgroundColor = (hexColor: string) => {
   const rgb = parseInt(hexColor, 16);
   const r = (rgb >> 16) & 0xff;
@@ -33,32 +26,36 @@ export const categoryStyle = (bgColor: string) => {
     color: `${getTextColorByBackgroundColor(bgColor.slice(1))}`,
   };
 };
+// 삭제 예정 end
 
-const CategorySelector = ({ target, position, handleClick }: Props) => {
+const CategorySelector = ({ handleClick }: Props) => {
   const categoryList: categoryType[] = todoData_category;
-
-  return target?.current
-    ? createPortal(
-        <div className={styles["selector"]}>
-          <span onClick={() => handleClick("", categoryDefault.categoryColorCode)}></span>
-          {categoryList.map((item, idx) => {
-            const { categoryId, categoryEmoticon, categoryColorCode, categoryTitle } = item;
-            return (
-              <div
-                className={styles["selector__item"]}
-                key={categoryId}
-                onClick={() => handleClick(categoryTitle, categoryColorCode)}
-              >
-                <div style={categoryStyle(categoryColorCode)}></div>
-                <Text types="small">{categoryEmoticon}</Text>
-                <Text types="small">{categoryTitle}</Text>
-              </div>
-            );
-          })}
-        </div>,
-        target.current,
-      )
-    : null;
+  return (
+    <div className={styles["category__selector"]}>
+      <div>
+        <Text>카테고리 선택</Text>
+      </div>
+      <div
+        className={styles["category__item--hover"]}
+        onClick={() => handleClick("", categoryDefault.categoryColorCode, categoryDefault.categoryEmoticon)}
+      >
+        <div>{categoryDefault.categoryEmoticon}</div>
+        <div>카테고리 없음</div>
+        <div style={{ backgroundColor: categoryDefault.categoryColorCode }}></div>
+      </div>
+      {categoryList.map((item, idx) => (
+        <div
+          key={idx}
+          className={styles["category__item--hover"]}
+          onClick={() => handleClick(item.categoryTitle, item.categoryColorCode, item.categoryEmoticon)}
+        >
+          <div>{item.categoryEmoticon}</div>
+          <div>{item.categoryTitle}</div>
+          <div style={{ backgroundColor: item.categoryColorCode }}></div>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default CategorySelector;
