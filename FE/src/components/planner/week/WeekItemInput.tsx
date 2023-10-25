@@ -1,7 +1,7 @@
 import React, { Dispatch, KeyboardEvent, MutableRefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import { TodoConfig } from "@util/planner.interface";
-import todoModule from "@util/data/TodoModule";
+import todoModule from "@util/TodoModule";
 
 interface Props {
   todoItems: TodoConfig[];
