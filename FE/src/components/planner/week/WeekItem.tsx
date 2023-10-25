@@ -60,6 +60,17 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
     setModalOpen(false);
   };
 
+  const setStatus = (status: string) => {
+    return status === "공백" ? " " : status === "완료" ? "O" : "X";
+  };
+
+  const handleStatusSave = () => {
+    updateTodo(idx, {
+      ...item,
+      todoStatus: item.todoStatus === "공백" ? "완료" : item.todoStatus === "완료" ? "미완료" : "공백",
+    });
+  };
+
   return (
     <>
       <div className={styles["item__todo-item"]}>
@@ -86,7 +97,9 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
           </div>
         )}
         <DeleteOutlined onClick={handleDelete} />
-        <div>{item.todoStatus ? "O" : "X"}</div>
+        <div onClick={handleStatusSave}>
+          <Text>{setStatus(item.todoStatus)}</Text>
+        </div>
       </div>
       <Modal open={Modalopen} onClose={handleClose}>
         <CategorySelector handleClick={handleClickCategory} />

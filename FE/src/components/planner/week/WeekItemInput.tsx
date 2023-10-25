@@ -18,7 +18,7 @@ const WeekItemInput = ({ todoItems, setTodoItems, nextId }: Props) => {
     if (newTodo === "") return;
     if (e.key == "Enter") {
       if (e.nativeEvent.isComposing) return;
-      insertTodo({ todoId: nextId.current, todoContent: newTodo, todoStatus: "" });
+      insertTodo({ todoId: nextId.current, todoContent: newTodo, todoStatus: "공백" });
       nextId.current += 1;
       setNewTodo("");
     }
