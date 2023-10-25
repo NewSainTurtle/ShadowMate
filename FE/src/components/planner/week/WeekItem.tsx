@@ -1,23 +1,24 @@
-import React, { ChangeEvent, Dispatch, KeyboardEvent, RefObject, SetStateAction, useRef, useState } from "react";
+import React, { ChangeEvent, Dispatch, KeyboardEvent, RefObject, SetStateAction, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
+import Modal from "@components/common/Modal";
+import CategorySelector from "@components/common/CategorySelector";
 import { DeleteOutlined } from "@mui/icons-material";
 import { TodoConfig } from "@util/planner.interface";
-import todoModule from "@util/data/TodoModule";
-import CategorySelector from "@components/common/CategorySelector";
+import { categoryDefault } from "@components/planner/day/TodoItem";
+import todoModule from "@util/TodoModule";
 
 interface Props {
   todoItems: TodoConfig[];
   setTodoItems: Dispatch<SetStateAction<TodoConfig[]>>;
   item: TodoConfig;
   idx: number;
-  menuRef: RefObject<HTMLDivElement>;
 }
 
-const WeekItem = ({ todoItems, setTodoItems, item, idx, menuRef }: Props) => {
+const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
   /* 카테고리 선택 메뉴 */
-  const dropMenuRef = useRef<HTMLDivElement>(null);
-  const [isDropdownView, setIsDropdownView] = useState(false);
+  const [Modalopen, setModalOpen] = useState(false);
+  const handleClose = () => setModalOpen(false);
 
   const { updateTodo, deleteTodo } = todoModule(todoItems, setTodoItems);
   const [todo, setTodo] = useState({
@@ -41,7 +42,6 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx, menuRef }: Props) => {
 
   const handleUpdateSave = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === "") e.target.value = todo.oldTodo;
-
     updateTodo(idx, { ...item, todoContent: e.target.value, todoUpdate: !item.todoUpdate });
   };
 
@@ -49,12 +49,22 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx, menuRef }: Props) => {
     deleteTodo(idx);
   };
 
+  const handleClickCategory = (title: string, bgColor: string, emoticon?: string) => {
+    if (emoticon) {
+      if (!item.category) {
+        updateTodo(idx, { ...item, category: { ...categoryDefault, categoryEmoticon: emoticon } });
+      } else {
+        updateTodo(idx, { ...item, category: { ...item.category, categoryEmoticon: emoticon } });
+      }
+    }
+    setModalOpen(false);
+  };
+
   return (
     <>
       <div className={styles["item__todo-item"]}>
-        <div ref={dropMenuRef} onClick={() => setIsDropdownView(!isDropdownView)}>
+        <div onClick={() => setModalOpen(!Modalopen)}>
           <span>{item.category?.categoryEmoticon}</span>
-          {isDropdownView && <CategorySelector target={menuRef} handleClick={() => console.log("open")} />}
         </div>
         {item.todoUpdate ? (
           <input
@@ -78,6 +88,9 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx, menuRef }: Props) => {
         <DeleteOutlined onClick={handleDelete} />
         <div>{item.todoStatus ? "O" : "X"}</div>
       </div>
+      <Modal open={Modalopen} onClose={handleClose}>
+        <CategorySelector handleClick={handleClickCategory} />
+      </Modal>
     </>
   );
 };

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
+import Modal from "@components/common/Modal";
+import CategorySelector, { categoryStyle } from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { todoType, categoryType } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
-import CategorySelector, { categoryStyle } from "@components/common/CategorySelector";
 
 const TodoDataDefalut: todoType = {
   todoId: 0,
@@ -42,6 +43,12 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
   const [isDropdownView, setDropdownView] = useState(false);
   const maxLength = 50;
 
+  // 카테고리 모달 start
+  const [ModalOpen, setModalOpen] = useState<boolean>(false);
+  const handleOpen = () => setModalOpen(true);
+  const handleClose = () => setModalOpen(false);
+  // 카테고리 모달 end
+
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
       if (isDropdownView && !dropMenuRef.current?.contains(e.target)) setDropdownView(false);
@@ -74,6 +81,7 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
     } else {
       updateTodo(idx, { ...item, categoryTitle: title, categoryColorCode: bgColor });
     }
+    setModalOpen(false);
   };
 
   const handleSaveTextTodo = () => {
@@ -93,52 +101,61 @@ const TodoItem = ({ idx = -1, item = TodoDataDefalut, addTodo, disable, todoModu
   const clicked = addTodo || !disable;
 
   return (
-    <div className={styles[`todo-item${disable ? "--disable" : ""}`]}>
-      <div
-        ref={dropMenuRef}
-        className={styles[`todo-item__category${clicked ? "--add" : ""}`]}
-        onClick={() => {
-          if (!disable) setDropdownView(!isDropdownView);
-        }}
-      >
-        <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
-          {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
-        </div>
-        {isDropdownView && <CategorySelector handleClick={handleClickCategory} />}
-      </div>
-
-      <div className={styles[`todo-item__content${clicked ? "--add" : ""}`]}>
-        {disable ? (
-          addTodo && (
-            <span>
-              <AddOutlined />
-            </span>
-          )
-        ) : (
-          <div className={styles["todo-item__content__possible"]}>
-            <input
-              value={text}
-              placeholder={"할 일을 입력하세요"}
-              minLength={2}
-              maxLength={maxLength}
-              autoFocus={addTodo}
-              onChange={editText}
-              onKeyDown={handleOnKeyPress}
-              onBlur={handleSaveTextTodo}
-            />
-            {!addTodo && (
-              <div onClick={removeTodo}>
-                <DeleteOutlined />
-              </div>
-            )}
+    <>
+      <div className={styles[`todo-item${disable ? "--disable" : ""}`]}>
+        <div
+          ref={dropMenuRef}
+          className={styles[`todo-item__category${clicked ? "--add" : ""}`]}
+          // onClick={() => {
+          //   if (!disable) setDropdownView(!isDropdownView);
+          // }}
+          onClick={handleOpen}
+        >
+          <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
+            {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
           </div>
-        )}
+          {/* {isDropdownView && <CategorySelector handleClick={handleClickCategory} />} */}
+        </div>
+
+        <div className={styles[`todo-item__content${clicked ? "--add" : ""}`]}>
+          {disable ? (
+            addTodo && (
+              <span>
+                <AddOutlined />
+              </span>
+            )
+          ) : (
+            <div className={styles["todo-item__content__possible"]}>
+              <input
+                value={text}
+                placeholder={"할 일을 입력하세요"}
+                minLength={2}
+                maxLength={maxLength}
+                autoFocus={addTodo}
+                onChange={editText}
+                onKeyDown={handleOnKeyPress}
+                onBlur={handleSaveTextTodo}
+              />
+              {!addTodo && (
+                <div onClick={removeTodo}>
+                  <DeleteOutlined />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
+          <Text types="semi-medium">{[" ", "O", "X"][todoStatus]}</Text>
+        </div>
       </div>
 
-      <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
-        <Text types="semi-medium">{[" ", "O", "X"][todoStatus]}</Text>
-      </div>
-    </div>
+      {/* 카테고리 모달 start */}
+      <Modal open={ModalOpen} onClose={handleClose}>
+        <CategorySelector handleClick={handleClickCategory} />
+      </Modal>
+      {/* 카테고리 모달 end */}
+    </>
   );
 };
 
