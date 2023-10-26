@@ -36,31 +36,32 @@ class CategoryRepositoryTest {
     private UserRepository userRepository;
 
     private User user;
+    private Category category;
+    private CategoryColor categoryColor;
 
     @BeforeEach
     void init() {
         user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
                 .withdrawal(false)
                 .build());
-    }
-
-    @Test
-    void 카테고리등록() {
-        //given
-        final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-
-        final Category category = Category.builder()
-                .categoryColor(categoryColor.get())
+        categoryColor = categoryColorRepository.findById(1L).get();
+        category = Category.builder()
+                .categoryColor(categoryColor)
                 .user(user)
                 .categoryTitle("국어")
                 .categoryRemove(false)
                 .categoryEmoticon("🍅")
                 .build();
+    }
+
+    @Test
+    void 카테고리등록() {
+        //given
 
         //when
         final Category saveCategory = categoryRepository.save(category);
@@ -68,7 +69,7 @@ class CategoryRepositoryTest {
         //then
         assertThat(saveCategory).isNotNull();
         assertThat(saveCategory.getUser().getId()).isEqualTo(user.getId());
-        assertThat(saveCategory.getCategoryColor().getCategoryColorId()).isEqualTo(categoryColor.get().getCategoryColorId());
+        assertThat(saveCategory.getCategoryColor().getCategoryColorId()).isEqualTo(categoryColor.getCategoryColorId());
         assertThat(saveCategory.getCategoryRemove()).isFalse();
         assertThat(saveCategory.getCategoryEmoticon()).isEqualTo("🍅");
     }
@@ -90,14 +91,7 @@ class CategoryRepositoryTest {
         @Test
         void 카테고리1개() {
             //given
-            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-            categoryRepository.save(Category.builder()
-                    .categoryColor(categoryColor.get())
-                    .user(user)
-                    .categoryTitle("국어")
-                    .categoryRemove(false)
-                    .categoryEmoticon("🍅")
-                    .build());
+            categoryRepository.save(category);
 
             //when
             final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
@@ -110,16 +104,9 @@ class CategoryRepositoryTest {
         @Test
         void 카테고리1개_삭제된카테고리1개() {
             //given
-            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
+            categoryRepository.save(category);
             categoryRepository.save(Category.builder()
-                    .categoryColor(categoryColor.get())
-                    .user(user)
-                    .categoryTitle("국어")
-                    .categoryRemove(false)
-                    .categoryEmoticon("🍅")
-                    .build());
-            categoryRepository.save(Category.builder()
-                    .categoryColor(categoryColor.get())
+                    .categoryColor(categoryColor)
                     .user(user)
                     .categoryTitle("국어")
                     .categoryRemove(true)
@@ -137,28 +124,19 @@ class CategoryRepositoryTest {
 
     @Nested
     class 카테고리수정 {
-        final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-        final Category category = Category.builder()
-                .categoryColor(categoryColor.get())
-                .user(user)
-                .categoryTitle("국어")
-                .categoryRemove(false)
-                .categoryEmoticon("🍅")
-                .build();
 
         @Test
         void 카테고리_이름수정() {
             //given
             final String changeTitle = "수학";
             final Category saveCategory = categoryRepository.save(category);
-            final Category findCategory = categoryRepository.findById(saveCategory.getId()).get();
             final Category changCategory = Category.builder()
-                    .id(findCategory.getId())
-                    .categoryColor(findCategory.getCategoryColor())
-                    .user(findCategory.getUser())
+                    .id(saveCategory.getId())
+                    .categoryColor(saveCategory.getCategoryColor())
+                    .user(saveCategory.getUser())
                     .categoryTitle(changeTitle)
-                    .categoryRemove(findCategory.getCategoryRemove())
-                    .categoryEmoticon(findCategory.getCategoryEmoticon())
+                    .categoryRemove(saveCategory.getCategoryRemove())
+                    .categoryEmoticon(saveCategory.getCategoryEmoticon())
                     .build();
 
             //when
@@ -168,22 +146,21 @@ class CategoryRepositoryTest {
             assertThat(result).isNotNull();
             assertThat(result.getCategoryTitle()).isEqualTo(changeTitle);
             assertThat(result.getCategoryTitle()).isNotEqualTo("국어");
-            assertThat(result.getCategoryColor()).isEqualTo(categoryColor.get());
+            assertThat(result.getCategoryColor()).isEqualTo(categoryColor);
         }
 
         @Test
         void 카테고리_색상수정() {
             //given
-            final Optional<CategoryColor> changeCategoryColor = categoryColorRepository.findById(2L);
             final Category saveCategory = categoryRepository.save(category);
-            final Category findCategory = categoryRepository.findById(saveCategory.getId()).get();
+            final CategoryColor changeCategoryColor = categoryColorRepository.findById(2L).get();
             final Category changCategory = Category.builder()
-                    .id(findCategory.getId())
-                    .categoryColor(changeCategoryColor.get())
-                    .user(findCategory.getUser())
-                    .categoryTitle(findCategory.getCategoryTitle())
-                    .categoryRemove(findCategory.getCategoryRemove())
-                    .categoryEmoticon(findCategory.getCategoryEmoticon())
+                    .id(saveCategory.getId())
+                    .categoryColor(changeCategoryColor)
+                    .user(saveCategory.getUser())
+                    .categoryTitle(saveCategory.getCategoryTitle())
+                    .categoryRemove(saveCategory.getCategoryRemove())
+                    .categoryEmoticon(saveCategory.getCategoryEmoticon())
                     .build();
 
             //when
@@ -191,23 +168,22 @@ class CategoryRepositoryTest {
 
             //then
             assertThat(result).isNotNull();
-            assertThat(result.getCategoryColor()).isEqualTo(changeCategoryColor.get());
-            assertThat(result.getCategoryColor()).isNotEqualTo(categoryColor.get());
+            assertThat(result.getCategoryColor()).isEqualTo(changeCategoryColor);
+            assertThat(result.getCategoryColor()).isNotEqualTo(categoryColor);
             assertThat(result.getCategoryTitle()).isEqualTo("국어");
         }
 
         @Test
         void 카테고리_이모티콘수정() {
             //given
-            final String changeEmoticon = "☘️";
             final Category saveCategory = categoryRepository.save(category);
-            final Category findCategory = categoryRepository.findById(saveCategory.getId()).get();
+            final String changeEmoticon = "☘️";
             final Category changCategory = Category.builder()
-                    .id(findCategory.getId())
-                    .categoryColor(findCategory.getCategoryColor())
-                    .user(findCategory.getUser())
-                    .categoryTitle(findCategory.getCategoryTitle())
-                    .categoryRemove(findCategory.getCategoryRemove())
+                    .id(saveCategory.getId())
+                    .categoryColor(saveCategory.getCategoryColor())
+                    .user(saveCategory.getUser())
+                    .categoryTitle(saveCategory.getCategoryTitle())
+                    .categoryRemove(saveCategory.getCategoryRemove())
                     .categoryEmoticon(changeEmoticon)
                     .build();
 
@@ -218,7 +194,7 @@ class CategoryRepositoryTest {
             assertThat(result).isNotNull();
             assertThat(result.getCategoryEmoticon()).isEqualTo(changeEmoticon);
             assertThat(result.getCategoryEmoticon()).isNotEqualTo("🍅");
-            assertThat(result.getCategoryColor()).isEqualTo(categoryColor.get());
+            assertThat(result.getCategoryColor()).isEqualTo(categoryColor);
         }
     }
 
@@ -228,25 +204,17 @@ class CategoryRepositoryTest {
         @Test
         void 카테고리_삭제필드변경() {
             //given
-            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-            final Category category = categoryRepository.save(Category.builder()
-                    .categoryColor(categoryColor.get())
-                    .user(user)
-                    .categoryTitle("국어")
-                    .categoryRemove(false)
-                    .categoryEmoticon("🍅")
-                    .build());
             final String changeTitle = "수학";
-            final Category findCategory = categoryRepository.findById(category.getId()).orElse(null);
+            final Category saveCategory = categoryRepository.save(category);
             final Category changCategory = Category.builder()
-                    .id(findCategory.getId())
-                    .createTime(findCategory.getCreateTime())
+                    .id(saveCategory.getId())
+                    .createTime(saveCategory.getCreateTime())
                     .deleteTime(LocalDateTime.now())
-                    .categoryColor(findCategory.getCategoryColor())
-                    .user(findCategory.getUser())
+                    .categoryColor(saveCategory.getCategoryColor())
+                    .user(saveCategory.getUser())
                     .categoryTitle(changeTitle)
                     .categoryRemove(true)
-                    .categoryEmoticon(findCategory.getCategoryEmoticon())
+                    .categoryEmoticon(saveCategory.getCategoryEmoticon())
                     .build();
 
             //when
@@ -261,18 +229,11 @@ class CategoryRepositoryTest {
         @Test
         void 카테고리_DB삭제() {
             //given
-            final Optional<CategoryColor> categoryColor = categoryColorRepository.findById(1L);
-            final Category category = categoryRepository.save(Category.builder()
-                    .categoryColor(categoryColor.get())
-                    .user(user)
-                    .categoryTitle("국어")
-                    .categoryRemove(false)
-                    .categoryEmoticon("🍅")
-                    .build());
+            final Category saveCategory = categoryRepository.save(category);
 
             //when
-            categoryRepository.deleteByUserAndId(user, category.getId());
-            final Category findCategory = categoryRepository.findById(category.getId()).orElse(null);
+            categoryRepository.deleteByUserAndId(user, saveCategory.getId());
+            final Category findCategory = categoryRepository.findById(saveCategory.getId()).orElse(null);
 
             //then
             assertThat(findCategory).isNull();

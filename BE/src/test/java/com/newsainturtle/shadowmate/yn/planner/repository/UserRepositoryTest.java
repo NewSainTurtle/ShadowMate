@@ -22,8 +22,8 @@ class UserRepositoryTest {
     void 탈퇴하지않은사용자조회() {
         //given
         final User user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -47,8 +47,8 @@ class UserRepositoryTest {
     void 탈퇴하지않은사용자조회_탈퇴한경우() {
         //given
         final User user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)

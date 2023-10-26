@@ -37,6 +37,9 @@ class AuthControllerTest {
 
     private MockMvc mockMvc;
     private Gson gson;
+    private final String email = "yntest@shadowmate.com";
+    private final String password = "yntest1234";
+    private final String nickname = "거북이";
 
     @BeforeEach
     void init() {
@@ -54,7 +57,7 @@ class AuthControllerTest {
         void 실패_이메일중복() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
-                    .email("test1234@naver.com")
+                    .email(email)
                     .build();
             doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL)).when(authServiceImpl).sendEmailAuthenticationCode(any());
 
@@ -109,7 +112,7 @@ class AuthControllerTest {
         void 실패_이미인증된이메일() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
-                    .email("test1234@test.com")
+                    .email(email)
                     .build();
             doThrow(new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL)).when(authServiceImpl).sendEmailAuthenticationCode(any());
 
@@ -128,7 +131,7 @@ class AuthControllerTest {
         void 실패_이메일전송실패() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
-                    .email("test1234@test.com")
+                    .email(email)
                     .build();
             doThrow(new AuthException(AuthErrorResult.FAIL_SEND_EMAIL)).when(authServiceImpl).sendEmailAuthenticationCode(any());
 
@@ -147,7 +150,7 @@ class AuthControllerTest {
         void 성공_이메일중복아님() throws Exception {
             //given
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
-                    .email("test1234@naver.com")
+                    .email(email)
                     .build();
 
             //when
@@ -165,7 +168,6 @@ class AuthControllerTest {
     @Nested
     class 이메일인증코드확인 {
         final String url = "/api/auth/email-authentication/check";
-        final String email = "test@test.com";
         final String code = "code127";
 
         @Test
@@ -334,8 +336,8 @@ class AuthControllerTest {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email(null)
-                    .password("test1234")
-                    .nickname("테스트중")
+                    .password(password)
+                    .nickname(nickname)
                     .build();
 
             //when
@@ -355,8 +357,8 @@ class AuthControllerTest {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
                     .email("test1234")
-                    .password("test1234")
-                    .nickname("테스트중")
+                    .password(password)
+                    .nickname(nickname)
                     .build();
 
             //when
@@ -374,9 +376,9 @@ class AuthControllerTest {
         void 실패_잘못된비밀번호형식_null() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
-                    .email("test1234@naver.com")
+                    .email(email)
                     .password(null)
-                    .nickname("테스트중")
+                    .nickname(nickname)
                     .build();
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -393,9 +395,9 @@ class AuthControllerTest {
         void 실패_잘못된비밀번호형식_길이() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
-                    .email("test1234@naver.com")
+                    .email(email)
                     .password("t")
-                    .nickname("테스트중")
+                    .nickname(nickname)
                     .build();
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -412,8 +414,8 @@ class AuthControllerTest {
         void 실패_잘못된닉네임형식_null() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
-                    .email("test1234@naver.com")
-                    .password("test1234")
+                    .email(email)
+                    .password(password)
                     .nickname(null)
                     .build();
             //when
@@ -431,8 +433,8 @@ class AuthControllerTest {
         void 실패_잘못된닉네임형식_길이() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
-                    .email("test1234@naver.com")
-                    .password("test1234")
+                    .email(email)
+                    .password(password)
                     .nickname("테")
                     .build();
             //when
@@ -450,11 +452,53 @@ class AuthControllerTest {
         void 실패_중복이메일() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
-                    .email("test1234@naver.com")
-                    .password("test1234")
-                    .nickname("테스트중")
+                    .email(email)
+                    .password(password)
+                    .nickname(nickname)
                     .build();
             doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL)).when(authServiceImpl).join(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .content(gson.toJson(joinRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_임시이메일_타임아웃() throws Exception {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email(email)
+                    .password(password)
+                    .nickname(nickname)
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT)).when(authServiceImpl).join(any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .content(gson.toJson(joinRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_임시이메일_인증안됨() throws Exception {
+            //given
+            final JoinRequest joinRequest = JoinRequest.builder()
+                    .email(email)
+                    .password(password)
+                    .nickname(nickname)
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.UNAUTHENTICATED_EMAIL)).when(authServiceImpl).join(any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -471,9 +515,9 @@ class AuthControllerTest {
         void 성공_회원가입() throws Exception {
             //given
             final JoinRequest joinRequest = JoinRequest.builder()
-                    .email("test1234@naver.com")
-                    .password("test1234")
-                    .nickname("테스트중")
+                    .email(email)
+                    .password(password)
+                    .nickname(nickname)
                     .build();
 
             //when

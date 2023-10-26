@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateProfileImageRequest;
 import com.newsainturtle.shadowmate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,15 @@ public class UserController {
                 SUCCESS_SEARCH_NICKNAME, userService.searchNickname(principalDetails.getUser(), nickname)));
     }
 
+    @PutMapping("/{userId}/images")
+    public ResponseEntity<BaseResponse> updateProfileImage(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody final UpdateProfileImageRequest updateProfileImageRequest) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        userService.updateProfileImage(userId, updateProfileImageRequest.getNewProfileImage());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_PROFILEIMAGE));
+    }
+  
     @DeleteMapping("/{userId}")
     public ResponseEntity<BaseResponse> deleteUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId) {

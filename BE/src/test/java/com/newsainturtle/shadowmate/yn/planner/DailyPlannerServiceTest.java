@@ -76,18 +76,26 @@ class DailyPlannerServiceTest {
     @Mock
     private FollowRepository followRepository;
 
-    final User user = User.builder()
+    private final String email = "yntest@shadowmate.com";
+    private final String password = "yntest1234";
+    private final String nickname = "거북이";
+    private final SocialType socialType = SocialType.BASIC;
+    private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
+    private final String date = "2023-09-25";
+    private final String todoContent = "수능완성 수학 과목별 10문제";
+
+    private final User user = User.builder()
             .id(1L)
-            .email("test@test.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
-            .nickname("거북이")
-            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .email(email)
+            .password(password)
+            .socialLogin(socialType)
+            .nickname(nickname)
+            .plannerAccessScope(plannerAccessScope)
             .withdrawal(false)
             .build();
     final DailyPlanner dailyPlanner = DailyPlanner.builder()
             .id(1L)
-            .dailyPlannerDay(Date.valueOf("2023-09-25"))
+            .dailyPlannerDay(Date.valueOf(date))
             .user(user)
             .build();
 
@@ -99,21 +107,41 @@ class DailyPlannerServiceTest {
     @Nested
     class 일일플래너할일 {
 
+        final CategoryColor categoryColor = CategoryColor.builder()
+                .categoryColorCode("#D9B5D9")
+                .build();
+        final Category category = Category.builder()
+                .id(1L)
+                .categoryColor(categoryColor)
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build();
+        final Todo todo = Todo.builder()
+                .id(1L)
+                .category(category)
+                .todoContent(todoContent)
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .build();
+
         @Nested
         class 일일플래너할일등록 {
+
+            final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
+                    .date(date)
+                    .categoryId(1L)
+                    .todoContent(todoContent)
+                    .build();
 
             @Test
             void 실패_유효하지않은카테고리ID() {
                 //given
-                final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
-                        .date("2023-09-25")
-                        .categoryId(1L)
-                        .todoContent("수능완성 수학 과목별 10문제")
-                        .build();
-                doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(null).when(categoryRepository).findByUserAndId(user, addDailyTodoRequest.getCategoryId());
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyTodo(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyTodo(user, addDailyTodoRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_CATEGORY);
@@ -122,15 +150,15 @@ class DailyPlannerServiceTest {
             @Test
             void 성공_카테고리Null() {
                 //given
-                final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
-                        .date("2023-09-25")
+                final AddDailyTodoRequest addDailyTodoRequest = AddDailyTodoRequest.builder()
+                        .date(date)
                         .categoryId(0L)
-                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoContent(todoContent)
                         .build();
                 final Todo todo = Todo.builder()
                         .id(1L)
                         .category(null)
-                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoContent(todoContent)
                         .todoStatus(TodoStatus.EMPTY)
                         .dailyPlanner(dailyPlanner)
                         .build();
@@ -138,7 +166,7 @@ class DailyPlannerServiceTest {
                 doReturn(todo).when(todoRepository).save(any(Todo.class));
 
                 //when
-                final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, request);
+                final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, addDailyTodoRequest);
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
@@ -151,35 +179,12 @@ class DailyPlannerServiceTest {
             @Test
             void 성공() {
                 //given
-                final AddDailyTodoRequest request = AddDailyTodoRequest.builder()
-                        .date("2023-09-25")
-                        .categoryId(1L)
-                        .todoContent("수능완성 수학 과목별 10문제")
-                        .build();
-                final CategoryColor categoryColor = CategoryColor.builder()
-                        .categoryColorCode("D9B5D9")
-                        .build();
-                final Category category = Category.builder()
-                        .id(1L)
-                        .categoryColor(categoryColor)
-                        .user(user)
-                        .categoryTitle("국어")
-                        .categoryRemove(false)
-                        .categoryEmoticon("🍅")
-                        .build();
-                final Todo todo = Todo.builder()
-                        .id(1L)
-                        .category(category)
-                        .todoContent("수능완성 수학 과목별 10문제")
-                        .todoStatus(TodoStatus.EMPTY)
-                        .dailyPlanner(dailyPlanner)
-                        .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
                 doReturn(category).when(categoryRepository).findByUserAndId(any(), any(Long.class));
                 doReturn(todo).when(todoRepository).save(any(Todo.class));
 
                 //when
-                final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, request);
+                final AddDailyTodoResponse addDailyTodoResponse = dailyPlannerServiceImpl.addDailyTodo(user, addDailyTodoRequest);
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
@@ -195,19 +200,27 @@ class DailyPlannerServiceTest {
         @Nested
         class 일일플래너할일수정 {
 
+            final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                    .date(date)
+                    .todoId(1L)
+                    .todoContent(todoContent)
+                    .categoryId(0L)
+                    .todoStatus("완료")
+                    .build();
+
             @Test
             void 실패_유효하지않은할일상태값() {
                 //given
-                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
-                        .date("2023-09-25")
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date(date)
                         .todoId(1L)
-                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoContent(todoContent)
                         .categoryId(1L)
                         .todoStatus("??")
                         .build();
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, updateDailyTodoRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO_STATUS);
@@ -217,10 +230,10 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_유효하지않은일일플래너() {
                 //given
-                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
-                        .date("2023-09-25")
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date(date)
                         .todoId(1L)
-                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoContent(todoContent)
                         .categoryId(1L)
                         .todoStatus("완료")
                         .build();
@@ -228,7 +241,7 @@ class DailyPlannerServiceTest {
                 doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, updateDailyTodoRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -237,19 +250,19 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_유효하지않은카테고리() {
                 //given
-                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
-                        .date("2023-09-25")
+                final UpdateDailyTodoRequest updateDailyTodoRequest = UpdateDailyTodoRequest.builder()
+                        .date(date)
                         .todoId(1L)
-                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoContent(todoContent)
                         .categoryId(1L)
                         .todoStatus("완료")
                         .build();
 
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(null).when(categoryRepository).findByUserAndId(user, updateDailyTodoRequest.getCategoryId());
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, updateDailyTodoRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_CATEGORY);
@@ -258,19 +271,11 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_유효하지않은할일() {
                 //given
-                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
-                        .date("2023-09-25")
-                        .todoId(1L)
-                        .todoContent("수능완성 수학 과목별 10문제")
-                        .categoryId(0L)
-                        .todoStatus("완료")
-                        .build();
-
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(updateDailyTodoRequest.getTodoId(), dailyPlanner);
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.updateDailyTodo(user, updateDailyTodoRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
@@ -279,36 +284,11 @@ class DailyPlannerServiceTest {
             @Test
             void 성공() {
                 //given
-                final UpdateDailyTodoRequest request = UpdateDailyTodoRequest.builder()
-                        .date("2023-09-25")
-                        .todoId(1L)
-                        .todoContent("수능완성 수학 과목별 10문제")
-                        .categoryId(0L)
-                        .todoStatus("완료")
-                        .build();
-                final CategoryColor categoryColor = CategoryColor.builder()
-                        .categoryColorCode("D9B5D9")
-                        .build();
-                final Category category = Category.builder()
-                        .id(1L)
-                        .categoryColor(categoryColor)
-                        .user(user)
-                        .categoryTitle("국어")
-                        .categoryRemove(false)
-                        .categoryEmoticon("🍅")
-                        .build();
-                final Todo todo = Todo.builder()
-                        .id(1L)
-                        .category(category)
-                        .todoContent("수능완성 수학 과목별 10문제")
-                        .todoStatus(TodoStatus.EMPTY)
-                        .dailyPlanner(dailyPlanner)
-                        .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(updateDailyTodoRequest.getTodoId(), dailyPlanner);
 
                 //when
-                dailyPlannerServiceImpl.updateDailyTodo(user, request);
+                dailyPlannerServiceImpl.updateDailyTodo(user, updateDailyTodoRequest);
 
                 //then
 
@@ -323,17 +303,18 @@ class DailyPlannerServiceTest {
         @Nested
         class 일일플래너할일삭제 {
 
+            final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                    .date(date)
+                    .todoId(1L)
+                    .build();
+
             @Test
             void 실패_유효하지않은일일플래너() {
                 //given
-                final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
-                        .date("2023-09-25")
-                        .todoId(1L)
-                        .build();
                 doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, removeDailyTodoRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -342,16 +323,11 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_유효하지않은할일() {
                 //given
-                final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
-                        .date("2023-09-25")
-                        .todoId(1L)
-                        .build();
-
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeDailyTodo(user, removeDailyTodoRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
@@ -360,34 +336,11 @@ class DailyPlannerServiceTest {
             @Test
             void 성공() {
                 //given
-                final RemoveDailyTodoRequest request = RemoveDailyTodoRequest.builder()
-                        .date("2023-09-25")
-                        .todoId(1L)
-                        .build();
-                final CategoryColor categoryColor = CategoryColor.builder()
-                        .categoryColorCode("D9B5D9")
-                        .build();
-                final Category category = Category.builder()
-                        .id(1L)
-                        .categoryColor(categoryColor)
-                        .user(user)
-                        .categoryTitle("국어")
-                        .categoryRemove(false)
-                        .categoryEmoticon("🍅")
-                        .build();
-                final Todo todo = Todo.builder()
-                        .id(1L)
-                        .category(category)
-                        .todoContent("수능완성 수학 과목별 10문제")
-                        .todoStatus(TodoStatus.EMPTY)
-                        .dailyPlanner(dailyPlanner)
-                        .build();
-
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(request.getTodoId(), dailyPlanner);
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
 
                 //when
-                dailyPlannerServiceImpl.removeDailyTodo(user, request);
+                dailyPlannerServiceImpl.removeDailyTodo(user, removeDailyTodoRequest);
 
                 //then
 
@@ -405,7 +358,7 @@ class DailyPlannerServiceTest {
         void 오늘의다짐편집() {
             //given
             final UpdateTodayGoalRequest updateTodayGoalRequest = UpdateTodayGoalRequest.builder()
-                    .date("2023-09-26")
+                    .date(date)
                     .todayGoal("🎧 Dreams Come True - NCT127")
                     .build();
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
@@ -435,7 +388,7 @@ class DailyPlannerServiceTest {
         void 내일의다짐편집() {
             //given
             final UpdateTomorrowGoalRequest updateTomorrowGoalRequest = UpdateTomorrowGoalRequest.builder()
-                    .date("2023-09-26")
+                    .date(date)
                     .tomorrowGoal("이제는 더이상 물러나 곳이 없다.")
                     .build();
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
@@ -465,7 +418,7 @@ class DailyPlannerServiceTest {
         void 오늘의회고편집() {
             //given
             final UpdateRetrospectionRequest updateRetrospectionRequest = UpdateRetrospectionRequest.builder()
-                    .date("2023-09-26")
+                    .date(date)
                     .retrospection("오늘 계획했던 일을 모두 끝냈다!!! 신남~~")
                     .build();
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
@@ -495,7 +448,7 @@ class DailyPlannerServiceTest {
         void 오늘의회고사진업로드_null() {
             //given
             final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
-                    .date("2023-09-26")
+                    .date(date)
                     .retrospectionImage(null)
                     .build();
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
@@ -525,7 +478,7 @@ class DailyPlannerServiceTest {
         void 오늘의회고사진업로드() {
             //given
             final UpdateRetrospectionImageRequest updateRetrospectionImageRequest = UpdateRetrospectionImageRequest.builder()
-                    .date("2023-09-26")
+                    .date(date)
                     .retrospectionImage("https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg")
                     .build();
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
@@ -558,18 +511,18 @@ class DailyPlannerServiceTest {
         final Long plannerWriterId = 1L;
         final User user2 = User.builder()
                 .id(2L)
-                .email("test2@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
+                .email("jntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
                 .nickname("토끼")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .plannerAccessScope(plannerAccessScope)
                 .withdrawal(false)
                 .build();
 
         @Nested
         class 좋아요등록 {
             final AddDailyLikeRequest addDailyLikeRequest = AddDailyLikeRequest.builder()
-                    .date("2023-09-28")
+                    .date(date)
                     .build();
 
             @Test
@@ -651,7 +604,7 @@ class DailyPlannerServiceTest {
         @Nested
         class 좋아요취소 {
             final RemoveDailyLikeRequest removeDailyLikeRequest = RemoveDailyLikeRequest.builder()
-                    .date("2023-09-28")
+                    .date(date)
                     .build();
 
             @Test
@@ -711,13 +664,12 @@ class DailyPlannerServiceTest {
 
     @Nested
     class 타임테이블 {
-        final String date = "2023-09-25";
         final String startTime = "2023-09-25 23:50";
         final String endTime = "2023-09-26 01:30";
         final Todo todo = Todo.builder()
                 .id(1L)
                 .category(null)
-                .todoContent("수능완성 수학 과목별 10문제")
+                .todoContent(todoContent)
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .build();
@@ -731,10 +683,17 @@ class DailyPlannerServiceTest {
         @Nested
         class 타임테이블등록 {
 
+            final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
+                    .date(date)
+                    .startTime(startTime)
+                    .endTime(endTime)
+                    .todoId(todo.getId())
+                    .build();
+
             @Test
             void 실패_잘못된시간값_끝시간이_시간시간보다_빠름() {
                 //given
-                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
                         .startTime(startTime)
                         .endTime("2023-09-25 14:10")
@@ -742,7 +701,7 @@ class DailyPlannerServiceTest {
                         .build();
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME);
@@ -751,7 +710,7 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_잘못된시간값_그날의시간에포함되지않음_과거() {
                 //given
-                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
                         .startTime("2023-09-25 03:50")
                         .endTime(endTime)
@@ -759,7 +718,7 @@ class DailyPlannerServiceTest {
                         .build();
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME);
@@ -768,7 +727,7 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_잘못된시간값_그날의시간에포함되지않음_미래() {
                 //given
-                final AddTimeTableRequest request = AddTimeTableRequest.builder()
+                final AddTimeTableRequest addTimeTableRequest = AddTimeTableRequest.builder()
                         .date(date)
                         .startTime(startTime)
                         .endTime("2023-09-26 04:10")
@@ -776,7 +735,7 @@ class DailyPlannerServiceTest {
                         .build();
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME);
@@ -785,16 +744,10 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_유효하지않은플래너() {
                 //given
-                final AddTimeTableRequest request = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .todoId(todo.getId())
-                        .build();
                 doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -803,16 +756,10 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_유효하지않은할일() {
                 //given
-                final AddTimeTableRequest request = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .todoId(todo.getId())
-                        .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 doReturn(null).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
@@ -821,16 +768,10 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_이미타임테이블시간이존재() {
                 //given
-                final AddTimeTableRequest request = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .todoId(todo.getId())
-                        .build();
                 final Todo todo = Todo.builder()
                         .id(1L)
                         .category(null)
-                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoContent(todoContent)
                         .todoStatus(TodoStatus.EMPTY)
                         .dailyPlanner(dailyPlanner)
                         .timeTable(timeTable)
@@ -839,7 +780,7 @@ class DailyPlannerServiceTest {
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE);
@@ -847,17 +788,11 @@ class DailyPlannerServiceTest {
 
             @Test
             void 성공() {
-                final AddTimeTableRequest request = AddTimeTableRequest.builder()
-                        .date(date)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .todoId(todo.getId())
-                        .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
 
                 //when
-                dailyPlannerServiceImpl.addTimeTable(user, request);
+                dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest);
 
                 //then
 
@@ -871,17 +806,18 @@ class DailyPlannerServiceTest {
         @Nested
         class 타임테이블삭제 {
 
+            final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
+                    .date(date)
+                    .todoId(todo.getId())
+                    .build();
+
             @Test
             void 실패_유효하지않은플래너() {
                 //given
-                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
-                        .date(date)
-                        .todoId(todo.getId())
-                        .build();
                 doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -890,15 +826,11 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_유효하지않은할일() {
                 //given
-                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
-                        .date(date)
-                        .todoId(todo.getId())
-                        .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 doReturn(null).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
@@ -907,15 +839,11 @@ class DailyPlannerServiceTest {
             @Test
             void 실패_타임테이블값없음() {
                 //given
-                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
-                        .date(date)
-                        .todoId(todo.getId())
-                        .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, request));
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME_TABLE);
@@ -927,21 +855,17 @@ class DailyPlannerServiceTest {
                 final Todo todo = Todo.builder()
                         .id(1L)
                         .category(null)
-                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoContent(todoContent)
                         .todoStatus(TodoStatus.EMPTY)
                         .dailyPlanner(dailyPlanner)
                         .timeTable(timeTable)
-                        .build();
-                final RemoveTimeTableRequest request = RemoveTimeTableRequest.builder()
-                        .date(date)
-                        .todoId(todo.getId())
                         .build();
 
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
 
                 //when
-                dailyPlannerServiceImpl.removeTimeTable(user, request);
+                dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest);
 
                 //then
 
@@ -956,7 +880,8 @@ class DailyPlannerServiceTest {
 
     @Nested
     class 일일플래너조회 {
-        final long plannerWriterId = 1L;
+        final long userId = 1L;
+        final long plannerWriterId = 2L;
         final String today = "2023-10-10";
 
         @Test
@@ -965,7 +890,7 @@ class DailyPlannerServiceTest {
             final String invalidToday = "2023.10.10";
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, invalidToday));
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchDailyPlanner(user, userId, invalidToday));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE_FORMAT);
@@ -974,10 +899,10 @@ class DailyPlannerServiceTest {
         @Test
         void 실패_유효하지않은플래너작성자() {
             //given
-            doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(userId);
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today));
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.searchDailyPlanner(user, userId, today));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
@@ -986,18 +911,18 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_플래너없을때() {
             //given
-            doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(userId);
             doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(Date.class));
 
             //when
-            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, userId, today);
 
             //then
             assertThat(searchDailyPlannerResponse).isNotNull();
             assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
-            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchDailyPlannerResponse.getDday()).isNull();
             assertThat(searchDailyPlannerResponse.getTodayGoal()).isNull();
             assertThat(searchDailyPlannerResponse.getRetrospection()).isNull();
@@ -1013,28 +938,28 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_플래너있을때_비공개() {
             //given
-            final User user2 = User.builder()
-                    .id(2L)
-                    .email("test@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("거북이")
+            final User plannerWriter = User.builder()
+                    .id(plannerWriterId)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
+                    .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.PRIVATE)
                     .withdrawal(false)
                     .build();
             final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                    .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-09-25"))
-                    .user(user2)
+                    .id(plannerWriterId)
+                    .dailyPlannerDay(Date.valueOf(date))
+                    .user(plannerWriter)
                     .build();
 
-            doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any());
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(Date.class));
 
             //when
-            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, 2L, today);
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
 
             //then
             assertThat(searchDailyPlannerResponse).isNotNull();
@@ -1055,29 +980,29 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_플래너있을때_친구공개_친구아님() {
             //given
-            final User user2 = User.builder()
-                    .id(2L)
-                    .email("test@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("거북이")
+            final User plannerWriter = User.builder()
+                    .id(plannerWriterId)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
+                    .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.FOLLOW)
                     .withdrawal(false)
                     .build();
             final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                    .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-09-25"))
-                    .user(user2)
+                    .id(plannerWriterId)
+                    .dailyPlannerDay(Date.valueOf(date))
+                    .user(plannerWriter)
                     .build();
 
-            doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any());
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(null).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(Date.class));
 
             //when
-            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, 2L, today);
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
 
             //then
             assertThat(searchDailyPlannerResponse).isNotNull();
@@ -1098,24 +1023,24 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_플래너있을때_친구공개_친구() {
             //given
-            final User user2 = User.builder()
-                    .id(2L)
-                    .email("test@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("거북이")
+            final User plannerWriter = User.builder()
+                    .id(plannerWriterId)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
+                    .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.FOLLOW)
                     .withdrawal(false)
                     .build();
             final Follow follow = Follow.builder()
                     .id(1L)
                     .followerId(user)
-                    .followingId(user2)
+                    .followingId(plannerWriter)
                     .build();
             final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                    .id(2L)
+                    .id(plannerWriterId)
                     .dailyPlannerDay(Date.valueOf(today))
-                    .user(user2)
+                    .user(plannerWriter)
                     .build();
             final Date birthday = Date.valueOf(LocalDate.now());
             final Dday dday = Dday.builder()
@@ -1138,7 +1063,7 @@ class DailyPlannerServiceTest {
             todoList.add(Todo.builder()
                     .id(1L)
                     .category(category)
-                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoContent(todoContent)
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .timeTable(TimeTable.builder()
@@ -1147,7 +1072,7 @@ class DailyPlannerServiceTest {
                             .build())
                     .build());
 
-            doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any());
+            doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
@@ -1179,7 +1104,7 @@ class DailyPlannerServiceTest {
         void 성공_플래너있을때_전체공개() {
             //given
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                    .id(1L)
+                    .id(userId)
                     .dailyPlannerDay(Date.valueOf(today))
                     .user(user)
                     .build();
@@ -1204,7 +1129,7 @@ class DailyPlannerServiceTest {
             todoList.add(Todo.builder()
                     .id(1L)
                     .category(category)
-                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoContent(todoContent)
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .timeTable(TimeTable.builder()
@@ -1213,7 +1138,7 @@ class DailyPlannerServiceTest {
                             .build())
                     .build());
 
-            doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(userId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
             doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
@@ -1222,12 +1147,12 @@ class DailyPlannerServiceTest {
 
 
             //when
-            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, userId, today);
 
             //then
             assertThat(searchDailyPlannerResponse).isNotNull();
             assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
-            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchDailyPlannerResponse.getDday()).isEqualTo(birthday.toString());
             assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
@@ -1244,9 +1169,24 @@ class DailyPlannerServiceTest {
 
     @Nested
     class 캘린더조회 {
-        final long plannerWriterId = 1L;
+        final long plannerWriterId = 2L;
         final String dateStr = "2023-10-01";
         final int lastDay = 31;
+
+        final User plannerWriter = User.builder()
+                .id(plannerWriterId)
+                .email("jntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
+                .nickname("토끼")
+                .plannerAccessScope(plannerAccessScope)
+                .withdrawal(false)
+                .build();
+        final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                .id(2L)
+                .dailyPlannerDay(Date.valueOf("2023-10-01"))
+                .user(plannerWriter)
+                .build();
 
         @Test
         void 실패_유효하지않은날짜형식() {
@@ -1288,10 +1228,10 @@ class DailyPlannerServiceTest {
         void 성공_비공개() {
             //given
             final User plannerWriter = User.builder()
-                    .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
+                    .id(plannerWriterId)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
                     .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.PRIVATE)
                     .withdrawal(false)
@@ -1312,10 +1252,10 @@ class DailyPlannerServiceTest {
         void 성공_친구공개_친구아님() {
             //given
             final User plannerWriter = User.builder()
-                    .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
+                    .id(plannerWriterId)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
                     .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.FOLLOW)
                     .withdrawal(false)
@@ -1336,10 +1276,10 @@ class DailyPlannerServiceTest {
         void 성공_친구공개_친구() {
             //given
             final User plannerWriter = User.builder()
-                    .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
+                    .id(plannerWriterId)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
                     .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.FOLLOW)
                     .withdrawal(false)
@@ -1372,21 +1312,6 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_전체공개_할일등록안함() {
             //given
-            final User plannerWriter = User.builder()
-                    .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("토끼")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .withdrawal(false)
-                    .build();
-            final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                    .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
-                    .user(plannerWriter)
-                    .build();
-
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(0).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
@@ -1396,7 +1321,7 @@ class DailyPlannerServiceTest {
 
             //then
             assertThat(searchCalendarResponse).isNotNull();
-            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
@@ -1407,21 +1332,6 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_전체공개_할일60미만달성() {
             //given
-            final User plannerWriter = User.builder()
-                    .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("토끼")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .withdrawal(false)
-                    .build();
-            final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                    .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
-                    .user(plannerWriter)
-                    .build();
-
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
@@ -1432,7 +1342,7 @@ class DailyPlannerServiceTest {
 
             //then
             assertThat(searchCalendarResponse).isNotNull();
-            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
@@ -1443,21 +1353,6 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_전체공개_할일100미만60이상달성() {
             //given
-            final User plannerWriter = User.builder()
-                    .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("토끼")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .withdrawal(false)
-                    .build();
-            final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                    .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
-                    .user(plannerWriter)
-                    .build();
-
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
@@ -1468,7 +1363,7 @@ class DailyPlannerServiceTest {
 
             //then
             assertThat(searchCalendarResponse).isNotNull();
-            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
@@ -1479,21 +1374,6 @@ class DailyPlannerServiceTest {
         @Test
         void 성공_전체공개_할일100달성() {
             //given
-            final User plannerWriter = User.builder()
-                    .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("토끼")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .withdrawal(false)
-                    .build();
-            final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                    .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-01"))
-                    .user(plannerWriter)
-                    .build();
-
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(2).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
@@ -1504,7 +1384,7 @@ class DailyPlannerServiceTest {
 
             //then
             assertThat(searchCalendarResponse).isNotNull();
-            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PUBLIC.getScope());
+            assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
             assertThat(searchCalendarResponse.getDayList().get(0).getDate()).isEqualTo(dateStr);
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");

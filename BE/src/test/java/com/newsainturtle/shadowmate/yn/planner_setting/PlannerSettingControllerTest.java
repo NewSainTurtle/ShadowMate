@@ -5,9 +5,6 @@ import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
-import com.newsainturtle.shadowmate.planner.dto.request.AddDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.request.RemoveDailyTodoRequest;
-import com.newsainturtle.shadowmate.planner.dto.request.UpdateDailyTodoRequest;
 import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingController;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
@@ -66,15 +63,16 @@ class PlannerSettingControllerTest {
         @Nested
         class 카테고리등록 {
             final String url = "/api/planner-settings/{userId}/categories";
+            final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
+                    .categoryTitle("국어")
+                    .categoryEmoticon("🍅")
+                    .categoryColorId(1L)
+                    .build();
 
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
-                        .categoryTitle("국어")
-                        .categoryEmoticon("🍅")
-                        .categoryColorId(1L)
-                        .build();
+
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
                 //when
@@ -91,11 +89,6 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_없는카테고리색상() throws Exception {
                 //given
-                final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
-                        .categoryTitle("국어")
-                        .categoryEmoticon("🍅")
-                        .categoryColorId(1L)
-                        .build();
                 doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR)).when(plannerSettingServiceImpl).addCategory(any(), any(AddCategoryRequest.class));
 
                 //when
@@ -131,11 +124,6 @@ class PlannerSettingControllerTest {
             @Test
             void 성공_이모티콘Null아님() throws Exception {
                 //given
-                final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
-                        .categoryTitle("국어")
-                        .categoryEmoticon("🍅")
-                        .categoryColorId(1L)
-                        .build();
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -396,6 +384,9 @@ class PlannerSettingControllerTest {
     class 카테고리설정_실패케이스모음_유효하지않은요청값 {
 
         final String url = "/api/planner-settings/{userId}/categories";
+        final String categoryEmoticon = "🍅";
+        final long categoryColorId = 1L;
+        final long categoryId = 1L;
 
         @ParameterizedTest
         @MethodSource("invalidAddCategoryRequest")
@@ -418,20 +409,20 @@ class PlannerSettingControllerTest {
                     // 타이틀 Null
                     Arguments.of(AddCategoryRequest.builder()
                             .categoryTitle(null)
-                            .categoryEmoticon("🍅")
-                            .categoryColorId(1L)
+                            .categoryEmoticon(categoryEmoticon)
+                            .categoryColorId(categoryColorId)
                             .build()),
                     // 유효길이가 아닌 타이틀
                     Arguments.of(AddCategoryRequest.builder()
                             .categoryTitle("국")
-                            .categoryEmoticon("🍅")
-                            .categoryColorId(1L)
+                            .categoryEmoticon(categoryEmoticon)
+                            .categoryColorId(categoryColorId)
                             .build()),
                     // 유효길이가 아닌 이모티콘
                     Arguments.of(AddCategoryRequest.builder()
                             .categoryTitle(null)
                             .categoryEmoticon("🍅🍅")
-                            .categoryColorId(1L)
+                            .categoryColorId(categoryColorId)
                             .build())
             );
         }
@@ -458,28 +449,28 @@ class PlannerSettingControllerTest {
                     Arguments.of(UpdateCategoryRequest.builder()
                             .categoryId(null)
                             .categoryTitle("국어")
-                            .categoryEmoticon("🍅")
-                            .categoryColorId(1L)
+                            .categoryEmoticon(categoryEmoticon)
+                            .categoryColorId(categoryColorId)
                             .build()),
                     // 유효하지 않은 카테고리 타이틀
                     Arguments.of(UpdateCategoryRequest.builder()
-                            .categoryId(1L)
+                            .categoryId(categoryId)
                             .categoryTitle("국")
-                            .categoryEmoticon("🍅")
-                            .categoryColorId(1L)
+                            .categoryEmoticon(categoryEmoticon)
+                            .categoryColorId(categoryColorId)
                             .build()),
                     // 카테고리 타이틀 Null
                     Arguments.of(UpdateCategoryRequest.builder()
-                            .categoryId(1L)
+                            .categoryId(categoryId)
                             .categoryTitle(null)
-                            .categoryEmoticon("🍅")
-                            .categoryColorId(1L)
+                            .categoryEmoticon(categoryEmoticon)
+                            .categoryColorId(categoryColorId)
                             .build()),
                     // 카테고리 색상 번호 Null
                     Arguments.of(UpdateCategoryRequest.builder()
-                            .categoryId(1L)
+                            .categoryId(categoryId)
                             .categoryTitle("국어")
-                            .categoryEmoticon("🍅")
+                            .categoryEmoticon(categoryEmoticon)
                             .categoryColorId(null)
                             .build())
             );
@@ -490,13 +481,13 @@ class PlannerSettingControllerTest {
     @Nested
     class 플래너공개여부설정 {
         final String url = "/api/planner-settings/{userId}/access-scopes";
+        final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
+                .plannerAccessScope("비공개")
+                .build();
 
         @Test
         void 실패_없는사용자() throws Exception {
             //given
-            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
-                    .plannerAccessScope("비공개")
-                    .build();
             doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
             //when
@@ -532,9 +523,6 @@ class PlannerSettingControllerTest {
         @Test
         void 성공_플래너공개여부설정() throws Exception {
             //given
-            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
-                    .plannerAccessScope("비공개")
-                    .build();
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -554,13 +542,14 @@ class PlannerSettingControllerTest {
 
         @Nested
         class 디데이등록 {
+            final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
+                    .ddayTitle("생일")
+                    .ddayDate("2023-01-27")
+                    .build();
+
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
-                        .ddayTitle("생일")
-                        .ddayDate("2023-01-27")
-                        .build();
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
                 //when
@@ -577,10 +566,6 @@ class PlannerSettingControllerTest {
             @Test
             void 성공() throws Exception {
                 //given
-                final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
-                        .ddayTitle("생일")
-                        .ddayDate("2023-01-27")
-                        .build();
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -627,11 +612,12 @@ class PlannerSettingControllerTest {
 
         @Nested
         class 디데이삭제 {
+            final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(1L).build();
 
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(1L).build();
+
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
                 //when
@@ -664,7 +650,6 @@ class PlannerSettingControllerTest {
             @Test
             void 성공() throws Exception {
                 //given
-                final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder().ddayId(1L).build();
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -681,14 +666,15 @@ class PlannerSettingControllerTest {
 
         @Nested
         class 디데이수정 {
+            final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
+                    .ddayId(1L)
+                    .ddayTitle("생일")
+                    .ddayDate("2023-01-27")
+                    .build();
+
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
-                        .ddayId(1L)
-                        .ddayTitle("생일")
-                        .ddayDate("2023-01-27")
-                        .build();
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
 
                 //when
@@ -706,11 +692,6 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_유효하지않은디데이() throws Exception {
                 //given
-                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
-                        .ddayId(1L)
-                        .ddayTitle("생일")
-                        .ddayDate("2023-01-27")
-                        .build();
                 doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY)).when(plannerSettingServiceImpl).updateDday(any(), any(UpdateDdayRequest.class));
 
                 //when
@@ -727,11 +708,6 @@ class PlannerSettingControllerTest {
             @Test
             void 성공() throws Exception {
                 //given
-                final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
-                        .ddayId(1L)
-                        .ddayTitle("생일")
-                        .ddayDate("2023-01-27")
-                        .build();
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -752,6 +728,8 @@ class PlannerSettingControllerTest {
     class 디데이설정_실패케이스모음_유효하지않은요청값 {
 
         final String url = "/api/planner-settings/{userId}/d-days";
+        final String ddayDate = "2023-01-27";
+        final String ddayTitle = "생일";
 
         @ParameterizedTest
         @MethodSource("invalidAddDdayRequest")
@@ -774,26 +752,26 @@ class PlannerSettingControllerTest {
                     // 타이틀 Null
                     Arguments.of(AddDdayRequest.builder()
                             .ddayTitle(null)
-                            .ddayDate("2023-01-27")
+                            .ddayDate(ddayDate)
                             .build()),
                     // 유효길이가 아닌 타이틀
                     Arguments.of(AddDdayRequest.builder()
                             .ddayTitle("12345678901234567890123456789012345678901")
-                            .ddayDate("2023-01-27")
+                            .ddayDate(ddayDate)
                             .build()),
                     // 유효하지 않은 날짜
                     Arguments.of(AddDdayRequest.builder()
-                            .ddayTitle("생일")
+                            .ddayTitle(ddayTitle)
                             .ddayDate("2023-13-27")
                             .build()),
                     // 잘못된 날짜 포맷
                     Arguments.of(AddDdayRequest.builder()
-                            .ddayTitle("생일")
+                            .ddayTitle(ddayTitle)
                             .ddayDate("2023.01.27")
                             .build()),
                     // 날짜 Null
                     Arguments.of(AddDdayRequest.builder()
-                            .ddayTitle("생일")
+                            .ddayTitle(ddayTitle)
                             .ddayDate(null)
                             .build())
             );
@@ -820,8 +798,8 @@ class PlannerSettingControllerTest {
                     // 디데이 ID Null
                     Arguments.of(UpdateDdayRequest.builder()
                             .ddayId(null)
-                            .ddayTitle("생일")
-                            .ddayDate("2023-01-27")
+                            .ddayTitle(ddayTitle)
+                            .ddayDate(ddayDate)
                             .build()),
                     // 디데이 타이틀 Null
                     Arguments.of(UpdateDdayRequest.builder()
@@ -833,24 +811,24 @@ class PlannerSettingControllerTest {
                     Arguments.of(UpdateDdayRequest.builder()
                             .ddayId(1L)
                             .ddayTitle("12345678901234567890123456789012345678901")
-                            .ddayDate("2023-01-27")
+                            .ddayDate(ddayDate)
                             .build()),
                     // 날짜 Null
                     Arguments.of(UpdateDdayRequest.builder()
                             .ddayId(1L)
-                            .ddayTitle("생일")
+                            .ddayTitle(ddayTitle)
                             .ddayDate(null)
                             .build()),
                     // 유효하지 않은 날짜
                     Arguments.of(UpdateDdayRequest.builder()
                             .ddayId(1L)
-                            .ddayTitle("생일")
+                            .ddayTitle(ddayTitle)
                             .ddayDate("2023-13-27")
                             .build()),
                     // 잘못된 날짜 포맷
                     Arguments.of(UpdateDdayRequest.builder()
                             .ddayId(1L)
-                            .ddayTitle("생일")
+                            .ddayTitle(ddayTitle)
                             .ddayDate("2023.01.27")
                             .build())
             );
