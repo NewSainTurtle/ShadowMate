@@ -10,25 +10,6 @@ interface Props {
   handleClick: (props: CategoryConfig) => void;
 }
 
-// 삭제 예정 start
-export const getTextColorByBackgroundColor = (hexColor: string) => {
-  const rgb = parseInt(hexColor, 16);
-  const r = (rgb >> 16) & 0xff;
-  const g = (rgb >> 8) & 0xff;
-  const b = (rgb >> 0) & 0xff;
-  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-  return luma < 127.5 ? "white" : "black";
-};
-
-export const categoryStyle = (bgColor: string) => {
-  return {
-    backgroundColor: `${bgColor == BASIC_CATEGORY_ITEM.categoryColorCode ? "none" : bgColor}`,
-    color: `${getTextColorByBackgroundColor(bgColor.slice(1))}`,
-  };
-};
-// 삭제 예정 end
-
 const CategorySelector = ({ type, handleClick }: Props) => {
   const categoryList: CategoryConfig[] = todoData_category;
   return (

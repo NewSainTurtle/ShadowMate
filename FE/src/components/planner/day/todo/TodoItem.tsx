@@ -30,11 +30,9 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const [isDropdownView, setDropdownView] = useState(false);
   const maxLength = 50;
 
-  // 카테고리 모달 start
   const [ModalOpen, setModalOpen] = useState<boolean>(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
-  // 카테고리 모달 end
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
@@ -110,14 +108,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
   return (
     <div className={styles[`todo-item${disable ? "--disable" : ""}`]}>
-      <div
-        ref={dropMenuRef}
-        className={styles[`todo-item__category${clicked ? "--add" : ""}`]}
-        // onClick={() => {
-        //   if (!disable) setDropdownView(!isDropdownView);
-        // }}
-        onClick={handleOpen}
-      >
+      <div ref={dropMenuRef} className={styles[`todo-item__category${clicked ? "--add" : ""}`]} onClick={handleOpen}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
         </div>
@@ -171,11 +162,9 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
       </div>
 
-      {/* 카테고리 모달 start */}
       <Modal open={ModalOpen} onClose={handleClose}>
         <CategorySelector type="day" handleClick={handleClickCategory} />
       </Modal>
-      {/* 카테고리 모달 end */}
     </div>
   );
 };

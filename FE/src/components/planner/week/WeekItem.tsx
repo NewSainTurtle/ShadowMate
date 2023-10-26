@@ -15,7 +15,6 @@ interface Props {
 }
 
 const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
-  /* 카테고리 선택 메뉴 */
   const [Modalopen, setModalOpen] = useState(false);
   const handleClose = () => setModalOpen(false);
 
