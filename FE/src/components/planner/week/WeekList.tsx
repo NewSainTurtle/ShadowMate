@@ -13,9 +13,9 @@ interface Props {
 }
 
 const WeekList = ({ dayInfo }: Props) => {
-  const [todoItems, setTodoItems] = useState<TodoConfig[]>(dayInfo.dailyTodo ? dayInfo.dailyTodo : []);
+  const [todoItems, setTodoItems] = useState<TodoConfig[]>(dayInfo.dailyTodo || []);
   const nextId = useRef(todoItems.length + 1);
-  const [retrospection, setRetrospection] = useState<string>(dayInfo.retrospection);
+  const [retrospection, setRetrospection] = useState<string>(dayInfo.retrospection || "");
 
   return (
     <div className={styles["item"]}>

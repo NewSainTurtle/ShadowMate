@@ -8,7 +8,7 @@ export interface CategoryConfig {
   categoryId: number;
   categoryTitle: string;
   categoryColorCode: string;
-  categoryEmoticon: string;
+  categoryEmoticon?: string | null;
 }
 
 export interface DayTodoConfig {
@@ -26,7 +26,7 @@ export interface TimeTableConfig {
 // 공통 Todo Item
 export interface TodoConfig {
   todoId: number;
-  category?: CategoryConfig;
+  category?: CategoryConfig | null;
   todoContent: string;
   todoStatus: string;
   todoUpdate?: boolean;
@@ -36,9 +36,10 @@ export interface TodoConfig {
 /* --- Week Interfaces --- */
 
 export interface WeekTodoItemConfig {
+  weeklyTodoId: number;
   weeklyTodoContent: string;
   weeklyTodoStatus: boolean;
-  weeklyTodoUpdate: boolean;
+  weeklyTodoUpdate?: boolean;
 }
 
 export interface ddayType {

@@ -1,7 +1,7 @@
 export const WEEK_TODO_ITEMS = [
-  { weeklyTodoContent: "국어 졸라게 열심히 풀기", weeklyTodoStatus: true, weeklyTodoUpdate: false },
-  { weeklyTodoContent: "수학 갈아버리기", weeklyTodoStatus: false, weeklyTodoUpdate: false },
-  { weeklyTodoContent: "영어 처참하게 눌러버리기", weeklyTodoStatus: false, weeklyTodoUpdate: false },
+  { weeklyTodoId: 0, weeklyTodoContent: "국어 졸라게 열심히 풀기", weeklyTodoStatus: true, weeklyTodoUpdate: false },
+  { weeklyTodoId: 1, weeklyTodoContent: "수학 갈아버리기", weeklyTodoStatus: false, weeklyTodoUpdate: false },
+  { weeklyTodoId: 2, weeklyTodoContent: "영어 처참하게 눌러버리기", weeklyTodoStatus: false, weeklyTodoUpdate: false },
 ];
 
 export const TODO_ITEMS = [
@@ -40,6 +40,8 @@ export const TODO_ITEMS_RESPONSE = {
             todoId: 1,
             category: {
               categoryId: 1,
+              categoryTitle: "국어",
+              categoryColorCode: "",
               categoryEmoticon: "🍅",
             },
             todoContent: "비문학 3문제 풀기",

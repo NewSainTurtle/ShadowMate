@@ -10,13 +10,18 @@ const WeekTodo = () => {
   const [newTodo, setNewTodo] = useState<string>("");
   const [oldTodo, setOldTodo] = useState<string>("");
   const todoEndRef = useRef<HTMLDivElement | null>(null);
+  const nextId = useRef<number>(WEEK_TODO_ITEMS.length);
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (newTodo === "") return;
     if (e.key === "Enter") {
       if (e.nativeEvent.isComposing) return;
-      setTodoItems([...todoItems, { weeklyTodoContent: newTodo, weeklyTodoStatus: false, weeklyTodoUpdate: false }]);
+      setTodoItems([
+        ...todoItems,
+        { weeklyTodoId: nextId.current, weeklyTodoContent: newTodo, weeklyTodoStatus: false, weeklyTodoUpdate: false },
+      ]);
       setNewTodo("");
+      nextId.current += 1;
     }
   };
 

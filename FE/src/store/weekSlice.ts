@@ -4,7 +4,7 @@ import { TodoConfig, WeekTodoItemConfig, CategoryConfig } from "@util/planner.in
 
 export interface DailyTodoConfig {
   todoId: number;
-  category?: CategoryConfig | null;
+  category?: CategoryConfig;
   todoContent: string;
   todoStatus: string;
   todoUpdate?: boolean;
@@ -12,14 +12,14 @@ export interface DailyTodoConfig {
 
 export interface DayListConfig {
   date: string;
-  retrospection: string;
-  dailyTodo: TodoConfig[];
+  retrospection: string | null;
+  dailyTodo: TodoConfig[] | null;
 }
 
 export interface WeekConfig {
   plannerAccessScope: string;
   dday: string;
-  weeklyTodo?: WeekTodoItemConfig[];
+  weeklyTodo: WeekTodoItemConfig[];
   dayList: DayListConfig[];
 }
 
