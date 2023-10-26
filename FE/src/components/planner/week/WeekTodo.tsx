@@ -93,7 +93,9 @@ const WeekTodo = () => {
         })}
         <div ref={todoEndRef} className={styles["todo__item"]}>
           <div className={styles["todo__checkbox"]}>
-            <input type="checkbox" style={{ cursor: "auto" }} disabled />
+            <div style={{ visibility: "hidden" }}>
+              <input type="checkbox" style={{ cursor: "auto" }} disabled />
+            </div>
             <input
               autoFocus
               type="text"
