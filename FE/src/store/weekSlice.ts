@@ -1,5 +1,5 @@
 import { rootState } from "@hooks/configStore";
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { TodoConfig, WeekTodoItemConfig, CategoryConfig } from "@util/planner.interface";
 
 export interface DailyTodoConfig {
@@ -34,11 +34,11 @@ const weekSlice = createSlice({
   name: "week",
   initialState,
   reducers: {
-    setWeekInfo: (state, { payload: { plannerAccessScope, dday, weeklyTodo, dayList } }) => {
-      state.plannerAccessScope = plannerAccessScope;
-      state.dday = dday;
-      state.weeklyTodo = weeklyTodo;
-      state.dayList = dayList;
+    setWeekInfo: (state, { payload }: PayloadAction<WeekConfig>) => {
+      state.plannerAccessScope = payload.plannerAccessScope;
+      state.dday = payload.dday;
+      state.weeklyTodo = payload.weeklyTodo;
+      state.dayList = payload.dayList;
     },
   },
 });
