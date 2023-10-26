@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { KeyboardEvent, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
@@ -15,6 +15,7 @@ interface Props {
 const WeekList = ({ dayInfo }: Props) => {
   const [todoItems, setTodoItems] = useState<TodoConfig[]>(dayInfo.dailyTodo ? dayInfo.dailyTodo : []);
   const nextId = useRef(todoItems.length + 1);
+  const [retrospection, setRetrospection] = useState<string>(dayInfo.retrospection);
 
   return (
     <div className={styles["item"]}>
@@ -30,9 +31,9 @@ const WeekList = ({ dayInfo }: Props) => {
       </div>
       <div className={`${styles["item__memo"]} ${todoItems.length < 4 && styles["top_border"]}`}>
         <textarea
-          value={dayInfo.retrospection ? dayInfo.retrospection : ""}
+          defaultValue={retrospection}
           placeholder="💡 오늘의 메모를 입력하세요."
-          readOnly
+          onChange={(e) => setRetrospection(e.target.value.replace(/\n|\r|\s*/g, ""))}
         />
       </div>
     </div>
