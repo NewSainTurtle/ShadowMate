@@ -71,6 +71,36 @@ public class UserRepositoryTest {
             assertThat(userEntity.getProfileImage()).isEqualTo(user.getProfileImage());
 
         }
+
+        @Test
+        void 성공_프로필사진수정() {
+            //given
+            final String newProfileImage = "NewProfileImage";
+            Optional<User> oldUser = userRepository.findById(userId);
+            final User newUser = User.builder()
+                    .id(oldUser.get().getId())
+                    .email(oldUser.get().getEmail())
+                    .password(oldUser.get().getPassword())
+                    .socialLogin(oldUser.get().getSocialLogin())
+                    .profileImage(newProfileImage)
+                    .nickname(oldUser.get().getNickname())
+                    .statusMessage(oldUser.get().getStatusMessage())
+                    .withdrawal(oldUser.get().getWithdrawal())
+                    .plannerAccessScope(oldUser.get().getPlannerAccessScope())
+                    .createTime(oldUser.get().getCreateTime())
+                    .updateTime(oldUser.get().getUpdateTime())
+                    .deleteTime(oldUser.get().getDeleteTime())
+                    .build();
+            userRepository.save(newUser);
+
+            //when
+            final User result = userRepository.findByNickname(newUser.getNickname());
+
+            //then
+            assertThat(result.getProfileImage()).isEqualTo(newProfileImage);
+
+        }
+
     }
 
     @Nested

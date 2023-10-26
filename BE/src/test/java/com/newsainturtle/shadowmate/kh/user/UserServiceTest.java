@@ -50,6 +50,7 @@ public class UserServiceTest {
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
     final User user2 = User.builder()
+            .id(2L)
             .email("test2@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
@@ -89,6 +90,36 @@ public class UserServiceTest {
             assertThat(profileResponse.getEmail()).isEqualTo(user1.getEmail());
 
         }
+
+        @Test
+        void 실패_프로필이미지수정_유저없음() {
+            //given
+            final String newProfileImage = "NewProfileImage";
+            doReturn(Optional.empty()).when(userRepository).findById(user1.getId());
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.updateProfileImage(user1.getId(), newProfileImage));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+        }
+
+
+        @Test
+        void 성공_프로필이미지수정() {
+            //given
+            final String newProfileImage = "NewProfileImage";
+            given(userRepository.findById(user1.getId())).willReturn(Optional.of(user1));
+
+            //when
+            userService.updateProfileImage(user1.getId(), newProfileImage);
+
+            //then
+            verify(userRepository, times(1)).findById(any());
+            verify(userRepository, times(1)).save(any());
+
+        }
+
     }
 
     @Nested
