@@ -73,7 +73,7 @@ class AuthServiceTest {
             final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder()
                     .email(email)
                     .build();
-            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(user).when(userRepository).findByEmailAndSocialLogin(email, socialType);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
@@ -93,7 +93,7 @@ class AuthServiceTest {
                     .authStatus(true)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -114,7 +114,7 @@ class AuthServiceTest {
                     .authStatus(false)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, SocialType.BASIC);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
             doReturn(message).when(mailSender).createMimeMessage();
 
@@ -124,7 +124,7 @@ class AuthServiceTest {
             //then
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
             verify(mailSender, times(1)).createMimeMessage();
         }
@@ -136,7 +136,7 @@ class AuthServiceTest {
                     .email(email)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, SocialType.BASIC);
             doReturn(null).when(redisServiceImpl).getHashEmailData(email);
             doReturn(message).when(mailSender).createMimeMessage();
 
@@ -146,7 +146,7 @@ class AuthServiceTest {
             //then
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
             verify(mailSender, times(1)).createMimeMessage();
         }
@@ -172,7 +172,7 @@ class AuthServiceTest {
                     .email(email)
                     .code(code)
                     .build();
-            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(user).when(userRepository).findByEmailAndSocialLogin(email, socialType);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
@@ -181,7 +181,7 @@ class AuthServiceTest {
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
         }
 
         @Test
@@ -192,7 +192,7 @@ class AuthServiceTest {
                     .code(code)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
             doReturn(null).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -202,7 +202,7 @@ class AuthServiceTest {
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
         }
 
@@ -218,7 +218,7 @@ class AuthServiceTest {
                     .authStatus(true)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -228,7 +228,7 @@ class AuthServiceTest {
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
         }
 
@@ -244,7 +244,7 @@ class AuthServiceTest {
                     .authStatus(false)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, SocialType.BASIC);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, SocialType.BASIC);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -254,7 +254,7 @@ class AuthServiceTest {
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.INVALID_EMAIL_AUTHENTICATION_CODE);
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
         }
 
@@ -270,7 +270,7 @@ class AuthServiceTest {
                     .authStatus(false)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
             doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -279,7 +279,7 @@ class AuthServiceTest {
             //then
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
         }
 
@@ -295,7 +295,7 @@ class AuthServiceTest {
                     .nickname(nickname)
                     .password(password)
                     .build();
-            doReturn(user).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(user).when(userRepository).findByEmailAndSocialLogin(email, socialType);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.join(joinRequest));
@@ -304,7 +304,7 @@ class AuthServiceTest {
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(userRepository, times(0)).save(any(User.class));
         }
 
@@ -317,7 +317,7 @@ class AuthServiceTest {
                     .password(password)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
             doReturn(null).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -327,7 +327,7 @@ class AuthServiceTest {
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(email);
         }
 
@@ -344,7 +344,7 @@ class AuthServiceTest {
                     .code(code)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
             doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
 
             //when
@@ -354,7 +354,7 @@ class AuthServiceTest {
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNAUTHENTICATED_EMAIL);
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(email);
         }
 
@@ -371,7 +371,7 @@ class AuthServiceTest {
                     .code(code)
                     .build();
 
-            doReturn(null).when(userRepository).findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
+            doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
             doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
             doReturn(user).when(userRepository).save(any(User.class));
 
@@ -381,7 +381,7 @@ class AuthServiceTest {
             //then
 
             //verify
-            verify(userRepository, times(1)).findByEmailAndSocialLoginAndWithdrawalIsFalse(any(String.class), any(SocialType.class));
+            verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
             verify(redisServiceImpl, times(1)).getHashEmailData(email);
             verify(userRepository, times(1)).save(any(User.class));
             verify(redisServiceImpl, times(1)).deleteEmailData(email);
