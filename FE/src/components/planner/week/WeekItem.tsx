@@ -3,9 +3,9 @@ import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import CategorySelector from "@components/common/CategorySelector";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { DeleteOutlined } from "@mui/icons-material";
 import { TodoConfig } from "@util/planner.interface";
-import { categoryDefault } from "@components/planner/day/TodoItem";
 import todoModule from "@util/TodoModule";
 
 interface Props {
@@ -52,7 +52,7 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
   const handleClickCategory = (title: string, bgColor: string, emoticon?: string) => {
     if (emoticon) {
       if (!item.category) {
-        updateTodo(idx, { ...item, category: { ...categoryDefault, categoryEmoticon: emoticon } });
+        updateTodo(idx, { ...item, category: { ...BASIC_CATEGORY_ITEM, categoryEmoticon: emoticon } });
       } else {
         updateTodo(idx, { ...item, category: { ...item.category, categoryEmoticon: emoticon } });
       }

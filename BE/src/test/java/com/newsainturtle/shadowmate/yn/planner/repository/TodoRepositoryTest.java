@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class TodoRepositoryTest {
+class TodoRepositoryTest {
 
     @Autowired
     private TodoRepository todoRepository;
@@ -50,10 +50,10 @@ public class TodoRepositoryTest {
     private DailyPlanner dailyPlanner;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -69,7 +69,7 @@ public class TodoRepositoryTest {
     class 일일플래너_할일등록 {
 
         @Test
-        public void 카테고리Null() {
+        void 카테고리Null() {
             //given
             final Todo todo = Todo.builder()
                     .category(null)
@@ -89,7 +89,7 @@ public class TodoRepositoryTest {
         }
 
         @Test
-        public void 카테고리있음() {
+        void 카테고리있음() {
             //given
             final Category category = categoryRepository.save(Category.builder()
                     .categoryColor(categoryColorRepository.findById(1L).orElse(null))
@@ -117,7 +117,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 일일플래너_할일삭제() {
+    void 일일플래너_할일삭제() {
         //given
         final Category category = categoryRepository.save(Category.builder()
                 .categoryColor(categoryColorRepository.findById(1L).orElse(null))
@@ -143,7 +143,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 일일플래너_할일삭제_타임테이블있는경우() {
+    void 일일플래너_할일삭제_타임테이블있는경우() {
         //given
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         final LocalDateTime startTime = LocalDateTime.parse("2023-10-06 16:10", formatter);
@@ -177,7 +177,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 일일플래너_할일수정() {
+    void 일일플래너_할일수정() {
         //given
         final Category category1 = categoryRepository.save(Category.builder()
                 .categoryColor(categoryColorRepository.findById(1L).orElse(null))
@@ -223,7 +223,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 일일플래너리스트조회() {
+    void 일일플래너리스트조회() {
         //given
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         final Category category = categoryRepository.save(Category.builder()
@@ -274,11 +274,11 @@ public class TodoRepositoryTest {
 
         //then
         assertThat(todoList).isNotNull();
-        assertThat(todoList.size()).isEqualTo(4);
+        assertThat(todoList).hasSize(4);
     }
 
     @Test
-    public void 일일플래너_할일카운트_전체() {
+    void 일일플래너_할일카운트_전체() {
         //given
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -319,7 +319,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 일일플래너_할일카운트_완료못한할일() {
+    void 일일플래너_할일카운트_완료못한할일() {
         //given
         todoRepository.save(Todo.builder()
                 .category(null)

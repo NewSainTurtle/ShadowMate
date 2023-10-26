@@ -1,9 +1,9 @@
 import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
-import { categoryDefault } from "@components/planner/day/TodoItem";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { todoData_category } from "@util/data/DayTodos";
-import { categoryType } from "@util/planner.interface";
+import { CategoryConfig } from "@util/planner.interface";
 
 interface Props {
   handleClick: (title: string, color: string, emoticon?: string) => void;
@@ -22,14 +22,14 @@ export const getTextColorByBackgroundColor = (hexColor: string) => {
 
 export const categoryStyle = (bgColor: string) => {
   return {
-    backgroundColor: `${bgColor == categoryDefault.categoryColorCode ? "none" : bgColor}`,
+    backgroundColor: `${bgColor == BASIC_CATEGORY_ITEM.categoryColorCode ? "none" : bgColor}`,
     color: `${getTextColorByBackgroundColor(bgColor.slice(1))}`,
   };
 };
 // 삭제 예정 end
 
 const CategorySelector = ({ handleClick }: Props) => {
-  const categoryList: categoryType[] = todoData_category;
+  const categoryList: CategoryConfig[] = todoData_category;
   return (
     <div className={styles["category__selector"]}>
       <div>
@@ -37,11 +37,11 @@ const CategorySelector = ({ handleClick }: Props) => {
       </div>
       <div
         className={styles["category__item--hover"]}
-        onClick={() => handleClick("", categoryDefault.categoryColorCode, categoryDefault.categoryEmoticon)}
+        onClick={() => handleClick("", BASIC_CATEGORY_ITEM.categoryColorCode, BASIC_CATEGORY_ITEM.categoryEmoticon)}
       >
-        <div>{categoryDefault.categoryEmoticon}</div>
+        <div>{BASIC_CATEGORY_ITEM.categoryEmoticon}</div>
         <div>카테고리 없음</div>
-        <div style={{ backgroundColor: categoryDefault.categoryColorCode }}></div>
+        <div style={{ backgroundColor: BASIC_CATEGORY_ITEM.categoryColorCode }}></div>
       </div>
       {categoryList.map((item, idx) => (
         <div

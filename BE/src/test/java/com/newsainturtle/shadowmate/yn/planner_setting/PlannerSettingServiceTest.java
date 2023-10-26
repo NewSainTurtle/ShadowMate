@@ -54,9 +54,10 @@ class PlannerSettingServiceTest {
     @Mock
     private TodoRepository todoRepository;
 
-    final User user = User.builder()
-            .email("test@test.com")
-            .password("123456")
+    private final User user = User.builder()
+            .id(1L)
+            .email("yntest@shadowmate.com")
+            .password("yntest1234")
             .socialLogin(SocialType.BASIC)
             .nickname("거북이")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -65,39 +66,40 @@ class PlannerSettingServiceTest {
 
     @Nested
     class 카테고리 {
+        final CategoryColor categoryColor = CategoryColor.builder()
+                .categoryColorCode("#D9B5D9")
+                .build();
+        final Category category = Category.builder()
+                .id(1L)
+                .categoryColor(categoryColor)
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build();
+
         @Nested
         class 카테고리등록 {
-            final CategoryColor categoryColor = CategoryColor.builder()
-                    .categoryColorCode("D9B5D9")
-                    .build();
-            final AddCategoryRequest request = AddCategoryRequest.builder()
+            final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                     .categoryTitle("국어")
                     .categoryEmoticon("🍅")
                     .categoryColorId(1L)
                     .build();
-            final Category category = Category.builder()
-                    .id(1L)
-                    .categoryTitle(request.getCategoryTitle())
-                    .categoryEmoticon(request.getCategoryEmoticon())
-                    .categoryRemove(false)
-                    .categoryColor(categoryColor)
-                    .user(user)
-                    .build();
 
             @Test
-            public void 실패_없는카테고리색상() {
+            void 실패_없는카테고리색상() {
                 //given
-                doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
+                doReturn(Optional.empty()).when(categoryColorRepository).findById(addCategoryRequest.getCategoryColorId());
 
                 //when
-                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addCategory(user, request));
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addCategory(user, addCategoryRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR);
             }
 
             @Test
-            public void 성공_카테고리등록_이모티콘없음() {
+            void 성공_카테고리등록_이모티콘없음() {
                 //given
                 final AddCategoryRequest addCategoryRequest = AddCategoryRequest.builder()
                         .categoryTitle("국어")
@@ -105,7 +107,7 @@ class PlannerSettingServiceTest {
                         .categoryColorId(1L)
                         .build();
 
-                doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
+                doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(addCategoryRequest.getCategoryColorId());
                 doReturn(category).when(categoryRepository).save(any(Category.class));
 
                 //when
@@ -116,107 +118,86 @@ class PlannerSettingServiceTest {
                 assertThat(saveCategory.getCategoryId()).isEqualTo(1L);
 
                 //verify
-                verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
+                verify(categoryColorRepository, times(1)).findById(addCategoryRequest.getCategoryColorId());
                 verify(categoryRepository, times(1)).save(any(Category.class));
             }
 
             @Test
-            public void 성공_카테고리등록_이모티콘있음() {
+            void 성공_카테고리등록_이모티콘있음() {
                 //given
-                doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
+                doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(addCategoryRequest.getCategoryColorId());
                 doReturn(category).when(categoryRepository).save(any(Category.class));
 
                 //when
-                final AddCategoryResponse saveCategory = plannerSettingService.addCategory(user, request);
+                final AddCategoryResponse saveCategory = plannerSettingService.addCategory(user, addCategoryRequest);
 
                 //then
                 assertThat(saveCategory.getCategoryId()).isNotNull();
                 assertThat(saveCategory.getCategoryId()).isEqualTo(1L);
 
                 //verify
-                verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
+                verify(categoryColorRepository, times(1)).findById(addCategoryRequest.getCategoryColorId());
                 verify(categoryRepository, times(1)).save(any(Category.class));
             }
         }
 
         @Nested
         class 카테고리수정 {
-            final CategoryColor categoryColor = CategoryColor.builder()
-                    .categoryColorCode("D9B5D9")
-                    .build();
-            final Category category = Category.builder()
+            final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
+                    .categoryId(1L)
                     .categoryTitle("수학")
                     .categoryEmoticon("🌀")
-                    .categoryRemove(false)
-                    .categoryColor(categoryColor)
-                    .user(user)
-                    .build();
-            final UpdateCategoryRequest request = UpdateCategoryRequest.builder()
-                    .categoryId(1L)
-                    .categoryTitle("국어")
-                    .categoryEmoticon("🍅")
                     .categoryColorId(1L)
                     .build();
 
             @Test
-            public void 실패_없는카테고리() {
+            void 실패_없는카테고리() {
                 //given
-                doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(null).when(categoryRepository).findByUserAndId(user, updateCategoryRequest.getCategoryId());
 
                 //when
-                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, request));
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, updateCategoryRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY);
             }
 
             @Test
-            public void 실패_없는카테고리색상() {
+            void 실패_없는카테고리색상() {
                 //given
-                doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
-                doReturn(Optional.empty()).when(categoryColorRepository).findById(request.getCategoryColorId());
+                doReturn(category).when(categoryRepository).findByUserAndId(user, updateCategoryRequest.getCategoryId());
+                doReturn(Optional.empty()).when(categoryColorRepository).findById(updateCategoryRequest.getCategoryColorId());
 
                 //when
-                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, request));
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, updateCategoryRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR);
             }
 
             @Test
-            public void 성공_카테고리등록() {
+            void 성공_카테고리등록() {
                 //given
-                doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
-                doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(request.getCategoryColorId());
+                doReturn(category).when(categoryRepository).findByUserAndId(user, updateCategoryRequest.getCategoryId());
+                doReturn(Optional.of(categoryColor)).when(categoryColorRepository).findById(updateCategoryRequest.getCategoryColorId());
 
                 //when
-                plannerSettingService.updateCategory(user, request);
+                plannerSettingService.updateCategory(user, updateCategoryRequest);
 
                 //then
 
                 //verify
-                verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
-                verify(categoryColorRepository, times(1)).findById(request.getCategoryColorId());
+                verify(categoryColorRepository, times(1)).findById(updateCategoryRequest.getCategoryColorId());
+                verify(categoryColorRepository, times(1)).findById(updateCategoryRequest.getCategoryColorId());
                 verify(categoryRepository, times(1)).save(any(Category.class));
             }
         }
 
         @Nested
         class 카테고리설정_조회 {
-            final CategoryColor categoryColor = CategoryColor.builder()
-                    .categoryColorCode("D9B5D9")
-                    .build();
-            final Long userId = 1L;
-            final Category category = Category.builder()
-                    .categoryColor(categoryColor)
-                    .user(user)
-                    .categoryTitle("국어")
-                    .categoryRemove(false)
-                    .categoryEmoticon("🍅")
-                    .build();
 
             @Test
-            public void 카테고리색상목록조회() {
+            void 카테고리색상목록조회() {
                 //given
                 final List<CategoryColor> list = new ArrayList<>();
                 list.add(categoryColor);
@@ -227,11 +208,11 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(result.getCategoryColorList()).isNotNull();
-                assertThat(result.getCategoryColorList().size()).isEqualTo(1);
+                assertThat(result.getCategoryColorList()).hasSize(1);
             }
 
             @Test
-            public void 카테고리목록조회() {
+            void 카테고리목록조회() {
                 //given
                 final List<Category> list = new ArrayList<>();
                 list.add(category);
@@ -242,33 +223,23 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(result.getCategoryList()).isNotNull();
-                assertThat(result.getCategoryList().size()).isEqualTo(1);
+                assertThat(result.getCategoryList()).hasSize(1);
             }
         }
 
         @Nested
         class 카테고리삭제 {
-            final CategoryColor categoryColor = CategoryColor.builder()
-                    .categoryColorCode("D9B5D9")
-                    .build();
-            final Category category = Category.builder()
-                    .categoryTitle("수학")
-                    .categoryEmoticon("🌀")
-                    .categoryRemove(false)
-                    .categoryColor(categoryColor)
-                    .user(user)
-                    .build();
-            final RemoveCategoryRequest request = RemoveCategoryRequest.builder()
+            final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
                     .categoryId(1L)
                     .build();
 
             @Test
-            public void 실패_없는카테고리() {
+            void 실패_없는카테고리() {
                 //given
-                doReturn(null).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(null).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
 
                 //when
-                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.removeCategory(user, request));
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.removeCategory(user, removeCategoryRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY);
@@ -276,13 +247,13 @@ class PlannerSettingServiceTest {
 
 
             @Test
-            public void 성공_카테고리_할일에없음() {
+            void 성공_카테고리_할일에없음() {
                 //given
-                doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
                 doReturn(0L).when(todoRepository).countByCategory(category);
 
                 //when
-                plannerSettingService.removeCategory(user, request);
+                plannerSettingService.removeCategory(user, removeCategoryRequest);
 
                 //then
 
@@ -293,13 +264,13 @@ class PlannerSettingServiceTest {
             }
 
             @Test
-            public void 성공_카테고리_할일에있음() {
+            void 성공_카테고리_할일에있음() {
                 //given
-                doReturn(category).when(categoryRepository).findByUserAndId(user, request.getCategoryId());
+                doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
                 doReturn(1L).when(todoRepository).countByCategory(category);
 
                 //when
-                plannerSettingService.removeCategory(user, request);
+                plannerSettingService.removeCategory(user, removeCategoryRequest);
 
                 //then
 
@@ -314,30 +285,28 @@ class PlannerSettingServiceTest {
     @Nested
     class 플래너공개여부설정 {
         @Test
-        public void 실패_잘못된범위값() {
+        void 실패_잘못된범위값() {
             //given
-            final Long userId = 1L;
-            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
+            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("잘못된범위값")
                     .build();
 
             //when
-            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(user, request));
+            final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.setAccessScope(user, setAccessScopeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
         }
 
         @Test
-        public void 성공_플래너공개여부설정() {
+        void 성공_플래너공개여부설정() {
             //given
-            final Long userId = 1L;
-            final SetAccessScopeRequest request = SetAccessScopeRequest.builder()
+            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("비공개")
                     .build();
 
             //when
-            plannerSettingService.setAccessScope(user, request);
+            plannerSettingService.setAccessScope(user, setAccessScopeRequest);
 
             //then
             verify(userRepository, times(1)).save(any(User.class));
@@ -346,19 +315,21 @@ class PlannerSettingServiceTest {
 
     @Nested
     class 디데이 {
+        final Dday dday = Dday.builder()
+                .id(1L)
+                .ddayTitle("생일")
+                .ddayDate(Date.valueOf("2023-02-09"))
+                .user(user)
+                .build();
+
         @Test
-        public void 디데이등록_성공() {
+        void 디데이등록_성공() {
             //given
             final AddDdayRequest addDdayRequest = AddDdayRequest.builder()
                     .ddayTitle("생일")
                     .ddayDate("2023-02-09")
                     .build();
-            final Dday dday = Dday.builder()
-                    .id(1L)
-                    .ddayTitle("생일")
-                    .ddayDate(Date.valueOf("2023-02-09"))
-                    .user(user)
-                    .build();
+
             doReturn(dday).when(ddayRepository).save(any(Dday.class));
 
             //when
@@ -375,7 +346,7 @@ class PlannerSettingServiceTest {
         @Nested
         class 디데이조회 {
             @Test
-            public void 등록된디데이목록이없음() {
+            void 등록된디데이목록이없음() {
                 //given
                 final List<Dday> list = new ArrayList<>();
                 doReturn(list).when(ddayRepository).findByUserOrderByDdayDateDesc(user);
@@ -385,11 +356,11 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(ddayListResponse.getDdayList()).isNotNull();
-                assertThat(ddayListResponse.getDdayList().size()).isEqualTo(0);
+                assertThat(ddayListResponse.getDdayList()).isEmpty();
             }
 
             @Test
-            public void 등록된디데이목록이있음() {
+            void 등록된디데이목록이있음() {
                 //given
                 final List<Dday> list = new ArrayList<>();
                 list.add(Dday.builder()
@@ -397,11 +368,7 @@ class PlannerSettingServiceTest {
                         .ddayDate(Date.valueOf("2024-09-14"))
                         .user(user)
                         .build());
-                list.add(Dday.builder()
-                        .ddayTitle("생일")
-                        .ddayDate(Date.valueOf("2023-02-09"))
-                        .user(user)
-                        .build());
+                list.add(dday);
                 doReturn(list).when(ddayRepository).findByUserOrderByDdayDateDesc(user);
 
                 //when
@@ -409,21 +376,13 @@ class PlannerSettingServiceTest {
 
                 //then
                 assertThat(ddayListResponse.getDdayList()).isNotNull();
-                assertThat(ddayListResponse.getDdayList().size()).isEqualTo(2);
+                assertThat(ddayListResponse.getDdayList()).hasSize(2);
             }
         }
 
         @Test
-        public void 디데이삭제_성공() {
+        void 디데이삭제_성공() {
             //given
-            final User user = User.builder()
-                    .email("test@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("거북이")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
-                    .withdrawal(false)
-                    .build();
             final RemoveDdayRequest removeDdayRequest = RemoveDdayRequest.builder()
                     .ddayId(1L)
                     .build();
@@ -439,36 +398,31 @@ class PlannerSettingServiceTest {
 
         @Nested
         class 디데이수정 {
-            final UpdateDdayRequest request = UpdateDdayRequest.builder()
+            final UpdateDdayRequest updateDdayRequest = UpdateDdayRequest.builder()
                     .ddayId(1L)
                     .ddayTitle("시험")
                     .ddayDate("2023-09-18")
                     .build();
-            final Dday dday = Dday.builder()
-                    .ddayTitle("생일")
-                    .ddayDate(Date.valueOf("2023-02-09"))
-                    .user(user)
-                    .build();
 
             @Test
-            public void 실패_유효하지않은디데이_권한이없는디데이() {
+            void 실패_유효하지않은디데이_권한이없는디데이() {
                 //given
                 doReturn(null).when(ddayRepository).findByUserAndId(user, 1L);
 
                 //when
-                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateDday(user, request));
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateDday(user, updateDdayRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_DDAY);
             }
 
             @Test
-            public void 성공() {
+            void 성공() {
                 //given
                 doReturn(dday).when(ddayRepository).findByUserAndId(user, 1L);
 
                 //when
-                plannerSettingService.updateDday(user, request);
+                plannerSettingService.updateDday(user, updateDdayRequest);
 
                 //then
 

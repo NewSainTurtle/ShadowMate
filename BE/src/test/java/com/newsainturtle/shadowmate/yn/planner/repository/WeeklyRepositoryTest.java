@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class WeeklyRepositoryTest {
+class WeeklyRepositoryTest {
 
     @Autowired
     private WeeklyRepository weeklyRepository;
@@ -31,10 +31,10 @@ public class WeeklyRepositoryTest {
     private User user;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -43,7 +43,7 @@ public class WeeklyRepositoryTest {
     }
 
     @Test
-    public void 주차별플래너등록() {
+    void 주차별플래너등록() {
         //given
 
         //when
@@ -61,7 +61,7 @@ public class WeeklyRepositoryTest {
     }
 
     @Test
-    public void 주차별플래너조회() {
+    void 주차별플래너조회() {
         //given
         weeklyRepository.save(Weekly.builder()
                 .startDay(startDay)
@@ -78,5 +78,5 @@ public class WeeklyRepositoryTest {
         assertThat(findWeekly.getStartDay()).isEqualTo(startDay);
         assertThat(findWeekly.getEndDay()).isEqualTo(endDay);
     }
-    
+
 }

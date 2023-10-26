@@ -14,16 +14,17 @@ import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
 
-    final String email = "test1234@naver.com";
-    final User user = User.builder()
-            .email("test1234@naver.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
+    private final String email = "yntest@shadowmate.com";
+    private final SocialType socialType = SocialType.BASIC;
+    private final User user = User.builder()
+            .email(email)
+            .password("yntest1234")
+            .socialLogin(socialType)
             .nickname("거북이")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .withdrawal(false)
@@ -32,24 +33,24 @@ public class UserRepositoryTest {
     @Nested
     class 이메일인증 {
         @Test
-        public void 실패_이메일이_중복된_경우() {
+        void 실패_이메일이_중복된_경우() {
             //given
             userRepository.save(user);
 
             //when
-            final User result = userRepository.findByEmail(email);
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
 
             //then
-            assertThat(result).isNotNull();
-            assertThat(result).isEqualTo(user);
+            assertThat(result).isNotNull()
+                    .isEqualTo(user);
         }
 
         @Test
-        public void 성공_이메일이_중복되지_않은_경우() {
+        void 성공_이메일이_중복되지_않은_경우() {
             //given
 
             //when
-            final User result = userRepository.findByEmail(email);
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(email, socialType);
 
             //then
             assertThat(result).isNull();
@@ -57,14 +58,14 @@ public class UserRepositoryTest {
     }
 
     @Nested
-    class 회원가입{
+    class 회원가입 {
         @Test
-        public void 사용자등록(){
+        void 사용자등록() {
             //given
             userRepository.save(user);
 
             //when
-            final User result = userRepository.findByEmail(user.getEmail());
+            final User result = userRepository.findByEmailAndSocialLoginAndWithdrawalIsFalse(user.getEmail(), socialType);
 
             //then
             assertThat(result).isNotNull();

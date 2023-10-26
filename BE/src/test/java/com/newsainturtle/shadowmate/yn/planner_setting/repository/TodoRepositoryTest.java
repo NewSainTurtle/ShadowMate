@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class TodoRepositoryTest {
+class TodoRepositoryTest {
 
     @Autowired
     private TodoRepository todoRepository;
@@ -46,10 +46,10 @@ public class TodoRepositoryTest {
     private Category category;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
+                .email("yntest@shadowmate.com")
+                .password("yntest1234")
                 .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
                 .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -71,7 +71,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void 카테고리없음() {
+    void 카테고리없음() {
         //given
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -81,15 +81,14 @@ public class TodoRepositoryTest {
                 .build());
 
         //when
-        final long count = todoRepository.countByCategory(category);
+        final Long count = todoRepository.countByCategory(category);
 
         //then
-        assertThat(count).isNotNull();
-        assertThat(count).isEqualTo(0);
+        assertThat(count).isNotNull().isZero();
     }
 
     @Test
-    public void 카테고리있음() {
+    void 카테고리있음() {
         //given
         todoRepository.save(Todo.builder()
                 .category(category)
@@ -105,11 +104,10 @@ public class TodoRepositoryTest {
                 .build());
 
         //when
-        final long count = todoRepository.countByCategory(category);
+        final Long count = todoRepository.countByCategory(category);
 
         //then
-        assertThat(count).isNotNull();
-        assertThat(count).isEqualTo(2);
+        assertThat(count).isNotNull().isEqualTo(2);
     }
 
 }

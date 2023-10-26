@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.kh.follow;
 
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
 import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
+import com.newsainturtle.shadowmate.follow.dto.FollowRequestResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
@@ -155,7 +156,7 @@ public class FollowServiceTest {
         }
 
         @Test
-        void 실패_팔로워유저없음() {
+        void 실패_팔로워삭제시유저없음() {
             // given
 
             // when
@@ -180,6 +181,41 @@ public class FollowServiceTest {
 
     @Nested
     class 팔로우신청TEST {
+
+        @Test
+        public void 성공_친구신청목록조회Null() {
+            //given
+            List<FollowRequest> followRequestList = new ArrayList<>();
+            doReturn(followRequestList).when(followRequestRepository).findAllByReceiverId(user2);
+
+            //when
+            List<FollowRequestResponse> result = followService.getFollowRequestList(user2);
+
+            //then
+            assertThat(result).isEmpty();
+        }
+
+
+        @Test
+        public void 성공_친구신청목록조회() {
+            //given
+            FollowRequest followRequest = FollowRequest.builder()
+                    .id(1L)
+                    .requesterId(user1)
+                    .receiverId(user2)
+                    .build();
+            List<FollowRequest> followRequestList = new ArrayList<>();
+            followRequestList.add(followRequest);
+
+            doReturn(followRequestList).when(followRequestRepository).findAllByReceiverId(user2);
+
+            //when
+            List<FollowRequestResponse> result = followService.getFollowRequestList(user2);
+
+            //then
+            assertThat(result.get(0).getNickname()).isEqualTo(followRequest.getRequesterId().getNickname());
+        }
+
 
         @Test
         public void 실패_중복친구신청() {

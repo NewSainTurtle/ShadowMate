@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class DdayRepositoryTest {
+class DdayRepositoryTest {
 
     @Autowired
     private DdayRepository ddayRepository;
@@ -30,27 +30,31 @@ public class DdayRepositoryTest {
     private UserRepository userRepository;
 
     private User user;
+    private Dday dday;
+    private final String password = "yntest1234";
+    private final SocialType socialType = SocialType.BASIC;
+    private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user = userRepository.save(User.builder()
-                .email("test1234@naver.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
+                .email("yntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
                 .nickname("거북이")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .plannerAccessScope(plannerAccessScope)
                 .withdrawal(false)
                 .build());
-    }
-
-    @Test
-    public void 디데이등록() {
-        //given
-        final Dday dday = Dday.builder()
-                .ddayTitle("생일")
+        dday = Dday.builder()
+                .ddayTitle("시험")
                 .ddayDate(Date.valueOf("2023-02-09"))
                 .user(user)
                 .build();
+    }
+
+    @Test
+    void 디데이등록() {
+        //given
 
         //when
         final Dday saveDday = ddayRepository.save(dday);
@@ -58,20 +62,16 @@ public class DdayRepositoryTest {
         //then
         assertThat(saveDday).isNotNull();
         assertThat(saveDday.getDdayDate()).isEqualTo("2023-02-09");
-        assertThat(saveDday.getDdayTitle()).isEqualTo("생일");
+        assertThat(saveDday.getDdayTitle()).isEqualTo("시험");
         assertThat(saveDday.getUser()).isEqualTo(user);
     }
 
     @Test
-    public void 디데이목록조회_미래순() {
+    void 디데이목록조회_미래순() {
         //given
+        ddayRepository.save(dday);
         ddayRepository.save(Dday.builder()
                 .ddayTitle("생일")
-                .ddayDate(Date.valueOf("2023-02-09"))
-                .user(user)
-                .build());
-        ddayRepository.save(Dday.builder()
-                .ddayTitle("시험")
                 .ddayDate(Date.valueOf("2024-09-14"))
                 .user(user)
                 .build());
@@ -81,27 +81,22 @@ public class DdayRepositoryTest {
 
         //then
         assertThat(ddayList).isNotNull();
-        assertThat(ddayList.size()).isEqualTo(2);
-        assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("시험");
+        assertThat(ddayList).hasSize(2);
+        assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("생일");
     }
 
     @Nested
     class 디데이삭제 {
         @Test
-        public void 실패_나의디데이가아님() {
+        void 실패_나의디데이가아님() {
             //given
-            final Dday dday = Dday.builder()
-                    .ddayTitle("생일")
-                    .ddayDate(Date.valueOf("2023-02-09"))
-                    .user(user)
-                    .build();
             final Dday saveDday = ddayRepository.save(dday);
             final User other = user = userRepository.save(User.builder()
-                    .email("aa@naver.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
-                    .nickname("다른사람")
-                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
+                    .nickname("토끼")
+                    .plannerAccessScope(plannerAccessScope)
                     .withdrawal(false)
                     .build());
 
@@ -114,29 +109,8 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 실패_없는디데이ID() {
+        void 성공() {
             //given
-            final Dday dday = Dday.builder()
-                    .ddayTitle("생일")
-                    .ddayDate(Date.valueOf("2023-02-09"))
-                    .user(user)
-                    .build();
-            final Dday saveDday = ddayRepository.save(dday);
-
-            //when
-            ddayRepository.deleteByUserAndId(user, Long.MAX_VALUE);
-
-            //then
-        }
-
-        @Test
-        public void 성공() {
-            //given
-            final Dday dday = Dday.builder()
-                    .ddayTitle("생일")
-                    .ddayDate(Date.valueOf("2023-02-09"))
-                    .user(user)
-                    .build();
             final Dday saveDday = ddayRepository.save(dday);
 
             //when
@@ -150,18 +124,13 @@ public class DdayRepositoryTest {
 
 
     @Test
-    public void 디데이수정() {
+    void 디데이수정() {
         //given
-        final Dday dday = Dday.builder()
-                .ddayTitle("생일")
-                .ddayDate(Date.valueOf("2023-02-09"))
-                .user(user)
-                .build();
         final Dday saveDday = ddayRepository.save(dday);
         final Dday changeDday = Dday.builder()
                 .id(saveDday.getId())
                 .createTime(saveDday.getCreateTime())
-                .ddayTitle("시험")
+                .ddayTitle("생일")
                 .ddayDate(Date.valueOf("2023-02-11"))
                 .user(user)
                 .build();
@@ -171,7 +140,7 @@ public class DdayRepositoryTest {
 
         //then
         assertThat(findDday).isNotNull();
-        assertThat(findDday.getDdayTitle()).isEqualTo("시험");
+        assertThat(findDday.getDdayTitle()).isEqualTo("생일");
         assertThat(findDday.getDdayDate()).isEqualTo(Date.valueOf("2023-02-11"));
     }
 
@@ -183,13 +152,9 @@ public class DdayRepositoryTest {
         final Date christmas = Date.valueOf(LocalDate.of(LocalDate.now().getYear() + 1, 12, 25));
 
         @Test
-        public void 오늘미래과거_디데이데이터가있는경우() {
+        void 오늘미래과거_디데이데이터가있는경우() {
             //given
-            ddayRepository.save(Dday.builder()
-                    .ddayTitle("시험")
-                    .ddayDate(test)
-                    .user(user)
-                    .build());
+            ddayRepository.save(dday);
             ddayRepository.save(Dday.builder()
                     .ddayTitle("생일")
                     .ddayDate(today)
@@ -215,13 +180,9 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 미래과거_디데이데이터가있는경우() {
+        void 미래과거_디데이데이터가있는경우() {
             //given
-            ddayRepository.save(Dday.builder()
-                    .ddayTitle("시험")
-                    .ddayDate(test)
-                    .user(user)
-                    .build());
+            ddayRepository.save(dday);
             ddayRepository.save(Dday.builder()
                     .ddayTitle("크리스마스")
                     .ddayDate(christmas)
@@ -242,13 +203,9 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 과거_디데이데이터가있는경우() {
+        void 과거_디데이데이터가있는경우() {
             //given
-            ddayRepository.save(Dday.builder()
-                    .ddayTitle("시험")
-                    .ddayDate(test)
-                    .user(user)
-                    .build());
+            ddayRepository.save(dday);
             ddayRepository.save(Dday.builder()
                     .ddayTitle("기념")
                     .ddayDate(Date.valueOf("2020-01-27"))
@@ -272,7 +229,7 @@ public class DdayRepositoryTest {
         }
 
         @Test
-        public void 디데이데이터가없는경우() {
+        void 디데이데이터가없는경우() {
             //given
 
             //when

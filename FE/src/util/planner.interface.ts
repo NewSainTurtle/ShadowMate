@@ -1,22 +1,32 @@
-export interface categoryType {
+export interface MonthType {
+  date: string;
+  todoCount: number;
+  dayStatus: number;
+}
+
+export interface CategoryConfig {
   categoryId: number;
-  categoryColorCode: string;
   categoryTitle: string;
+  categoryColorCode: string;
   categoryEmoticon: string;
 }
 
-export interface todoType {
+export interface DayTodoConfig {
   todoId: number;
-  categoryColorCode: string;
-  categoryTitle: string;
   todoContent: string;
-  todoStatus: 0 | 1 | 2; // none, O, X
+  todoStatus: "공백" | "완료" | "미완료"; // none, O, X
+}
+
+export interface TimeTableConfig {
+  timeTableId: number;
+  startTime: string;
+  endTime: string;
 }
 
 // 공통 Todo Item
 export interface TodoConfig {
   todoId: number;
-  category?: categoryType;
+  category?: CategoryConfig;
   todoContent: string;
   todoStatus: string;
   todoUpdate?: boolean;

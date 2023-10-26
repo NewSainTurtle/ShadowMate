@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class WeeklyPlannerServiceTest {
+class WeeklyPlannerServiceTest {
 
     @InjectMocks
     private WeeklyPlannerServiceImpl weeklyPlannerServiceImpl;
@@ -71,13 +71,18 @@ public class WeeklyPlannerServiceTest {
     private final String startDay = "2023-10-09";
     private final String endDay = "2023-10-15";
     private final String weeklyTodoContent = "자기소개서 제출하기";
+
+    private final String password = "yntest1234";
+    private final SocialType socialType = SocialType.BASIC;
+    private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
+
     private final User user = User.builder()
             .id(1L)
-            .email("test@test.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
+            .email("yntest@shadowmate.com")
+            .password(password)
+            .socialLogin(socialType)
             .nickname("거북이")
-            .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .plannerAccessScope(plannerAccessScope)
             .withdrawal(false)
             .build();
 
@@ -85,41 +90,41 @@ public class WeeklyPlannerServiceTest {
     class 주차별할일등록 {
 
         @Test
-        public void 실패_올바르지않은날짜_시작요일이월요일이아님() {
+        void 실패_올바르지않은날짜_시작요일이월요일이아님() {
             //given
-            final AddWeeklyTodoRequest request = AddWeeklyTodoRequest.builder()
+            final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                     .startDate("2023-10-10")
                     .endDate(endDay)
                     .weeklyTodoContent(weeklyTodoContent)
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.addWeeklyTodo(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.addWeeklyTodo(user, addWeeklyTodoRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 실패_올바르지않은날짜_일주일간격이아님() {
+        void 실패_올바르지않은날짜_일주일간격이아님() {
             //given
-            final AddWeeklyTodoRequest request = AddWeeklyTodoRequest.builder()
+            final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                     .startDate(startDay)
                     .endDate("2023-10-16")
                     .weeklyTodoContent(weeklyTodoContent)
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.addWeeklyTodo(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.addWeeklyTodo(user, addWeeklyTodoRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 성공() {
+        void 성공() {
             //given
-            final AddWeeklyTodoRequest request = AddWeeklyTodoRequest.builder()
+            final AddWeeklyTodoRequest addWeeklyTodoRequest = AddWeeklyTodoRequest.builder()
                     .startDate(startDay)
                     .endDate(endDay)
                     .weeklyTodoContent(weeklyTodoContent)
@@ -142,10 +147,10 @@ public class WeeklyPlannerServiceTest {
             doReturn(weeklyTodo).when(weeklyTodoRepository).save(any(WeeklyTodo.class));
 
             //when
-            final AddWeeklyTodoResponse addWeeklyTodoRequest = weeklyPlannerServiceImpl.addWeeklyTodo(user, request);
+            final AddWeeklyTodoResponse addWeeklyTodoResponse = weeklyPlannerServiceImpl.addWeeklyTodo(user, addWeeklyTodoRequest);
 
             //then
-            assertThat(addWeeklyTodoRequest.getWeeklyTodoId()).isNotNull();
+            assertThat(addWeeklyTodoResponse.getWeeklyTodoId()).isNotNull();
 
             //verify
             verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
@@ -169,11 +174,17 @@ public class WeeklyPlannerServiceTest {
                 .weeklyTodoContent(weeklyTodoContent)
                 .weeklyTodoStatus(false)
                 .build();
+        final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
+                .startDate(startDay)
+                .endDate(endDay)
+                .weeklyTodoId(weeklyTodo.getId())
+                .weeklyTodoContent(changeWeeklyTodoContent)
+                .build();
 
         @Test
-        public void 실패_올바르지않은날짜_시작요일이월요일이아님() {
+        void 실패_올바르지않은날짜_시작요일이월요일이아님() {
             //given
-            final UpdateWeeklyTodoContentRequest request = UpdateWeeklyTodoContentRequest.builder()
+            final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                     .startDate("2023-10-10")
                     .endDate(endDay)
                     .weeklyTodoId(weeklyTodo.getId())
@@ -181,16 +192,16 @@ public class WeeklyPlannerServiceTest {
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, updateWeeklyTodoContentRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 실패_올바르지않은날짜_일주일간격이아님() {
+        void 실패_올바르지않은날짜_일주일간격이아님() {
             //given
-            final UpdateWeeklyTodoContentRequest request = UpdateWeeklyTodoContentRequest.builder()
+            final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest = UpdateWeeklyTodoContentRequest.builder()
                     .startDate(startDay)
                     .endDate("2023-10-16")
                     .weeklyTodoId(weeklyTodo.getId())
@@ -198,47 +209,49 @@ public class WeeklyPlannerServiceTest {
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, updateWeeklyTodoContentRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 실패_유효하지않은위클리할일() {
+        void 실패_유효하지않은위클리() {
             //given
-            final UpdateWeeklyTodoContentRequest request = UpdateWeeklyTodoContentRequest.builder()
-                    .startDate(startDay)
-                    .endDate(endDay)
-                    .weeklyTodoId(weeklyTodo.getId())
-                    .weeklyTodoContent(changeWeeklyTodoContent)
-                    .build();
+
+            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, updateWeeklyTodoContentRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_WEEKLY_PLANNER);
+        }
+
+        @Test
+        void 실패_유효하지않은위클리할일() {
+            //given
+
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             doReturn(null).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, updateWeeklyTodoContentRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
         }
 
         @Test
-        public void 성공() {
+        void 성공() {
             //given
-            final UpdateWeeklyTodoContentRequest request = UpdateWeeklyTodoContentRequest.builder()
-                    .startDate(startDay)
-                    .endDate(endDay)
-                    .weeklyTodoId(weeklyTodo.getId())
-                    .weeklyTodoContent(weeklyTodoContent)
-                    .build();
 
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).save(any(WeeklyTodo.class));
 
             //when
-            weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, request);
+            weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, updateWeeklyTodoContentRequest);
 
             //then
 
@@ -264,11 +277,17 @@ public class WeeklyPlannerServiceTest {
                 .weeklyTodoContent(weeklyTodoContent)
                 .weeklyTodoStatus(false)
                 .build();
+        final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
+                .startDate(startDay)
+                .endDate(endDay)
+                .weeklyTodoId(weeklyTodo.getId())
+                .weeklyTodoStatus(true)
+                .build();
 
         @Test
-        public void 실패_올바르지않은날짜_시작요일이월요일이아님() {
+        void 실패_올바르지않은날짜_시작요일이월요일이아님() {
             //given
-            final UpdateWeeklyTodoStatusRequest request = UpdateWeeklyTodoStatusRequest.builder()
+            final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                     .startDate("2023-10-10")
                     .endDate(endDay)
                     .weeklyTodoId(weeklyTodo.getId())
@@ -276,16 +295,16 @@ public class WeeklyPlannerServiceTest {
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, updateWeeklyTodoStatusRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 실패_올바르지않은날짜_일주일간격이아님() {
+        void 실패_올바르지않은날짜_일주일간격이아님() {
             //given
-            final UpdateWeeklyTodoStatusRequest request = UpdateWeeklyTodoStatusRequest.builder()
+            final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest = UpdateWeeklyTodoStatusRequest.builder()
                     .startDate(startDay)
                     .endDate("2023-10-16")
                     .weeklyTodoId(weeklyTodo.getId())
@@ -293,48 +312,49 @@ public class WeeklyPlannerServiceTest {
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, updateWeeklyTodoStatusRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 실패_유효하지않은위클리할일() {
+        void 실패_유효하지않은위클리() {
             //given
-            final UpdateWeeklyTodoStatusRequest request = UpdateWeeklyTodoStatusRequest.builder()
-                    .startDate(startDay)
-                    .endDate(endDay)
-                    .weeklyTodoId(weeklyTodo.getId())
-                    .weeklyTodoStatus(true)
-                    .build();
+
+            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, updateWeeklyTodoStatusRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_WEEKLY_PLANNER);
+        }
+
+        @Test
+        void 실패_유효하지않은위클리할일() {
+            //given
 
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             doReturn(null).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, updateWeeklyTodoStatusRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
         }
 
         @Test
-        public void 성공() {
+        void 성공() {
             //given
-            final UpdateWeeklyTodoStatusRequest request = UpdateWeeklyTodoStatusRequest.builder()
-                    .startDate(startDay)
-                    .endDate(endDay)
-                    .weeklyTodoId(weeklyTodo.getId())
-                    .weeklyTodoStatus(true)
-                    .build();
 
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).save(any(WeeklyTodo.class));
 
             //when
-            weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, request);
+            weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, updateWeeklyTodoStatusRequest);
 
             //then
 
@@ -349,46 +369,59 @@ public class WeeklyPlannerServiceTest {
     @Nested
     class 주차별할일삭제 {
 
+        final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
+                .startDate(startDay)
+                .endDate(endDay)
+                .weeklyTodoId(1L)
+                .build();
+
         @Test
-        public void 실패_올바르지않은날짜_시작요일이월요일이아님() {
+        void 실패_올바르지않은날짜_시작요일이월요일이아님() {
             //given
-            final RemoveWeeklyTodoRequest request = RemoveWeeklyTodoRequest.builder()
+            final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                     .startDate("2023-10-10")
                     .endDate(endDay)
                     .weeklyTodoId(1L)
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, removeWeeklyTodoRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 실패_올바르지않은날짜_일주일간격이아님() {
+        void 실패_올바르지않은날짜_일주일간격이아님() {
             //given
-            final RemoveWeeklyTodoRequest request = RemoveWeeklyTodoRequest.builder()
+            final RemoveWeeklyTodoRequest removeWeeklyTodoRequest = RemoveWeeklyTodoRequest.builder()
                     .startDate(startDay)
                     .endDate("2023-10-16")
                     .weeklyTodoId(1L)
                     .build();
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, request));
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, removeWeeklyTodoRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DATE);
         }
 
         @Test
-        public void 성공() {
+        void 실패_유효하지않은위클리() {
             //given
-            final RemoveWeeklyTodoRequest request = RemoveWeeklyTodoRequest.builder()
-                    .startDate(startDay)
-                    .endDate(endDay)
-                    .weeklyTodoId(1L)
-                    .build();
+            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, removeWeeklyTodoRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_WEEKLY_PLANNER);
+        }
+
+        @Test
+        void 성공() {
+            //given
             final Weekly weekly = Weekly.builder()
                     .id(1L)
                     .startDay(Date.valueOf(startDay))
@@ -399,7 +432,7 @@ public class WeeklyPlannerServiceTest {
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
 
             //when
-            weeklyPlannerServiceImpl.removeWeeklyTodo(user, request);
+            weeklyPlannerServiceImpl.removeWeeklyTodo(user, removeWeeklyTodoRequest);
 
             //then
 
@@ -415,11 +448,11 @@ public class WeeklyPlannerServiceTest {
         final long plannerWriterId = 2L;
         final User plannerWriter = User.builder()
                 .id(2L)
-                .email("test123@test.com")
-                .password("123456")
-                .socialLogin(SocialType.BASIC)
+                .email("jntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
                 .nickname("토끼")
-                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .plannerAccessScope(plannerAccessScope)
                 .withdrawal(false)
                 .build();
         final Weekly weekly = Weekly.builder()
@@ -436,7 +469,7 @@ public class WeeklyPlannerServiceTest {
                 .build();
 
         @Test
-        public void 실패_유효하지않은날짜형식_시작날짜() {
+        void 실패_유효하지않은날짜형식_시작날짜() {
             //given
             final String invalidStartDay = "2023.10.09";
 
@@ -448,7 +481,7 @@ public class WeeklyPlannerServiceTest {
         }
 
         @Test
-        public void 실패_유효하지않은날짜형식_끝날짜() {
+        void 실패_유효하지않은날짜형식_끝날짜() {
             //given
             final String invalidEndDay = "2023.10.15";
 
@@ -460,7 +493,7 @@ public class WeeklyPlannerServiceTest {
         }
 
         @Test
-        public void 실패_유효하지않은플래너작성자() {
+        void 실패_유효하지않은플래너작성자() {
             //given
             doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
 
@@ -472,7 +505,7 @@ public class WeeklyPlannerServiceTest {
         }
 
         @Test
-        public void 실패_올바르지않은날짜_시작요일이월요일이아님() {
+        void 실패_올바르지않은날짜_시작요일이월요일이아님() {
             //given
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
 
@@ -484,7 +517,7 @@ public class WeeklyPlannerServiceTest {
         }
 
         @Test
-        public void 실패_올바르지않은날짜_일주일간격이아님() {
+        void 실패_올바르지않은날짜_일주일간격이아님() {
             //given
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
 
@@ -496,7 +529,7 @@ public class WeeklyPlannerServiceTest {
         }
 
         @Test
-        public void 성공_플래너없을때() {
+        void 성공_플래너없을때() {
             //given
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
@@ -512,26 +545,26 @@ public class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isNull();
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(0);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos()).isEmpty();
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
-        public void 성공_플래너있을때_비공개() {
+        void 성공_플래너있을때_비공개() {
             //given
             final User plannerWriter = User.builder()
                     .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
                     .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.PRIVATE)
                     .withdrawal(false)
                     .build();
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-09"))
+                    .dailyPlannerDay(Date.valueOf(startDay))
                     .user(plannerWriter)
                     .build();
 
@@ -549,26 +582,26 @@ public class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isNull();
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(0);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos()).isEmpty();
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
-        public void 성공_플래너있을때_친구공개_친구아님() {
+        void 성공_플래너있을때_친구공개_친구아님() {
             //given
             final User plannerWriter = User.builder()
                     .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
                     .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.FOLLOW)
                     .withdrawal(false)
                     .build();
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-09"))
+                    .dailyPlannerDay(Date.valueOf(startDay))
                     .user(plannerWriter)
                     .build();
 
@@ -587,19 +620,19 @@ public class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isNull();
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(0);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos()).isEmpty();
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
-        public void 성공_플래너있을때_친구공개_친구() {
+        void 성공_플래너있을때_친구공개_친구() {
             //given
             final User plannerWriter = User.builder()
                     .id(2L)
-                    .email("test123@test.com")
-                    .password("123456")
-                    .socialLogin(SocialType.BASIC)
+                    .email("jntest@shadowmate.com")
+                    .password(password)
+                    .socialLogin(socialType)
                     .nickname("토끼")
                     .plannerAccessScope(PlannerAccessScope.FOLLOW)
                     .withdrawal(false)
@@ -611,7 +644,7 @@ public class WeeklyPlannerServiceTest {
                     .build();
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-09"))
+                    .dailyPlannerDay(Date.valueOf(startDay))
                     .user(plannerWriter)
                     .build();
             final Date birthday = Date.valueOf(LocalDate.now());
@@ -643,17 +676,17 @@ public class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isEqualTo(birthday.toString());
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(1);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos()).hasSize(1);
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
         @Test
-        public void 성공_플래너있을때_전체공개() {
+        void 성공_플래너있을때_전체공개() {
             //given
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .id(2L)
-                    .dailyPlannerDay(Date.valueOf("2023-10-09"))
+                    .dailyPlannerDay(Date.valueOf(startDay))
                     .user(plannerWriter)
                     .build();
             final Date birthday = Date.valueOf(LocalDate.now());
@@ -684,9 +717,9 @@ public class WeeklyPlannerServiceTest {
             assertThat(searchWeeklyPlanner).isNotNull();
             assertThat(searchWeeklyPlanner.getDday()).isEqualTo(birthday.toString());
             assertThat(searchWeeklyPlanner.getWeeklyTodos()).isNotNull();
-            assertThat(searchWeeklyPlanner.getWeeklyTodos().size()).isEqualTo(1);
+            assertThat(searchWeeklyPlanner.getWeeklyTodos()).hasSize(1);
             assertThat(searchWeeklyPlanner.getDayList()).isNotNull();
-            assertThat(searchWeeklyPlanner.getDayList().size()).isEqualTo(7);
+            assertThat(searchWeeklyPlanner.getDayList()).hasSize(7);
         }
 
     }

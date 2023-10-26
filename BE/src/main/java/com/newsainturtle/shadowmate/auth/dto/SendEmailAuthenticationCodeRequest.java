@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertifyEmailRequest {
+public class SendEmailAuthenticationCodeRequest {
     @Email
     @NotNull
     private String email;

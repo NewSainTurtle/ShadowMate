@@ -13,11 +13,14 @@ import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -49,12 +52,36 @@ public class UserServiceImpl implements UserService {
         return UserResponse.builder()
                 .userId(searchUser.getId())
                 .email(searchUser.getEmail())
-                .prfileImage(searchUser.getProfileImage())
+                .profileImage(searchUser.getProfileImage())
                 .nickname(searchUser.getNickname())
                 .statusMessage(searchUser.getStatusMessage())
                 .plannerAccessScope(searchUser.getPlannerAccessScope())
                 .isFollow(isFollow(user, searchUser))
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(final Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        User deleteUser = User.builder()
+                .id(user.get().getId())
+                .email(user.get().getEmail())
+                .password(user.get().getPassword())
+                .socialLogin(user.get().getSocialLogin())
+                .profileImage(user.get().getProfileImage())
+                .nickname(user.get().getNickname())
+                .statusMessage(user.get().getStatusMessage())
+                .withdrawal(true)
+                .plannerAccessScope(user.get().getPlannerAccessScope())
+                .createTime(user.get().getCreateTime())
+                .updateTime(user.get().getUpdateTime())
+                .deleteTime(LocalDateTime.now())
+                .build();
+        userRepository.save(deleteUser);
     }
 
     private FollowStatus isFollow(final User user, final User searchUser) {

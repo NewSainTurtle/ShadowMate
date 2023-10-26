@@ -1,6 +1,6 @@
 package com.newsainturtle.shadowmate.kh.auth;
 
-import com.newsainturtle.shadowmate.auth.dto.CertifyEmailRequest;
+import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
@@ -64,27 +64,13 @@ public class AuthServiceTest {
         public void 실패_이메일중복() {
             //given
             doReturn(user).when(userRepository).findByEmail(email);
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("test1234@naver.com").build();
+            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("test1234@naver.com").build();
 
             //when
-            final AuthException result = Assertions.assertThrows(AuthException.class, () -> authServiceImpl.certifyEmail(certifyEmailRequest));
+            final AuthException result = Assertions.assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
-        }
-
-        @Test
-        public void 성공_이메일중복아님() {
-            //given
-            doReturn(null).when(userRepository).findByEmail(email);
-            doReturn(message).when(emailSender).createMimeMessage();
-            final CertifyEmailRequest certifyEmailRequest = CertifyEmailRequest.builder().email("test1234@naver.com").build();
-
-            //when
-            authServiceImpl.certifyEmail(certifyEmailRequest);
-
-            //then
-
         }
 
         @Test

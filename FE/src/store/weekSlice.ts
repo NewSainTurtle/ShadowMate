@@ -1,10 +1,10 @@
 import { rootState } from "@hooks/configStore";
 import { createSlice } from "@reduxjs/toolkit";
-import { TodoConfig, WeekTodoItemConfig, categoryType } from "@util/planner.interface";
+import { TodoConfig, WeekTodoItemConfig, CategoryConfig } from "@util/planner.interface";
 
 export interface DailyTodoConfig {
   todoId: number;
-  category?: categoryType | null;
+  category?: CategoryConfig | null;
   todoContent: string;
   todoStatus: string;
   todoUpdate?: boolean;
