@@ -10,7 +10,8 @@ import { useAppDispatch } from "@hooks/hook";
 import { setLogin } from "@store/authSlice";
 
 const Login = () => {
-  const [showAlert, setShowAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [autoLogin, setAutoLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
@@ -43,6 +44,10 @@ const Login = () => {
       .then((res) => {
         const accessToken = res.headers["authorization"];
         dispatch(setLogin({ accessToken: accessToken, userId: 0 }));
+        if (autoLogin) {
+          localStorage.clear();
+          localStorage.setItem("accessToken", accessToken);
+        }
         navigator("/month");
       })
       .catch((err) => console.log(err));
@@ -58,7 +63,7 @@ const Login = () => {
         </div>
         <div className={styles.login_toolbox}>
           <div className={styles.login_checkbox}>
-            <input id="auto" type="checkbox" />
+            <input id="auto" type="checkbox" checked={autoLogin} />
             <label htmlFor="auto">
               <Text types="small">자동로그인</Text>
             </label>
