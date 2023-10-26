@@ -33,12 +33,6 @@ export interface TodoConfig {
   timeTable?: TimeTableConfig;
 }
 
-export interface TimeTableConfig {
-  timeTableId: number;
-  startTime: string;
-  endTime: string;
-}
-
 /* --- Week Interfaces --- */
 
 export interface WeekTodoItemConfig {
