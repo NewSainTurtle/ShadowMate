@@ -224,6 +224,41 @@ $color-warning: var(--color-warning);
       @extend .category__item;
       background-color: $color-gray-1;
     }
+
+    &--hover {
+      @extend .category__item;
+      grid-template-columns: 1.2fr 8.8fr;
+      > div:nth-child(1) {
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+        line-height: 30px;
+        text-align: center;
+      }
+      &:hover {
+        background-color: $color-gray-1;
+      }
+    }
+  }
+
+  &__selector {
+    max-height: calc(3.5em * 5);
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: $color-background;
+    > div:nth-child(1) {
+      position: fixed;
+      height: 3.5em;
+      width: 100%;
+      line-height: 3.5em;
+      padding: 0 1em;
+      box-sizing: border-box;
+      border-bottom: 0.5px solid $color-gray-2;
+      background-color: $color-background;
+    }
+    > div:nth-child(2) {
+      margin-top: 3.5em;
+    }
   }
 }
 

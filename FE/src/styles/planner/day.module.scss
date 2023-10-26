@@ -341,34 +341,6 @@ $color-btn-blue: var(--color-btn-blue);
         text-overflow: ellipsis;
       }
     }
-
-    &-menu {
-      background-color: $color-background;
-      border-radius: 1em;
-      border: 2px solid $color-btn-blue;
-      width: min-content;
-      max-width: 15em;
-      max-height: 8em;
-      padding: 1em;
-      box-sizing: border-box;
-      position: absolute;
-      top: calc(100% + 0.5em);
-      left: 0.5em;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5em 1em;
-      z-index: 2;
-      cursor: default;
-
-      > :nth-child(1) {
-        border: 1px dashed $color-text;
-      }
-
-      > :nth-child(n) {
-        cursor: pointer;
-        padding: 0 1rem;
-      }
-    }
   }
 
   &__content {

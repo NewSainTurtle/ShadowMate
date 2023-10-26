@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FocusEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
-import styles from "../week/Week.module.scss";
+import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import { WeekTodoItemConfig } from "@util/planner.interface";
 import { WEEK_TODO_ITEMS } from "@util/data/WeekTodos";
@@ -10,13 +10,18 @@ const WeekTodo = () => {
   const [newTodo, setNewTodo] = useState<string>("");
   const [oldTodo, setOldTodo] = useState<string>("");
   const todoEndRef = useRef<HTMLDivElement | null>(null);
+  const nextId = useRef<number>(WEEK_TODO_ITEMS.length);
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (newTodo === "") return;
     if (e.key === "Enter") {
       if (e.nativeEvent.isComposing) return;
-      setTodoItems([...todoItems, { weeklyTodoContent: newTodo, weeklyTodoStatus: false, weeklyTodoUpdate: false }]);
+      setTodoItems([
+        ...todoItems,
+        { weeklyTodoId: nextId.current, weeklyTodoContent: newTodo, weeklyTodoStatus: false, weeklyTodoUpdate: false },
+      ]);
       setNewTodo("");
+      nextId.current += 1;
     }
   };
 
@@ -93,7 +98,9 @@ const WeekTodo = () => {
         })}
         <div ref={todoEndRef} className={styles["todo__item"]}>
           <div className={styles["todo__checkbox"]}>
-            <input type="checkbox" style={{ cursor: "auto" }} disabled />
+            <div style={{ visibility: "hidden" }}>
+              <input type="checkbox" style={{ cursor: "auto" }} disabled />
+            </div>
             <input
               autoFocus
               type="text"

@@ -53,7 +53,7 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
         <Text>카테고리 이모지</Text>
         <Input
           name="categoryEmoticon"
-          value={categoryEmoticon}
+          value={categoryEmoticon || ""}
           placeholder="카테고리 이모지"
           onChange={onChangeInput}
           helperText={
