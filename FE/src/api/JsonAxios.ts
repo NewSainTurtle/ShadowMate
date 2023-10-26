@@ -17,7 +17,7 @@ Axios.interceptors.request.use((config) => {
 
 Axios.interceptors.response.use(
   (res) => {
-    return res.data;
+    return res;
   },
   (err) => {
     return Promise.reject(err);
