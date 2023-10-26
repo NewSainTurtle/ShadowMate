@@ -173,7 +173,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
       {/* 카테고리 모달 start */}
       <Modal open={ModalOpen} onClose={handleClose}>
-        <CategorySelector handleClick={handleClickCategory} />
+        <CategorySelector type="day" handleClick={handleClickCategory} />
       </Modal>
       {/* 카테고리 모달 end */}
     </div>

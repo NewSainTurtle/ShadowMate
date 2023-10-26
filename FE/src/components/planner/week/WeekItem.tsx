@@ -96,7 +96,7 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
         </div>
       </div>
       <Modal open={Modalopen} onClose={handleClose}>
-        <CategorySelector handleClick={handleClickCategory} />
+        <CategorySelector type="week" handleClick={handleClickCategory} />
       </Modal>
     </>
   );
