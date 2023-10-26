@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
+import Modal from "@components/common/Modal";
+import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { todoType, BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { CategoryConfig } from "@util/planner.interface";
@@ -27,6 +29,12 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const dropMenuRef = useRef<HTMLDivElement>(null);
   const [isDropdownView, setDropdownView] = useState(false);
   const maxLength = 50;
+
+  // 카테고리 모달 start
+  const [ModalOpen, setModalOpen] = useState<boolean>(false);
+  const handleOpen = () => setModalOpen(true);
+  const handleClose = () => setModalOpen(false);
+  // 카테고리 모달 end
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
@@ -61,6 +69,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
     } else {
       updateTodo(idx, newCategory);
     }
+    setModalOpen(false);
   };
 
   const handleSaveTextTodo = () => {
@@ -104,9 +113,10 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
       <div
         ref={dropMenuRef}
         className={styles[`todo-item__category${clicked ? "--add" : ""}`]}
-        onClick={() => {
-          if (!disable) setDropdownView(!isDropdownView);
-        }}
+        // onClick={() => {
+        //   if (!disable) setDropdownView(!isDropdownView);
+        // }}
+        onClick={handleOpen}
       >
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
@@ -160,6 +170,12 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
       <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
         <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
       </div>
+
+      {/* 카테고리 모달 start */}
+      <Modal open={ModalOpen} onClose={handleClose}>
+        <CategorySelector handleClick={handleClickCategory} />
+      </Modal>
+      {/* 카테고리 모달 end */}
     </div>
   );
 };

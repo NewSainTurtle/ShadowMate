@@ -6,7 +6,7 @@ import { todoData_category } from "@util/data/DayTodos";
 import { CategoryConfig } from "@util/planner.interface";
 
 interface Props {
-  handleClick: (title: string, color: string, emoticon?: string) => void;
+  handleClick: (props: CategoryConfig) => void;
 }
 
 // 삭제 예정 start
@@ -35,25 +35,20 @@ const CategorySelector = ({ handleClick }: Props) => {
       <div>
         <Text>카테고리 선택</Text>
       </div>
-      <div
-        className={styles["category__item--hover"]}
-        onClick={() => handleClick("", BASIC_CATEGORY_ITEM.categoryColorCode, BASIC_CATEGORY_ITEM.categoryEmoticon)}
-      >
-        <div>{BASIC_CATEGORY_ITEM.categoryEmoticon}</div>
-        <div>카테고리 없음</div>
-        <div style={{ backgroundColor: BASIC_CATEGORY_ITEM.categoryColorCode }}></div>
-      </div>
-      {categoryList.map((item, idx) => (
-        <div
-          key={idx}
-          className={styles["category__item--hover"]}
-          onClick={() => handleClick(item.categoryTitle, item.categoryColorCode, item.categoryEmoticon)}
-        >
-          <div>{item.categoryEmoticon}</div>
-          <div>{item.categoryTitle}</div>
-          <div style={{ backgroundColor: item.categoryColorCode }}></div>
+      <div>
+        <div className={styles["category__item--hover"]} onClick={() => handleClick(BASIC_CATEGORY_ITEM)}>
+          <div>{BASIC_CATEGORY_ITEM.categoryEmoticon}</div>
+          <div>카테고리 없음</div>
+          <div style={{ backgroundColor: BASIC_CATEGORY_ITEM.categoryColorCode }}></div>
         </div>
-      ))}
+        {categoryList.map((item, idx) => (
+          <div key={idx} className={styles["category__item--hover"]} onClick={() => handleClick(item)}>
+            <div>{item.categoryEmoticon}</div>
+            <div>{item.categoryTitle}</div>
+            <div style={{ backgroundColor: item.categoryColorCode }}></div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
