@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         ObjectMapper om = new ObjectMapper();
         try {
             User user = om.readValue(request.getInputStream(), User.class);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getNickname(), user.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
             return authentication;
@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
         String jwtToken = jwtProvider.createToken(principalDetails);
         jwtProvider.addTokenHeader(response, jwtToken);
+        response.setHeader("id", principalDetails.getUser().getId().toString());
         chain.doFilter(request, response);
     }
 
