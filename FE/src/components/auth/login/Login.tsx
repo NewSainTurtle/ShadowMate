@@ -47,6 +47,7 @@ const Login = () => {
         if (autoLogin) {
           localStorage.clear();
           localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("id", userId);
         }
         navigator("/month");
       })

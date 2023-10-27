@@ -13,6 +13,8 @@ import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
 import LandingPage from "@pages/LandingPage";
 import PrivateRoute from "@util/PrivateRoute";
+import { useDispatch } from "react-redux";
+import { setLogin } from "@store/authSlice";
 
 const theme = createTheme({
   typography: {
@@ -21,6 +23,7 @@ const theme = createTheme({
 });
 
 const App = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const [pathName, setPathName] = useState(false);
   const isLogin = !!sessionStorage.getItem("accessToken");
@@ -32,6 +35,14 @@ const App = () => {
   useEffect(() => {
     setPathName(["/", "/login", "/signup"].includes(location.pathname));
   }, [location.pathname]);
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken") || "";
+    const id = localStorage.getItem("id");
+    let userId = 0;
+    if (id) userId = parseInt(id);
+    dispatch(setLogin({ accessToken: accessToken, userId: userId }));
+  });
 
   return (
     <ThemeProvider theme={theme}>
