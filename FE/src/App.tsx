@@ -12,6 +12,7 @@ import NotFoundPage from "@pages/NotFoundPage";
 import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
 import LandingPage from "@pages/LandingPage";
+import PrivateRoute from "@util/PrivateRoute";
 
 const theme = createTheme({
   typography: {
@@ -22,6 +23,7 @@ const theme = createTheme({
 const App = () => {
   const location = useLocation();
   const [pathName, setPathName] = useState(false);
+  const isLogin = !!sessionStorage.getItem("accessToken");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "light");
@@ -41,12 +43,14 @@ const App = () => {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/signup" element={<AuthPage />} />
 
-          <Route path="/day" element={<DayPage />} />
-          <Route path="/week" element={<WeekPage />} />
-          <Route path="/month" element={<MonthPage />} />
+          <Route element={<PrivateRoute isLogin={isLogin} />}>
+            <Route path="/day" element={<DayPage />} />
+            <Route path="/week" element={<WeekPage />} />
+            <Route path="/month" element={<MonthPage />} />
 
-          <Route path="/social" element={<SocialPage />} />
-          <Route path="/mypage" element={<MyPage />} />
+            <Route path="/social" element={<SocialPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+          </Route>
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
