@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "@styles/auth/Login.module.scss";
 import Input from "@components/common/Input";
 import AuthButton from "../AuthButton";
@@ -11,14 +11,16 @@ import { setLogin } from "@store/authSlice";
 
 const Login = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [error, setError] = useState({
+    email: true,
+    password: true,
+  });
   const [autoLogin, setAutoLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
   });
   const { email, password } = loginInfo;
-  const emailCondition = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-  const pwCondition = /^[a-zA-Z\\d`~!@#$%^&*()-_=+]{6,20}$/;
   const dispatch = useAppDispatch();
   const navigator = useNavigate();
 
@@ -30,19 +32,15 @@ const Login = () => {
     });
   };
 
-  const handleLogin = async () => {
-    if (!emailCondition.test(email)) {
-      alert("이메일 형식에 맞지 않습니다.");
-      return;
-    }
-    if (!pwCondition.test(password)) {
-      alert("비밀번호 형식에 맞지 않습니다.");
-      return;
-    }
+  const handleLogin = () => {
+    setShowAlert(false);
+    setError({ email: !!email, password: !!password }); // null이면 false
+    if (!email || !password) return;
 
     authApi
       .login({ email: email, password: password })
       .then((res) => {
+        setShowAlert(false);
         const accessToken = res.headers["authorization"];
         const userId = res.headers["id"];
         dispatch(setLogin({ accessToken: accessToken, userId: userId }));
@@ -52,7 +50,10 @@ const Login = () => {
         }
         navigator("/month");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setShowAlert(true);
+        console.log(err);
+      });
   };
 
   return (
@@ -60,8 +61,24 @@ const Login = () => {
       <div className={styles.login_container}>
         <div className={styles.login_logo}>Login</div>
         <div className={styles.login_input}>
-          <Input name="email" value={email} types="default" placeholder="이메일" onChange={onChange} />
-          <Input name="password" value={password} types="password" placeholder="비밀번호" onChange={onChange} />
+          <Input
+            name="email"
+            value={email}
+            types="default"
+            placeholder="이메일"
+            onChange={onChange}
+            error={!error.email} // false일 시 error
+            helperText={!error.email && "이메일을 입력해주세요."}
+          />
+          <Input
+            name="password"
+            value={password}
+            types="password"
+            placeholder="비밀번호"
+            onChange={onChange}
+            error={!error.password}
+            helperText={!error.password && "비밀번호를 입력해주세요."}
+          />
         </div>
         <div className={styles.login_toolbox}>
           <div className={styles.login_checkbox}>
