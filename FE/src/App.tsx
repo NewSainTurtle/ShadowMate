@@ -38,12 +38,14 @@ const App = () => {
       {!pathName && <Header />}
       <div id="App" style={pathName ? {} : { marginLeft: "10em" }}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/common" element={<CommonPage />} />
-          <Route path="/login" element={<AuthPage />} />
-          <Route path="/signup" element={<AuthPage />} />
+          <Route element={<PrivateRoute isLogin={isLogin} option={false} />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/common" element={<CommonPage />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/signup" element={<AuthPage />} />
+          </Route>
 
-          <Route element={<PrivateRoute isLogin={isLogin} />}>
+          <Route element={<PrivateRoute isLogin={isLogin} option={true} />}>
             <Route path="/day" element={<DayPage />} />
             <Route path="/week" element={<WeekPage />} />
             <Route path="/month" element={<MonthPage />} />
