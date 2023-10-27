@@ -39,11 +39,13 @@ const Login = () => {
       alert("비밀번호 형식에 맞지 않습니다.");
       return;
     }
+
     authApi
       .login({ email: email, password: password })
       .then((res) => {
         const accessToken = res.headers["authorization"];
-        dispatch(setLogin({ accessToken: accessToken, userId: 0 }));
+        const userId = res.headers["id"];
+        dispatch(setLogin({ accessToken: accessToken, userId: userId }));
         if (autoLogin) {
           localStorage.clear();
           localStorage.setItem("accessToken", accessToken);
