@@ -41,10 +41,14 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         String jwtToken = jwtProvider.createToken(principalDetails);
-        Cookie cookie = new Cookie("token", jwtToken);
+        response.addCookie(addCookie("token", jwtToken));
+        this.handle(request,response,authentication);
+    }
+
+    private Cookie addCookie(String Key, String value) {
+        Cookie cookie = new Cookie(Key, value);
         cookie.setPath("/");
         cookie.setMaxAge(100000);
-        response.addCookie(cookie);
-        this.handle(request,response,authentication);
+        return cookie;
     }
 }
