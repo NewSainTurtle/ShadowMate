@@ -65,7 +65,7 @@ const Login = () => {
         </div>
         <div className={styles.login_toolbox}>
           <div className={styles.login_checkbox}>
-            <input id="auto" type="checkbox" checked={autoLogin} />
+            <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={() => setAutoLogin(!autoLogin)} />
             <label htmlFor="auto">
               <Text types="small">자동로그인</Text>
             </label>
