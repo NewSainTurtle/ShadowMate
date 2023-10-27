@@ -11,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,7 +42,14 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         String jwtToken = jwtProvider.createToken(principalDetails);
-        jwtProvider.addTokenHeader(response, jwtToken);
+        response.addCookie(addCookie("userId", principalDetails.getUser().getId().toString()));
         this.handle(request,response,authentication);
+    }
+
+    private Cookie addCookie(String Key, String value) {
+        Cookie cookie = new Cookie(Key, value);
+        cookie.setPath("/");
+        cookie.setMaxAge(100000);
+        return cookie;
     }
 }
