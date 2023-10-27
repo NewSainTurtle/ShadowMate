@@ -41,6 +41,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         String jwtToken = jwtProvider.createToken(principalDetails);
+        response.addCookie(addCookie("userId", principalDetails.getUser().getId().toString()));
         response.addCookie(addCookie("token", jwtToken));
         this.handle(request,response,authentication);
     }
