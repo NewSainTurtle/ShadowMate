@@ -1,13 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/auth/Login.module.scss";
 import Input from "@components/common/Input";
 import AuthButton from "../AuthButton";
 import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@hooks/hook";
+import { setLogin } from "@store/authSlice";
+
+const getCookie = (name: string) => {
+  var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  return value ? value[2] : null;
+};
 
 const Login = () => {
+  const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8080/api/oauth/google";
+  };
+
+  useEffect(() => {
+    const token = getCookie("token");
+    const id = getCookie("userId");
+    if (token && id) {
+      dispatch(setLogin({ accessToken: token, userId: id }));
+      sessionStorage.setItem("accessToken", token);
+      navigator("/month");
+    }
+  }, [document.cookie]);
+
   return (
     <div className={styles.login_display}>
       <div className={styles.login_container}>
@@ -41,7 +65,7 @@ const Login = () => {
           <Text types="small">or</Text>
         </div>
         <div className={styles.login_social}>
-          <button>
+          <button onClick={handleGoogleLogin}>
             <img src={Google} alt="Goolgle Icon" />
             <span>Continue with Google</span>
           </button>

@@ -8,6 +8,7 @@ interface authConfig {
 }
 
 interface userInfoConfig {
+  userId: number;
   email: string;
   nickname: string;
   profile: string;
@@ -17,6 +18,7 @@ const initialState: authConfig = {
   accessToken: "",
   login: false,
   userInfo: {
+    userId: 0,
     email: "",
     nickname: "",
     profile: "",
@@ -27,15 +29,16 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setLogin: (state, { payload: { accessToken, nickname } }) => {
+    setLogin: (state, { payload: { accessToken, userId } }) => {
       state.accessToken = accessToken;
       state.login = true;
-      state.userInfo.nickname = nickname;
+      state.userInfo.userId = userId;
       sessionStorage.setItem("accessToken", accessToken);
     },
     setLogout: (state) => {
       state.accessToken = "";
       state.login = false;
+      state.userInfo.userId = 0;
       state.userInfo.email = "";
       state.userInfo.nickname = "";
       state.userInfo.profile = "";
