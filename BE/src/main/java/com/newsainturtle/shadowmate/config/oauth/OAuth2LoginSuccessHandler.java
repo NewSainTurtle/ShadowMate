@@ -9,7 +9,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -23,26 +22,27 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private final JwtProvider jwtProvider;
 
     @Override
-    protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher(determineTargetUrl(request, response, authentication));
+    protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        String targetURL = "http://localhost:3000/login";
         request.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
-        requestDispatcher.forward(request,response);
+        getRedirectStrategy().sendRedirect(request, response, targetURL);
     }
 
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String tartget = "/api/auth/social-login";
-        return UriComponentsBuilder.fromUriString(tartget)
+        String target = "/api/auth/social-login";
+        return UriComponentsBuilder.fromUriString(target)
                 .queryParam("token", response.getHeader("Authorization"))
                 .build().toUriString();
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         String jwtToken = jwtProvider.createToken(principalDetails);
         response.addCookie(addCookie("userId", principalDetails.getUser().getId().toString()));
+        response.addCookie(addCookie("token", jwtToken));
         this.handle(request,response,authentication);
     }
 
