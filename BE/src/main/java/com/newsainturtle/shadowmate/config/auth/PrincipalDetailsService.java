@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.config.auth;
 
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +17,7 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User userEntity = userRepository.findByEmail(username);
+        User userEntity = userRepository.findByEmailAndSocialLogin(username, SocialType.BASIC);
         return new PrincipalDetails(userEntity);
     }
 }

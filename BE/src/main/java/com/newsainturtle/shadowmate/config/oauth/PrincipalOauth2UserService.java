@@ -34,7 +34,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .plannerAccessScope(PlannerAccessScope.PUBLIC)
                     .withdrawal(false)
                     .build();
-            userRepository.save(user);
+            user = userRepository.save(user);
         }
 
         return new PrincipalDetails(user, oAuth2User.getAttributes());
