@@ -13,8 +13,8 @@ import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
 import LandingPage from "@pages/LandingPage";
 import PrivateRoute from "@util/PrivateRoute";
-import { setLogin } from "@store/authSlice";
-import { useAppDispatch } from "@hooks/hook";
+import { selectLoginState, setLogin } from "@store/authSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 
 const theme = createTheme({
   typography: {
@@ -26,7 +26,7 @@ const App = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const [pathName, setPathName] = useState(false);
-  const isLogin = !!sessionStorage.getItem("accessToken");
+  const isLogin = useAppSelector(selectLoginState);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "light");
@@ -37,12 +37,13 @@ const App = () => {
   }, [location.pathname]);
 
   useEffect(() => {
+    // 자동 로그인 확인 시
     const accessToken = localStorage.getItem("accessToken") || "";
     const id = localStorage.getItem("id");
     let userId = 0;
     if (id) userId = parseInt(id);
-    dispatch(setLogin({ accessToken: accessToken, userId: userId }));
-  });
+    if (accessToken && id) dispatch(setLogin({ accessToken: accessToken, userId: userId }));
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
