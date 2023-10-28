@@ -33,17 +33,16 @@ const Signup = () => {
             setEmailRedundancy(false);
             setErrorMessage("");
           })
-          .catch(() => {
+          .catch((err) => {
             setEmailAuthentication(false);
-            setErrorMessage("중복된 이메일 입니다.");
+            setErrorMessage(err.response.data.message);
           });
       else setErrorMessage("이메일 형식이 아닙니다");
     };
     const onClickEmailCheck = () =>
       authApi
         .emailAuthenticationCheck({ email, code })
-        .then((res) => {
-          console.log(res);
+        .then(() => {
           setEmailRedundancy(true);
           setErrorMessage("");
         })
@@ -105,14 +104,26 @@ const Signup = () => {
 
         <div className={styles["signup_box_1"]}>
           <div className={styles["input_box__button"]}>
-            <Input placeholder="이메일" name="email" value={email} onChange={handleInput} />
-            <Button types="gray" onClick={onClickEmail}>
+            <Input
+              placeholder="이메일"
+              name="email"
+              value={email}
+              onChange={handleInput}
+              disabled={isEmailRedundancy}
+            />
+            <Button types="gray" onClick={onClickEmail} disabled={isEmailRedundancy}>
               {!isEmailAuthentication ? "인증" : "재전송"}
             </Button>
           </div>
           {isEmailAuthentication && (
             <div className={styles["input_box__button"]}>
-              <Input placeholder="이메일 인증 코드" name="code" value={code} onChange={handleInput} />
+              <Input
+                placeholder="이메일 인증 코드"
+                name="code"
+                value={code}
+                onChange={handleInput}
+                disabled={isEmailRedundancy}
+              />
               <Button types="gray" onClick={onClickEmailCheck} disabled={isEmailRedundancy}>
                 {!isEmailRedundancy ? "인증확인" : "인증완료"}
               </Button>
@@ -127,7 +138,13 @@ const Signup = () => {
             onChange={handleInput}
           />
           <div className={styles["input_box__button"]}>
-            <Input placeholder="닉네임" name="nickname" value={nickname} onChange={handleInput} />
+            <Input
+              placeholder="닉네임"
+              name="nickname"
+              value={nickname}
+              onChange={handleInput}
+              disabled={isNickanmeAuthentication}
+            />
             <Button types="gray" onClick={onClickNickName} disabled={isNickanmeAuthentication}>
               {!isNickanmeAuthentication ? "중복검사" : "검사완료"}
             </Button>
