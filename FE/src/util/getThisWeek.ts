@@ -21,26 +21,16 @@ const dayOfWeekList = ["월", "화", "수", "목", "금", "토", "일"];
 
 export const getThisWeek = ({ date }: Props) => {
   const inputDate = dayjs(date).toDate();
-  let weekInfo: DayInfoConfig[] = [];
+  let weekInfo: string[] = [];
 
   const theYear = inputDate.getFullYear();
   const theMonth = inputDate.getMonth();
   const theDate = inputDate.getDate();
   const dayOfWeek = inputDate.getDay();
 
-  for (var i = 0; i < 7; i++) {
-    const resultDay = new Date(theYear, theMonth, theDate + (i - dayOfWeek));
-    let year = resultDay.getFullYear();
-    let month = Number(resultDay.getMonth());
-    let day = resultDay.getDate();
-
-    weekInfo[i] = {
-      year,
-      month,
-      day,
-      dayOfWeek: dayOfWeekList[i],
-    };
-  }
+  const startDate = dayjs(new Date(theYear, theMonth, theDate - dayOfWeek + 1)).format("YYYY-MM-DD");
+  const endDate = dayjs(new Date(theYear, theMonth, theDate - dayOfWeek + 7)).format("YYYY-MM-DD");
+  weekInfo = [startDate, endDate];
 
   return weekInfo;
 };

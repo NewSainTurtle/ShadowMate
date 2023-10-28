@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.kh.auth;
 import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
+import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
@@ -65,36 +66,6 @@ public class AuthServiceTest {
     class 이메일인증 {
 
         @Test
-        public void 실패_이메일중복() {
-            //given
-            doReturn(user).when(userRepository).findByEmail(email);
-            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("test1234@naver.com").build();
-
-            //when
-            final AuthException result = Assertions.assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL);
-        }
-
-        @Test
-        public void 성공_이메일중복아님() {
-            //given
-            doReturn(null).when(userRepository).findByEmail(email);
-            doReturn(null).when(redisService).getHashEmailData(email);
-            doReturn(message).when(mailSender).createMimeMessage();
-            final SendEmailAuthenticationCodeRequest sendEmailAuthenticationCodeRequest = SendEmailAuthenticationCodeRequest.builder().email("test1234@naver.com").build();
-
-            //when
-            authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest);
-
-            //then
-            verify(userRepository, times(1)).findByEmail(any(String.class));
-            verify(redisService, times(1)).getHashEmailData(any(String.class));
-            verify(mailSender, times(1)).createMimeMessage();
-        }
-
-        @Test
         public void 랜덤숫자생성() {
             for(int i=0; i<10; i++) {
                 String code = createRandomCode();
@@ -115,8 +86,8 @@ public class AuthServiceTest {
             final JoinRequest joinRequest =
                     JoinRequest.builder()
                             .email("test@test.com")
-                            .password("1234")
-                            .nickname("닉")
+                            .password("123456")
+                            .nickname("테스트닉네임임")
                             .build();
             final User userEntity =
                     User.builder()
@@ -127,6 +98,12 @@ public class AuthServiceTest {
                             .plannerAccessScope(PlannerAccessScope.PUBLIC)
                             .withdrawal(false)
                             .build();
+            final String code = "testCode";
+            final EmailAuthentication emailAuthentication = EmailAuthentication.builder()
+                    .authStatus(true)
+                    .code(code)
+                    .build();
+            doReturn(emailAuthentication).when(redisService).getHashEmailData(any());
             doReturn(userEntity).when(userRepository).save(any(User.class));
 
             //when

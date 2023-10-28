@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from "react";
-import styles from "@components/planner/week/Week.module.scss";
-import WeekItem from "./WeekItem";
+import React, { useState } from "react";
+import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
 import { profileInfo } from "@pages/commonPage";
 import WeekTodo from "./WeekTodo";
-import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
+import { getThisWeekCnt } from "@util/getThisWeek";
+import { useAppSelector } from "@hooks/hook";
+import { selectDayList } from "@store/weekSlice";
+import WeekList from "./WeekList";
 
 const Week = () => {
   const today = new Date();
   const [week, setWeek] = useState(today);
-
-  const thisWeek = getThisWeek({ date: week });
   const thisWeekCnt = getThisWeekCnt({ date: week });
   const [isMine, setIsMine] = useState<boolean>(true);
+  const dayList = useAppSelector(selectDayList);
 
   const handleButton = (to: string) => {
     const date = week.getDate();
@@ -52,7 +53,7 @@ const Week = () => {
       </div>
       <div className={styles["week__list"]}>
         <WeekTodo />
-        {thisWeek?.map((today, key) => <WeekItem date={today} key={key} />)}
+        {dayList?.map((today, key) => <WeekList dayInfo={today} key={key} />)}
       </div>
     </div>
   );

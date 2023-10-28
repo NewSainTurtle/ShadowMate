@@ -1,42 +1,28 @@
-import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import styles from "./Week.module.scss";
+import React, { ChangeEvent, Dispatch, KeyboardEvent, RefObject, SetStateAction, useState } from "react";
+import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
-import Dday from "@components/common/Dday";
-import { TodoItemConfig } from "@util/planner.interface";
-import { TODO_ITEMS } from "@util/data/WeekTodos";
-import { DayInfoConfig } from "@util/getThisWeek";
+import Modal from "@components/common/Modal";
+import CategorySelector from "@components/common/CategorySelector";
 import { DeleteOutlined } from "@mui/icons-material";
+import { CategoryConfig, TodoConfig } from "@util/planner.interface";
+import todoModule from "@util/TodoModule";
 
 interface Props {
-  date: DayInfoConfig;
+  todoItems: TodoConfig[];
+  setTodoItems: Dispatch<SetStateAction<TodoConfig[]>>;
+  item: TodoConfig;
+  idx: number;
 }
 
-const WeekItem = ({ date }: Props) => {
-  const todoEndRef = useRef<HTMLDivElement | null>(null);
-  const [newTodo, setNewTodo] = useState<string>("");
-  const [oldTodo, setOldTodo] = useState<string>("");
-  const [todoItems, setTodoItems] = useState<TodoItemConfig[]>(TODO_ITEMS);
+const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
+  const [Modalopen, setModalOpen] = useState(false);
+  const handleClose = () => setModalOpen(false);
 
-  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (newTodo === "") return;
-    if (e.key == "Enter") {
-      if (e.nativeEvent.isComposing) return;
-      setTodoItems([...todoItems, { todoContents: newTodo, todoStatus: false, todoUpdate: false }]);
-      setNewTodo("");
-    }
-  };
-
-  const handleEditState = (idx: number) => {
-    setTodoItems(
-      todoItems.map((item, key) => {
-        if (key === idx) {
-          setOldTodo(item.todoContents);
-          return { ...item, todoUpdate: !item.todoUpdate };
-        }
-        return item;
-      }),
-    );
-  };
+  const { updateTodo, deleteTodo } = todoModule(todoItems, setTodoItems);
+  const [todo, setTodo] = useState({
+    newTodo: "",
+    oldTodo: "",
+  });
 
   const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -45,74 +31,73 @@ const WeekItem = ({ date }: Props) => {
     }
   };
 
-  const handleEditSave = (idx: number, e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "") e.target.value = oldTodo;
-    setTodoItems(
-      todoItems.map((item, key) => {
-        if (key === idx) {
-          return { ...item, todoContents: e.target.value, todoUpdate: !item.todoUpdate };
-        }
-        return item;
-      }),
-    );
+  const handleUpdateState = () => {
+    setTodo((prev) => {
+      return { ...prev, oldTodo: item.todoContent };
+    });
+    updateTodo(idx, { ...item, todoUpdate: !item.todoUpdate });
   };
 
-  const handleDelete = (idx: number) => {
-    setTodoItems(todoItems.filter((item, key) => idx !== key));
+  const handleUpdateSave = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === "") e.target.value = todo.oldTodo;
+    updateTodo(idx, { ...item, todoContent: e.target.value, todoUpdate: !item.todoUpdate });
   };
 
-  useEffect(() => {
-    todoEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [newTodo]);
+  const handleDelete = () => {
+    deleteTodo(idx);
+  };
+
+  const handleClickCategory = (props: CategoryConfig) => {
+    const newCategory = { ...item, category: props };
+    updateTodo(idx, newCategory);
+    setModalOpen(false);
+  };
+
+  const setStatus = (status: string) => {
+    return status === "공백" ? " " : status === "완료" ? "O" : "X";
+  };
+
+  const handleStatusSave = () => {
+    updateTodo(idx, {
+      ...item,
+      todoStatus: item.todoStatus === "공백" ? "완료" : item.todoStatus === "완료" ? "미완료" : "공백",
+    });
+  };
 
   return (
-    <div className={styles["item"]}>
-      <div className={styles["item__title"]}>
-        <Text>
-          {date.month + 1}월 {date.day}일 ({date.dayOfWeek})
-        </Text>
-        <Dday comparedDate={new Date(date.year, date.month, date.day)} />
-      </div>
-      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, 20%` }}>
-        {todoItems.map((item: TodoItemConfig, key: number) => (
-          <div className={styles["item__todo-item"]} key={key}>
-            <div>💻</div>
-            {item.todoUpdate ? (
-              <input
-                className={styles["item__edit-input"]}
-                autoFocus
-                type="text"
-                defaultValue={item.todoContents}
-                onKeyDown={(e) => handleEnter(e)}
-                onBlur={(e) => handleEditSave(key, e)}
-              />
-            ) : (
-              <div onClick={() => handleEditState(key)}>
-                <Text types="small">{item.todoContents}</Text>
-              </div>
-            )}
-            <DeleteOutlined onClick={() => handleDelete(key)} />
-            <div>{item.todoStatus ? "O" : "X"}</div>
-          </div>
-        ))}
-        <div ref={todoEndRef} className={styles["item__todo-item"]}>
-          <div>
-            <span style={{ visibility: "hidden" }}>💻</span>
-          </div>
+    <>
+      <div className={styles["item__todo-item"]}>
+        <div onClick={() => setModalOpen(!Modalopen)}>
+          <span>{item.category?.categoryEmoticon}</span>
+        </div>
+        {item.todoUpdate ? (
           <input
+            className={styles["item__edit-input"]}
+            autoFocus
             type="text"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-            onKeyDown={(e) => handleOnKeyPress(e)}
-            placeholder="💡 할 일을 입력하세요."
+            defaultValue={item.todoContent}
+            onChange={(e) =>
+              setTodo((prev) => {
+                return { ...prev, newTodo: e.target.value };
+              })
+            }
+            onKeyDown={(e) => handleEnter(e)}
+            onBlur={(e) => handleUpdateSave(e)}
           />
-          <svg style={{ cursor: "auto", height: "0" }} />
+        ) : (
+          <div onClick={handleUpdateState}>
+            <Text types="small">{item.todoContent}</Text>
+          </div>
+        )}
+        <DeleteOutlined onClick={handleDelete} />
+        <div onClick={handleStatusSave}>
+          <Text>{setStatus(item.todoStatus)}</Text>
         </div>
       </div>
-      <div className={`${styles["item__memo"]} ${todoItems.length < 4 && styles["top_border"]}`}>
-        <textarea placeholder="💡 오늘의 메모를 입력하세요." />
-      </div>
-    </div>
+      <Modal open={Modalopen} onClose={handleClose}>
+        <CategorySelector type="week" handleClick={handleClickCategory} />
+      </Modal>
+    </>
   );
 };
 
