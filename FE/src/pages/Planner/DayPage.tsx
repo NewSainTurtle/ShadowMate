@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
 import TimeTable from "@components/planner/day/todo/TimeTable";
 import TodoList from "@components/planner/day/todo/TodoList";
 import Ment from "@components/planner/day/Ment";
-import dayjs from "dayjs";
+import { useAppSelector } from "@hooks/hook";
+import { selectTodoList } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
+import dayjs from "dayjs";
 
 const DayPage = () => {
   const [ment, setMent] = useState({
@@ -14,6 +15,21 @@ const DayPage = () => {
     tomorrowGoals: "",
     retrospections: "",
   });
+  const todoListData = useAppSelector(selectTodoList);
+  const totalTime = useMemo(() => {
+    const sumMinute = todoListData
+      .filter((ele) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
+      .reduce(
+        (accumulator, item) =>
+          accumulator + Number(dayjs(item.timeTable!.endTime).diff(dayjs(item.timeTable!.startTime), "m")),
+        0,
+      );
+
+    return {
+      studyTimeHour: Math.floor(sumMinute / 60),
+      studyTimeMinute: Math.floor(sumMinute % 60),
+    };
+  }, [todoListData]);
   const [isClickTimeTable, setIsClickTimeTable] = useState(false);
   const todoDivRef = useRef<HTMLDivElement>(null);
 
@@ -48,6 +64,7 @@ const DayPage = () => {
   }, [isClickTimeTable]);
 
   const { todayGoals, tomorrowGoals, retrospections } = ment;
+  const { studyTimeHour, studyTimeMinute } = totalTime;
 
   return (
     <div className={styles["page-container"]}>
@@ -63,9 +80,9 @@ const DayPage = () => {
         />
 
         <div className={styles["item__time"]}>
-          <span>{4}</span>
+          <span>{studyTimeHour}</span>
           <span>시간</span>
-          <span>{10}</span>
+          <span>{studyTimeMinute}</span>
           <span>분</span>
         </div>
 

@@ -95,7 +95,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele) => ele.timeTable?.startTime != null && ele.timeTable?.endTime != null)
+      .filter((ele) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
       .map((item) => {
         const { todoId, category, timeTable } = item;
         let { startTime, endTime } = timeTable!;
