@@ -52,6 +52,7 @@ $color-gray-5: var(--color-gray-5);
   flex-direction: column;
 
   .signup_warning {
+    height: 0.875em;
     text-align: center;
     color: $color-warning;
   }
