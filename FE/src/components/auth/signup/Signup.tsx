@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "@styles/auth/Signup.module.scss";
 import AuthButton from "@components/auth/AuthButton";
@@ -70,8 +70,9 @@ const Signup = () => {
         setErrorMessage("닉네임은 2 ~ 10글자이내로 입력해주세요");
       }
     };
+
     const onClickJoin = () => {
-      if (userRegex.password.test(password)) setErrorMessage("비밀번호는 6 ~ 20이내로 입력해주세요");
+      if (!password || userRegex.password.test(password)) setErrorMessage("비밀번호는 6 ~ 20이내로 입력해주세요");
       else if (password != passwordCheck) setErrorMessage("비밀번호가 일치하지 않습니다.");
       else if (!isEmailRedundancy) setErrorMessage("이메일을 인증 해주세요");
       else if (!isNickanmeAuthentication) setErrorMessage("닉네임을 인증 해주세요");
