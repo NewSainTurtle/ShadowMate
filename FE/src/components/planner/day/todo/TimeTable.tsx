@@ -3,7 +3,14 @@ import styles from "@styles/planner/day.module.scss";
 import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate, selectTodoItem, selectTodoList, removeTodoItem, setTimeTable } from "@store/planner/daySlice";
+import {
+  selectDate,
+  selectTodoItem,
+  selectTodoList,
+  removeTodoItem,
+  setTimeTable,
+  todoType,
+} from "@store/planner/daySlice";
 
 interface Props {
   clicked: boolean;
@@ -95,8 +102,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele) => ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
-      .map((item) => {
+      .filter((ele: todoType) => ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
+      .map((item: todoType) => {
         const { todoId, category } = item;
         let { startTime, endTime } = item.timeTable;
         const miniArr: tableTimeType[] = [];
