@@ -13,8 +13,8 @@ import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
 import LandingPage from "@pages/LandingPage";
 import PrivateRoute from "@util/PrivateRoute";
-import { useDispatch } from "react-redux";
 import { setLogin } from "@store/authSlice";
+import { useAppDispatch } from "@hooks/hook";
 
 const theme = createTheme({
   typography: {
@@ -23,7 +23,7 @@ const theme = createTheme({
 });
 
 const App = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const [pathName, setPathName] = useState(false);
   const isLogin = !!sessionStorage.getItem("accessToken");
