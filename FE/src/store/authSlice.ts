@@ -1,5 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
+
+interface userInfoConfig {
+  userId: number;
+  email: string;
+  nickname: string;
+  profile: string;
+}
 
 interface authConfig {
   accessToken: string;
@@ -7,16 +14,11 @@ interface authConfig {
   userInfo: userInfoConfig;
 }
 
-interface userInfoConfig {
-  email: string;
-  nickname: string;
-  profile: string;
-}
-
 const initialState: authConfig = {
   accessToken: "",
   login: false,
   userInfo: {
+    userId: -1,
     email: "",
     nickname: "",
     profile: "",
@@ -27,11 +29,11 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setLogin: (state, { payload: { accessToken, nickname } }) => {
-      state.accessToken = accessToken;
+    setLogin: (state, { payload }: PayloadAction<{ accessToken: string; userId: number }>) => {
+      state.accessToken = payload.accessToken;
       state.login = true;
-      state.userInfo.nickname = nickname;
-      sessionStorage.setItem("accessToken", accessToken);
+      state.userInfo.userId = payload.userId;
+      sessionStorage.setItem("accessToken", payload.accessToken);
     },
     setLogout: (state) => {
       state.accessToken = "";
@@ -41,9 +43,10 @@ const authSlice = createSlice({
       state.userInfo.profile = "";
       sessionStorage.clear();
     },
-    setUserInfo: (state, { payload: { email, profile } }) => {
-      state.userInfo.email = email;
-      state.userInfo.profile = profile;
+    setUserInfo: (state, { payload }: PayloadAction<{ email: string; nickname: string; profile: string }>) => {
+      state.userInfo.email = payload.email;
+      state.userInfo.nickname = payload.nickname;
+      state.userInfo.profile = payload.profile;
     },
   },
 });
