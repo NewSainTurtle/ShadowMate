@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
@@ -7,7 +7,6 @@ import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
 import { CategoryConfig } from "@util/planner.interface";
-import { todoData_category } from "@util/data/DayTodos";
 
 interface Props {
   idx?: number;
@@ -25,23 +24,13 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const { category, todoContent, todoStatus } = todoItem;
   const [categoryTitle, categoryColorCode] = [category!.categoryTitle, category!.categoryColorCode];
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
-  const categoryList: CategoryConfig[] = todoData_category;
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
-  const [isDropdownView, setDropdownView] = useState(false);
   const maxLength = 50;
 
   const [ModalOpen, setModalOpen] = useState<boolean>(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
-
-  useEffect(() => {
-    const handleOutsideClose = (e: { target: any }) => {
-      if (isDropdownView && !dropMenuRef.current?.contains(e.target)) setDropdownView(false);
-    };
-    document.addEventListener("click", handleOutsideClose);
-    return () => document.removeEventListener("click", handleOutsideClose);
-  }, [isDropdownView]);
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > maxLength) {
@@ -113,22 +102,6 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
         </div>
-        {isDropdownView && (
-          <div className={styles["todo-item__category-menu"]}>
-            <span onClick={() => handleClickCategory(BASIC_CATEGORY_ITEM)}>&emsp;&emsp;</span>
-            {categoryList.map((item) => {
-              return (
-                <span
-                  key={item.categoryId}
-                  style={categoryStyle(item.categoryColorCode)}
-                  onClick={() => handleClickCategory(item)}
-                >
-                  {item.categoryTitle}
-                </span>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       <div className={styles[`todo-item__content${clicked ? "--add" : ""}`]}>
