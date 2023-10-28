@@ -1,9 +1,11 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "@store/authSlice";
+import weekReducer from "@store/planner/weekSlice";
 import dayReducer from "@store/planner/daySlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  week: weekReducer,
   day: dayReducer,
 });
 
