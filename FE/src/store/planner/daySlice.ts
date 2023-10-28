@@ -1,18 +1,13 @@
-import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
-import { CategoryConfig, DayTodoConfig, TimeTableConfig } from "@util/planner.interface";
+import { TodoConfig, TimeTableConfig } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 
-export interface todoType extends DayTodoConfig {
-  category: CategoryConfig;
-  timeTable: TimeTableConfig;
-}
-
 interface dayConfig {
   date: string | Date | dayjs.Dayjs;
-  todoItem: todoType;
-  todoList: todoType[];
+  todoItem: TodoConfig;
+  dailyTodo: TodoConfig[];
 }
 
 const initialState: dayConfig = {
@@ -33,7 +28,7 @@ const initialState: dayConfig = {
       endTime: "",
     },
   },
-  todoList: todoData_list,
+  dailyTodo: todoData_list,
 };
 
 const daySlice = createSlice({
@@ -49,30 +44,38 @@ const daySlice = createSlice({
     removeTodoItem: (state) => {
       state.todoItem = initialState.todoItem;
     },
-    setTodoList: (state, action: PayloadAction<dayConfig["todoList"]>) => {
-      state.todoList = action.payload;
+    setTodoList: (state, action: PayloadAction<dayConfig["dailyTodo"]>) => {
+      state.dailyTodo = action.payload;
     },
     setTimeTable: (state, action: PayloadAction<{ todoId: number; startTime: string; endTime: string }>) => {
       const { todoId, startTime, endTime } = action.payload;
 
-      const tempArr = state.todoList.map((item) => {
-        if (startTime != "" && startTime >= item.timeTable.startTime && endTime <= item.timeTable.endTime) {
+      const tempArr = state.dailyTodo.map((item) => {
+        if (
+          startTime != "" &&
+          item.timeTable &&
+          startTime >= item.timeTable.startTime &&
+          endTime <= item.timeTable.endTime
+        ) {
           return { ...item, timeTable: initialState.todoItem.timeTable };
         } else return item;
       });
 
-      const findIndex = state.todoList.findIndex((item) => item.todoId == todoId);
-      tempArr[findIndex].timeTable = { ...tempArr[findIndex].timeTable, startTime, endTime };
-      state.todoList = tempArr;
+      const findIndex = state.dailyTodo.findIndex((item) => item.todoId == todoId);
+      if (tempArr[findIndex].timeTable) {
+        const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
+        tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
+      }
+      state.dailyTodo = tempArr;
     },
   },
 });
 
-export const BASIC_TODO_ITEM = initialState.todoItem;
-export const BASIC_CATEGORY_ITEM = initialState.todoItem.category;
+export const BASIC_TODO_ITEM = initialState.todoItem!;
+export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
 export const { setDate, setTodoItem, removeTodoItem, setTodoList, setTimeTable } = daySlice.actions;
 export const selectDate = (state: rootState) => state.day.date;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;
-export const selectTodoList = (state: rootState) => state.day.todoList;
+export const selectTodoList = (state: rootState) => state.day.dailyTodo;
 
 export default daySlice.reducer;

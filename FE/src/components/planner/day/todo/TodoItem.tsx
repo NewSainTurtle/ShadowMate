@@ -4,25 +4,26 @@ import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
-import { todoType, BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import { TodoConfig } from "@util/planner.interface";
 import { CategoryConfig } from "@util/planner.interface";
 import { todoData_category } from "@util/data/DayTodos";
 
 interface Props {
   idx?: number;
-  todoItem: todoType;
+  todoItem: TodoConfig;
   addTodo?: boolean;
   disable?: boolean;
   todoModule: {
-    insertTodo: (props: todoType) => void;
-    updateTodo: (idx: number, props: todoType) => void;
+    insertTodo: (props: TodoConfig) => void;
+    updateTodo: (idx: number, props: TodoConfig) => void;
     deleteTodo: (idx: number) => void;
   };
 }
 
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
   const { category, todoContent, todoStatus } = todoItem;
-  const { categoryTitle, categoryColorCode } = category;
+  const [categoryTitle, categoryColorCode] = [category!.categoryTitle, category!.categoryColorCode];
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
   const categoryList: CategoryConfig[] = todoData_category;
   const [text, setText] = useState(todoContent);

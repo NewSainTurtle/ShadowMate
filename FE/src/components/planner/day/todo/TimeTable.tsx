@@ -33,8 +33,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
   const { todoId, category } = useAppSelector(selectTodoItem);
+  const [categoryColorCode] = [category!.categoryColorCode];
   const todoList = useAppSelector(selectTodoList);
-  const { categoryColorCode } = category;
   const makeTimeArr: tableTimeType[] = (() => {
     const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
     // 오전 4시 ~ 익일 4시
@@ -95,17 +95,17 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele) => ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
+      .filter((ele) => ele.timeTable?.startTime != null && ele.timeTable?.endTime != null)
       .map((item) => {
-        const { todoId, category } = item;
-        let { startTime, endTime } = item.timeTable;
+        const { todoId, category, timeTable } = item;
+        let { startTime, endTime } = timeTable!;
         const miniArr: tableTimeType[] = [];
         let tempTime = startTime;
         while (tempTime != endTime) {
           tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
           miniArr.push({
             todoId,
-            categoryColorCode: category.categoryColorCode,
+            categoryColorCode: category!.categoryColorCode,
             time: tempTime,
             closeButton: tempTime == endTime,
           });

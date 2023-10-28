@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { BASIC_TODO_ITEM, todoType, setTodoList, selectTodoList } from "@store/planner/daySlice";
+import { BASIC_TODO_ITEM, setTodoList, selectTodoList } from "@store/planner/daySlice";
+import { TodoConfig } from "@util/planner.interface";
 import TodoItemChoice from "./TodoItemChoice";
 
 interface Props {
@@ -27,13 +28,13 @@ const TodoList = ({ clicked }: Props) => {
   }, [todoArr.length]);
 
   const todoModule = (() => {
-    const insertTodo = (props: todoType) => {
+    const insertTodo = (props: TodoConfig) => {
       copyTodos.push({ ...props, todoId: nextId.current });
       dispatch(setTodoList(copyTodos));
       nextId.current += 1;
     };
 
-    const updateTodo = (idx: number, props: todoType) => {
+    const updateTodo = (idx: number, props: TodoConfig) => {
       copyTodos[idx] = { ...props };
       dispatch(setTodoList(copyTodos));
     };
