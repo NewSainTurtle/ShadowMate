@@ -59,7 +59,7 @@ const TodoList = ({ clicked }: Props) => {
     >
       {!clicked ? (
         <>
-          {todoArr.map((item: todoType, idx: number) => (
+          {todoArr.map((item: TodoConfig, idx: number) => (
             <TodoItem key={item.todoId} idx={idx} todoItem={item} todoModule={todoModule} />
           ))}
           <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
@@ -69,7 +69,7 @@ const TodoList = ({ clicked }: Props) => {
         </>
       ) : (
         <>
-          {todoArr.map((item: todoType, idx: number) => (
+          {todoArr.map((item: TodoConfig, idx: number) => (
             <TodoItemChoice key={item.todoId} idx={idx} todoItem={item} possible={item.todoStatus === "완료"} />
           ))}
           {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (

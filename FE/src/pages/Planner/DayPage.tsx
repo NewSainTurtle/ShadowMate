@@ -8,6 +8,7 @@ import { useAppSelector } from "@hooks/hook";
 import { selectTodoList } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
+import { TodoConfig } from "@util/planner.interface";
 
 const DayPage = () => {
   const [ment, setMent] = useState({
@@ -18,9 +19,9 @@ const DayPage = () => {
   const todoListData = useAppSelector(selectTodoList);
   const totalTime = useMemo(() => {
     const sumMinute = todoListData
-      .filter((ele) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
+      .filter((ele: TodoConfig) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
       .reduce(
-        (accumulator, item) =>
+        (accumulator: number, item: { timeTable: any }) =>
           accumulator + Number(dayjs(item.timeTable!.endTime).diff(dayjs(item.timeTable!.startTime), "m")),
         0,
       );
