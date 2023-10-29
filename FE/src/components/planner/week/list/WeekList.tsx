@@ -1,9 +1,9 @@
-import React, { KeyboardEvent, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
-import WeekItem from "./WeekItem";
-import WeekItemInput from "./WeekItemInput";
+import WeekItem from "@components/planner/week/list/WeekItem";
+import WeekItemInput from "@components/planner/week/list/WeekItemInput";
 import { dateFormat } from "@util/getThisWeek";
 import { DayListConfig } from "@store/planner/weekSlice";
 import { TodoConfig } from "@util/planner.interface";

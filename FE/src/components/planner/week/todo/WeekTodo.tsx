@@ -1,11 +1,11 @@
-import React, { ChangeEvent, FocusEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
+import WeekTodoInput from "@components/planner/week/todo/WeekTodoInput";
+import WeekTodoItem from "@components/planner/week/todo/WeekTodoItem";
 import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppSelector } from "@hooks/hook";
-import { selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
-import WeekTodoInput from "./WeekTodoInput";
-import WeekTodoItem from "./WeekTodoItem";
+import { selectWeeklyTodos } from "@store/planner/weekSlice";
 
 const WeekTodo = () => {
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);

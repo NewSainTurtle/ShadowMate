@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import { WeekTodoItemConfig } from "@util/planner.interface";
