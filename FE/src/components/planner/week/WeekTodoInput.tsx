@@ -21,19 +21,6 @@ const WeekTodoInput = () => {
     if (todo === "") return;
     if (e.key != "Enter") return;
     if (e.nativeEvent.isComposing) return;
-    dispatch(
-      setWeeklyTodos([
-        ...weeklyTodos,
-        {
-          weeklyTodoId: nextId.current,
-          weeklyTodoContent: todo,
-          weeklyTodoStatus: false,
-          weeklyTodoUpdate: false,
-        },
-      ]),
-    );
-    setTodo("");
-    nextId.current += 1;
     setWeeklyTodo();
   };
 
@@ -44,7 +31,21 @@ const WeekTodoInput = () => {
         endDate: dates[1],
         weeklyTodoContent: todo,
       })
-      .then((res) => console.log(res))
+      .then((res) => {
+        const returnId = res.data.data.weeklyTodoId;
+        dispatch(
+          setWeeklyTodos([
+            ...weeklyTodos,
+            {
+              weeklyTodoId: returnId,
+              weeklyTodoContent: todo,
+              weeklyTodoStatus: false,
+              weeklyTodoUpdate: false,
+            },
+          ]),
+        );
+        setTodo("");
+      })
       .catch((err) => console.log(err));
   };
 
