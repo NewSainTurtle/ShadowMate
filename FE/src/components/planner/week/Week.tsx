@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
-import WeekList from "@components/planner/week/WeekList";
-import WeekTodo from "@components/planner/week/WeekTodo";
+import WeekList from "@components/planner/week/list/WeekList";
+import WeekTodo from "@components/planner/week/todo/WeekTodo";
 import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
