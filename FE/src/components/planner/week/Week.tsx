@@ -39,6 +39,7 @@ const Week = () => {
             dday: response.dday,
             weeklyTodos: response.weeklyTodos,
             dayList: response.dayList,
+            thisWeek: week,
           }),
         );
       })

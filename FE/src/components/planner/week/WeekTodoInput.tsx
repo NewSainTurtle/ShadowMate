@@ -3,32 +3,49 @@ import styles from "@styles/planner/Week.module.scss";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
 import { WeekTodoItemConfig } from "@util/planner.interface";
+import { plannerApi } from "@api/Api";
+import { selectUserInfo } from "@store/authSlice";
+import { getThisWeek } from "@util/getThisWeek";
 
 const WeekTodoInput = () => {
   const dispatch = useAppDispatch();
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
-  const [todo, setTodo] = useState<string>("");
+  const userId: number = useAppSelector(selectUserInfo).userId;
+  const thisWeek = useAppSelector(selectWeeklyTodos).week;
   const todoEndRef = useRef<HTMLDivElement | null>(null);
   const nextId = useRef<number>(weeklyTodos.length);
+  const [todo, setTodo] = useState<string>("");
+  const dates = getThisWeek(thisWeek);
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (todo === "") return;
-    if (e.key === "Enter") {
-      if (e.nativeEvent.isComposing) return;
-      dispatch(
-        setWeeklyTodos([
-          ...weeklyTodos,
-          {
-            weeklyTodoId: nextId.current,
-            weeklyTodoContent: todo,
-            weeklyTodoStatus: false,
-            weeklyTodoUpdate: false,
-          },
-        ]),
-      );
-      setTodo("");
-      nextId.current += 1;
-    }
+    if (e.key != "Enter") return;
+    if (e.nativeEvent.isComposing) return;
+    dispatch(
+      setWeeklyTodos([
+        ...weeklyTodos,
+        {
+          weeklyTodoId: nextId.current,
+          weeklyTodoContent: todo,
+          weeklyTodoStatus: false,
+          weeklyTodoUpdate: false,
+        },
+      ]),
+    );
+    setTodo("");
+    nextId.current += 1;
+    setWeeklyTodo();
+  };
+
+  const setWeeklyTodo = () => {
+    plannerApi
+      .addWeeklyTodos(userId.toString(), {
+        startDate: dates[0],
+        endDate: dates[1],
+        weeklyTodoContent: todo,
+      })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {

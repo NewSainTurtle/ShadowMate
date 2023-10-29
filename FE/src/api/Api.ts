@@ -45,7 +45,7 @@ export const plannerApi = {
 
   weekly: (userId: string, params: { "start-date": string; "end-date": string }) =>
     Axios.get(api.planners.weekly(userId), { params: params }),
-  addWeeklyTodos: (userId: string, data: { startDate: number; endDate: string; weeklyTodoContent: string }) =>
+  addWeeklyTodos: (userId: string, data: { startDate: string; endDate: string; weeklyTodoContent: string }) =>
     Axios.post(api.planners.weeklyTodos(userId), data),
   editWeeklyTodos: (
     userId: string,
