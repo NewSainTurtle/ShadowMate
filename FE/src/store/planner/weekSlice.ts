@@ -19,14 +19,14 @@ export interface DayListConfig {
 export interface WeekConfig {
   plannerAccessScope: string;
   dday: string;
-  weeklyTodo: WeekTodoItemConfig[];
+  weeklyTodos: WeekTodoItemConfig[];
   dayList: DayListConfig[];
 }
 
 const initialState: WeekConfig = {
   plannerAccessScope: "",
   dday: "",
-  weeklyTodo: [],
+  weeklyTodos: [],
   dayList: [],
 };
 
@@ -37,13 +37,17 @@ const weekSlice = createSlice({
     setWeekInfo: (state, { payload }: PayloadAction<WeekConfig>) => {
       state.plannerAccessScope = payload.plannerAccessScope;
       state.dday = payload.dday;
-      state.weeklyTodo = payload.weeklyTodo;
+      state.weeklyTodos = payload.weeklyTodos;
       state.dayList = payload.dayList;
+    },
+    setWeeklyTodos: (state, { payload }: PayloadAction<WeekTodoItemConfig[]>) => {
+      state.weeklyTodos = payload;
     },
   },
 });
 
-export const { setWeekInfo } = weekSlice.actions;
+export const { setWeekInfo, setWeeklyTodos } = weekSlice.actions;
 export const selectDayList = (state: rootState) => state.week.dayList;
+export const selectWeeklyTodos = (state: rootState) => state.week.weeklyTodos;
 
 export default weekSlice.reducer;

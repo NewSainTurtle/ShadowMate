@@ -5,7 +5,7 @@ import Dday from "@components/common/Dday";
 import WeekItem from "./WeekItem";
 import WeekItemInput from "./WeekItemInput";
 import { dateFormat } from "@util/getThisWeek";
-import { DayListConfig } from "@store/weekSlice";
+import { DayListConfig } from "@store/planner/weekSlice";
 import { TodoConfig } from "@util/planner.interface";
 
 interface Props {
