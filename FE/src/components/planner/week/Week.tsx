@@ -1,19 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
+import WeekList from "@components/planner/week/WeekList";
+import WeekTodo from "@components/planner/week/WeekTodo";
 import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
+import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { DayListConfig, selectDayList, setWeekInfo } from "@store/planner/weekSlice";
+import { selectUserInfo } from "@store/authSlice";
 import { profileInfo } from "@pages/commonPage";
-import WeekTodo from "./WeekTodo";
-import { getThisWeekCnt } from "@util/getThisWeek";
-import { useAppSelector } from "@hooks/hook";
-import { selectDayList } from "@store/weekSlice";
-import WeekList from "./WeekList";
+import { plannerApi } from "@api/Api";
 
 const Week = () => {
-  const today = new Date();
-  const [week, setWeek] = useState(today);
+  const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt({ date: week });
   const [isMine, setIsMine] = useState<boolean>(true);
+
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserInfo).userId;
   const dayList = useAppSelector(selectDayList);
 
   const handleButton = (to: string) => {
@@ -21,6 +25,29 @@ const Week = () => {
     if (to === "forward") setWeek(new Date(week.setDate(date - 7)));
     else if (to === "backward") setWeek(new Date(week.setDate(date + 7)));
   };
+
+  const getDayList = () => {
+    const dates = getThisWeek(week);
+    plannerApi
+      .weekly(userId, { "start-date": dates[0], "end-date": dates[1] })
+      .then((res) => {
+        const response = res.data.data;
+        console.log(response);
+        dispatch(
+          setWeekInfo({
+            plannerAccessScope: response.plannerAccessScope,
+            dday: response.dday,
+            weeklyTodos: response.weeklyTodos,
+            dayList: response.dayList,
+          }),
+        );
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    getDayList();
+  }, [week]);
 
   return (
     <div className={styles["week"]}>
@@ -53,7 +80,7 @@ const Week = () => {
       </div>
       <div className={styles["week__list"]}>
         <WeekTodo />
-        {dayList?.map((today, key) => <WeekList dayInfo={today} key={key} />)}
+        {dayList?.map((today: DayListConfig, key: number) => <WeekList dayInfo={today} key={key} />)}
       </div>
     </div>
   );
