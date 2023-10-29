@@ -4,19 +4,13 @@ import Input from "@components/common/Input";
 import Text from "@components/common/Text";
 import { Avatar } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import { myInfoData } from "@util/data/MyInfoData";
 import Button from "@components/common/Button";
-
-interface userInfoType {
-  email: string;
-  nickname: string;
-  profileImage: string;
-  statusMessage: string;
-  plannerAccessScope: string;
-}
+import { selectUserInfo, userInfoConfig } from "@store/authSlice";
+import { useAppSelector } from "@hooks/hook";
 
 const MyPageInfo = () => {
-  const [userInfo, setUserInfo] = useState<userInfoType>(myInfoData);
+  const myInfoData = useAppSelector(selectUserInfo);
+  const [userInfo, setUserInfo] = useState<userInfoConfig>(myInfoData);
   const [password, setPassword] = useState({
     nowPassword: "",
     newPassword: "",
@@ -61,7 +55,7 @@ const MyPageInfo = () => {
       {
         title: "닉네임",
         node: (
-          <div className={styles["info__profile--nickname"]}>
+          <div className={styles["info__profile-nickname"]}>
             <Input placeholder="닉네임" name="nickname" value={nickname} onChange={handleUser} />
             <Button types="gray">중복검사</Button>
           </div>
@@ -74,18 +68,19 @@ const MyPageInfo = () => {
       {
         title: "프로필 사진",
         node: (
-          <div className={styles["info__profile--img"]}>
+          <div className={styles["info__profile-img"]}>
             <input type="file" id="imageFile" accept="image/*" onChange={(e) => saveImgFile(e)} />
             <label htmlFor="imageFile">
               <Avatar src={profileImage} />
             </label>
+            {profileImage && <div className={styles["button--delete"]} />}
           </div>
         ),
       },
       {
         title: "비밀번호 변경",
         node: (
-          <div className={styles["info__profile--password"]}>
+          <div className={styles["info__profile-password"]}>
             <Input
               types="password"
               placeholder="현재 비밀번호 입력"
