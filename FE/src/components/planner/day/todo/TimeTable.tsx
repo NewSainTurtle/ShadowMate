@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
-import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDate, selectTodoItem, selectTodoList, removeTodoItem, setTimeTable } from "@store/planner/daySlice";
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 interface Props {
   clicked: boolean;
@@ -72,7 +76,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     const mouseUp = (endTime: string) => {
       if (todoId != 0) {
         setTimeClicked(false);
-        const startTime = dayjs(selectTime.startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
+
+        let { startTime } = selectTime;
+        if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
+        startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
         dispatch(setTimeTable({ todoId, startTime, endTime }));
 
         setSelectTime({ startTime: "", endTime: "" });
@@ -123,7 +130,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     if (startTime != "" && endTime != "") {
       if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
       const dragArr: tableTimeType[] = copyTimeArr.map((obj) => {
-        if (obj.time >= startTime && obj.time <= endTime) {
+        if (dayjs(obj.time).isSameOrAfter(startTime) && dayjs(obj.time).isSameOrBefore(endTime)) {
           return { todoId, categoryColorCode, time: obj.time };
         } else return obj;
       });
