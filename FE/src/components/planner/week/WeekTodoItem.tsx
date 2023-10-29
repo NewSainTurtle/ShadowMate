@@ -3,7 +3,7 @@ import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
+import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
 import { DeleteOutlined } from "@mui/icons-material";
 import { selectUserInfo } from "@store/authSlice";
 import { getThisWeek } from "@util/getThisWeek";
@@ -19,7 +19,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
   const dispatch = useAppDispatch();
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
   const userId: number = useAppSelector(selectUserInfo).userId;
-  const thisWeek = useAppSelector(selectWeeklyTodos).week;
+  const thisWeek = useAppSelector(selectThisWeek);
   const dates = getThisWeek(thisWeek);
   const [todo, setTodo] = useState({
     newTodo: "",

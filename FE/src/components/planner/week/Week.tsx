@@ -6,7 +6,7 @@ import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { DayListConfig, selectDayList, setWeekInfo } from "@store/planner/weekSlice";
+import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
 import { selectUserInfo } from "@store/authSlice";
 import { profileInfo } from "@pages/commonPage";
 import { plannerApi } from "@api/Api";
@@ -22,8 +22,12 @@ const Week = () => {
 
   const handleButton = (to: string) => {
     const date = week.getDate();
-    if (to === "forward") setWeek(new Date(week.setDate(date - 7)));
-    else if (to === "backward") setWeek(new Date(week.setDate(date + 7)));
+    if (to === "forward") {
+      setWeek(new Date(week.setDate(date - 7)));
+    } else if (to === "backward") {
+      setWeek(new Date(week.setDate(date + 7)));
+    }
+    dispatch(setThisWeek(week));
   };
 
   const getDayList = () => {

@@ -43,7 +43,7 @@ const weekSlice = createSlice({
       state.dayList = payload.dayList;
     },
     setThisWeek: (state, { payload }: PayloadAction<Date>) => {
-      console.log(payload);
+      console.log("날짜 갱신: ", payload);
       state.thisWeek = payload;
     },
     setWeeklyTodos: (state, { payload }: PayloadAction<WeekTodoItemConfig[]>) => {
@@ -55,5 +55,6 @@ const weekSlice = createSlice({
 export const { setWeekInfo, setWeeklyTodos, setThisWeek } = weekSlice.actions;
 export const selectDayList = (state: rootState) => state.week.dayList;
 export const selectWeeklyTodos = (state: rootState) => state.week.weeklyTodos;
+export const selectThisWeek = (state: rootState) => state.week.thisWeek;
 
 export default weekSlice.reducer;
