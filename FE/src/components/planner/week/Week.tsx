@@ -13,7 +13,7 @@ import { plannerApi } from "@api/Api";
 
 const Week = () => {
   const [week, setWeek] = useState(new Date());
-  const thisWeekCnt = getThisWeekCnt({ date: week });
+  const thisWeekCnt = getThisWeekCnt(week);
   const [isMine, setIsMine] = useState<boolean>(true);
 
   const dispatch = useAppDispatch();

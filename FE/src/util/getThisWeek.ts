@@ -36,7 +36,7 @@ export const getThisWeek = (date: string | Date | dayjs.Dayjs) => {
   return weekInfo;
 };
 
-export const getThisWeekCnt = ({ date }: Props) => {
+export const getThisWeekCnt = (date: string | Date | dayjs.Dayjs) => {
   const inputDate = dayjs(date).toDate();
   const currentDate = inputDate.getDate();
   const firstDay = new Date(inputDate.setDate(1)).getDay();
