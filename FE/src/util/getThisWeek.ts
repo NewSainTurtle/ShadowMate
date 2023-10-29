@@ -19,7 +19,7 @@ interface Props {
 
 const dayOfWeekList = ["월", "화", "수", "목", "금", "토", "일"];
 
-export const getThisWeek = ({ date }: Props) => {
+export const getThisWeek = (date: string | Date | dayjs.Dayjs) => {
   const inputDate = dayjs(date).toDate();
   let weekInfo: string[] = [];
 
@@ -27,9 +27,10 @@ export const getThisWeek = ({ date }: Props) => {
   const theMonth = inputDate.getMonth();
   const theDate = inputDate.getDate();
   const dayOfWeek = inputDate.getDay();
+  const mondayFirst = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
-  const startDate = dayjs(new Date(theYear, theMonth, theDate - dayOfWeek + 1)).format("YYYY-MM-DD");
-  const endDate = dayjs(new Date(theYear, theMonth, theDate - dayOfWeek + 7)).format("YYYY-MM-DD");
+  const startDate = dayjs(new Date(theYear, theMonth, theDate - mondayFirst)).format("YYYY-MM-DD");
+  const endDate = dayjs(new Date(theYear, theMonth, theDate - mondayFirst + 6)).format("YYYY-MM-DD");
   weekInfo = [startDate, endDate];
 
   return weekInfo;
