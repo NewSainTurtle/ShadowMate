@@ -4,9 +4,10 @@ import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
-import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import { BASIC_CATEGORY_ITEM, setTimeTable } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
 import { CategoryConfig } from "@util/planner.interface";
+import { useAppDispatch } from "@hooks/hook";
 
 interface Props {
   idx?: number;
@@ -21,7 +22,8 @@ interface Props {
 }
 
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
-  const { category, todoContent, todoStatus } = todoItem;
+  const dispatch = useAppDispatch();
+  const { todoId, category, todoContent, todoStatus } = todoItem;
   const [categoryTitle, categoryColorCode] = [category!.categoryTitle, category!.categoryColorCode];
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
   const [text, setText] = useState(todoContent);
@@ -67,10 +69,18 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
   const handleSaveStatusTodo = () => {
     if (text === "") return;
-    updateTodo(idx, {
-      ...todoItem,
-      todoStatus: todoStatus == "공백" ? "완료" : todoStatus == "완료" ? "미완료" : "공백",
-    });
+    if (todoStatus == "완료") {
+      updateTodo(idx, {
+        ...todoItem,
+        todoStatus: "미완료",
+        timeTable: { ...todoItem.timeTable!, startTime: "", endTime: "" },
+      });
+    } else {
+      updateTodo(idx, {
+        ...todoItem,
+        todoStatus: todoStatus == "공백" ? "완료" : "공백",
+      });
+    }
   };
 
   const clickDeleteTodo = () => {
