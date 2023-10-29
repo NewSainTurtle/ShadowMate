@@ -55,7 +55,7 @@ export const plannerApi = {
     Axios.delete(api.planners.weeklyTodos(userId), { data: data }),
   weeklyTodosStatus: (
     userId: string,
-    data: { startDate: number; endDate: string; weeklyTodoId: number; weeklyTodoStatus: boolean },
+    data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoStatus: boolean },
   ) => Axios.put(api.planners.weeklyTodosStatus(userId), data),
 
   daily: (userId: string, params: { date: string }) => Axios.get(api.planners.daily(userId), { params: params }),

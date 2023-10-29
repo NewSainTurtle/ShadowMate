@@ -25,6 +25,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
     newTodo: "",
     oldTodo: "",
   });
+  const [checked, setChecked] = useState<boolean>(item.weeklyTodoStatus);
 
   const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -38,6 +39,10 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
     setTodo({ ...todo, oldTodo: copyTodos[idx].weeklyTodoContent });
     copyTodos[idx] = { ...copyTodos[idx], weeklyTodoUpdate: !copyTodos[idx].weeklyTodoUpdate };
     dispatch(setWeeklyTodos(copyTodos));
+  };
+
+  const handleUpdateStatus = (e: ChangeEvent<HTMLInputElement>) => {
+    putUpdateWeeklyTodoStatus();
   };
 
   const handleUpdateSave = (e: ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +77,20 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
       .catch((err) => console.log(err));
   };
 
+  const putUpdateWeeklyTodoStatus = () => {
+    plannerApi
+      .weeklyTodosStatus(userId.toString(), {
+        startDate: dates[0],
+        endDate: dates[1],
+        weeklyTodoId: id,
+        weeklyTodoStatus: !checked,
+      })
+      .then((res) => {
+        setChecked(!checked);
+      })
+      .catch((err) => console.log(err));
+  };
+
   const deleteWeeklyTodo = () => {
     plannerApi
       .deleteWeeklyTodos(userId.toString(), { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
@@ -82,7 +101,13 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
   return (
     <div className={styles["todo__item"]} key={item.weeklyTodoId}>
       <div className={styles["todo__checkbox"]}>
-        <input type="checkbox" defaultChecked={item.weeklyTodoStatus} />
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => {
+            handleUpdateStatus(e);
+          }}
+        />
         {item.weeklyTodoUpdate ? (
           <input
             autoFocus
