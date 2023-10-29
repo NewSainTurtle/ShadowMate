@@ -20,7 +20,7 @@ const WeekTodo = () => {
         style={{ gridTemplateRows: `repeat(${weeklyTodos.length + 1}, calc(100% / 7)` }}
       >
         {weeklyTodos.map((item: WeekTodoItemConfig, idx: number) => {
-          return <WeekTodoItem key={item.weeklyTodoId} idx={idx} item={item} />;
+          return <WeekTodoItem key={item.weeklyTodoId} id={item.weeklyTodoId} idx={idx} item={item} />;
         })}
         <WeekTodoInput />
       </div>

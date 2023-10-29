@@ -49,7 +49,7 @@ export const plannerApi = {
     Axios.post(api.planners.weeklyTodos(userId), data),
   editWeeklyTodos: (
     userId: string,
-    data: { startDate: number; endDate: string; weeklyTodoId: number; weeklyTodoContent: string },
+    data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoContent: string },
   ) => Axios.put(api.planners.weeklyTodos(userId), data),
   deleteWeeklyTodos: (userId: string, data: { startDate: number; endDate: string; weeklyTodoId: number }) =>
     Axios.delete(api.planners.weeklyTodos(userId), { data: data }),

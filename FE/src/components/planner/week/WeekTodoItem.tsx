@@ -5,15 +5,22 @@ import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
 import { DeleteOutlined } from "@mui/icons-material";
+import { selectUserInfo } from "@store/authSlice";
+import { getThisWeek } from "@util/getThisWeek";
+import { plannerApi } from "@api/Api";
 
 interface Props {
+  id: number;
   idx: number;
   item: WeekTodoItemConfig;
 }
 
-const WeekTodoItem = ({ idx, item }: Props) => {
+const WeekTodoItem = ({ id, idx, item }: Props) => {
   const dispatch = useAppDispatch();
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
+  const userId: number = useAppSelector(selectUserInfo).userId;
+  const thisWeek = useAppSelector(selectWeeklyTodos).week;
+  const dates = getThisWeek(thisWeek);
   const [todo, setTodo] = useState({
     newTodo: "",
     oldTodo: "",
@@ -43,15 +50,28 @@ const WeekTodoItem = ({ idx, item }: Props) => {
     let copyTodos = [...weeklyTodos];
     copyTodos[idx] = {
       ...copyTodos[idx],
-      weeklyTodoContent: e.target.value,
+      weeklyTodoContent: todo.newTodo,
       weeklyTodoUpdate: !copyTodos[idx].weeklyTodoUpdate,
     };
     dispatch(setWeeklyTodos(copyTodos));
+    setUpdateWeeklyTodo(id, todo.newTodo);
   };
 
   const handleDelete = () => {
     let newTodos = weeklyTodos.filter((item, i) => idx != i);
     dispatch(setWeeklyTodos(newTodos));
+  };
+
+  const setUpdateWeeklyTodo = (id: number, content: string) => {
+    plannerApi
+      .editWeeklyTodos(userId.toString(), {
+        startDate: dates[0],
+        endDate: dates[1],
+        weeklyTodoId: id,
+        weeklyTodoContent: content,
+      })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   };
 
   return (
