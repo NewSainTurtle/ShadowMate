@@ -21,6 +21,7 @@ export interface WeekConfig {
   dday: string;
   weeklyTodos: WeekTodoItemConfig[];
   dayList: DayListConfig[];
+  thisWeek: Date | string;
 }
 
 const initialState: WeekConfig = {
@@ -28,6 +29,7 @@ const initialState: WeekConfig = {
   dday: "",
   weeklyTodos: [],
   dayList: [],
+  thisWeek: new Date(),
 };
 
 const weekSlice = createSlice({
@@ -40,13 +42,17 @@ const weekSlice = createSlice({
       state.weeklyTodos = payload.weeklyTodos;
       state.dayList = payload.dayList;
     },
+    setThisWeek: (state, { payload }: PayloadAction<Date>) => {
+      console.log(payload);
+      state.thisWeek = payload;
+    },
     setWeeklyTodos: (state, { payload }: PayloadAction<WeekTodoItemConfig[]>) => {
       state.weeklyTodos = payload;
     },
   },
 });
 
-export const { setWeekInfo, setWeeklyTodos } = weekSlice.actions;
+export const { setWeekInfo, setWeeklyTodos, setThisWeek } = weekSlice.actions;
 export const selectDayList = (state: rootState) => state.week.dayList;
 export const selectWeeklyTodos = (state: rootState) => state.week.weeklyTodos;
 
