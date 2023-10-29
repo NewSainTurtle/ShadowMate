@@ -3,6 +3,10 @@ import { rootState } from "@hooks/configStore";
 import { TodoConfig, TimeTableConfig } from "@util/planner.interface";
 import { todoData_list } from "@util/data/DayTodos";
 import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 interface dayConfig {
   date: string | Date | dayjs.Dayjs;
@@ -51,21 +55,25 @@ const daySlice = createSlice({
       const { todoId, startTime, endTime } = action.payload;
 
       const tempArr = state.dailyTodo.map((item) => {
-        if (
-          startTime != "" &&
-          item.timeTable &&
-          startTime >= item.timeTable.startTime &&
-          endTime <= item.timeTable.endTime
-        ) {
-          return { ...item, timeTable: initialState.todoItem.timeTable };
-        } else return item;
+        if (startTime != "" && item.timeTable && item.timeTable.startTime != "") {
+          if (
+            !(
+              dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
+              dayjs(item.timeTable.startTime).isSameOrAfter(endTime)
+            )
+          ) {
+            return { ...item, timeTable: initialState.todoItem.timeTable };
+          }
+        }
+        return item;
       });
 
-      const findIndex = state.dailyTodo.findIndex((item) => item.todoId == todoId);
+      const findIndex = tempArr.findIndex((item) => item.todoId == todoId);
       if (tempArr[findIndex].timeTable) {
         const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
         tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
       }
+
       state.dailyTodo = tempArr;
     },
   },
