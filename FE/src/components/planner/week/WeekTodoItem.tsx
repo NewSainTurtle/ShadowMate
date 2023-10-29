@@ -57,6 +57,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
   const handleDelete = () => {
     let newTodos = weeklyTodos.filter((item, i) => idx != i);
     dispatch(setWeeklyTodos(newTodos));
+    deleteWeeklyTodo();
   };
 
   const putUpdateWeeklyTodo = (content: string) => {
@@ -70,6 +71,14 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   };
+
+  const deleteWeeklyTodo = () => {
+    plannerApi
+      .deleteWeeklyTodos(userId.toString(), { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
+
   return (
     <div className={styles["todo__item"]} key={item.weeklyTodoId}>
       <div className={styles["todo__checkbox"]}>
