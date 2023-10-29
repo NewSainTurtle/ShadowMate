@@ -6,8 +6,9 @@ export const authApi = {
   login: (data: { email: string; password: string }) => Axios.post(api.auth.login(), data),
   googleLogin: () => Axios.post(api.auth.googleLogin()),
   nickname: (data: { nickname: string }) => Axios.post(api.auth.nickname(), data),
-  emailAuthentication: (data: { email: string }) => Axios.post(api.auth.nickname(), data),
-  emailAuthenticationCheck: (data: { email: string; code: string }) => Axios.post(api.auth.nickname(), data),
+  emailAuthentication: (data: { email: string }) => Axios.post(api.auth.emailAuthentication(), data),
+  emailAuthenticationCheck: (data: { email: string; code: string }) =>
+    Axios.post(api.auth.emailAuthenticationCheck(), data),
 };
 
 export const userApi = {

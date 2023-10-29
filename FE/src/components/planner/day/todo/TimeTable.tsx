@@ -6,6 +6,7 @@ import { selectDate, selectTodoItem, selectTodoList, removeTodoItem, setTimeTabl
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { TodoConfig } from "@util/planner.interface";
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
@@ -102,8 +103,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
-      .map((item) => {
+      .filter((ele: TodoConfig) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
+      .map((item: TodoConfig) => {
         const { todoId, category, timeTable } = item;
         let { startTime, endTime } = timeTable!;
         const miniArr: tableTimeType[] = [];
