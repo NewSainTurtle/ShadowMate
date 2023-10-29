@@ -5,9 +5,9 @@ import AuthButton from "../AuthButton";
 import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
-import { authApi } from "@api/Api";
+import { authApi, userApi } from "@api/Api";
 import { useAppDispatch } from "@hooks/hook";
-import { setLogin } from "@store/authSlice";
+import { setLogin, setUserInfo } from "@store/authSlice";
 
 const Login = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -49,7 +49,11 @@ const Login = () => {
           localStorage.setItem("accessToken", accessToken);
           localStorage.setItem("id", userId);
         }
-        navigator("/month");
+
+        userApi.getProfiles(userId).then((res) => {
+          dispatch(setUserInfo(res.data.data));
+          navigator("/month");
+        });
       })
       .catch((err) => {
         setShowAlert(true);

@@ -5,7 +5,9 @@ interface userInfoConfig {
   userId: number;
   email: string;
   nickname: string;
-  profile: string;
+  profileImage: string;
+  statusMessage: string;
+  plannerAccessScope: string;
 }
 
 interface authConfig {
@@ -18,10 +20,12 @@ const initialState: authConfig = {
   accessToken: "",
   login: false,
   userInfo: {
-    userId: -1,
+    userId: 0,
     email: "",
     nickname: "",
-    profile: "",
+    profileImage: "",
+    statusMessage: "",
+    plannerAccessScope: "",
   },
 };
 
@@ -36,17 +40,30 @@ const authSlice = createSlice({
       sessionStorage.setItem("accessToken", payload.accessToken);
     },
     setLogout: (state) => {
-      state.accessToken = "";
-      state.login = false;
-      state.userInfo.email = "";
-      state.userInfo.nickname = "";
-      state.userInfo.profile = "";
+      state = initialState;
       sessionStorage.clear();
     },
-    setUserInfo: (state, { payload }: PayloadAction<{ email: string; nickname: string; profile: string }>) => {
-      state.userInfo.email = payload.email;
-      state.userInfo.nickname = payload.nickname;
-      state.userInfo.profile = payload.profile;
+    setUserInfo: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        email: string;
+        nickname: string;
+        profileImage: string | null;
+        statusMessage: string | null;
+        plannerAccessScope: string;
+      }>,
+    ) => {
+      const { email, nickname, profileImage, statusMessage, plannerAccessScope } = payload;
+      state.userInfo = {
+        ...state.userInfo,
+        email,
+        nickname,
+        profileImage: profileImage || "",
+        statusMessage: statusMessage || "",
+        plannerAccessScope,
+      };
     },
   },
 });
