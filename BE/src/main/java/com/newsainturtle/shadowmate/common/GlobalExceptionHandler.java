@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
+import com.newsainturtle.shadowmate.social.exception.SocialException;
 import com.newsainturtle.shadowmate.user.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -74,6 +75,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn("FollowException occur: ", exception);
         return this.makeErrorResponseEntity(exception.getErrorResult());
     }
+
+    @ExceptionHandler({SocialException.class})
+    public ResponseEntity<ErrorResponse> handleSocialException(final SocialException exception) {
+        log.warn("SocialException occur: ", exception);
+        return this.makeErrorResponseEntity(exception.getErrorResult());
+    }
+
 
     private ResponseEntity<ErrorResponse> makeErrorResponseEntity(final BaseErrorResult errorResult) {
         return ResponseEntity.status(errorResult.getHttpStatus())
