@@ -6,8 +6,9 @@ export const authApi = {
   login: (data: { email: string; password: string }) => Axios.post(api.auth.login(), data),
   googleLogin: () => Axios.post(api.auth.googleLogin()),
   nickname: (data: { nickname: string }) => Axios.post(api.auth.nickname(), data),
-  emailAuthentication: (data: { email: string }) => Axios.post(api.auth.nickname(), data),
-  emailAuthenticationCheck: (data: { email: string; code: string }) => Axios.post(api.auth.nickname(), data),
+  emailAuthentication: (data: { email: string }) => Axios.post(api.auth.emailAuthentication(), data),
+  emailAuthenticationCheck: (data: { email: string; code: string }) =>
+    Axios.post(api.auth.emailAuthenticationCheck(), data),
 };
 
 export const userApi = {
@@ -45,17 +46,17 @@ export const plannerApi = {
 
   weekly: (userId: string, params: { "start-date": string; "end-date": string }) =>
     Axios.get(api.planners.weekly(userId), { params: params }),
-  addWeeklyTodos: (userId: string, data: { startDate: number; endDate: string; weeklyTodoContent: string }) =>
+  addWeeklyTodos: (userId: string, data: { startDate: string; endDate: string; weeklyTodoContent: string }) =>
     Axios.post(api.planners.weeklyTodos(userId), data),
   editWeeklyTodos: (
     userId: string,
-    data: { startDate: number; endDate: string; weeklyTodoId: number; weeklyTodoContent: string },
+    data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoContent: string },
   ) => Axios.put(api.planners.weeklyTodos(userId), data),
-  deleteWeeklyTodos: (userId: string, data: { startDate: number; endDate: string; weeklyTodoId: number }) =>
+  deleteWeeklyTodos: (userId: string, data: { startDate: string; endDate: string; weeklyTodoId: number }) =>
     Axios.delete(api.planners.weeklyTodos(userId), { data: data }),
   weeklyTodosStatus: (
     userId: string,
-    data: { startDate: number; endDate: string; weeklyTodoId: number; weeklyTodoStatus: boolean },
+    data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoStatus: boolean },
   ) => Axios.put(api.planners.weeklyTodosStatus(userId), data),
 
   daily: (userId: string, params: { date: string }) => Axios.get(api.planners.daily(userId), { params: params }),

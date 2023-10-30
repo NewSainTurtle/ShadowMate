@@ -1,5 +1,9 @@
 package com.newsainturtle.shadowmate.yn.planner_setting;
 
+import com.newsainturtle.shadowmate.follow.entity.Follow;
+import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
+import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
@@ -53,6 +57,12 @@ class PlannerSettingServiceTest {
 
     @Mock
     private TodoRepository todoRepository;
+
+    @Mock
+    private FollowRequestRepository followRequestRepository;
+
+    @Mock
+    private FollowRepository followRepository;
 
     private final User user = User.builder()
             .id(1L)
@@ -297,6 +307,55 @@ class PlannerSettingServiceTest {
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
         }
+
+        @Test
+        void 성공_플래너공개여부설정_비공개에서_공개로() {
+            //given
+            final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
+                    .plannerAccessScope("전체공개")
+                    .build();
+            final User user2 = User.builder()
+                    .id(2L)
+                    .email("jntest@shadowmate.com")
+                    .password("yntest1234")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("토끼")
+                    .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                    .withdrawal(false)
+                    .build();
+            final User user3 = User.builder()
+                    .id(3L)
+                    .email("nctest@shadowmate.com")
+                    .password("yntest1234")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("고양이")
+                    .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                    .withdrawal(false)
+                    .build();
+            final List<FollowRequest> followRequestList = new ArrayList<>();
+            followRequestList.add(FollowRequest.builder()
+                    .id(1L)
+                    .receiverId(user2)
+                    .requesterId(user)
+                    .build());
+            followRequestList.add(FollowRequest.builder()
+                    .id(2L)
+                    .receiverId(user2)
+                    .requesterId(user3)
+                    .build());
+
+            doReturn(followRequestList).when(followRequestRepository).findAllByReceiverId(any(User.class));
+
+            //when
+            plannerSettingService.setAccessScope(user2, setAccessScopeRequest);
+
+            //then
+            verify(followRequestRepository, times(1)).findAllByReceiverId(any(User.class));
+            verify(followRepository, times(2)).save(any(Follow.class));
+            verify(followRequestRepository, times(1)).deleteAllByReceiverId(any(User.class));
+            verify(userRepository, times(1)).save(any(User.class));
+        }
+
 
         @Test
         void 성공_플래너공개여부설정() {

@@ -11,12 +11,6 @@ export interface CategoryConfig {
   categoryEmoticon?: string | null;
 }
 
-export interface DayTodoConfig {
-  todoId: number;
-  todoContent: string;
-  todoStatus: "공백" | "완료" | "미완료"; // none, O, X
-}
-
 export interface TimeTableConfig {
   timeTableId: number;
   startTime: string;
@@ -28,9 +22,9 @@ export interface TodoConfig {
   todoId: number;
   category?: CategoryConfig | null;
   todoContent: string;
-  todoStatus: string;
+  todoStatus: "공백" | "완료" | "미완료";
   todoUpdate?: boolean;
-  timeTable?: TimeTableConfig;
+  timeTable?: TimeTableConfig | null;
 }
 
 /* --- Week Interfaces --- */

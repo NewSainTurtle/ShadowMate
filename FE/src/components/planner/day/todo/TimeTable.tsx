@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
-import dayjs from "dayjs";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDate, selectTodoItem, selectTodoList, removeTodoItem, setTimeTable } from "@store/planner/daySlice";
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { TodoConfig } from "@util/planner.interface";
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 interface Props {
   clicked: boolean;
@@ -33,8 +38,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
   const { todoId, category } = useAppSelector(selectTodoItem);
+  const [categoryColorCode] = [category!.categoryColorCode];
   const todoList = useAppSelector(selectTodoList);
-  const { categoryColorCode } = category;
   const makeTimeArr: tableTimeType[] = (() => {
     const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
     // 오전 4시 ~ 익일 4시
@@ -72,7 +77,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     const mouseUp = (endTime: string) => {
       if (todoId != 0) {
         setTimeClicked(false);
-        const startTime = dayjs(selectTime.startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
+
+        let { startTime } = selectTime;
+        if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
+        startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
         dispatch(setTimeTable({ todoId, startTime, endTime }));
 
         setSelectTime({ startTime: "", endTime: "" });
@@ -95,17 +103,17 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele) => ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
-      .map((item) => {
-        const { todoId, category } = item;
-        let { startTime, endTime } = item.timeTable;
+      .filter((ele: TodoConfig) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
+      .map((item: TodoConfig) => {
+        const { todoId, category, timeTable } = item;
+        let { startTime, endTime } = timeTable!;
         const miniArr: tableTimeType[] = [];
         let tempTime = startTime;
         while (tempTime != endTime) {
           tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
           miniArr.push({
             todoId,
-            categoryColorCode: category.categoryColorCode,
+            categoryColorCode: category!.categoryColorCode,
             time: tempTime,
             closeButton: tempTime == endTime,
           });
@@ -123,7 +131,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     if (startTime != "" && endTime != "") {
       if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
       const dragArr: tableTimeType[] = copyTimeArr.map((obj) => {
-        if (obj.time >= startTime && obj.time <= endTime) {
+        if (dayjs(obj.time).isSameOrAfter(startTime) && dayjs(obj.time).isSameOrBefore(endTime)) {
           return { todoId, categoryColorCode, time: obj.time };
         } else return obj;
       });

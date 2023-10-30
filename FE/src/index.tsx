@@ -3,8 +3,9 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { store } from "@hooks/configStore";
+import { persistor, store } from "@hooks/configStore";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
@@ -12,7 +13,9 @@ root.render(
   <BrowserRouter>
     <StyledEngineProvider injectFirst>
       <Provider store={store}>
-        <App />
+        <PersistGate persistor={persistor}>
+          <App />
+        </PersistGate>
       </Provider>
     </StyledEngineProvider>
   </BrowserRouter>,
