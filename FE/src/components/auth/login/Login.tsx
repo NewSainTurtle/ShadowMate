@@ -14,6 +14,10 @@ const getCookie = (name: string) => {
   return value ? value[2] : null;
 };
 
+const deleteCookie = (name: string) => {
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+};
+
 const Login = () => {
   const dispatch = useAppDispatch();
   const navigator = useNavigate();
@@ -71,7 +75,8 @@ const Login = () => {
     const id = getCookie("userId");
     if (token && id) {
       dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
-      sessionStorage.setItem("accessToken", token);
+      deleteCookie("token");
+      deleteCookie("userId");
       navigator("/month");
     }
   }, [document.cookie]);
