@@ -180,6 +180,7 @@ $color-warning: var(--color-warning);
     }
     > :nth-child(3) {
       margin-top: 1.5em;
+      color: black;
     }
     > div:nth-child(4) {
       display: flex;
@@ -503,6 +504,17 @@ $color-warning: var(--color-warning);
       display: flex;
       flex-direction: column;
       gap: 1em;
+    }
+  }
+
+  &__modal {
+    @extend .diary__modal;
+    > div:nth-child(4) {
+      > div {
+        &:nth-child(2) {
+          background-color: #ffa9a9;
+        }
+      }
     }
   }
 }
