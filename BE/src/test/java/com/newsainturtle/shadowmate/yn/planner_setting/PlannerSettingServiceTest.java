@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
+import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
@@ -16,6 +17,7 @@ import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepo
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
+import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -63,6 +65,12 @@ class PlannerSettingServiceTest {
 
     @Mock
     private FollowRepository followRepository;
+
+    @Mock
+    private DailyPlannerRepository dailyPlannerRepository;
+
+    @Mock
+    private SocialRepository socialRepository;
 
     private final User user = User.builder()
             .id(1L)
@@ -345,6 +353,7 @@ class PlannerSettingServiceTest {
                     .build());
 
             doReturn(followRequestList).when(followRequestRepository).findAllByReceiverId(any(User.class));
+            doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
 
             //when
             plannerSettingService.setAccessScope(user2, setAccessScopeRequest);
@@ -353,21 +362,27 @@ class PlannerSettingServiceTest {
             verify(followRequestRepository, times(1)).findAllByReceiverId(any(User.class));
             verify(followRepository, times(2)).save(any(Follow.class));
             verify(followRequestRepository, times(1)).deleteAllByReceiverId(any(User.class));
+            verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
+            verify(socialRepository, times(1)).updateDeleteTimeAll(any(), any(List.class));
             verify(userRepository, times(1)).save(any(User.class));
         }
 
 
         @Test
-        void 성공_플래너공개여부설정() {
+        void 성공_플래너공개여부설정_공개에서_비공개() {
             //given
             final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("비공개")
                     .build();
 
+            doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
+
             //when
             plannerSettingService.setAccessScope(user, setAccessScopeRequest);
 
             //then
+            verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
+            verify(socialRepository, times(1)).updateDeleteTimeAll(any(), any(List.class));
             verify(userRepository, times(1)).save(any(User.class));
         }
     }
