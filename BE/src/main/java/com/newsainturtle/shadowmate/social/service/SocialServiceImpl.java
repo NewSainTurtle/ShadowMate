@@ -18,7 +18,7 @@ import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class SocialServiceImpl implements SocialService {
 
     private final SocialRepository socialRepository;
