@@ -2,18 +2,19 @@ import React from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { useAppDispatch } from "@hooks/hook";
-import { todoType, setTodoItem } from "@store/planner/daySlice";
+import { setTodoItem } from "@store/planner/daySlice";
+import { TodoConfig } from "@util/planner.interface";
 
 interface Props {
   idx?: number;
-  todoItem: todoType;
+  todoItem: TodoConfig;
   possible: boolean;
 }
 
 const TodoItemChoice = ({ todoItem, possible }: Props) => {
   const dispatch = useAppDispatch();
   const { category, todoContent, todoStatus } = todoItem;
-  const { categoryTitle, categoryColorCode } = category;
+  const [categoryTitle, categoryColorCode] = [category!.categoryTitle, category!.categoryColorCode];
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
     const rgb = parseInt(hexColor, 16);

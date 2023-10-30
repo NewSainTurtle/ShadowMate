@@ -5,7 +5,7 @@ import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
 import { DeleteOutlined } from "@mui/icons-material";
-import { selectUserInfo } from "@store/authSlice";
+import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { getThisWeek } from "@util/getThisWeek";
 import { plannerApi } from "@api/Api";
 
@@ -18,7 +18,7 @@ interface Props {
 const WeekTodoItem = ({ id, idx, item }: Props) => {
   const dispatch = useAppDispatch();
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
-  const userId: number = useAppSelector(selectUserInfo).userId;
+  const userId: number = useAppSelector(selectUserId);
   const thisWeek = useAppSelector(selectThisWeek);
   const dates = getThisWeek(thisWeek);
   const [todo, setTodo] = useState({
@@ -67,7 +67,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
 
   const putUpdateWeeklyTodo = (content: string) => {
     plannerApi
-      .editWeeklyTodos(userId.toString(), {
+      .editWeeklyTodos(userId, {
         startDate: dates[0],
         endDate: dates[1],
         weeklyTodoId: id,
@@ -79,7 +79,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
 
   const putUpdateWeeklyTodoStatus = () => {
     plannerApi
-      .weeklyTodosStatus(userId.toString(), {
+      .weeklyTodosStatus(userId, {
         startDate: dates[0],
         endDate: dates[1],
         weeklyTodoId: id,
@@ -93,7 +93,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
 
   const deleteWeeklyTodo = () => {
     plannerApi
-      .deleteWeeklyTodos(userId.toString(), { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
+      .deleteWeeklyTodos(userId, { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
       .then()
       .catch((err) => console.log(err));
   };

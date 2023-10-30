@@ -7,7 +7,7 @@ import FriendProfile from "@components/common/FriendProfile";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
-import { selectUserInfo } from "@store/authSlice";
+import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { profileInfo } from "@pages/commonPage";
 import { plannerApi } from "@api/Api";
 
@@ -17,7 +17,7 @@ const Week = () => {
   const [isMine, setIsMine] = useState<boolean>(true);
 
   const dispatch = useAppDispatch();
-  const userId = useAppSelector(selectUserInfo).userId;
+  const userId = useAppSelector(selectUserId);
   const dayList = useAppSelector(selectDayList);
 
   const handleButton = (to: string) => {

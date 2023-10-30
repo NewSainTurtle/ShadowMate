@@ -18,6 +18,8 @@ import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.social.entity.Social;
+import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
@@ -48,6 +50,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final UserRepository userRepository;
     private final DdayRepository ddayRepository;
     private final FollowRepository followRepository;
+    private final SocialRepository socialRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
@@ -283,6 +286,29 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         timeTableRepository.deleteById(timeTableId);
     }
 
+    @Override
+    @Transactional
+    public void shareSocial(final User user, final ShareSocialRequest shareSocialRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, shareSocialRequest.getDate());
+        final Social findSocial = socialRepository.findByDailyPlanner(dailyPlanner);
+        Social social;
+        if (findSocial == null) {
+            social = Social.builder()
+                    .dailyPlanner(dailyPlanner)
+                    .socialImage(shareSocialRequest.getSocialImage())
+                    .build();
+
+        } else {
+            social = Social.builder()
+                    .id(findSocial.getId())
+                    .createTime(findSocial.getCreateTime())
+                    .dailyPlanner(dailyPlanner)
+                    .socialImage(shareSocialRequest.getSocialImage())
+                    .build();
+        }
+        socialRepository.save(social);
+    }
+
     private String LocalDateTimeToString(final LocalDateTime time) {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return time.format(formatter);
@@ -407,7 +433,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                     final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner);
                     if (totalCount > 0) {
                         todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
-                        final double percent = ((totalCount - todoCount) / (double)totalCount) * 100;
+                        final double percent = ((totalCount - todoCount) / (double) totalCount) * 100;
                         dayStaus = percent == 100 ? 3 : percent >= 60 ? 2 : 1;
                     }
                 }

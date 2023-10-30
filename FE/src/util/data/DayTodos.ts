@@ -1,5 +1,5 @@
 import { CategoryConfig } from "@util/planner.interface";
-import { todoType } from "@store/planner/daySlice";
+import { TodoConfig } from "@util/planner.interface";
 import dayjs from "dayjs";
 
 export const todoData_friend = {
@@ -29,7 +29,7 @@ export const todoData_category: CategoryConfig[] = [
   },
 ];
 
-export const todoData_list: todoType[] = [
+export const todoData_list: TodoConfig[] = [
   {
     todoId: 1,
     todoContent: "수능완성 수학 과목별 10문제",

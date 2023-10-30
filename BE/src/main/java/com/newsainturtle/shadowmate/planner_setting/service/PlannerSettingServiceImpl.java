@@ -1,5 +1,9 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
+import com.newsainturtle.shadowmate.follow.entity.Follow;
+import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
+import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
@@ -33,6 +37,8 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     private final DdayRepository ddayRepository;
     private final UserRepository userRepository;
     private final TodoRepository todoRepository;
+    private final FollowRequestRepository followRequestRepository;
+    private final FollowRepository followRepository;
 
     private CategoryColor getCategoryColor(final Long categoryColorId) {
         final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
@@ -136,6 +142,17 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
         final PlannerAccessScope accessScope = PlannerAccessScope.parsing(setAccessScopeRequest.getPlannerAccessScope());
         if (accessScope == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE);
+        }
+
+        if (!user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) && accessScope.equals(PlannerAccessScope.PUBLIC)) {
+            List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiverId(user);
+            for (FollowRequest followRequest : followRequestList) {
+                followRepository.save(Follow.builder()
+                        .followerId(followRequest.getRequesterId())
+                        .followingId(user)
+                        .build());
+            }
+            followRequestRepository.deleteAllByReceiverId(user);
         }
 
         final User changeUser = User.builder()
