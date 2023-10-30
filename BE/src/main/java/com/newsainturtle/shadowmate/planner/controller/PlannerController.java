@@ -160,6 +160,15 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_WEEKLY_TODO));
     }
 
+    @PostMapping("/{userId}/daily/social")
+    public ResponseEntity<BaseResponse> shareSocial(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                    @PathVariable("userId") final Long userId,
+                                                    @RequestBody @Valid final ShareSocialRequest shareSocialRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.shareSocial(principalDetails.getUser(), shareSocialRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SHARE_SOCIAL));
+    }
+
     @GetMapping("/{userId}/daily")
     public ResponseEntity<BaseResponse> searchDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                            @PathVariable("userId") final Long userId,
