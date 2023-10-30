@@ -6,7 +6,7 @@ import { profileInfo } from "@pages/commonPage";
 import WeekTodo from "./WeekTodo";
 import { getThisWeekCnt } from "@util/getThisWeek";
 import { useAppSelector } from "@hooks/hook";
-import { selectDayList } from "@store/weekSlice";
+import { DayListConfig, selectDayList } from "@store/weekSlice";
 import WeekList from "./WeekList";
 
 const Week = () => {
@@ -53,7 +53,7 @@ const Week = () => {
       </div>
       <div className={styles["week__list"]}>
         <WeekTodo />
-        {dayList?.map((today, key) => <WeekList dayInfo={today} key={key} />)}
+        {dayList?.map((today: DayListConfig, key: number) => <WeekList dayInfo={today} key={key} />)}
       </div>
     </div>
   );
