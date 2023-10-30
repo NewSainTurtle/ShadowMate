@@ -273,8 +273,7 @@ class TodoRepositoryTest {
         final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
 
         //then
-        assertThat(todoList).isNotNull();
-        assertThat(todoList).hasSize(4);
+        assertThat(todoList).isNotNull().hasSize(4);
     }
 
     @Test

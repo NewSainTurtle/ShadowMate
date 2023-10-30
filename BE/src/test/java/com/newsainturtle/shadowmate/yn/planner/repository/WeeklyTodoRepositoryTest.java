@@ -157,8 +157,7 @@ class WeeklyTodoRepositoryTest {
             final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
 
             //then
-            assertThat(weeklyTodoList).isNotNull();
-            assertThat(weeklyTodoList).isEmpty();
+            assertThat(weeklyTodoList).isNotNull().isEmpty();
         }
 
         @Test
@@ -178,8 +177,7 @@ class WeeklyTodoRepositoryTest {
             final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
 
             //then
-            assertThat(weeklyTodoList).isNotNull();
-            assertThat(weeklyTodoList).hasSize(2);
+            assertThat(weeklyTodoList).isNotNull().hasSize(2);
         }
     }
 

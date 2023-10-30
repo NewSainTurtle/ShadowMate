@@ -80,8 +80,7 @@ class DdayRepositoryTest {
         final List<Dday> ddayList = ddayRepository.findByUserOrderByDdayDateDesc(user);
 
         //then
-        assertThat(ddayList).isNotNull();
-        assertThat(ddayList).hasSize(2);
+        assertThat(ddayList).isNotNull().hasSize(2);
         assertThat(ddayList.get(0).getDdayTitle()).isEqualTo("생일");
     }
 
