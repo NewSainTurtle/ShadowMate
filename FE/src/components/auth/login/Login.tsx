@@ -72,7 +72,7 @@ const Login = () => {
     const token = getCookie("token");
     const id = getCookie("userId");
     if (token && id) {
-      dispatch(setLogin({ accessToken: token, userId: id }));
+      dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
       sessionStorage.setItem("accessToken", token);
       navigator("/month");
     }
