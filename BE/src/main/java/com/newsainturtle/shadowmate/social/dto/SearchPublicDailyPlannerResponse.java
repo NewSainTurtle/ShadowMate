@@ -16,5 +16,5 @@ public class SearchPublicDailyPlannerResponse {
 
     private String sort;
 
-    List<Social> socialList;
+    private List<Social> socialList;
 }
