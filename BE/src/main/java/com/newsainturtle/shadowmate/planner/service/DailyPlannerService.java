@@ -18,6 +18,7 @@ public interface DailyPlannerService {
     void removeDailyLike(final User user, final Long plannerWriterId, final RemoveDailyLikeRequest removeDailyLikeRequest);
     void addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest);
     void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest);
+    void shareSocial(final User user, final ShareSocialRequest shareSocialRequest);
     SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date);
     SearchCalendarResponse searchCalendar(final User user, final Long plannerWriterId, final String date);
 }

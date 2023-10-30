@@ -33,7 +33,14 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        use: ["@svgr/webpack", "file-loader"],
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "Imgs/[name].[ext]?[hash]",
+            },
+          },
+        ],
       },
       {
         test: /\.(sa|sc|c)ss$/,
@@ -61,6 +68,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
+      favicon: "./public/favicon.svg",
       template: "./public/index.html",
       filename: "index.html",
     }),
