@@ -20,7 +20,7 @@ const throttle = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
 const CustomCursor = () => {
   const cursorRef = useRef<SVGSVGElement>(null);
   const { category } = useAppSelector(selectTodoItem);
-  const { categoryColorCode } = category;
+  const [categoryColorCode] = [category!.categoryColorCode];
 
   const moveCursor = (e: { clientY: any; clientX: any }) => {
     const mouseY = e.clientY;

@@ -1,19 +1,11 @@
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { DayTodoConfig, WeekTodoItemConfig, CategoryConfig } from "@util/planner.interface";
-
-export interface DailyTodoConfig {
-  todoId: number;
-  category?: CategoryConfig;
-  todoContent: string;
-  todoStatus: string;
-  todoUpdate?: boolean;
-}
+import { TodoConfig, WeekTodoItemConfig } from "@util/planner.interface";
 
 export interface DayListConfig {
   date: string;
   retrospection: string | null;
-  dailyTodo: DayTodoConfig[] | null;
+  dailyTodo: TodoConfig[] | null;
 }
 
 export interface WeekConfig {

@@ -12,4 +12,6 @@ public interface SocialRepository extends JpaRepository<Social, Long> {
 
     @Query(value = "SELECT s FROM Social s WHERE s.deleteTime is null")
     List<Social> findAllByDeleteTime();
+  
+    Social findByDailyPlanner(final DailyPlanner dailyPlanner);
 }
