@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.planner_setting.dto.request;
 
-import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
