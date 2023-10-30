@@ -23,7 +23,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     @Override
     protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        String targetURL = "http://localhost:3000/login";
+        String targetURL = "https://shadowmate.kro.kr:/login";
         request.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
         getRedirectStrategy().sendRedirect(request, response, targetURL);
