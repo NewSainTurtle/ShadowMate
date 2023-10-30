@@ -98,5 +98,41 @@ class SocialRepositoryTest {
             assertThat(checkSocial.getDeleteTime()).isNotNull().isEqualTo(checkSocial2.getDeleteTime()).isEqualTo(checkSocial3.getDeleteTime());
         }
 
+        @Test
+        void 소셜보이기() {
+            //given
+            final LocalDateTime localDateTime = LocalDateTime.now();
+
+            final Social social = socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner)
+                    .socialImage(socialImage)
+                    .deleteTime(localDateTime)
+                    .build());
+            final Social social2 = socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner2)
+                    .socialImage(socialImage)
+                    .deleteTime(localDateTime)
+                    .build());
+            final Social social3 = socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner3)
+                    .socialImage(socialImage)
+                    .deleteTime(localDateTime)
+                    .build());
+
+            //when
+            final List<DailyPlanner> dailyPlanners = dailyPlannerRepository.findAllByUser(user);
+            socialRepository.updateDeleteTimeAll(null, dailyPlanners);
+            final Social checkSocial = socialRepository.findById(social.getId()).orElse(null);
+            final Social checkSocial2 = socialRepository.findById(social2.getId()).orElse(null);
+            final Social checkSocial3 = socialRepository.findById(social3.getId()).orElse(null);
+
+            //then
+            assertThat(checkSocial).isNotNull();
+            assertThat(checkSocial2).isNotNull();
+            assertThat(checkSocial3).isNotNull();
+            assertThat(checkSocial.getDeleteTime()).isNull();
+            assertThat(checkSocial2.getDeleteTime()).isNull();
+            assertThat(checkSocial3.getDeleteTime()).isNull();
+        }
     }
 }
