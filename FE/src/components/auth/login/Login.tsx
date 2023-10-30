@@ -9,8 +9,15 @@ import { authApi } from "@api/Api";
 import { useAppDispatch } from "@hooks/hook";
 import { setLogin } from "@store/authSlice";
 
+const getCookie = (name: string) => {
+  var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  return value ? value[2] : null;
+};
+
 const Login = () => {
-  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const navigator = useNavigate();
+  const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState({
     email: true,
     password: true,
@@ -21,8 +28,10 @@ const Login = () => {
     password: "",
   });
   const { email, password } = loginInfo;
-  const dispatch = useAppDispatch();
-  const navigator = useNavigate();
+
+  const handleGoogleLogin = () => {
+    window.location.href = "https://shadowmate.kro.kr/api/oauth/google";
+  };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -56,6 +65,16 @@ const Login = () => {
         console.log(err);
       });
   };
+
+  useEffect(() => {
+    const token = getCookie("token");
+    const id = getCookie("userId");
+    if (token && id) {
+      dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
+      sessionStorage.setItem("accessToken", token);
+      navigator("/month");
+    }
+  }, [document.cookie]);
 
   return (
     <div className={styles.login_display}>
@@ -106,7 +125,7 @@ const Login = () => {
           <Text types="small">or</Text>
         </div>
         <div className={styles.login_social}>
-          <button>
+          <button onClick={handleGoogleLogin}>
             <img src={Google} alt="Goolgle Icon" />
             <span>Continue with Google</span>
           </button>
