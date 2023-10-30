@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { BASIC_TODO_ITEM, todoType, setTodoList, selectTodoList } from "@store/planner/daySlice";
+import { BASIC_TODO_ITEM, setTodoList, selectTodoList } from "@store/planner/daySlice";
+import { TodoConfig } from "@util/planner.interface";
 import TodoItemChoice from "./TodoItemChoice";
 
 interface Props {
@@ -27,13 +28,13 @@ const TodoList = ({ clicked }: Props) => {
   }, [todoArr.length]);
 
   const todoModule = (() => {
-    const insertTodo = (props: todoType) => {
+    const insertTodo = (props: TodoConfig) => {
       copyTodos.push({ ...props, todoId: nextId.current });
       dispatch(setTodoList(copyTodos));
       nextId.current += 1;
     };
 
-    const updateTodo = (idx: number, props: todoType) => {
+    const updateTodo = (idx: number, props: TodoConfig) => {
       copyTodos[idx] = { ...props };
       dispatch(setTodoList(copyTodos));
     };
@@ -58,7 +59,7 @@ const TodoList = ({ clicked }: Props) => {
     >
       {!clicked ? (
         <>
-          {todoArr.map((item: todoType, idx: number) => (
+          {todoArr.map((item: TodoConfig, idx: number) => (
             <TodoItem key={item.todoId} idx={idx} todoItem={item} todoModule={todoModule} />
           ))}
           <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
@@ -68,7 +69,7 @@ const TodoList = ({ clicked }: Props) => {
         </>
       ) : (
         <>
-          {todoArr.map((item: todoType, idx: number) => (
+          {todoArr.map((item: TodoConfig, idx: number) => (
             <TodoItemChoice key={item.todoId} idx={idx} todoItem={item} possible={item.todoStatus === "완료"} />
           ))}
           {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
