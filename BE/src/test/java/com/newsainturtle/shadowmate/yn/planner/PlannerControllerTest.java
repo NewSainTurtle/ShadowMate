@@ -7,10 +7,12 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner.controller.PlannerController;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerServiceImpl;
+import com.newsainturtle.shadowmate.social.entity.Social;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,10 +30,14 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.sql.Date;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -2273,5 +2279,109 @@ class PlannerControllerTest {
             //then
             resultActions.andExpect(status().isOk());
         }
+    }
+
+    @Nested
+    class 소셜공유 {
+        final String url = "/api/planners/{userId}/daily/social";
+        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+        final ShareSocialRequest shareSocialRequest = ShareSocialRequest.builder()
+                .date(date)
+                .socialImage(socialImage)
+                .build();
+
+        @Test
+        void 실패_없는사용자() throws Exception {
+            //given
+
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 실패_유효하지않은플래너() throws Exception {
+            //given
+
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).shareSocial(any(), any(ShareSocialRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class 소셜공유_실패케이스모음_유효하지않은요청값 {
+
+        final String url = "/api/planners/{userId}/daily/social";
+        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+
+        @ParameterizedTest
+        @MethodSource("invalidShareSocialRequest")
+        void 소셜공유_실패(final ShareSocialRequest shareSocialRequest) throws Exception {
+            // given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidShareSocialRequest() {
+            return Stream.of(
+                    // 올바르지 않은 날짜 형식
+                    Arguments.of(ShareSocialRequest.builder()
+                            .date("2023/10/16")
+                            .socialImage(socialImage)
+                            .build()),
+                    // 날짜 Null
+                    Arguments.of(ShareSocialRequest.builder()
+                            .date(null)
+                            .socialImage(socialImage)
+                            .build()),
+                    // 소셜 이미지 Null
+                    Arguments.of(ShareSocialRequest.builder()
+                            .date(date)
+                            .socialImage(null)
+                            .build())
+            );
+        }
+
     }
 }
