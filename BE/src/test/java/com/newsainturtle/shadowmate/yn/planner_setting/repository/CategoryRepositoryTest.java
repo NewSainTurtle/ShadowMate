@@ -84,8 +84,7 @@ class CategoryRepositoryTest {
             final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
 
             //then
-            assertThat(categoryList).isNotNull();
-            assertThat(categoryList).isEmpty();
+            assertThat(categoryList).isNotNull().isEmpty();
         }
 
         @Test
@@ -97,8 +96,7 @@ class CategoryRepositoryTest {
             final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
 
             //then
-            assertThat(categoryList).isNotNull();
-            assertThat(categoryList).hasSize(1);
+            assertThat(categoryList).isNotNull().hasSize(1);
         }
 
         @Test
@@ -117,8 +115,7 @@ class CategoryRepositoryTest {
             final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
 
             //then
-            assertThat(categoryList).isNotNull();
-            assertThat(categoryList).hasSize(1);
+            assertThat(categoryList).isNotNull().hasSize(1);
         }
     }
 

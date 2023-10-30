@@ -90,6 +90,89 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
         return weeklyTodo;
     }
 
+    private String localDateToString(final LocalDate date) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    private LocalDate stringToLocalDate(final String dateStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
+
+    private String getDday(final User user) {
+        final Date today = Date.valueOf(LocalDate.now());
+        Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+        if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+        return dday == null ? null : dday.getDdayDate().toString();
+    }
+
+    private boolean havePermissionToSearch(final User user, final User plannerWriter) {
+        if (user.equals(plannerWriter) ||
+                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
+        final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
+        checkValidDate(startDate, endDate);
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, Date.valueOf(startDate), Date.valueOf(endDate));
+        if (weekly != null) {
+            final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
+            if (permission) {
+                for (WeeklyTodo weeklyTodo : weeklyTodoList) {
+                    weeklyTodos.add(WeeklyPlannerTodoResponse.builder()
+                            .weeklyTodoId(weeklyTodo.getId())
+                            .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
+                            .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
+                            .build());
+                }
+            }
+        }
+        return weeklyTodos;
+    }
+
+    private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
+        final List<WeeklyPlannerDailyResponse> dayList = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
+            final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
+            if (dailyPlanner == null || !permission) {
+                dayList.add(WeeklyPlannerDailyResponse.builder()
+                        .date(localDateToString(date.plusDays(i)))
+                        .retrospection(null)
+                        .dailyTodos(dailyTodos)
+                        .build());
+            } else {
+                final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
+                for (Todo todo : todoList) {
+                    dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
+                            .todoId(todo.getId())
+                            .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
+                                    .categoryId(todo.getCategory().getId())
+                                    .categoryTitle(todo.getCategory().getCategoryTitle())
+                                    .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
+                                    .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
+                                    .build() : null)
+                            .todoContent(todo.getTodoContent())
+                            .todoStatus(todo.getTodoStatus().getStatus())
+                            .build());
+                }
+                dayList.add(WeeklyPlannerDailyResponse.builder()
+                        .date(localDateToString(date.plusDays(i)))
+                        .retrospection(dailyPlanner.getRetrospection())
+                        .dailyTodos(dailyTodos)
+                        .build());
+            }
+        }
+        return dayList;
+    }
+
     @Override
     @Transactional
     public AddWeeklyTodoResponse addWeeklyTodo(final User user, final AddWeeklyTodoRequest addWeeklyTodoRequest) {
@@ -135,88 +218,6 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
     public void removeWeeklyTodo(final User user, final RemoveWeeklyTodoRequest removeWeeklyTodoRequest) {
         final Weekly weekly = getWeeklyPlanner(user, removeWeeklyTodoRequest.getStartDate(), removeWeeklyTodoRequest.getEndDate());
         weeklyTodoRepository.deleteByIdAndWeekly(removeWeeklyTodoRequest.getWeeklyTodoId(), weekly);
-    }
-
-    private String LocalDateToString(final LocalDate date) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(formatter);
-    }
-
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
-    }
-
-    private String getDday(final User user) {
-        final Date today = Date.valueOf(LocalDate.now());
-        Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
-        if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
-        return dday == null ? null : dday.getDdayDate().toString();
-    }
-
-    private boolean havePermissionToSearch(final User user, final User plannerWriter) {
-        if (user.equals(plannerWriter) ||
-                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
-                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    private List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
-        final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
-        checkValidDate(startDate, endDate);
-        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, Date.valueOf(startDate), Date.valueOf(endDate));
-        if (weekly != null) {
-            final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
-            if (permission) {
-                for (WeeklyTodo weeklyTodo : weeklyTodoList) {
-                    weeklyTodos.add(WeeklyPlannerTodoResponse.builder()
-                            .weeklyTodoId(weeklyTodo.getId())
-                            .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
-                            .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
-                            .build());
-                }
-            }
-        }
-        return weeklyTodos;
-    }
-
-    private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
-        final List<WeeklyPlannerDailyResponse> dayList = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
-            final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
-            if (dailyPlanner == null || !permission) {
-                dayList.add(WeeklyPlannerDailyResponse.builder()
-                        .date(LocalDateToString(date.plusDays(i)))
-                        .retrospection(null)
-                        .dailyTodos(dailyTodos)
-                        .build());
-            } else {
-                final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
-                for (Todo todo : todoList) {
-                    dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
-                            .todoId(todo.getId())
-                            .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
-                                    .categoryId(todo.getCategory().getId())
-                                    .categoryTitle(todo.getCategory().getCategoryTitle())
-                                    .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
-                                    .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
-                                    .build() : null)
-                            .todoContent(todo.getTodoContent())
-                            .todoStatus(todo.getTodoStatus().getStatus())
-                            .build());
-                }
-                dayList.add(WeeklyPlannerDailyResponse.builder()
-                        .date(LocalDateToString(date.plusDays(i)))
-                        .retrospection(dailyPlanner.getRetrospection())
-                        .dailyTodos(dailyTodos)
-                        .build());
-            }
-        }
-        return dayList;
     }
 
     @Override

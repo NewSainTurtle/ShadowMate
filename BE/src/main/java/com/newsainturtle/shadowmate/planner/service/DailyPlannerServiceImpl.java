@@ -88,6 +88,70 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         return todo;
     }
 
+    private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long plannerWriterId, final String date) {
+        if (user.getId().equals(plannerWriterId)) {
+            throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
+        }
+
+        final User plannerWriter = userRepository.findByIdAndWithdrawalIsFalse(plannerWriterId);
+        if (plannerWriter == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_USER);
+        }
+
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
+        if (dailyPlanner == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+        return dailyPlanner;
+    }
+
+    private LocalDateTime stringToLocalDateTime(String timeStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(timeStr, formatter);
+    }
+
+    private void checkValidDateTime(String date, LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDateTime localDateTime = stringToLocalDateTime(date + " 00:00");
+        if (endTime.isBefore(startTime)
+                || localDateTime.withHour(4).isAfter(startTime)
+                || localDateTime.plusDays(1).withHour(4).isBefore(endTime)) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TIME);
+        }
+    }
+
+    private String localDateTimeToString(final LocalDateTime time) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return time.format(formatter);
+    }
+
+    private String getDday(final User user) {
+        final Date today = Date.valueOf(LocalDate.now());
+        Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+        if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+        return dday == null ? null : dday.getDdayDate().toString();
+    }
+
+    private boolean havePermissionToSearch(final User user, final User plannerWriter) {
+        if (user.equals(plannerWriter) ||
+                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private String localDateToString(final LocalDate date) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    private LocalDate stringToLocalDate(final String dateStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
+
     @Override
     @Transactional
     public AddDailyTodoResponse addDailyTodo(final User user, final AddDailyTodoRequest addDailyTodoRequest) {
@@ -200,23 +264,6 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         dailyPlannerRepository.save(changeDailyPlanner);
     }
 
-    private DailyPlanner getAnotherUserDailyPlanner(final User user, final Long plannerWriterId, final String date) {
-        if (user.getId().equals(plannerWriterId)) {
-            throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
-        }
-
-        final User plannerWriter = userRepository.findByIdAndWithdrawalIsFalse(plannerWriterId);
-        if (plannerWriter == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_USER);
-        }
-
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
-        if (dailyPlanner == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
-        }
-        return dailyPlanner;
-    }
-
     @Override
     @Transactional
     public void addDailyLike(final User user, final Long plannerWriterId, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
@@ -237,20 +284,6 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     public void removeDailyLike(final User user, final Long plannerWriterId, final RemoveDailyLikeRequest removeDailyLikeRequest) {
         final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, plannerWriterId, removeDailyLikeRequest.getDate());
         dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user, dailyPlanner);
-    }
-
-    private LocalDateTime stringToLocalDateTime(String timeStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(timeStr, formatter);
-    }
-
-    private void checkValidDateTime(String date, LocalDateTime startTime, LocalDateTime endTime) {
-        LocalDateTime localDateTime = stringToLocalDateTime(date + " 00:00");
-        if (endTime.isBefore(startTime)
-                || localDateTime.withHour(4).isAfter(startTime)
-                || localDateTime.plusDays(1).withHour(4).isBefore(endTime)) {
-            throw new PlannerException(PlannerErrorResult.INVALID_TIME);
-        }
     }
 
     @Override
@@ -309,28 +342,6 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         socialRepository.save(social);
     }
 
-    private String LocalDateTimeToString(final LocalDateTime time) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return time.format(formatter);
-    }
-
-    private String getDday(final User user) {
-        final Date today = Date.valueOf(LocalDate.now());
-        Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
-        if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
-        return dday == null ? null : dday.getDdayDate().toString();
-    }
-
-    private boolean havePermissionToSearch(final User user, final User plannerWriter) {
-        if (user.equals(plannerWriter) ||
-                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
-                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
-        ) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date) {
         final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$";
@@ -371,8 +382,8 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                         .todoStatus(todo.getTodoStatus().getStatus())
                         .timeTable(todo.getTimeTable() != null ? DailyPlannerTodoTimeTableResponse.builder()
                                 .timeTableId(todo.getTimeTable().getId())
-                                .startTime(LocalDateTimeToString(todo.getTimeTable().getStartTime()))
-                                .endTime(LocalDateTimeToString(todo.getTimeTable().getEndTime()))
+                                .startTime(localDateTimeToString(todo.getTimeTable().getStartTime()))
+                                .endTime(localDateTimeToString(todo.getTimeTable().getEndTime()))
                                 .build() : null)
                         .build());
                 if (todo.getTimeTable() != null) {
@@ -396,16 +407,6 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                     .build();
 
         }
-    }
-
-    private String LocalDateToString(final LocalDate date) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(formatter);
-    }
-
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
     }
 
     @Override
@@ -434,12 +435,18 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
                     if (totalCount > 0) {
                         todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
                         final double percent = ((totalCount - todoCount) / (double) totalCount) * 100;
-                        dayStaus = percent == 100 ? 3 : percent >= 60 ? 2 : 1;
+                        if(percent == 100){
+                            dayStaus = 3;
+                        }else if(percent >= 60){
+                            dayStaus = 2;
+                        }else if(percent >= 0){
+                            dayStaus = 1;
+                        }
                     }
                 }
                 dayList.add(
                         CalendarDayResponse.builder()
-                                .date(LocalDateToString(date.plusDays(i)))
+                                .date(localDateToString(date.plusDays(i)))
                                 .todoCount(todoCount)
                                 .dayStatus(dayStaus)
                                 .build()

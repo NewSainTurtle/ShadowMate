@@ -26,8 +26,7 @@ class CategoryColorRepositoryTest {
         final List<CategoryColor> result = categoryColorRepository.findAll();
 
         //then
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(16);
+        assertThat(result).isNotNull().hasSize(16);
     }
 
 }
