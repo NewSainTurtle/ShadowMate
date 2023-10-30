@@ -28,8 +28,6 @@ const Login = () => {
     password: "",
   });
   const { email, password } = loginInfo;
-  const dispatch = useAppDispatch();
-  const navigator = useNavigate();
 
   const handleGoogleLogin = () => {
     window.location.href = "https://shadowmate.kro.kr/api/oauth/google";
@@ -67,7 +65,7 @@ const Login = () => {
         console.log(err);
       });
   };
-  
+
   useEffect(() => {
     const token = getCookie("token");
     const id = getCookie("userId");
