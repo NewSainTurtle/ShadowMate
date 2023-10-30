@@ -25,9 +25,6 @@ public class SocialController {
                                                                  @PathVariable("userId") final Long userId,
                                                                  @RequestParam final String sort,
                                                                  @RequestParam final Long pageNumber) {
-        System.out.println(userId);
-        System.out.println(sort);
-        System.out.println(pageNumber);
         authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_PUBLIC_DAILY_PLANNER, socialService.searchPublicDailyPlanner(sort, pageNumber)));
     }
