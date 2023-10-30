@@ -36,12 +36,7 @@ const authSlice = createSlice({
       sessionStorage.setItem("accessToken", payload.accessToken);
     },
     setLogout: (state) => {
-      state.accessToken = "";
-      state.login = false;
-      state.userId = 0;
-      state.userInfo.email = "";
-      state.userInfo.nickname = "";
-      state.userInfo.profile = "";
+      state = initialState;
       sessionStorage.clear();
     },
     setUserInfo: (state, { payload }: PayloadAction<{ email: string; nickname: string; profile: string }>) => {
