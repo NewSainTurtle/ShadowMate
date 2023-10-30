@@ -73,7 +73,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
         weeklyTodoId: id,
         weeklyTodoContent: content,
       })
-      .then((res) => console.log(res))
+      .then()
       .catch((err) => console.log(err));
   };
 
@@ -94,7 +94,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
   const deleteWeeklyTodo = () => {
     plannerApi
       .deleteWeeklyTodos(userId.toString(), { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
-      .then((res) => console.log(res))
+      .then()
       .catch((err) => console.log(err));
   };
 

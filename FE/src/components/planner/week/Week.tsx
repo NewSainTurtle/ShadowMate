@@ -36,7 +36,6 @@ const Week = () => {
       .weekly(userId, { "start-date": dates[0], "end-date": dates[1] })
       .then((res) => {
         const response = res.data.data;
-        console.log(response);
         dispatch(
           setWeekInfo({
             plannerAccessScope: response.plannerAccessScope,
