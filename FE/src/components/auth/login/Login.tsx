@@ -19,7 +19,7 @@ const Login = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8080/api/oauth/google";
+    window.location.href = "https://shadowmate.kro.kr/api/oauth/google";
   };
 
   useEffect(() => {
