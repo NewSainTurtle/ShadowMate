@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, KeyboardEvent, RefObject, SetStateAction, useState } from "react";
+import React, { ChangeEvent, Dispatch, KeyboardEvent, SetStateAction, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";

@@ -18,7 +18,7 @@ const initialState: authConfig = {
   accessToken: "",
   login: false,
   userInfo: {
-    userId: -1,
+    userId: 0,
     email: "",
     nickname: "",
     profile: "",
