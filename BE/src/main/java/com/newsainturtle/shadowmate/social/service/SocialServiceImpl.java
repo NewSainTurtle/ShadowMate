@@ -43,10 +43,11 @@ public class SocialServiceImpl implements SocialService {
     @Override
     public SearchPublicDailyPlannerResponse searchPublicDailyPlanner(final String sort, final long pageNumber) {
         List<Social> socialList = socialRepository.findAllByDeleteTime();
-        int totalPage = socialList.size();
-        if(totalPage<((int)pageNumber-1)*6) throw new SocialException(NOT_FOUND_PAGE_NUMBER);
+        int totalPage = socialList.size()/6;
+        if(0 < socialList.size() % 6) totalPage++;
+        if(totalPage < pageNumber) throw new SocialException(NOT_FOUND_PAGE_NUMBER);
         if(sort.equals("latest")) {
-            if(totalPage < 6) {
+            if(totalPage == 1) {
                 return SearchPublicDailyPlannerResponse.builder()
                         .pageNumber(pageNumber)
                         .totalPage(totalPage)
@@ -56,7 +57,7 @@ public class SocialServiceImpl implements SocialService {
             }
             else {
                 List<Social> newList = new ArrayList<>();
-                for(int i=(int)(pageNumber-1)*6, cnt=0; i<totalPage; i++, cnt++) {
+                for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
                     if(cnt==6) break;
                     newList.add(socialList.get(i));
                 }
@@ -73,7 +74,7 @@ public class SocialServiceImpl implements SocialService {
                     .map(social -> new SocialLike(social,dailyPlannerLikeRepository.countByDailyPlanner(social.getDailyPlanner())))
                     .collect(Collectors.toList());
             Collections.sort(socialLikeList);
-            if(totalPage < 6) {
+            if(totalPage == 1) {
                 return SearchPublicDailyPlannerResponse.builder()
                         .pageNumber(pageNumber)
                         .totalPage(totalPage)
@@ -85,12 +86,10 @@ public class SocialServiceImpl implements SocialService {
             }
             else {
                 List<Social> newList = new ArrayList<>();
-                for(int i=(int)(pageNumber-1)*6, cnt=0; i<totalPage; i++, cnt++) {
+                for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
                     if(cnt==6) break;
                     newList.add(socialLikeList.get(i).social);
                 }
-                System.out.println(totalPage);
-                System.out.println(newList.size());
                 return SearchPublicDailyPlannerResponse.builder()
                         .pageNumber(pageNumber)
                         .totalPage(totalPage)
