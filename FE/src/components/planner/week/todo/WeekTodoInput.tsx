@@ -26,7 +26,7 @@ const WeekTodoInput = () => {
 
   const setWeeklyTodo = () => {
     plannerApi
-      .addWeeklyTodos(userId.toString(), {
+      .addWeeklyTodos(userId, {
         startDate: dates[0],
         endDate: dates[1],
         weeklyTodoContent: todo,

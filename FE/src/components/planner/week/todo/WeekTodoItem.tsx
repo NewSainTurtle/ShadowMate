@@ -67,7 +67,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
 
   const putUpdateWeeklyTodo = (content: string) => {
     plannerApi
-      .editWeeklyTodos(userId.toString(), {
+      .editWeeklyTodos(userId, {
         startDate: dates[0],
         endDate: dates[1],
         weeklyTodoId: id,
@@ -79,7 +79,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
 
   const putUpdateWeeklyTodoStatus = () => {
     plannerApi
-      .weeklyTodosStatus(userId.toString(), {
+      .weeklyTodosStatus(userId, {
         startDate: dates[0],
         endDate: dates[1],
         weeklyTodoId: id,
@@ -93,7 +93,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
 
   const deleteWeeklyTodo = () => {
     plannerApi
-      .deleteWeeklyTodos(userId.toString(), { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
+      .deleteWeeklyTodos(userId, { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
       .then()
       .catch((err) => console.log(err));
   };
