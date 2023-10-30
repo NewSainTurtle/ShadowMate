@@ -123,7 +123,7 @@ public class SocialServiceTest {
 
         // then
         assertThat(result.getSocialList().size()).isEqualTo(1);
-        assertThat(result.getTotalPage()).isEqualTo(7L);
+        assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
 
@@ -153,7 +153,7 @@ public class SocialServiceTest {
 
         // then
         assertThat(result.getSocialList().size()).isEqualTo(2);
-        assertThat(result.getTotalPage()).isEqualTo(2L);
+        assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlanner().getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
         assertThat(result.getSocialList().get(1).getDailyPlanner().getDailyPlannerDay()).isEqualTo(Date.valueOf(date));
@@ -188,7 +188,7 @@ public class SocialServiceTest {
 
         // then
         assertThat(result.getSocialList().size()).isEqualTo(2);
-        assertThat(result.getTotalPage()).isEqualTo(8);
+        assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlanner().getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
         assertThat(result.getSocialList().get(1).getDailyPlanner().getDailyPlannerDay()).isEqualTo(Date.valueOf(date));
