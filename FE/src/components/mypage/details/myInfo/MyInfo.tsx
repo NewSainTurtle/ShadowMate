@@ -5,21 +5,32 @@ import Text from "@components/common/Text";
 import { Avatar } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
-import { selectUserInfo, userInfoConfig } from "@store/authSlice";
-import { useAppSelector } from "@hooks/hook";
+import Modal from "@components/common/Modal";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import { selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { userApi } from "@api/Api";
 
 const MyPageInfo = () => {
+  const dispatch = useAppDispatch();
   const myInfoData = useAppSelector(selectUserInfo);
-  const [userInfo, setUserInfo] = useState<userInfoConfig>(myInfoData);
+  const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
+  const [imgPreview, setImgPreview] = useState<string>("");
   const [password, setPassword] = useState({
-    nowPassword: "",
+    oldPassword: "",
     newPassword: "",
     newPasswordCheck: "",
   });
+  const { userId, email, nickname, profileImage, statusMessage } = userMyInfo;
+  const { oldPassword, newPassword, newPasswordCheck } = password;
+  const errorCheck = !(newPassword == "" || newPasswordCheck == "") && newPassword != newPasswordCheck;
+  const [Modalopen, setModalOpen] = useState(false);
+  const handleOpen = () => setModalOpen(true);
+  const handleClose = () => setModalOpen(false);
 
   const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInfo({
-      ...userInfo,
+    setUserMyInfo({
+      ...userMyInfo,
       [e.target.name]: e.target.value,
     });
   };
@@ -31,25 +42,72 @@ const MyPageInfo = () => {
     });
   };
 
-  const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files;
-    if (!file) return;
+  const deleteImgFile = () => {
+    setUserMyInfo({
+      ...userMyInfo,
+      profileImage: "",
+    });
+    setImgPreview("");
+  };
 
+  const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
     const reader = new FileReader();
-    reader.readAsDataURL(file[0]);
+    reader.readAsDataURL(e.target.files[0]);
     reader.onloadend = () => {
-      setUserInfo({
-        ...userInfo,
-        profileImage: reader.result as string,
-      });
+      if (e.target.files != null)
+        setUserMyInfo({
+          ...userMyInfo,
+          profileImage: e.target.files[0] as unknown as string,
+        });
+      setImgPreview(reader.result as string);
       e.target.value = "";
     };
   };
 
-  const MY_INFO = (() => {
-    const { email, nickname, profileImage, statusMessage } = userInfo;
-    const { nowPassword, newPassword, newPasswordCheck } = password;
+  const saveMyInfo = () => {
+    userApi
+      .myPage(userId.toString(), { nickname, statusMessage })
+      .then((res) => {
+        console.log("프로필 변경 성공", res);
+        // dispatch(setUserInfo({ ...myInfoData, email, nickname, profileImage, statusMessage }));
+      })
+      .catch((err) => console.error("프로필 변경 실패", err))
+      .then(() => {
+        // 사진이 달라지면
+        if (userMyInfo.profileImage != myInfoData.profileImage) {
+          if (userMyInfo.profileImage == "") {
+            userApi
+              .deleteProfileImg(userId.toString())
+              .then((res) => console.log("사진 삭제 성공", res))
+              .catch((err) => console.error("사진 삭제 실패", err));
+          } else {
+            userApi
+              .editProfileImg(userId.toString(), { newProfileImage: userMyInfo.profileImage })
+              .then((res) => console.log("사진 변경 성공", res))
+              .catch((err) => console.error("사진 변경 실패", err));
+          }
+        }
+      })
+      .then(() => {
+        // 비밀번호가 변경되면
+        if (!errorCheck) {
+          userApi
+            .password(userId.toString(), { oldPassword, newPassword })
+            .then((res) => console.log("비밀번호 변경 성공", res))
+            .catch((err) => console.error("비밀번호 변경 실패", err));
+        }
+      });
+  };
 
+  const deleteProfile = () => {
+    userApi
+      .userOut(userId.toString())
+      .then((res) => console.log("회원탈퇴 성공", res))
+      .catch((err) => console.error("회원탈퇴 실패", err));
+  };
+
+  const MY_INFO = (() => {
     return [
       { title: "이메일", node: <Input value={email} disabled /> },
       {
@@ -69,11 +127,11 @@ const MyPageInfo = () => {
         title: "프로필 사진",
         node: (
           <div className={styles["info__profile-img"]}>
-            <input type="file" id="imageFile" accept="image/*" onChange={(e) => saveImgFile(e)} />
+            <input type="file" id="imageFile" accept="image/*" onChange={saveImgFile} />
             <label htmlFor="imageFile">
-              <Avatar src={profileImage} />
+              <Avatar src={imgPreview} />
             </label>
-            {profileImage && <div className={styles["button--delete"]} />}
+            {imgPreview && <div className={styles["button--delete"]} onClick={deleteImgFile} />}
           </div>
         ),
       },
@@ -85,7 +143,7 @@ const MyPageInfo = () => {
               types="password"
               placeholder="현재 비밀번호 입력"
               name="nowPassword"
-              value={nowPassword}
+              value={oldPassword}
               onChange={handlePassword}
             />
             <Input
@@ -101,6 +159,7 @@ const MyPageInfo = () => {
               name="newPasswordCheck"
               value={newPasswordCheck}
               onChange={handlePassword}
+              error={errorCheck}
             />
           </div>
         ),
@@ -119,16 +178,36 @@ const MyPageInfo = () => {
             <div>{item.node}</div>
           </div>
         ))}
-        <div>
+        <div onClick={handleOpen}>
           <Text>회원 탈퇴</Text>
         </div>
       </div>
       <div className={styles["info__button"]}>
-        <div className={styles["info__button--save"]}>
+        <div className={styles["info__button--save"]} onClick={saveMyInfo}>
           <SaveIcon />
           <Text>저장</Text>
         </div>
       </div>
+
+      <Modal open={Modalopen} onClose={handleClose}>
+        <div className={styles["info__modal"]}>
+          <WarningAmberRoundedIcon />
+          <Text types="small">
+            <>정말 탈퇴하시겠습니까?</>
+            <br />
+            <></>
+          </Text>
+          <Text types="small">계정 탈퇴는 취소할 수 없습니다</Text>
+          <div>
+            <div onClick={handleClose}>
+              <Text types="small">취소</Text>
+            </div>
+            <div onClick={deleteProfile}>
+              <Text types="small">탈퇴</Text>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

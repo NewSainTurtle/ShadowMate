@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 
-interface userInfoConfig {
+export interface userInfoConfig {
   userId: number;
   email: string;
   nickname: string;
