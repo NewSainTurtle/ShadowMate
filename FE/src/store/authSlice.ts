@@ -33,7 +33,6 @@ const authSlice = createSlice({
       state.accessToken = payload.accessToken;
       state.login = true;
       state.userInfo.userId = payload.userId;
-      sessionStorage.setItem("accessToken", payload.accessToken);
     },
     setLogout: (state) => {
       state.accessToken = "";
@@ -42,7 +41,8 @@ const authSlice = createSlice({
       state.userInfo.email = "";
       state.userInfo.nickname = "";
       state.userInfo.profile = "";
-      sessionStorage.clear();
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("id");
     },
     setUserInfo: (state, { payload }: PayloadAction<{ email: string; nickname: string; profile: string }>) => {
       state.userInfo.email = payload.email;
