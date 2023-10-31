@@ -60,16 +60,26 @@ const MyPageFrame = ({ title }: Props) => {
 
   const handleAdd = (title: string) => {
     if (title === "카테고리") {
-      const newCategory: CategoryConfig = {
-        categoryId: category_nextId.current,
+      const init = {
         categoryTitle: "새 카테고리",
-        categoryEmoticon: "",
-        categoryColorCode: "#B6DEF7",
+        categoryEmoticon: null,
+        categoryColorId: 12,
       };
-      setCategoryList([...categoryList, newCategory]);
-      setCategoryInput(newCategory);
-      setCategoryClick(categoryList.length);
-      category_nextId.current += 1;
+      settingApi
+        .addCategories(userId, init)
+        .then((res) => {
+          const returnId = res.data.data.categoryId;
+          const newCategory: CategoryConfig = {
+            categoryId: returnId,
+            categoryTitle: "새 카테고리",
+            categoryEmoticon: "",
+            categoryColorCode: categoryColors[11].categoryColorCode,
+          };
+          dispatch(setCategoryList([...categoryList, newCategory]));
+          dispatch(setCategoryClick(categoryList.length));
+          dispatch(setCategoryInput(newCategory));
+        })
+        .catch((err) => console.log(err));
     } else {
       const newDday: ddayType = {
         ddayId: dday_nextId.current,
