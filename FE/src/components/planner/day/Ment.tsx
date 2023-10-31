@@ -3,11 +3,12 @@ import styles from "@styles/planner/day.module.scss";
 import { AddPhotoAlternateOutlined, RemoveCircle } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import Text from "@components/common/Text";
-
-interface FileImgeProps {
-  retrospectionImage: File | null;
-  setRetrospectionImage: Dispatch<SetStateAction<File | null>>;
-}
+import { firebaseStorage } from "@api/firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { plannerApi } from "@api/Api";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
+import { selectDate, selectDayInfo, setDayRetrospectionImage } from "@store/planner/daySlice";
 
 interface Props {
   title: string;
@@ -15,49 +16,54 @@ interface Props {
   name: string;
   value: string;
   isFile?: boolean;
-  retrospectionImage?: File | null;
-  setRetrospectionImage?: Dispatch<SetStateAction<File | null>>;
   rows?: number;
   onBlur: React.FocusEventHandler;
   onChange: React.ChangeEventHandler;
 }
 
-const FileImg = ({ retrospectionImage, setRetrospectionImage }: FileImgeProps) => {
-  const [imgPreview, setImgPreview] = useState<string>(() => {
-    const reader = new FileReader();
-    if (retrospectionImage) {
-      reader.readAsDataURL(retrospectionImage);
-      reader.onload = () => {
-        return reader.result;
-      };
-    }
-    return "";
-  });
+const FileImg = () => {
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
+  const date = useAppSelector(selectDate);
+  const { retrospectionImage } = useAppSelector(selectDayInfo);
 
-  const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const saveImage = async (retrospectionImage: string | null) => {
+    await plannerApi
+      .retrospectionImages(userId, { date, retrospectionImage })
+      .then(() => dispatch(setDayRetrospectionImage(retrospectionImage)))
+      .catch((err) => console.error(err));
+  };
+
+  const renderImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
     const reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
     reader.onloadend = () => {
-      setImgPreview(reader.result as string);
       if (e.target.files != null) {
-        setRetrospectionImage(e.target.files[0]);
+        const file = e.target.files[0];
+        const storageRef = ref(firebaseStorage, `retrospections/${file.name}`);
+
+        uploadBytes(storageRef, file).then((snapshot) =>
+          getDownloadURL(snapshot.ref).then((downloadURL) => {
+            saveImage(downloadURL);
+          }),
+        );
       }
       e.target.value = "";
     };
   };
 
   const imgDelete = () => {
-    setRetrospectionImage(null);
+    saveImage(null);
   };
 
   return (
     <div className={styles["ment-preview__box"]}>
-      <input type="file" id="imageFile" accept="image/*" onChange={saveImgFile} />
-      {imgPreview ? (
+      <input type="file" id="imageFile" accept="image/*" onChange={renderImage} />
+      {retrospectionImage ? (
         <div className={styles["ment-preview__img"]}>
-          <img src={imgPreview} alt="img-preview" />
+          <img src={retrospectionImage} alt="img-preview" />
           <IconButton disableRipple onClick={imgDelete}>
             <RemoveCircle fontSize="small" />
           </IconButton>
@@ -73,7 +79,7 @@ const FileImg = ({ retrospectionImage, setRetrospectionImage }: FileImgeProps) =
   );
 };
 
-const Ment = ({ title, rows, isFile, retrospectionImage, setRetrospectionImage, ...rest }: Props) => {
+const Ment = ({ title, rows, isFile, ...rest }: Props) => {
   const { value, maxLength } = rest;
   const [inputCount, setInputCount] = useState(0);
 
@@ -99,7 +105,7 @@ const Ment = ({ title, rows, isFile, retrospectionImage, setRetrospectionImage, 
           ({inputCount}/{maxLength}자)
         </Text>
       </div>
-      {isFile && <FileImg retrospectionImage={retrospectionImage!} setRetrospectionImage={setRetrospectionImage!} />}
+      {isFile && <FileImg />}
     </div>
   );
 };
@@ -107,7 +113,6 @@ const Ment = ({ title, rows, isFile, retrospectionImage, setRetrospectionImage, 
 Ment.defaultProps = {
   title: "title",
   value: "내용이 들어갑니다.",
-  retrospectionImage: null,
 };
 
 export default Ment;
