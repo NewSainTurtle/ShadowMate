@@ -9,6 +9,20 @@ import MyPageDdayItem from "./item/MyPageDdayItem";
 import { CategoryConfig, ddayType } from "@util/planner.interface";
 import { CATEGORY_LIST, CATEGORY_COLORS } from "@util/data/CategoryData";
 import { DDAY_LIST } from "@util/data/DdayData";
+import { settingApi } from "@api/Api";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
+import {
+  selectCategoryClick,
+  selectCategoryColorClick,
+  selectCategoryColors,
+  selectCategoryInput,
+  selectCategoryList,
+  setCategoryClick,
+  setCategoryInput,
+  setCategoryList,
+} from "@store/mypageSlice";
+import CategoryList from "./list/CategoryList";
 
 interface Props {
   title: string;
@@ -22,16 +36,13 @@ export interface EditInfoConfig {
 
 const MyPageFrame = ({ title }: Props) => {
   /* 카테고리 관련 변수 */
-  const [categoryList, setCategoryList] = useState<CategoryConfig[]>(CATEGORY_LIST);
-  const [categoryInput, setCategoryInput] = useState<CategoryConfig>({
-    categoryId: 0,
-    categoryTitle: categoryList[0].categoryTitle,
-    categoryEmoticon: categoryList[0].categoryEmoticon,
-    categoryColorCode: categoryList[0].categoryColorCode,
-  });
-  const [categoryClick, setCategoryClick] = useState<number>(0);
-  const [colorClick, setColorClick] = useState<number>(0);
-  const category_nextId = useRef(categoryList.length);
+  const dispatch = useAppDispatch();
+  const userId: number = useAppSelector(selectUserId);
+  const categoryList: CategoryConfig[] = useAppSelector(selectCategoryList);
+  const categoryColors = useAppSelector(selectCategoryColors);
+  const categoryClick: number = useAppSelector(selectCategoryClick);
+  const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
+  const colorClick: number = useAppSelector(selectCategoryColorClick);
 
   /* 디데이 관련 변수 */
   const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
@@ -154,16 +165,7 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail title={title} isDisable={isDisable} handleUpdate={handleUpdate} handleDelete={handleDelete}>
         {
           {
-            카테고리: (
-              <MyPageCategory
-                click={categoryClick}
-                categoryList={categoryList}
-                input={categoryInput}
-                setInput={setCategoryInput}
-                colorClick={colorClick}
-                setColorClick={setColorClick}
-              />
-            ),
+            카테고리: <MyPageCategory />,
             디데이: (
               <MyPageDday
                 click={ddayClick}

@@ -5,18 +5,22 @@ import Input from "@components/common/Input";
 import CategoryColorList from "@components/mypage/item/CategoryColorList";
 import { CategoryConfig } from "@util/planner.interface";
 import { CATEGORY_COLORS } from "@util/data/CategoryData";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import {
+  selectCategoryClick,
+  selectCategoryInput,
+  selectCategoryList,
+  setCategoryColorClick,
+  setCategoryInput,
+} from "@store/mypageSlice";
 
-interface Props {
-  click: number;
-  categoryList: CategoryConfig[];
-  input: CategoryConfig;
-  setInput: Dispatch<SetStateAction<CategoryConfig>>;
-  colorClick: number;
-  setColorClick: Dispatch<SetStateAction<number>>;
-}
+const MyPageCategory = () => {
+  const dispatch = useAppDispatch();
+  const click = useAppSelector(selectCategoryClick);
+  const categoryList = useAppSelector(selectCategoryList);
+  const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
 
-const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setColorClick }: Props) => {
-  const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = input;
+  const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = categoryInput;
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -26,7 +30,7 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
         return;
       }
     }
-    setInput({ ...input, [name]: value });
+    dispatch(setCategoryInput({ ...categoryInput, [name]: value }));
   };
 
   useEffect(() => {
@@ -34,9 +38,9 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
     CATEGORY_COLORS.map((item, idx) => {
       if (item === categoryList[click].categoryColorCode) currentColor = idx;
     });
-    setColorClick(currentColor);
-    setInput(categoryList[click]);
-  }, [click, categoryList]);
+    dispatch(setCategoryColorClick(currentColor));
+    dispatch(setCategoryInput(categoryList[click]));
+  }, [click]);
 
   return (
     <div className={styles["frame__contents"]}>
@@ -44,7 +48,7 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
         <Text>카테고리 이름</Text>
         <Input
           name="categoryTitle"
-          value={categoryTitle}
+          value={categoryTitle || ""}
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
         />
@@ -67,7 +71,7 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 색상</Text>
-        <CategoryColorList click={colorClick} setClick={setColorClick} />
+        <CategoryColorList />
       </div>
     </div>
   );
