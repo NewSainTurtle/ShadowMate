@@ -2,15 +2,17 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "@store/authSlice";
 import weekReducer from "@store/planner/weekSlice";
 import dayReducer from "@store/planner/daySlice";
+import mypageReducer from "@store/mypageSlice";
+
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
-
 
 const rootReducer = combineReducers({
   auth: authReducer,
   week: weekReducer,
   day: dayReducer,
+  mypage: mypageReducer,
 });
 
 const persistConfig = {
