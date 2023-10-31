@@ -10,19 +10,19 @@ export const todoData_friend = {
 
 export const todoData_category: CategoryConfig[] = [
   {
-    categoryId: 1,
+    categoryId: 44,
     categoryTitle: "국어",
     categoryColorCode: "#FFCBE1",
     categoryEmoticon: "📓",
   },
   {
-    categoryId: 2,
+    categoryId: 45,
     categoryTitle: "수학",
     categoryColorCode: "#B6F7E1",
     categoryEmoticon: "📐",
   },
   {
-    categoryId: 3,
+    categoryId: 46,
     categoryTitle: "과학 뿌셔뿌셔 대항전",
     categoryColorCode: "#B6DEF7",
     categoryEmoticon: "🧪",

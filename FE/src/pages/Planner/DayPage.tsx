@@ -15,6 +15,7 @@ import { selectUserId } from "@store/authSlice";
 const DayPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
+  const friedUserId = userId;
   const date = useAppSelector(selectDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
@@ -33,7 +34,7 @@ const DayPage = () => {
   useEffect(() => {
     const day = dayjs(date).format("YYYY-MM-DD");
     plannerApi
-      .daily(userId, { date: day })
+      .daily(friedUserId, { date: day })
       .then((res) => {
         const response = res.data.data;
         dispatch(
@@ -125,8 +126,8 @@ const DayPage = () => {
 
   return (
     <div className={styles["page-container"]} key={date}>
-      <Header />
-      <div className={styles["page-content"]}>
+      <Header isFriend={userId != friedUserId} />
+      <div className={styles["page-content"]} style={{ pointerEvents: userId != friedUserId ? "none" : "auto" }}>
         <Ment
           title={"오늘의 다짐"}
           name="todayGoal"

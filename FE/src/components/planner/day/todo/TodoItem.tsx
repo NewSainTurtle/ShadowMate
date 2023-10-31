@@ -127,7 +127,6 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
               placeholder={"할 일을 입력하세요"}
               minLength={2}
               maxLength={maxLength}
-              autoFocus={addTodo}
               onChange={editText}
               onKeyDown={handleOnKeyPress}
               onBlur={handleSaveTextTodo}

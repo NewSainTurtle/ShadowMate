@@ -22,7 +22,6 @@ const TodoList = ({ clicked }: Props) => {
     return todoArr.length + 1 >= listSize ? todoArr.length + 1 : listSize;
   }, [todoArr]);
   const todoEndRef = useRef<HTMLDivElement>(null);
-  const nextId = useRef(todoArr.length + 1);
   const copyTodos = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
 
   useEffect(() => {
