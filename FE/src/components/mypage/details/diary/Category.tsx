@@ -22,8 +22,8 @@ const MyPageCategory = () => {
   const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
 
-  const { categoryTitle, categoryEmoticon } = categoryInput;
-  const [length, setLength] = useState<number>(categoryTitle.length);
+  const { categoryTitle, categoryEmoticon } = categoryInput || "";
+  const [length, setLength] = useState<number>(categoryTitle ? categoryTitle.length : 0);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -43,13 +43,15 @@ const MyPageCategory = () => {
   };
 
   useEffect(() => {
-    let currentColor: number = 0;
-    categoryColors.map((item: CategoryColorConfig, idx: number) => {
-      if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;
-    });
-    dispatch(setCategoryColorClick(currentColor));
-    dispatch(setCategoryInput(categoryList[click]));
-    setLength(categoryList[click].categoryTitle.length);
+    if (categoryList && categoryInput) {
+      let currentColor: number = 0;
+      categoryColors.map((item: CategoryColorConfig, idx: number) => {
+        if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;
+      });
+      dispatch(setCategoryColorClick(currentColor));
+      dispatch(setCategoryInput(categoryList[click]));
+      setLength(categoryList[click].categoryTitle.length);
+    }
   }, [click]);
 
   return (

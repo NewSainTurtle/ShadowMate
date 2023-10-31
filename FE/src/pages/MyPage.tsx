@@ -23,18 +23,10 @@ const MyPage = () => {
       .categories(userId)
       .then((res) => {
         let response: CategoryConfig[] = res.data.data.categoryList;
-        if (response.length === 0) {
-          response = [
-            {
-              categoryId: 1,
-              categoryTitle: "새 카테고리",
-              categoryEmoticon: null,
-              categoryColorCode: "#B6DEF7",
-            },
-          ];
+        if (response.length != 0) {
+          dispatch(setCategoryList(response));
+          dispatch(setCategoryInput(response[0]));
         }
-        dispatch(setCategoryList(response));
-        dispatch(setCategoryInput(response[0]));
       })
       .catch((err) => console.log(err));
   };
