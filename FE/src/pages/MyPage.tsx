@@ -32,7 +32,7 @@ const MyPage = () => {
           };
         }
         dispatch(setCategoryList(response));
-        dispatch(setCategoryInput(response));
+        dispatch(setCategoryInput(response[0]));
       })
       .catch((err) => console.log(err));
   };

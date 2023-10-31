@@ -47,7 +47,7 @@ const mypageSlice = createSlice({
       state.category.categoryClick = payload;
     },
     setCategoryInput: (state, { payload }: PayloadAction<CategoryConfig>) => {
-      if (payload) state.category.categoryInput = payload;
+      state.category.categoryInput = payload;
     },
     setCategoryColorClick: (state, { payload }: PayloadAction<number>) => {
       state.category.categoryColorClick = payload;

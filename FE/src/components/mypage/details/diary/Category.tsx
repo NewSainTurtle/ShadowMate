@@ -19,8 +19,10 @@ const MyPageCategory = () => {
   const click = useAppSelector(selectCategoryClick);
   const categoryList = useAppSelector(selectCategoryList);
   const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
+  const [error, setError] = useState<boolean>(false);
 
   const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = categoryInput;
+  const [length, setLength] = useState<number>(categoryTitle.length);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -29,6 +31,12 @@ const MyPageCategory = () => {
       if (value !== "" && !value.match("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+")) {
         return;
       }
+    }
+    if (name === "categoryTitle") {
+      setLength(value.length);
+      if (value.length < 2 || value.length >= 10) {
+        setError(true);
+      } else setError(false);
     }
     dispatch(setCategoryInput({ ...categoryInput, [name]: value }));
   };
@@ -40,6 +48,7 @@ const MyPageCategory = () => {
     });
     dispatch(setCategoryColorClick(currentColor));
     dispatch(setCategoryInput(categoryList[click]));
+    setLength(categoryList[click].categoryTitle.length);
   }, [click]);
 
   return (
@@ -51,6 +60,8 @@ const MyPageCategory = () => {
           value={categoryTitle || ""}
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
+          error={error}
+          helperText={error ? "카테고리 이름은 2글자 이상, 10글자 미만입니다." : `글자 수: ${length}/10`}
         />
       </div>
       <div className={styles["frame__line"]}>
