@@ -7,7 +7,7 @@ import { DeleteOutlined } from "@mui/icons-material";
 interface Props {
   children: ReactNode;
   title: string;
-  handleSave: (title: string) => void;
+  handleUpdate: (title: string) => void;
   handleDelete: (title: string) => void;
   isDisable: boolean;
 }
@@ -16,7 +16,7 @@ interface Props {
  * MyPage - 다이어리, 디데이 설정 중 오른쪽 사이드
  */
 
-const MyPageDetail = ({ children, title, isDisable, handleSave, handleDelete }: Props) => {
+const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }: Props) => {
   const disable = isDisable ? "--disable" : "";
   return (
     <div className={styles["frame__container"]}>
@@ -29,7 +29,7 @@ const MyPageDetail = ({ children, title, isDisable, handleSave, handleDelete }: 
           <DeleteOutlined />
           <Text>삭제</Text>
         </div>
-        <div className={styles["frame__button--save"]} onClick={() => handleSave(title)}>
+        <div className={styles[`frame__button--save${disable}`]} onClick={() => handleUpdate(title)}>
           <SaveIcon />
           <Text>저장</Text>
         </div>

@@ -1,22 +1,29 @@
-import React, { ChangeEvent, ChangeEventHandler, Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CategoryColorList from "@components/mypage/item/CategoryColorList";
-import { CategoryConfig } from "@util/planner.interface";
-import { CATEGORY_COLORS } from "@util/data/CategoryData";
+import { CategoryColorConfig, CategoryConfig } from "@util/planner.interface";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import {
+  selectCategoryClick,
+  selectCategoryColors,
+  selectCategoryInput,
+  selectCategoryList,
+  setCategoryColorClick,
+  setCategoryInput,
+} from "@store/mypageSlice";
 
-interface Props {
-  click: number;
-  categoryList: CategoryConfig[];
-  input: CategoryConfig;
-  setInput: Dispatch<SetStateAction<CategoryConfig>>;
-  colorClick: number;
-  setColorClick: Dispatch<SetStateAction<number>>;
-}
+const MyPageCategory = () => {
+  const dispatch = useAppDispatch();
+  const click = useAppSelector(selectCategoryClick);
+  const categoryList = useAppSelector(selectCategoryList);
+  const categoryColors = useAppSelector(selectCategoryColors);
+  const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
+  const [error, setError] = useState<boolean>(false);
 
-const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setColorClick }: Props) => {
-  const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = input;
+  const { categoryTitle, categoryEmoticon } = categoryInput || "";
+  const [length, setLength] = useState<number>(categoryTitle ? categoryTitle.length : 0);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -26,17 +33,26 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
         return;
       }
     }
-    setInput({ ...input, [name]: value });
+    if (name === "categoryTitle") {
+      setLength(value.length);
+      if (value.length < 2 || value.length >= 10) {
+        setError(true);
+      } else setError(false);
+    }
+    dispatch(setCategoryInput({ ...categoryInput, [name]: value }));
   };
 
   useEffect(() => {
-    let currentColor: number = 0;
-    CATEGORY_COLORS.map((item, idx) => {
-      if (item === categoryList[click].categoryColorCode) currentColor = idx;
-    });
-    setColorClick(currentColor);
-    setInput(categoryList[click]);
-  }, [click, categoryList]);
+    if (categoryList && categoryInput) {
+      let currentColor: number = 0;
+      categoryColors.map((item: CategoryColorConfig, idx: number) => {
+        if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;
+      });
+      dispatch(setCategoryColorClick(currentColor));
+      dispatch(setCategoryInput(categoryList[click]));
+      setLength(categoryList[click].categoryTitle.length);
+    }
+  }, [click]);
 
   return (
     <div className={styles["frame__contents"]}>
@@ -44,9 +60,11 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
         <Text>카테고리 이름</Text>
         <Input
           name="categoryTitle"
-          value={categoryTitle}
+          value={categoryTitle || ""}
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
+          error={error}
+          helperText={error ? "카테고리 이름은 2글자 이상, 10글자 미만입니다." : `글자 수: ${length}/10`}
         />
       </div>
       <div className={styles["frame__line"]}>
@@ -67,7 +85,7 @@ const MyPageCategory = ({ click, categoryList, input, setInput, colorClick, setC
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 색상</Text>
-        <CategoryColorList click={colorClick} setClick={setColorClick} />
+        <CategoryColorList />
       </div>
     </div>
   );
