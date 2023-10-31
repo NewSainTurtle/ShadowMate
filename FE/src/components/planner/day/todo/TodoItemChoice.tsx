@@ -2,7 +2,7 @@ import React from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import { useAppDispatch } from "@hooks/hook";
-import { setTodoItem } from "@store/planner/daySlice";
+import { BASIC_CATEGORY_ITEM, setTodoItem } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
 
 interface Props {
@@ -13,8 +13,9 @@ interface Props {
 
 const TodoItemChoice = ({ todoItem, possible }: Props) => {
   const dispatch = useAppDispatch();
-  const { category, todoContent, todoStatus } = todoItem;
-  const [categoryTitle, categoryColorCode] = [category!.categoryTitle, category!.categoryColorCode];
+  const { todoContent, todoStatus } = todoItem;
+  const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
+  const [categoryTitle, categoryColorCode] = [category.categoryTitle, category.categoryColorCode];
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
     const rgb = parseInt(hexColor, 16);

@@ -36,7 +36,6 @@ const DayPage = () => {
       .daily(userId, { date: day })
       .then((res) => {
         const response = res.data.data;
-        console.log("플래너 조회", response);
         dispatch(
           setDayInfo({
             plannerAccessScope: response.plannerAccessScope,
