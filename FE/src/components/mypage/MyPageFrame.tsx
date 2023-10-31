@@ -71,7 +71,7 @@ const MyPageFrame = ({ title }: Props) => {
     }
   };
 
-  const handleSave = (title: string) => {
+  const handleUpdate = (title: string) => {
     if (title === "카테고리") {
       setCategoryList(
         categoryList.map((item, idx) => {
@@ -163,7 +163,7 @@ const MyPageFrame = ({ title }: Props) => {
           }[title]
         }
       </MyPageList>
-      <MyPageDetail title={title} isDisable={isDisable} handleSave={handleSave} handleDelete={handleDelete}>
+      <MyPageDetail title={title} isDisable={isDisable} handleUpdate={handleUpdate} handleDelete={handleDelete}>
         {
           {
             카테고리: (
