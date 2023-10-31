@@ -12,7 +12,6 @@ interface dayInfoConfig {
   dday: string | null;
   like: boolean;
   likeCount: number;
-  retrospectionImage: string | null;
   dailyTodos: TodoConfig[];
 }
 
@@ -29,7 +28,6 @@ const initialState: dayConfig = {
     dday: null,
     like: false,
     likeCount: 0,
-    retrospectionImage: null,
     dailyTodos: [],
   },
   todoItem: {
@@ -56,9 +54,6 @@ const daySlice = createSlice({
   reducers: {
     setDayInfo: (state, action: PayloadAction<dayConfig["info"]>) => {
       state.info = action.payload;
-    },
-    setDayRetrospectionImage: (state, action: PayloadAction<dayInfoConfig["retrospectionImage"]>) => {
-      state.info.retrospectionImage = action.payload;
     },
     setDate: (state, action: PayloadAction<dayConfig["date"]>) => {
       state.date = action.payload;
@@ -102,8 +97,7 @@ const daySlice = createSlice({
 
 export const BASIC_TODO_ITEM = initialState.todoItem!;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
-export const { setDayInfo, setDayRetrospectionImage, setDate, setTodoItem, removeTodoItem, setTodoList, setTimeTable } =
-  daySlice.actions;
+export const { setDayInfo, setDate, setTodoItem, removeTodoItem, setTodoList, setTimeTable } = daySlice.actions;
 export const selectDate = (state: rootState) => state.day.date;
 export const selectDayInfo = (state: rootState) => state.day.info;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;

@@ -23,6 +23,7 @@ const DayPage = () => {
     tomorrowGoal: "",
     retrospection: "",
   });
+  const [retrospectionImage, setRetrospectionImage] = useState<string | null>(null);
   const [isClickTimeTable, setIsClickTimeTable] = useState(false);
   const todoDivRef = useRef<HTMLDivElement>(null);
   const [totalTime, setTotalTime] = useState({
@@ -36,14 +37,12 @@ const DayPage = () => {
       .daily(friedUserId, { date: day })
       .then((res) => {
         const response = res.data.data;
-        console.log(response);
         dispatch(
           setDayInfo({
             plannerAccessScope: response.plannerAccessScope,
             dday: response.dday,
             like: response.like,
             likeCount: response.likeCount,
-            retrospectionImage: response.retrospectionImage,
             dailyTodos: response.dailyTodos || [],
           }),
         );
@@ -52,6 +51,7 @@ const DayPage = () => {
           todayGoal: response.todayGoal || "",
           tomorrowGoal: response.tomorrowGoal || "",
         });
+        setRetrospectionImage(response.retrospectionImage);
         setTotalTime({ studyTimeHour: response.studyTimeHour, studyTimeMinute: response.studyTimeMinute });
       })
       .catch((err) => console.error(err));
@@ -154,6 +154,8 @@ const DayPage = () => {
           rows={5}
           maxLength={100}
           isFile
+          retrospectionImage={retrospectionImage}
+          setRetrospectionImage={setRetrospectionImage}
           onBlur={saveRetrospections}
         />
 

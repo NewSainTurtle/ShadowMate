@@ -6,9 +6,14 @@ import Text from "@components/common/Text";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { plannerApi } from "@api/Api";
-import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { selectDate, selectDayInfo, setDayRetrospectionImage } from "@store/planner/daySlice";
+import { selectDate } from "@store/planner/daySlice";
+
+interface fileImgProps {
+  retrospectionImage: string | null;
+  setRetrospectionImage: Dispatch<SetStateAction<string | null>>;
+}
 
 interface Props {
   title: string;
@@ -17,20 +22,19 @@ interface Props {
   value: string;
   isFile?: boolean;
   rows?: number;
+  retrospectionImage?: string | null;
+  setRetrospectionImage?: Dispatch<SetStateAction<string | null>>;
   onBlur: React.FocusEventHandler;
   onChange: React.ChangeEventHandler;
 }
 
-const FileImg = () => {
-  const dispatch = useAppDispatch();
+const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) => {
   const userId = useAppSelector(selectUserId);
   const date = useAppSelector(selectDate);
-  const { retrospectionImage } = useAppSelector(selectDayInfo);
 
-  const saveImage = async (retrospectionImage: string | null) => {
+  const saveImage = async (imageUrl: string | null) => {
     await plannerApi
-      .retrospectionImages(userId, { date, retrospectionImage })
-      .then(() => dispatch(setDayRetrospectionImage(retrospectionImage)))
+      .retrospectionImages(userId, { date, retrospectionImage: imageUrl })
       .catch((err) => console.error(err));
   };
 
@@ -40,6 +44,7 @@ const FileImg = () => {
     const reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
     reader.onloadend = () => {
+      setRetrospectionImage(reader.result as string);
       if (e.target.files != null) {
         const file = e.target.files[0];
         const storageRef = ref(firebaseStorage, `retrospections/${file.name}`);
@@ -53,9 +58,9 @@ const FileImg = () => {
       e.target.value = "";
     };
   };
-
   const imgDelete = () => {
     saveImage(null);
+    setRetrospectionImage(null);
   };
 
   return (
@@ -79,7 +84,7 @@ const FileImg = () => {
   );
 };
 
-const Ment = ({ title, rows, isFile, ...rest }: Props) => {
+const Ment = ({ title, rows, isFile, retrospectionImage, setRetrospectionImage, ...rest }: Props) => {
   const { value, maxLength } = rest;
   const [inputCount, setInputCount] = useState(0);
 
@@ -105,7 +110,7 @@ const Ment = ({ title, rows, isFile, ...rest }: Props) => {
           ({inputCount}/{maxLength}자)
         </Text>
       </div>
-      {isFile && <FileImg />}
+      {isFile && <FileImg retrospectionImage={retrospectionImage!} setRetrospectionImage={setRetrospectionImage!} />}
     </div>
   );
 };
@@ -113,6 +118,7 @@ const Ment = ({ title, rows, isFile, ...rest }: Props) => {
 Ment.defaultProps = {
   title: "title",
   value: "내용이 들어갑니다.",
+  retrospectionImage: null,
 };
 
 export default Ment;
