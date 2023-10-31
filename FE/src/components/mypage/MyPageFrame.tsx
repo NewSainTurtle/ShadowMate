@@ -94,20 +94,26 @@ const MyPageFrame = ({ title }: Props) => {
 
   const handleUpdate = (title: string) => {
     if (title === "카테고리") {
-      setCategoryList(
-        categoryList.map((item, idx) => {
-          if (categoryInput.categoryId === item.categoryId) {
-            return {
-              ...item,
+      const input = {
+        categoryId: categoryInput.categoryId,
               categoryId: categoryInput.categoryId,
               categoryTitle: categoryInput.categoryTitle,
-              categoryEmoticon: categoryInput.categoryEmoticon,
-              categoryColorCode: CATEGORY_COLORS[colorClick],
-            };
-          }
-          return item;
-        }),
-      );
+        categoryEmoticon: categoryInput.categoryEmoticon || "",
+        categoryColorId: colorClick + 1,
+      };
+      settingApi
+        .editCategories(userId, input)
+        .then((res) => {
+          let copyList: CategoryConfig[] = [...categoryList];
+          copyList[categoryClick] = {
+            categoryId: input.categoryId,
+            categoryTitle: input.categoryTitle,
+            categoryEmoticon: input.categoryEmoticon,
+            categoryColorCode: categoryColors[colorClick].categoryColorCode,
+          };
+          dispatch(setCategoryList(copyList));
+        })
+        .catch((err) => console.log(err));
     } else {
       if (ddayInput.ddayTitle === "" || ddayInput.ddayTitle.length < 2 || ddayInput.ddayTitle.length > 20) {
         setDdayError(true);
