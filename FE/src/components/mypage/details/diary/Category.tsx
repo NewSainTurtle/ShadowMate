@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ChangeEventHandler, Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
@@ -22,7 +22,7 @@ const MyPageCategory = () => {
   const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
 
-  const { categoryId, categoryTitle, categoryEmoticon, categoryColorCode } = categoryInput;
+  const { categoryTitle, categoryEmoticon } = categoryInput;
   const [length, setLength] = useState<number>(categoryTitle.length);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {

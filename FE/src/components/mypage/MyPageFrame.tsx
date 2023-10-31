@@ -3,6 +3,7 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/diary/Category";
+import CategoryList from "@components/mypage/list/CategoryList";
 import MyPageDday from "./details/diary/Dday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
 import { CategoryConfig, ddayType } from "@util/planner.interface";
@@ -20,7 +21,6 @@ import {
   setCategoryInput,
   setCategoryList,
 } from "@store/mypageSlice";
-import CategoryList from "./list/CategoryList";
 
 interface Props {
   title: string;
@@ -75,7 +75,6 @@ const MyPageFrame = ({ title }: Props) => {
           };
           dispatch(setCategoryList([...categoryList, newCategory]));
           dispatch(setCategoryClick(categoryList.length));
-          dispatch(setCategoryInput(newCategory));
         })
         .catch((err) => console.log(err));
     } else {
