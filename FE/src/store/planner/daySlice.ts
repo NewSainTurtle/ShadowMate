@@ -10,7 +10,7 @@ dayjs.extend(isSameOrAfter);
 
 interface dayInfoConfig {
   plannerAccessScope: "전체공개" | "친구공개" | "비공개";
-  dday: string | Date | dayjs.Dayjs;
+  dday: string | null;
   todayGoal: string;
   retrospection: string;
   retrospectionImage: string;
@@ -30,7 +30,7 @@ const initialState: dayConfig = {
   date: new Date(),
   info: {
     plannerAccessScope: "전체공개",
-    dday: "",
+    dday: null,
     todayGoal: "",
     retrospection: "",
     retrospectionImage: "",
@@ -108,6 +108,7 @@ export const BASIC_TODO_ITEM = initialState.todoItem!;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
 export const { setDayInfo, setDate, setTodoItem, removeTodoItem, setTodoList, setTimeTable } = daySlice.actions;
 export const selectDate = (state: rootState) => state.day.date;
+export const selectDayInfo = (state: rootState) => state.day.info;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;
 export const selectTodoList = (state: rootState) => state.day.info.dailyTodos;
 

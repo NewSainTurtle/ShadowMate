@@ -38,7 +38,7 @@ const DayPage = () => {
         dispatch(
           setDayInfo({
             plannerAccessScope: response.plannerAccessScope,
-            dday: response.dday || "",
+            dday: response.dday,
             like: response.like,
             likeCount: response.likeCount,
             retrospection: response.retrospection || "",
