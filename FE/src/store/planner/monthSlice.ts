@@ -23,7 +23,7 @@ const monthSlice = createSlice({
   reducers: {
     setMonthInfo: (
       state,
-      { payload }: PayloadAction<{ plannerAccessScope: "전체공개" | "친구공개" | "비공개"; dayList: MonthDayConfig[] }>,
+      { payload }: PayloadAction<{ plannerAccessScope: MonthConfig["plannerAccessScope"]; dayList: MonthDayConfig[] }>,
     ) => {
       state.plannerAccessScope = payload.plannerAccessScope;
       state.dayList = payload.dayList;

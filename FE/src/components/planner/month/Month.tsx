@@ -6,7 +6,7 @@ import Text from "@components/common/Text";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { MonthDayConfig, setMonthInfo } from "@store/planner/monthSlice";
+import { MonthConfig, MonthDayConfig, setMonthInfo } from "@store/planner/monthSlice";
 import { plannerApi } from "@api/Api";
 
 const Month = () => {
@@ -32,7 +32,7 @@ const Month = () => {
       .calendars(userId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
       .then((res) => {
         const dayList: MonthDayConfig[] = res.data.data.dayList;
-        const plannerAccessScope: "전체공개" | "친구공개" | "비공개" = res.data.data.plannerAcessScope || "전체공개";
+        const plannerAccessScope: MonthConfig["plannerAccessScope"] = res.data.data.plannerAcessScope || "전체공개";
         dispatch(setMonthInfo({ plannerAccessScope, dayList }));
       })
       .catch((err) => console.log(err));
