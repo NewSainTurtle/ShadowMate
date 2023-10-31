@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Date;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,7 +68,7 @@ class DailyPlannerRepositoryTest {
     @Nested
     class 일일플래너_USER로_조회 {
         @Test
-        void 일일플래너없음_Null() {
+        void 개별조회_일일플래너없음_Null() {
             //given
 
             //when
@@ -78,7 +79,7 @@ class DailyPlannerRepositoryTest {
         }
 
         @Test
-        void 일일플래너있음() {
+        void 개별조회_일일플래너있음() {
             //given
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .dailyPlannerDay(Date.valueOf(date))
@@ -97,6 +98,25 @@ class DailyPlannerRepositoryTest {
             assertThat(findDailyPlanner.getRetrospectionImage()).isNull();
             assertThat(findDailyPlanner.getTodayGoal()).isNull();
             assertThat(findDailyPlanner.getTomorrowGoal()).isNull();
+        }
+
+        @Test
+        void 전체조회() {
+            //given
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf(date))
+                    .user(user)
+                    .build());
+            final DailyPlanner dailyPlanner2 = dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf("2023-09-26"))
+                    .user(user)
+                    .build());
+
+            //when
+            final List<DailyPlanner> dailyPlanners = dailyPlannerRepository.findAllByUser(user);
+
+            //then
+            assertThat(dailyPlanners).isNotNull().hasSize(2);
         }
     }
 
