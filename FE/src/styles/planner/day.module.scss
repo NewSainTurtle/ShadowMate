@@ -6,6 +6,7 @@ $color-gray_1: var(--color-gray-1);
 $color-text: var(--color-text);
 $color-warning: var(--color-warning);
 $color-background: var(--color-background);
+$color-btn-red: var(--color-btn-red);
 $color-btn-blue: var(--color-btn-blue);
 
 %item-container {
@@ -110,36 +111,35 @@ $color-btn-blue: var(--color-btn-blue);
     }
   }
 
+  button {
+    width: 6rem;
+  }
+
+  .button__visit > button {
+    box-shadow: inset 0px 3px 6px 0px rgba(black, 0.4);
+  }
+
   &__default {
     display: flex;
     justify-content: flex-end;
     padding-right: 0.2em;
     gap: 10px;
 
-    > div {
-      width: 5.5em;
+    > button {
       &:nth-child(1) {
-        cursor: default;
-        &:hover {
-          background-color: var(--color-btn-red);
-        }
+        background-color: $color-btn-red;
         &:active {
           box-shadow: none;
         }
       }
     }
-
-    > .button__visit > div {
-      box-shadow: inset 0px 3px 6px 0px rgba(0, 0, 0, 0.25);
-    }
   }
 
   &__friend {
     height: 100%;
-    display: flex;
+    display: grid;
     justify-items: end;
-    justify-content: flex-end;
-    align-items: flex-end;
+    grid-template-columns: 1fr 1fr;
     gap: 0.5em;
 
     > div:nth-child(1) {
@@ -148,14 +148,13 @@ $color-btn-blue: var(--color-btn-blue);
       flex-direction: column;
       justify-content: space-evenly;
 
-      > div {
-        width: 5.5em;
+      .button__visit > button > span {
+        color: #f00;
       }
     }
 
     > div:nth-child(2) {
       width: 100%;
-      max-width: 28em;
     }
   }
 }
