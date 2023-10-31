@@ -3,11 +3,11 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CategoryColorList from "@components/mypage/item/CategoryColorList";
-import { CategoryConfig } from "@util/planner.interface";
-import { CATEGORY_COLORS } from "@util/data/CategoryData";
+import { CategoryColorConfig, CategoryConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import {
   selectCategoryClick,
+  selectCategoryColors,
   selectCategoryInput,
   selectCategoryList,
   setCategoryColorClick,
@@ -18,6 +18,7 @@ const MyPageCategory = () => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectCategoryClick);
   const categoryList = useAppSelector(selectCategoryList);
+  const categoryColors = useAppSelector(selectCategoryColors);
   const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
 
@@ -43,8 +44,8 @@ const MyPageCategory = () => {
 
   useEffect(() => {
     let currentColor: number = 0;
-    CATEGORY_COLORS.map((item, idx) => {
-      if (item === categoryList[click].categoryColorCode) currentColor = idx;
+    categoryColors.map((item: CategoryColorConfig, idx: number) => {
+      if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;
     });
     dispatch(setCategoryColorClick(currentColor));
     dispatch(setCategoryInput(categoryList[click]));

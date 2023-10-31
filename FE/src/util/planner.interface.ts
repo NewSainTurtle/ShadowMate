@@ -4,6 +4,11 @@ export interface MonthType {
   dayStatus: number;
 }
 
+export interface CategoryColorConfig {
+  categoryColorId: number;
+  categoryColorCode: string;
+}
+
 export interface CategoryConfig {
   categoryId: number;
   categoryTitle: string;

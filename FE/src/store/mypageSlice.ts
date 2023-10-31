@@ -1,11 +1,6 @@
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { CategoryConfig } from "@util/planner.interface";
-
-interface CategoryColorConfig {
-  categoryColorId: number;
-  categoryColorCode: string;
-}
+import { CategoryColorConfig, CategoryConfig } from "@util/planner.interface";
 
 interface mypageConfig {
   category: {
