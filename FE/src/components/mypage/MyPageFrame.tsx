@@ -135,21 +135,22 @@ const MyPageFrame = ({ title }: Props) => {
   const handleDelete = (title: string) => {
     if (isDisable) return;
     if (title === "카테고리") {
-      dispatch(
-        setCategoryList(
-          categoryList.filter((item, idx) => {
-            return idx !== categoryClick;
-          }),
-        ),
-      );
       settingApi
         .deleteCategories(userId, { categoryId: categoryList[categoryClick].categoryId })
-        .then((res) => console.log(res))
+        .then((res) => {
+          dispatch(
+            setCategoryList(
+              categoryList.filter((item, idx) => {
+                return idx !== categoryClick;
+              }),
+            ),
+          );
+          dispatch(setCategoryClick(categoryClick === categoryList.length - 1 ? categoryClick - 1 : categoryClick));
+        })
         .catch((err) => {
           console.log(err);
         });
       // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
-      dispatch(setCategoryClick(categoryClick === categoryList.length ? categoryClick - 1 : categoryClick));
     } else {
       setDdayList(
         ddayList.filter((item, idx) => {
