@@ -140,19 +140,7 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageList handleAdd={handleAdd} title={title}>
         {
           {
-            카테고리: (
-              <>
-                {categoryList.map((item, idx) => (
-                  <MyPageCategoryItem
-                    key={item.categoryId}
-                    index={idx}
-                    item={item}
-                    click={categoryClick}
-                    setClick={setCategoryClick}
-                  />
-                ))}
-              </>
-            ),
+            카테고리: <CategoryList />,
             디데이: (
               <>
                 {ddayList.map((item, key) => (
