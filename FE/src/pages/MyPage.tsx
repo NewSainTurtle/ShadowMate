@@ -10,26 +10,28 @@ import MyFriend from "@components/mypage/details/friend/MyFriend";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { selectCategoryColors, setCategoryColors, setCategoryInput, setCategoryList } from "@store/mypageSlice";
+import { setCategoryColors, setCategoryInput, setCategoryList } from "@store/mypageSlice";
+import { CategoryConfig } from "@util/planner.interface";
 
 const MyPage = () => {
   const dispatch = useAppDispatch();
   const [tabName, setTabName] = useState<string>("내 정보 확인");
   const userId: number = useAppSelector(selectUserId);
-  const categoryColors = useAppSelector(selectCategoryColors);
 
   const getCategoryList = () => {
     settingApi
       .categories(userId)
       .then((res) => {
-        let response = res.data.data.categoryList;
+        let response: CategoryConfig[] = res.data.data.categoryList;
         if (response.length === 0) {
-          response = {
-            categoryId: 1,
-            categoryTitle: "새 카테고리",
-            categoryEmoticon: null,
-            categoryColorCode: categoryColors[11].categoryColorCode,
-          };
+          response = [
+            {
+              categoryId: 1,
+              categoryTitle: "새 카테고리",
+              categoryEmoticon: null,
+              categoryColorCode: "#B6DEF7",
+            },
+          ];
         }
         dispatch(setCategoryList(response));
         dispatch(setCategoryInput(response[0]));
