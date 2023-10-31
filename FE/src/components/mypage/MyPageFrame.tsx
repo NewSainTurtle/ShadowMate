@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
-import MyPageCategoryItem from "./item/MyPageCategoryItem";
 import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/diary/Category";
 import MyPageDday from "./details/diary/Dday";
 import MyPageDdayItem from "./item/MyPageDdayItem";
 import { CategoryConfig, ddayType } from "@util/planner.interface";
-import { CATEGORY_LIST, CATEGORY_COLORS } from "@util/data/CategoryData";
 import { DDAY_LIST } from "@util/data/DdayData";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -96,8 +94,7 @@ const MyPageFrame = ({ title }: Props) => {
     if (title === "카테고리") {
       const input = {
         categoryId: categoryInput.categoryId,
-              categoryId: categoryInput.categoryId,
-              categoryTitle: categoryInput.categoryTitle,
+        categoryTitle: categoryInput.categoryTitle,
         categoryEmoticon: categoryInput.categoryEmoticon || "",
         categoryColorId: colorClick + 1,
       };
@@ -138,13 +135,21 @@ const MyPageFrame = ({ title }: Props) => {
   const handleDelete = (title: string) => {
     if (isDisable) return;
     if (title === "카테고리") {
-      setCategoryList(
-        categoryList.filter((item, idx) => {
-          return idx !== categoryClick;
-        }),
+      dispatch(
+        setCategoryList(
+          categoryList.filter((item, idx) => {
+            return idx !== categoryClick;
+          }),
+        ),
       );
+      settingApi
+        .deleteCategories(userId, { categoryId: categoryList[categoryClick].categoryId })
+        .then((res) => console.log(res))
+        .catch((err) => {
+          console.log(err);
+        });
       // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
-      setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1);
+      dispatch(setCategoryClick(categoryClick === categoryList.length ? categoryClick - 1 : categoryClick));
     } else {
       setDdayList(
         ddayList.filter((item, idx) => {
