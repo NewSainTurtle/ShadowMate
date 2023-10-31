@@ -32,7 +32,6 @@ const mypageSlice = createSlice({
   initialState,
   reducers: {
     setCategoryList: (state, { payload }: PayloadAction<CategoryConfig[]>) => {
-      console.log("updated: " + payload);
       state.category.categoryList = payload;
     },
     setCategoryColors: (state, { payload }: PayloadAction<CategoryColorConfig[]>) => {
