@@ -91,6 +91,7 @@ const MyPageFrame = ({ title }: Props) => {
   };
 
   const handleUpdate = (title: string) => {
+    if (isDisable) return;
     if (title === "카테고리") {
       const input = {
         categoryId: categoryInput.categoryId,
@@ -134,7 +135,7 @@ const MyPageFrame = ({ title }: Props) => {
   };
 
   const handleDelete = (title: string) => {
-    if (isDisable) return;
+    if (categoryList.length == 0) return;
     if (title === "카테고리") {
       settingApi
         .deleteCategories(userId, { categoryId: categoryList[categoryClick].categoryId })
@@ -163,9 +164,8 @@ const MyPageFrame = ({ title }: Props) => {
   };
 
   useEffect(() => {
-    // 카테고리 및 디데이 항목이 1개 남은 경우, 삭제 불가
-    if (title === "카테고리" && categoryList.length <= 1) setIsDisable(true);
-    else if (title === "디데이" && ddayList.length <= 1) setIsDisable(true);
+    if (title === "카테고리" && categoryList.length < 1) setIsDisable(true);
+    else if (title === "디데이" && ddayList.length < 1) setIsDisable(true);
     else setIsDisable(false);
   }, [title, categoryList, ddayList]);
 

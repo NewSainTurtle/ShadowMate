@@ -29,7 +29,7 @@ const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }
           <DeleteOutlined />
           <Text>삭제</Text>
         </div>
-        <div className={styles["frame__button--save"]} onClick={() => handleUpdate(title)}>
+        <div className={styles[`frame__button--save${disable}`]} onClick={() => handleUpdate(title)}>
           <SaveIcon />
           <Text>저장</Text>
         </div>
