@@ -8,7 +8,7 @@ export interface MonthDayConfig {
 }
 
 export interface MonthConfig {
-  plannerAccessScope: string;
+  plannerAccessScope: "전체공개" | "친구공개" | "비공개";
   dayList: MonthDayConfig[];
 }
 
@@ -21,7 +21,10 @@ const monthSlice = createSlice({
   name: "month",
   initialState,
   reducers: {
-    setMonthInfo: (state, { payload }: PayloadAction<{ plannerAccessScope: string; dayList: MonthDayConfig[] }>) => {
+    setMonthInfo: (
+      state,
+      { payload }: PayloadAction<{ plannerAccessScope: "전체공개" | "친구공개" | "비공개"; dayList: MonthDayConfig[] }>,
+    ) => {
       state.plannerAccessScope = payload.plannerAccessScope;
       state.dayList = payload.dayList;
     },

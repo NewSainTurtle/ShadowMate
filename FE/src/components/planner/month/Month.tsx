@@ -32,7 +32,7 @@ const Month = () => {
       .calendars(userId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
       .then((res) => {
         const dayList: MonthDayConfig[] = res.data.data.dayList;
-        const plannerAccessScope: string = res.data.data.plannerAcessScope || "전체공개";
+        const plannerAccessScope: "전체공개" | "친구공개" | "비공개" = res.data.data.plannerAcessScope || "전체공개";
         dispatch(setMonthInfo({ plannerAccessScope, dayList }));
       })
       .catch((err) => console.log(err));
