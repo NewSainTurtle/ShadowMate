@@ -5,8 +5,8 @@ import { IconButton } from "@mui/material";
 import Text from "@components/common/Text";
 
 interface FileImgeProps {
-  fileImg: string;
-  setFileImg: Dispatch<SetStateAction<string>>;
+  retrospectionImage: File | null;
+  setRetrospectionImage: Dispatch<SetStateAction<File | null>>;
 }
 
 interface Props {
@@ -15,36 +15,49 @@ interface Props {
   name: string;
   value: string;
   isFile?: boolean;
-  fileImg?: string;
-  setFileImg?: Dispatch<SetStateAction<string>>;
+  retrospectionImage?: File | null;
+  setRetrospectionImage?: Dispatch<SetStateAction<File | null>>;
   rows?: number;
   onBlur: React.FocusEventHandler;
   onChange: React.ChangeEventHandler;
 }
 
-const FileImg = ({ fileImg, setFileImg }: FileImgeProps) => {
+const FileImg = ({ retrospectionImage, setRetrospectionImage }: FileImgeProps) => {
+  const [imgPreview, setImgPreview] = useState<string>(() => {
+    const reader = new FileReader();
+    if (retrospectionImage) {
+      reader.readAsDataURL(retrospectionImage);
+      reader.onload = () => {
+        return reader.result;
+      };
+    }
+    return "";
+  });
+
   const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files;
-    if (!file) return;
+    if (!e.target.files) return;
 
     const reader = new FileReader();
-    reader.readAsDataURL(file[0]);
+    reader.readAsDataURL(e.target.files[0]);
     reader.onloadend = () => {
-      setFileImg(reader.result as string);
+      setImgPreview(reader.result as string);
+      if (e.target.files != null) {
+        setRetrospectionImage(e.target.files[0]);
+      }
       e.target.value = "";
     };
   };
 
   const imgDelete = () => {
-    setFileImg("");
+    setRetrospectionImage(null);
   };
 
   return (
     <div className={styles["ment-preview__box"]}>
       <input type="file" id="imageFile" accept="image/*" onChange={saveImgFile} />
-      {fileImg ? (
+      {imgPreview ? (
         <div className={styles["ment-preview__img"]}>
-          <img src={fileImg} alt="img-preview" />
+          <img src={imgPreview} alt="img-preview" />
           <IconButton disableRipple onClick={imgDelete}>
             <RemoveCircle fontSize="small" />
           </IconButton>
@@ -60,7 +73,7 @@ const FileImg = ({ fileImg, setFileImg }: FileImgeProps) => {
   );
 };
 
-const Ment = ({ title, rows, isFile, fileImg, setFileImg, ...rest }: Props) => {
+const Ment = ({ title, rows, isFile, retrospectionImage, setRetrospectionImage, ...rest }: Props) => {
   const { value, maxLength } = rest;
   const [inputCount, setInputCount] = useState(0);
 
@@ -86,7 +99,7 @@ const Ment = ({ title, rows, isFile, fileImg, setFileImg, ...rest }: Props) => {
           ({inputCount}/{maxLength}자)
         </Text>
       </div>
-      {isFile && <FileImg fileImg={fileImg!} setFileImg={setFileImg!} />}
+      {isFile && <FileImg retrospectionImage={retrospectionImage!} setRetrospectionImage={setRetrospectionImage!} />}
     </div>
   );
 };
@@ -94,7 +107,7 @@ const Ment = ({ title, rows, isFile, fileImg, setFileImg, ...rest }: Props) => {
 Ment.defaultProps = {
   title: "title",
   value: "내용이 들어갑니다.",
-  fileImg: "",
+  retrospectionImage: null,
 };
 
 export default Ment;

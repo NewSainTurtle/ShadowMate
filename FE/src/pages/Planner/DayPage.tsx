@@ -22,7 +22,7 @@ const DayPage = () => {
     tomorrowGoal: "",
     retrospection: "",
   });
-  const [retrospectionImage, setRetrospectionImage] = useState("");
+  const [retrospectionImage, setRetrospectionImage] = useState<File | null>(null);
   const [isClickTimeTable, setIsClickTimeTable] = useState(false);
   const todoDivRef = useRef<HTMLDivElement>(null);
   const [totalTime, setTotalTime] = useState({
@@ -50,7 +50,7 @@ const DayPage = () => {
           todayGoal: response.todayGoal || "",
           tomorrowGoal: response.tomorrowGoal || "",
         });
-        setRetrospectionImage(response.retrospectionImage || "");
+        setRetrospectionImage(response.retrospectionImage);
         setTotalTime({ studyTimeHour: response.studyTimeHour, studyTimeMinute: response.studyTimeMinute });
       })
       .catch((err) => console.error(err));
@@ -68,6 +68,15 @@ const DayPage = () => {
     const studyTimeMinute = Math.floor(sumMinute % 60);
     setTotalTime({ studyTimeHour, studyTimeMinute });
   }, [todoList]);
+
+  useEffect(() => {
+    // 파이어베이스 연결 후 조건문 지울 예정
+    if (retrospectionImage)
+      plannerApi
+        .retrospectionImages(userId, { date, retrospectionImage: null })
+        .then((res) => console.log("이미지 업로드", res))
+        .catch((err) => console.error(err));
+  }, [retrospectionImage]);
 
   (() => {
     const handleOutsideClose = (e: MouseEvent) => {
@@ -153,8 +162,8 @@ const DayPage = () => {
           rows={5}
           maxLength={100}
           isFile
-          fileImg={retrospectionImage}
-          setFileImg={setRetrospectionImage}
+          retrospectionImage={retrospectionImage}
+          setRetrospectionImage={setRetrospectionImage}
           onBlur={saveRetrospections}
         />
 
