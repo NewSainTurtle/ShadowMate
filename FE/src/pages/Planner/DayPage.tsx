@@ -36,6 +36,7 @@ const DayPage = () => {
       .daily(userId, { date: day })
       .then((res) => {
         const response = res.data.data;
+        console.log("플래너 조회", response);
         dispatch(
           setDayInfo({
             plannerAccessScope: response.plannerAccessScope,
@@ -58,7 +59,7 @@ const DayPage = () => {
 
   useEffect(() => {
     const sumMinute = todoList
-      .filter((ele: TodoConfig) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
+      .filter((ele: TodoConfig) => ele.timeTable && ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
       .reduce(
         (accumulator: number, item: { timeTable: any }) =>
           accumulator + Number(dayjs(item.timeTable!.endTime).diff(dayjs(item.timeTable!.startTime), "m")),
