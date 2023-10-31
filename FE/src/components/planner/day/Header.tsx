@@ -73,7 +73,7 @@ const Header = () => {
   const isFriend = false;
 
   const moveDate = (n: -1 | 0 | 1) => {
-    const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
+    const newDate = n == 0 ? dayjs().format("YYYY-MM-DD") : dayjs(date).add(n, "day").format("YYYY-MM-DD");
     dispatch(setDate(newDate));
   };
 

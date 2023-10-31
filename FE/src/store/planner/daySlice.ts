@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 import { TodoConfig, TimeTableConfig } from "@util/planner.interface";
-import { todoData_list } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -11,30 +10,22 @@ dayjs.extend(isSameOrAfter);
 interface dayInfoConfig {
   plannerAccessScope: "전체공개" | "친구공개" | "비공개";
   dday: string | null;
-  todayGoal: string;
-  retrospection: string;
-  retrospectionImage: string;
-  tomorrowGoal: string;
   like: boolean;
   likeCount: number;
   dailyTodos: TodoConfig[];
 }
 
 interface dayConfig {
-  date: string | Date | dayjs.Dayjs;
+  date: string;
   info: dayInfoConfig;
   todoItem: TodoConfig; // 내가 선택한 todo
 }
 
 const initialState: dayConfig = {
-  date: new Date(),
+  date: dayjs().format("YYYY-MM-DD"),
   info: {
     plannerAccessScope: "전체공개",
     dday: null,
-    todayGoal: "",
-    retrospection: "",
-    retrospectionImage: "",
-    tomorrowGoal: "",
     like: false,
     likeCount: 0,
     dailyTodos: [],

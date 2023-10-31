@@ -18,10 +18,11 @@ const DayPage = () => {
   const date = useAppSelector(selectDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
-    todayGoals: "",
-    tomorrowGoals: "",
-    retrospections: "",
+    todayGoal: "",
+    tomorrowGoal: "",
+    retrospection: "",
   });
+  const [retrospectionImage, setRetrospectionImage] = useState("");
   const [isClickTimeTable, setIsClickTimeTable] = useState(false);
   const todoDivRef = useRef<HTMLDivElement>(null);
   const [totalTime, setTotalTime] = useState({
@@ -41,13 +42,15 @@ const DayPage = () => {
             dday: response.dday,
             like: response.like,
             likeCount: response.likeCount,
-            retrospection: response.retrospection || "",
-            retrospectionImage: response.retrospectionImage || "",
-            todayGoal: response.todayGoal || "",
-            tomorrowGoal: response.tomorrowGoal || "",
             dailyTodos: response.dailyTodos || [],
           }),
         );
+        setMent({
+          retrospection: response.retrospection || "",
+          todayGoal: response.todayGoal || "",
+          tomorrowGoal: response.tomorrowGoal || "",
+        });
+        setRetrospectionImage(response.retrospectionImage || "");
         setTotalTime({ studyTimeHour: response.studyTimeHour, studyTimeMinute: response.studyTimeMinute });
       })
       .catch((err) => console.error(err));
@@ -69,7 +72,7 @@ const DayPage = () => {
   (() => {
     const handleOutsideClose = (e: MouseEvent) => {
       if (todoDivRef && todoDivRef.current) {
-        if (e.button == 2) handleClickTimeTable(false);
+        if (e.button == 2) setIsClickTimeTable(false);
       }
     };
     document.addEventListener("mouseup", handleOutsideClose);
@@ -77,17 +80,28 @@ const DayPage = () => {
     return () => document.addEventListener("mouseup", handleOutsideClose);
   })();
 
-  const handleClickTimeTable = (props: boolean) => {
-    setIsClickTimeTable(props);
-  };
-
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
-      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) handleClickTimeTable(false);
+      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) setIsClickTimeTable(false);
     };
     document.addEventListener("click", handleOutsideClose);
+
     return () => document.removeEventListener("click", handleOutsideClose);
   }, [isClickTimeTable]);
+
+  const handleSaveMent = (() => {
+    const saveTodayGoals = () => plannerApi.todayGoals(userId, { date, todayGoal }).catch((err) => console.error(err));
+    const saveRetrospections = () =>
+      plannerApi.retrospections(userId, { date, retrospection }).catch((err) => console.error(err));
+    const saveTomorrowGoals = () =>
+      plannerApi.tomorrowGoals(userId, { date, tomorrowGoal }).catch((err) => console.error(err));
+
+    return {
+      saveTodayGoals,
+      saveRetrospections,
+      saveTomorrowGoals,
+    };
+  })();
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMent({
@@ -96,7 +110,8 @@ const DayPage = () => {
     });
   };
 
-  const { todayGoals, tomorrowGoals, retrospections } = ment;
+  const { saveTodayGoals, saveRetrospections, saveTomorrowGoals } = handleSaveMent;
+  const { todayGoal, tomorrowGoal, retrospection } = ment;
   const { studyTimeHour, studyTimeMinute } = totalTime;
 
   return (
@@ -105,11 +120,12 @@ const DayPage = () => {
       <div className={styles["page-content"]}>
         <Ment
           title={"오늘의 다짐"}
-          name="todayGoals"
-          value={todayGoals}
+          name="todayGoal"
+          value={todayGoal}
           onChange={handleInput}
           rows={1}
           maxLength={50}
+          onBlur={saveTodayGoals}
         />
 
         <div className={styles["item__time"]}>
@@ -125,27 +141,31 @@ const DayPage = () => {
             <TodoList clicked={isClickTimeTable} />
           </div>
           <div className={styles["item__timetable"]}>
-            <TimeTable clicked={isClickTimeTable} setClicked={handleClickTimeTable} />
+            <TimeTable clicked={isClickTimeTable} setClicked={() => setIsClickTimeTable(true)} />
           </div>
         </div>
 
         <Ment
           title={"오늘의 회고"}
-          name="retrospections"
-          value={retrospections}
+          name="retrospection"
+          value={retrospection}
           onChange={handleInput}
           rows={5}
           maxLength={100}
-          fileImg
+          isFile
+          fileImg={retrospectionImage}
+          setFileImg={setRetrospectionImage}
+          onBlur={saveRetrospections}
         />
 
         <Ment
           title={"내일 다짐"}
-          name="tomorrowGoals"
-          value={tomorrowGoals}
+          name="tomorrowGoal"
+          value={tomorrowGoal}
           onChange={handleInput}
           rows={5}
           maxLength={50}
+          onBlur={saveTomorrowGoals}
         />
       </div>
     </div>
