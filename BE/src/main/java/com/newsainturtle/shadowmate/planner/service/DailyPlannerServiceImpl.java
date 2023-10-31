@@ -90,12 +90,12 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         return dailyPlanner;
     }
 
-    private LocalDateTime stringToLocalDateTime(String timeStr) {
+    private LocalDateTime stringToLocalDateTime(final String timeStr) {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return LocalDateTime.parse(timeStr, formatter);
     }
 
-    private void checkValidDateTime(String date, LocalDateTime startTime, LocalDateTime endTime) {
+    private void checkValidDateTime(final String date, final LocalDateTime startTime, final LocalDateTime endTime) {
         LocalDateTime localDateTime = stringToLocalDateTime(date + " 00:00");
         if (endTime.isBefore(startTime)
                 || localDateTime.withHour(4).isAfter(startTime)
