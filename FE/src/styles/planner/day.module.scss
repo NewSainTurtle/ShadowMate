@@ -86,7 +86,10 @@ $color-btn-blue: var(--color-btn-blue);
     .todo-item,
     .timetable__container-box {
       pointer-events: auto;
-      > * {
+      &::after {
+        content: "";
+      }
+      & > * {
         pointer-events: none;
       }
     }
@@ -406,26 +409,6 @@ $color-btn-blue: var(--color-btn-blue);
     padding: 0em 0.2em;
     box-sizing: border-box;
 
-    &::after {
-      @extend .text-small;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.5;
-      margin: 0 0 1.2em 1.2em;
-      text-align: center;
-      white-space: pre;
-      line-height: 1.5em;
-      content: "클릭하여\A타임 테이블 등록";
-    }
-
-    &.--clicked {
-      &::after {
-        content: "";
-      }
-    }
-
     &-box {
       height: 100%;
       overflow-y: auto;
@@ -433,6 +416,24 @@ $color-btn-blue: var(--color-btn-blue);
       display: grid;
       grid-template-columns: 1fr 8fr;
       grid-template-rows: 1fr;
+
+      &::after {
+        @extend .text-small;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.5;
+        margin: 0 0 1.2em 1.2em;
+        text-align: center;
+        white-space: pre;
+        line-height: 1.5em;
+        content: "클릭하여\A타임 테이블 등록";
+      }
+
+      &.--clicked::after {
+        content: "";
+      }
     }
   }
 

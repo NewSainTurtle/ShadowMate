@@ -15,7 +15,7 @@ import { selectUserId } from "@store/authSlice";
 const DayPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const friendUserId = userId;
+  const friendUserId = 3;
   const date = useAppSelector(selectDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
