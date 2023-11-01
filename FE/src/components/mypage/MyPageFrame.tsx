@@ -21,6 +21,7 @@ import {
   setCategoryInput,
   setCategoryList,
 } from "@store/mypageSlice";
+import DdayList from "./list/DdayList";
 
 interface Props {
   title: string;
@@ -175,13 +176,7 @@ const MyPageFrame = ({ title }: Props) => {
         {
           {
             카테고리: <CategoryList />,
-            디데이: (
-              <>
-                {ddayList.map((item, key) => (
-                  <MyPageDdayItem key={key} item={item} index={key} click={ddayClick} setClick={setDdayClick} />
-                ))}
-              </>
-            ),
+            디데이: <DdayList />,
           }[title]
         }
       </MyPageList>
