@@ -168,10 +168,11 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   }, [selectTime]);
 
   const clickedStyle = clicked ? styles["--clicked"] : "";
+  const todoListNoneStyle = !todoList.length ? styles["--none"] : "";
 
   return (
-    <div className={`${styles["timetable__container"]} ${clickedStyle}`} onClick={() => setClicked(true)}>
-      <div className={styles["timetable__container-box"]}>
+    <div className={styles["timetable__container"]} onClick={() => setClicked(true)}>
+      <div className={`${styles["timetable__container-box"]} ${todoListNoneStyle} ${clickedStyle} `}>
         <div className={styles["timetable__hours"]}>
           {Array.from({ length: 24 }).map((_, idx) => (
             <div key={idx}>{String((4 + idx) % 24).padStart(2, "0")}</div>
