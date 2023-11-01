@@ -15,7 +15,7 @@ const TodoItemChoice = ({ todoItem, possible }: Props) => {
   const dispatch = useAppDispatch();
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
-  const [categoryTitle, categoryColorCode] = [category.categoryTitle, category.categoryColorCode];
+  const { categoryTitle, categoryColorCode } = category;
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
     const rgb = parseInt(hexColor, 16);

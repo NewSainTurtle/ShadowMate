@@ -23,7 +23,7 @@ interface Props {
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
-  const [categoryTitle, categoryColorCode] = [category.categoryTitle, category.categoryColorCode];
+  const { categoryTitle, categoryColorCode } = category;
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
