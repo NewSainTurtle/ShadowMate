@@ -15,7 +15,7 @@ import { selectUserId } from "@store/authSlice";
 const DayPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const friendUserId = 3;
+  const friendUserId = userId;
   const date = useAppSelector(selectDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
@@ -70,23 +70,22 @@ const DayPage = () => {
     setTotalTime({ studyTimeHour, studyTimeMinute });
   }, [todoList]);
 
-  (() => {
+  useEffect(() => {
     const handleOutsideClose = (e: MouseEvent) => {
-      if (todoDivRef && todoDivRef.current) {
-        if (e.button == 2) handleClickTimeTable(false);
+      if (todoDivRef && todoDivRef.current && e.button == 2) {
+        setIsClickTimeTable(false);
       }
     };
     document.addEventListener("mouseup", handleOutsideClose);
     document.addEventListener("contextmenu", (e) => e.preventDefault());
     return () => document.addEventListener("mouseup", handleOutsideClose);
-  })();
+  }, []);
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
-      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) handleClickTimeTable(false);
+      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) setIsClickTimeTable(false);
     };
     document.addEventListener("click", handleOutsideClose);
-
     return () => document.removeEventListener("click", handleOutsideClose);
   }, [isClickTimeTable]);
 
@@ -112,7 +111,7 @@ const DayPage = () => {
   };
 
   const handleClickTimeTable = (props: boolean) => {
-    if (userId == friendUserId) setIsClickTimeTable(props);
+    if (userId == friendUserId && todoList.length > 0) setIsClickTimeTable(props);
   };
 
   const { saveTodayGoals, saveRetrospections, saveTomorrowGoals } = handleSaveMent;
