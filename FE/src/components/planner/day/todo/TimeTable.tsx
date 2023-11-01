@@ -167,10 +167,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     }
   }, [selectTime]);
 
-  const clickedStyle = clicked ? "--clicked" : "";
+  const clickedStyle = clicked ? styles["--clicked"] : "";
 
   return (
-    <div className={styles[`timetable__container${clickedStyle}`]} onClick={() => setClicked(true)}>
+    <div className={`${styles["timetable__container"]} ${clickedStyle}`} onClick={() => setClicked(true)}>
       <div className={styles["timetable__container-box"]}>
         <div className={styles["timetable__hours"]}>
           {Array.from({ length: 24 }).map((_, idx) => (

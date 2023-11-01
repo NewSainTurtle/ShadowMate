@@ -15,7 +15,7 @@ import { selectUserId } from "@store/authSlice";
 const DayPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const friedUserId = userId;
+  const friendUserId = userId;
   const date = useAppSelector(selectDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
@@ -34,7 +34,7 @@ const DayPage = () => {
   useEffect(() => {
     const day = dayjs(date).format("YYYY-MM-DD");
     plannerApi
-      .daily(friedUserId, { date: day })
+      .daily(friendUserId, { date: day })
       .then((res) => {
         const response = res.data.data;
         dispatch(
@@ -73,7 +73,7 @@ const DayPage = () => {
   (() => {
     const handleOutsideClose = (e: MouseEvent) => {
       if (todoDivRef && todoDivRef.current) {
-        if (e.button == 2) setIsClickTimeTable(false);
+        if (e.button == 2) handleClickTimeTable(false);
       }
     };
     document.addEventListener("mouseup", handleOutsideClose);
@@ -83,7 +83,7 @@ const DayPage = () => {
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
-      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) setIsClickTimeTable(false);
+      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) handleClickTimeTable(false);
     };
     document.addEventListener("click", handleOutsideClose);
 
@@ -111,14 +111,19 @@ const DayPage = () => {
     });
   };
 
+  const handleClickTimeTable = (props: boolean) => {
+    if (userId == friendUserId) setIsClickTimeTable(props);
+  };
+
   const { saveTodayGoals, saveRetrospections, saveTomorrowGoals } = handleSaveMent;
   const { todayGoal, tomorrowGoal, retrospection } = ment;
   const { studyTimeHour, studyTimeMinute } = totalTime;
+  const isFriend = userId != friendUserId;
 
   return (
     <div className={styles["page-container"]} key={date}>
-      <Header isFriend={userId != friedUserId} />
-      <div className={styles["page-content"]} style={{ pointerEvents: userId != friedUserId ? "none" : "auto" }}>
+      <Header isFriend={userId != friendUserId} />
+      <div className={`${styles["page-content"]} ${isFriend ? styles["--friend"] : ""}`}>
         <Ment
           title={"오늘의 다짐"}
           name="todayGoal"
@@ -142,7 +147,7 @@ const DayPage = () => {
             <TodoList clicked={isClickTimeTable} />
           </div>
           <div className={styles["item__timetable"]}>
-            <TimeTable clicked={isClickTimeTable} setClicked={() => setIsClickTimeTable(true)} />
+            <TimeTable clicked={isClickTimeTable} setClicked={handleClickTimeTable} />
           </div>
         </div>
 
