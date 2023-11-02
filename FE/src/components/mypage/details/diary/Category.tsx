@@ -43,7 +43,7 @@ const MyPageCategory = () => {
   };
 
   useEffect(() => {
-    if (categoryList && categoryInput) {
+    if (categoryList.length > 0 && categoryInput) {
       let currentColor: number = 0;
       categoryColors.map((item: CategoryColorConfig, idx: number) => {
         if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;

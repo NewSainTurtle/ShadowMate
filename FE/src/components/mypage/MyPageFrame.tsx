@@ -191,26 +191,14 @@ const MyPageFrame = ({ title }: Props) => {
         }
       </MyPageList>
       <MyPageDetail title={title} isDisable={isDisable} handleUpdate={handleUpdate} handleDelete={handleDelete}>
-        {categoryList.length != 0 ? (
-          <>
+        <>
+          {
             {
-              {
-                카테고리: <MyPageCategory />,
-                디데이: (
-                  <MyPageDday
-                    click={ddayClick}
-                    ddayList={ddayList}
-                    input={ddayInput}
-                    setInput={setDdayInput}
-                    error={ddayError}
-                  />
-                ),
-              }[title]
-            }
-          </>
-        ) : (
-          <></>
-        )}
+              카테고리: categoryList.length != 0 ? <MyPageCategory /> : <></>,
+              디데이: ddayList.length != 0 ? <MyPageDday /> : <></>,
+            }[title]
+          }
+        </>
       </MyPageDetail>
     </div>
   );
