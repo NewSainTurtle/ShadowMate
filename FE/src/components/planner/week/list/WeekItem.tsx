@@ -3,26 +3,31 @@ import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import CategorySelector from "@components/common/CategorySelector";
-import { DeleteOutlined } from "@mui/icons-material";
-import { CategoryConfig, TodoConfig } from "@util/planner.interface";
 import todoModule from "@util/TodoModule";
+import dayjs from "dayjs";
+import { useAppSelector } from "@hooks/hook";
+import { CategoryConfig, TodoConfig } from "@util/planner.interface";
+import { selectUserId } from "@store/authSlice";
+import { plannerApi } from "@api/Api";
+import { DeleteOutlined } from "@mui/icons-material";
 
 interface Props {
-  todoItems: TodoConfig[];
-  setTodoItems: Dispatch<SetStateAction<TodoConfig[]>>;
-  item: TodoConfig;
   idx: number;
+  item: TodoConfig;
+  date: string;
+  dailyTodos: TodoConfig[];
+  setDailyTodos: Dispatch<SetStateAction<TodoConfig[]>>;
 }
 
-const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
+const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
+  const userId = useAppSelector(selectUserId);
   const [Modalopen, setModalOpen] = useState(false);
   const handleClose = () => setModalOpen(false);
-
-  const { updateTodo, deleteTodo } = todoModule(todoItems, setTodoItems);
   const [todo, setTodo] = useState({
     newTodo: "",
     oldTodo: "",
   });
+  const { updateTodo, deleteTodo } = todoModule(dailyTodos, setDailyTodos);
 
   const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -68,7 +73,7 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
     <>
       <div className={styles["item__todo-item"]}>
         <div onClick={() => setModalOpen(!Modalopen)}>
-          <span>{item.category?.categoryEmoticon}</span>
+          <span>{item.category?.categoryEmoticon || ""}</span>
         </div>
         {item.todoUpdate ? (
           <input
@@ -81,12 +86,12 @@ const WeekItem = ({ todoItems, setTodoItems, item, idx }: Props) => {
                 return { ...prev, newTodo: e.target.value };
               })
             }
-            onKeyDown={(e) => handleEnter(e)}
-            onBlur={(e) => handleUpdateSave(e)}
+            onKeyDown={handleEnter}
+            onBlur={handleUpdateSave}
           />
         ) : (
           <div onClick={handleUpdateState}>
-            <Text types="small">{item.todoContent}</Text>
+            <Text types="small">{item?.todoContent}</Text>
           </div>
         )}
         <DeleteOutlined onClick={handleDelete} />

@@ -1,18 +1,23 @@
 import React, { Dispatch, KeyboardEvent, MutableRefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
-import { TodoConfig } from "@util/planner.interface";
 import todoModule from "@util/TodoModule";
+import dayjs from "dayjs";
+import { TodoConfig } from "@util/planner.interface";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
+import { plannerApi } from "@api/Api";
 
 interface Props {
-  todoItems: TodoConfig[];
-  setTodoItems: Dispatch<SetStateAction<TodoConfig[]>>;
-  nextId: MutableRefObject<number>;
+  date: string;
+  dailyTodos: TodoConfig[];
+  setDailyTodos: Dispatch<SetStateAction<TodoConfig[]>>;
 }
 
-const WeekItemInput = ({ todoItems, setTodoItems, nextId }: Props) => {
+const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
+  const userId = useAppSelector(selectUserId);
   const todoEndRef = useRef<HTMLDivElement | null>(null);
-  const { insertTodo } = todoModule(todoItems, setTodoItems);
   const [newTodo, setNewTodo] = useState<string>("");
+  const { insertTodo } = todoModule(dailyTodos, setDailyTodos);
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (newTodo === "") return;

@@ -1,22 +1,31 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
 import WeekItem from "@components/planner/week/list/WeekItem";
 import WeekItemInput from "@components/planner/week/list/WeekItemInput";
 import { dateFormat } from "@util/getThisWeek";
-import { DayListConfig, selectWeekDday } from "@store/planner/weekSlice";
 import { TodoConfig } from "@util/planner.interface";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { DayListConfig, selectDayList, selectWeekDday, setDayList } from "@store/planner/weekSlice";
+import { plannerApi } from "@api/Api";
+import { selectUserId } from "@store/authSlice";
+import dayjs from "dayjs";
 
 interface Props {
-  dayInfo: DayListConfig;
+  idx: number;
 }
 
-const WeekList = ({ dayInfo }: Props) => {
+const WeekList = ({ idx }: Props) => {
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
   const nearDate = useAppSelector(selectWeekDday);
+  const dayList: DayListConfig[] = useAppSelector(selectDayList);
+  const date = dayList[idx].date;
+  const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos || []);
   const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection || "");
   const copyDayList = useMemo(() => JSON.parse(JSON.stringify(dayList)), [dayList]);
+
   const handleSaveRetrospection = () => {
     if (dayList[idx].retrospection === null && retrospection === "") return;
     if (dayList[idx].retrospection === retrospection) return;
@@ -32,19 +41,23 @@ const WeekList = ({ dayInfo }: Props) => {
       .catch((err) => console.log(err));
   };
 
+  useEffect(() => {
+    setDailyTodos(dayList[idx].dailyTodos || []);
+  }, [dayList]);
+
   return (
     <div className={styles["item"]}>
       <div className={styles["item__title"]}>
-        <Text>{dateFormat(dayInfo.date)}</Text>
-        <Dday nearDate={nearDate} comparedDate={dateFormat(dayInfo.date)} />
+        <Text>{dateFormat(date)}</Text>
+        <Dday nearDate={nearDate} comparedDate={dateFormat(date)} />
       </div>
-      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, 20%` }}>
-        {todoItems.map((item, key) => (
-          <WeekItem key={key} idx={key} todoItems={todoItems} setTodoItems={setTodoItems} item={item} />
+      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${dailyTodos.length + 1}, 20%` }}>
+        {dailyTodos.map((item: TodoConfig, key: number) => (
+          <WeekItem key={key} idx={key} item={item} date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />
         ))}
-        <WeekItemInput todoItems={todoItems} setTodoItems={setTodoItems} nextId={nextId} />
+        <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />
       </div>
-      <div className={`${styles["item__memo"]} ${todoItems.length < 4 && styles["top_border"]}`}>
+      <div className={`${styles["item__memo"]} ${dailyTodos?.length < 4 && styles["top_border"]}`}>
         <textarea
           value={retrospection}
           placeholder="💡 오늘의 회고를 입력하세요."
