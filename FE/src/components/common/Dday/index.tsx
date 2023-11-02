@@ -1,23 +1,27 @@
-import React, { ReactNode, useMemo } from "react";
+import React from "react";
 import Text from "@components/common/Text";
 import colors from "@util/colors";
 import dayjs from "dayjs";
 
 interface Props {
+  nearDate: string | number | Date | dayjs.Dayjs;
   comparedDate: string | number | Date | dayjs.Dayjs;
 }
 
-const Dday = ({ comparedDate }: Props) => {
-  const tempDday = dayjs("2023-11-16"); // (임시)가장 최근 DDAY설정한 날짜
+const Dday = ({ nearDate, comparedDate }: Props) => {
+  const isVisible = nearDate !== null;
 
-  const dday = (function () {
-    let date = dayjs(comparedDate).format("YYYY-MM-DD");
-    let cacl = dayjs(date).diff(dayjs(tempDday), "day");
-    return cacl == 0 ? "-DAY" : cacl < 0 ? cacl : "+" + cacl;
+  const dday = (() => {
+    if (isVisible) {
+      let date = dayjs(comparedDate).format("YYYY-MM-DD");
+      let cacl = dayjs(date).diff(dayjs(nearDate), "day");
+      return cacl == 0 ? "-DAY" : cacl < 0 ? cacl : "+" + cacl;
+    }
   })();
 
-  const style = {
+  const style: React.CSSProperties = {
     color: colors.colorGray_Light_4,
+    visibility: isVisible ? "visible" : "hidden",
   };
 
   return (

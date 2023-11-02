@@ -47,5 +47,6 @@ export const { setWeekInfo, setWeeklyTodos, setThisWeek } = weekSlice.actions;
 export const selectDayList = (state: rootState) => state.week.dayList;
 export const selectWeeklyTodos = (state: rootState) => state.week.weeklyTodos;
 export const selectThisWeek = (state: rootState) => state.week.thisWeek;
+export const selectWeekDday = (state: rootState) => state.week.dday;
 
 export default weekSlice.reducer;

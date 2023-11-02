@@ -1,45 +1,75 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import { AddPhotoAlternateOutlined, RemoveCircle } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import Text from "@components/common/Text";
+import { firebaseStorage } from "@api/firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { plannerApi } from "@api/Api";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
+import { selectDate } from "@store/planner/daySlice";
+
+interface fileImgProps {
+  retrospectionImage: string | null;
+  setRetrospectionImage: Dispatch<SetStateAction<string | null>>;
+}
 
 interface Props {
   title: string;
-  fileImg: boolean;
   maxLength: 50 | 100;
   name: string;
   value: string;
+  isFile?: boolean;
   rows?: number;
+  retrospectionImage?: string | null;
+  setRetrospectionImage?: Dispatch<SetStateAction<string | null>>;
+  onBlur: React.FocusEventHandler;
   onChange: React.ChangeEventHandler;
 }
 
-const FileImg = () => {
-  const [imgURL, setImgURL] = useState("");
+const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) => {
+  const userId = useAppSelector(selectUserId);
+  const date = useAppSelector(selectDate);
 
-  const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files;
-    if (!file) return;
+  const saveImage = async (imageUrl: string | null) => {
+    await plannerApi
+      .retrospectionImages(userId, { date, retrospectionImage: imageUrl })
+      .catch((err) => console.error(err));
+  };
+
+  const renderImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
 
     const reader = new FileReader();
-    reader.readAsDataURL(file[0]);
+    reader.readAsDataURL(e.target.files[0]);
     reader.onloadend = () => {
-      setImgURL(reader.result as string);
+      setRetrospectionImage(reader.result as string);
+      if (e.target.files != null) {
+        const file = e.target.files[0];
+        const storageRef = ref(firebaseStorage, `retrospections/${file.name}`);
+
+        uploadBytes(storageRef, file).then((snapshot) =>
+          getDownloadURL(snapshot.ref).then((downloadURL) => {
+            saveImage(downloadURL);
+          }),
+        );
+      }
       e.target.value = "";
     };
   };
-
   const imgDelete = () => {
-    setImgURL("");
+    saveImage(null);
+    setRetrospectionImage(null);
   };
 
   return (
     <div className={styles["ment-preview__box"]}>
-      <input type="file" id="imageFile" accept="image/*" onChange={(e) => saveImgFile(e)} />
-      {imgURL ? (
+      <input type="file" id="imageFile" accept="image/*" onChange={renderImage} />
+      {retrospectionImage ? (
         <div className={styles["ment-preview__img"]}>
-          <img src={imgURL} alt="img-preview" />
-          <IconButton disableRipple onClick={() => imgDelete()}>
+          <img src={retrospectionImage} alt="img-preview" />
+          <IconButton disableRipple onClick={imgDelete}>
             <RemoveCircle fontSize="small" />
           </IconButton>
         </div>
@@ -54,7 +84,7 @@ const FileImg = () => {
   );
 };
 
-const Ment = ({ title, fileImg, rows, ...rest }: Props) => {
+const Ment = ({ title, rows, isFile, retrospectionImage, setRetrospectionImage, ...rest }: Props) => {
   const { value, maxLength } = rest;
   const [inputCount, setInputCount] = useState(0);
 
@@ -62,18 +92,25 @@ const Ment = ({ title, fileImg, rows, ...rest }: Props) => {
     setInputCount(value.replace(/<br\s*\/?>/gm, "\n").length);
   }, [value]);
 
+  const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (e.nativeEvent.isComposing) return;
+      (document.activeElement as HTMLElement).blur();
+    }
+  };
+
   return (
     <div className={styles["ment-container"]}>
       <div className={styles["ment-content__box"]}>
-        <Text types="medium" bold>
+        <Text types="semi-medium" bold>
           {title}
         </Text>
-        {rows == 1 ? <input {...rest} /> : <textarea rows={rows} {...rest} />}
+        {rows == 1 ? <input {...rest} onKeyDown={handleOnKeyPress} /> : <textarea rows={rows} {...rest} />}
         <Text types="small">
           ({inputCount}/{maxLength}자)
         </Text>
       </div>
-      {fileImg && <FileImg />}
+      {isFile && <FileImg retrospectionImage={retrospectionImage!} setRetrospectionImage={setRetrospectionImage!} />}
     </div>
   );
 };
@@ -81,7 +118,7 @@ const Ment = ({ title, fileImg, rows, ...rest }: Props) => {
 Ment.defaultProps = {
   title: "title",
   value: "내용이 들어갑니다.",
-  fileImg: false,
+  retrospectionImage: null,
 };
 
 export default Ment;
