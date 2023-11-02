@@ -111,7 +111,7 @@ public class FollowServiceImpl implements FollowService {
     @Transactional
     public String receiveFollow(final User user, final Long targetUserId, final boolean followReceive) {
         User targetUser = certifyFollowUser(targetUserId);
-        FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, targetUser);
+        FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(targetUser, user);
         if(followRequest == null) {
             throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST);
         }
