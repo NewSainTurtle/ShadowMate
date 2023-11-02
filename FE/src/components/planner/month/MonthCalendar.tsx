@@ -1,12 +1,12 @@
-import React, { Children, Dispatch, Fragment, SetStateAction, useEffect, useState } from "react";
+import React, { Children, Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import dayjs from "dayjs";
-import { MonthType } from "@util/planner.interface";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
-import { useAppDispatch } from "@hooks/hook";
-import { setDate } from "@store/planner/daySlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { useNavigate } from "react-router-dom";
+import { MonthDayConfig, selectMonthDayList } from "@store/planner/monthSlice";
+import { setDate } from "@store/planner/daySlice";
 
 interface Props {
   selectedDay: string;
@@ -25,21 +25,11 @@ const MonthCalendar = ({ selectedDay }: Props) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isNotFriend, setIsNotFriend] = useState<boolean>(false);
-  const [ItemList, setItemList] = useState<(MonthType | null)[]>([]);
+  const [dayList, setDayList] = useState<(MonthDayConfig | null)[]>([]);
+  const monthDayList = useAppSelector(selectMonthDayList);
 
   const initArr = (firstDay: number, daysInMonth: number) => {
-    return Array.from({ length: firstDay + daysInMonth }, (v, i) =>
-      i < firstDay
-        ? null
-        : {
-            date: dayjs(selectedDay)
-              .startOf("month")
-              .set("date", i - firstDay + 1)
-              .format("YYYY-MM-DD"),
-            todoCount: i,
-            dayStatus: i % 4,
-          },
-    );
+    return Array.from({ length: firstDay + daysInMonth }, (v, i) => (i < firstDay ? null : monthDayList[i - firstDay]));
   };
 
   const itemClickHandler = (date: string) => {
@@ -48,10 +38,11 @@ const MonthCalendar = ({ selectedDay }: Props) => {
   };
 
   useEffect(() => {
-    const firstDay = dayjs(selectedDay).startOf("month").day();
+    let firstDay = dayjs(selectedDay).startOf("month").day();
+    firstDay = firstDay === 0 ? 6 : firstDay - 1; // 월요일 ~ 일요일
     const daysInMonth = dayjs(selectedDay).daysInMonth();
-    setItemList(initArr(firstDay, daysInMonth));
-  }, [selectedDay]);
+    setDayList(initArr(firstDay, daysInMonth));
+  }, [selectedDay, monthDayList]);
 
   return (
     <>
@@ -62,7 +53,7 @@ const MonthCalendar = ({ selectedDay }: Props) => {
           </div>
         ))}
         {Children.toArray(
-          ItemList?.map((item, idx) => {
+          dayList?.map((item, idx) => {
             return (
               <>
                 {idx % 7 === 0 && (

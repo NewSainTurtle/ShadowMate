@@ -1,5 +1,6 @@
 import Axios from "@api/JsonAxios";
 import api from "@api/BaseUrl";
+import { MonthConfig } from "@store/planner/monthSlice";
 
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
@@ -95,7 +96,7 @@ export const plannerApi = {
 };
 
 export const settingApi = {
-  accessScopes: (userId: number, data: { plannerAccessScope: "전체공개" | "친구공개" | "비공개" }) =>
+  accessScopes: (userId: number, data: { plannerAccessScope: MonthConfig["plannerAccessScope"] }) =>
     Axios.put(api.setting.accessScopes(userId), data),
 
   categories: (userId: number) => Axios.get(api.setting.categories(userId)),
@@ -112,9 +113,9 @@ export const settingApi = {
     Axios.delete(api.setting.categories(userId), { data: data }),
 
   ddays: (userId: number) => Axios.get(api.setting.ddays(userId)),
-  addDdays: (userId: number, data: { ddayDate: string; ddayTime: string }) =>
+  addDdays: (userId: number, data: { ddayDate: string; ddayTitle: string }) =>
     Axios.post(api.setting.ddays(userId), data),
-  editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTime: string }) =>
+  editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
 };

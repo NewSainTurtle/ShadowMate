@@ -6,9 +6,8 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
-import com.newsainturtle.shadowmate.user.constant.UserConstant;
 import com.newsainturtle.shadowmate.user.controller.UserController;
-import com.newsainturtle.shadowmate.user.dto.UpdateProfileImageRequest;
+import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -29,7 +28,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.newsainturtle.shadowmate.user.constant.UserConstant.SUCCESS_UPDATE_PROFILEIMAGE;
 import static com.newsainturtle.shadowmate.user.constant.UserConstant.*;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -113,42 +111,72 @@ public class UserControllerTest {
         }
 
         @Test
-        void 실패_프로필사진수정_유저틀림() throws Exception {
+        void 실패_내정보수정_유저틀림() throws Exception {
             //given
-            final String url = "/api/users/{userId}/images";
-            final UpdateProfileImageRequest updateProfileImageRequest = UpdateProfileImageRequest.builder()
-                    .newProfileImage("NewProfileImage")
+            final String url = "/api/users/{userId}/mypages";
+            final String newNickname = "NewNickName";
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
                     .build();
             doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.put(url,userId)
-                            .content(gson.toJson(updateProfileImageRequest))
+                            .content(gson.toJson(updateUserRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
             //then
             resultActions.andExpect(status().isForbidden());
         }
 
-
         @Test
-        void 성공_프로필사진수정() throws Exception {
+        void 실패_내정보수정_닉네임NULL() throws Exception {
             //given
-            final String url = "/api/users/{userId}/images";
-            final UpdateProfileImageRequest updateProfileImageRequest = UpdateProfileImageRequest.builder()
-                    .newProfileImage("NewProfileImage")
+            final String url = "/api/users/{userId}/mypages";
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
                     .build();
 
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.put(url,userId)
-                            .content(gson.toJson(updateProfileImageRequest))
+                            .content(gson.toJson(updateUserRequest))
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공_내정보수정() throws Exception {
+            //given
+            final String url = "/api/users/{userId}/mypages";
+            final String newNickname = "NewNickName";
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url,userId)
+                            .content(gson.toJson(updateUserRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
             //then
             resultActions.andExpect(status().isOk())
-                    .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_PROFILEIMAGE));
+                    .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_USER));
         }
 
     }

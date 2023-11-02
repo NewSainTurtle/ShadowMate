@@ -4,10 +4,9 @@ import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
-import { BASIC_CATEGORY_ITEM, setTimeTable } from "@store/planner/daySlice";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
 import { CategoryConfig } from "@util/planner.interface";
-import { useAppDispatch } from "@hooks/hook";
 
 interface Props {
   idx?: number;
@@ -17,14 +16,14 @@ interface Props {
   todoModule: {
     insertTodo: (props: TodoConfig) => void;
     updateTodo: (idx: number, props: TodoConfig) => void;
-    deleteTodo: (idx: number) => void;
+    deleteTodo: (idx: number, todoId: number) => void;
   };
 }
 
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
-  const dispatch = useAppDispatch();
-  const { todoId, category, todoContent, todoStatus } = todoItem;
-  const [categoryTitle, categoryColorCode] = [category!.categoryTitle, category!.categoryColorCode];
+  const { todoContent, todoStatus } = todoItem;
+  const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
+  const { categoryTitle, categoryColorCode } = category;
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
@@ -64,7 +63,13 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
   const handleSaveTextTodo = () => {
     if (text === "") return;
-    updateTodo(idx, { ...todoItem, todoContent: text });
+    if (addTodo) {
+      if (text === "") return;
+      insertTodo({ ...todoItem, todoContent: text });
+      setText("");
+    } else {
+      updateTodo(idx, { ...todoItem, todoContent: text });
+    }
   };
 
   const handleSaveStatusTodo = () => {
@@ -84,7 +89,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   };
 
   const clickDeleteTodo = () => {
-    deleteTodo(idx);
+    deleteTodo(idx, todoItem.todoId);
   };
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
@@ -128,7 +133,6 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
               placeholder={"할 일을 입력하세요"}
               minLength={2}
               maxLength={maxLength}
-              autoFocus={addTodo}
               onChange={editText}
               onKeyDown={handleOnKeyPress}
               onBlur={handleSaveTextTodo}

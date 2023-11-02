@@ -2,11 +2,20 @@ import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate, selectTodoItem, selectTodoList, removeTodoItem, setTimeTable } from "@store/planner/daySlice";
+import {
+  selectDate,
+  selectTodoItem,
+  selectTodoList,
+  removeTodoItem,
+  setTimeTable,
+  BASIC_CATEGORY_ITEM,
+} from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { TodoConfig } from "@util/planner.interface";
+import { plannerApi } from "@api/Api";
+import { selectUserId } from "@store/authSlice";
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
@@ -36,9 +45,13 @@ const debouncing = <T extends (...args: any[]) => any>(fn: T, delay: number) => 
 
 const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
   const date = useAppSelector(selectDate);
-  const { todoId, category } = useAppSelector(selectTodoItem);
-  const [categoryColorCode] = [category!.categoryColorCode];
+  const selectItem: TodoConfig = useAppSelector(selectTodoItem);
+  const [todoId, categoryColorCode] = [
+    selectItem.todoId,
+    selectItem.category?.categoryColorCode || BASIC_CATEGORY_ITEM.categoryColorCode,
+  ];
   const todoList = useAppSelector(selectTodoList);
   const makeTimeArr: tableTimeType[] = (() => {
     const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
@@ -78,13 +91,9 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       if (todoId != 0) {
         setTimeClicked(false);
 
-        let { startTime } = selectTime;
-        if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
-        startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
-        dispatch(setTimeTable({ todoId, startTime, endTime }));
-
-        setSelectTime({ startTime: "", endTime: "" });
-        dispatch(removeTodoItem());
+        if (selectItem.timeTable && selectItem.timeTable.startTime != "")
+          deleteTimeTable(todoId).then(() => saveTimeTable(endTime));
+        else saveTimeTable(endTime);
       }
     };
     const debounceMouseEnter = debouncing(mouseEnter, 50);
@@ -96,24 +105,42 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     };
   })();
 
-  const deleteTimeTable = (todoId: number) => {
-    dispatch(setTimeTable({ todoId, startTime: "", endTime: "" }));
+  const saveTimeTable = async (endTime: string) => {
+    let { startTime } = selectTime;
+    if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
+    startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
+
+    await plannerApi
+      .timetables(userId, { date, todoId, startTime, endTime })
+      .then(() => {
+        dispatch(setTimeTable({ todoId: todoId, startTime, endTime }));
+        setSelectTime({ startTime: "", endTime: "" });
+        dispatch(removeTodoItem());
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const deleteTimeTable = async (todoId: number) => {
+    await plannerApi
+      .deleteTimetable(userId, { date, todoId: todoId })
+      .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "" })));
   };
 
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele: TodoConfig) => ele.timeTable!.startTime != "" && ele.timeTable!.endTime != "")
+      .filter((ele: TodoConfig) => ele.timeTable && ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
       .map((item: TodoConfig) => {
-        const { todoId, category, timeTable } = item;
-        let { startTime, endTime } = timeTable!;
+        const { todoId, category } = item;
+        const timeTable = item.timeTable!;
+        let { startTime, endTime } = timeTable;
         const miniArr: tableTimeType[] = [];
         let tempTime = startTime;
         while (tempTime != endTime) {
           tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
           miniArr.push({
             todoId,
-            categoryColorCode: category!.categoryColorCode,
+            categoryColorCode: category?.categoryColorCode || BASIC_CATEGORY_ITEM.categoryColorCode,
             time: tempTime,
             closeButton: tempTime == endTime,
           });
@@ -140,11 +167,12 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     }
   }, [selectTime]);
 
-  const clickedStyle = clicked ? "--clicked" : "";
+  const clickedStyle = clicked ? styles["--clicked"] : "";
+  const todoListNoneStyle = !todoList.length ? styles["--none"] : "";
 
   return (
-    <div className={styles[`timetable__container${clickedStyle}`]} onClick={() => setClicked(true)}>
-      <div className={styles["timetable__container-box"]}>
+    <div className={styles["timetable__container"]} onClick={() => setClicked(true)}>
+      <div className={`${styles["timetable__container-box"]} ${todoListNoneStyle} ${clickedStyle} `}>
         <div className={styles["timetable__hours"]}>
           {Array.from({ length: 24 }).map((_, idx) => (
             <div key={idx}>{String((4 + idx) % 24).padStart(2, "0")}</div>

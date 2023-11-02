@@ -9,12 +9,17 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UpdateProfileImageRequest {
+public class UpdateUserRequest {
 
+    @NotNull
+    private String newNickname;
     private String newProfileImage;
+    private String newStatusMessage;
 
     @Builder
-    public UpdateProfileImageRequest(String newProfileImage) {
+    public UpdateUserRequest(String newNickname, String newProfileImage, String newStatusMessage) {
+        this.newNickname = newNickname;
         this.newProfileImage = newProfileImage;
+        this.newStatusMessage = newStatusMessage;
     }
 }

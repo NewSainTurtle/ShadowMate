@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.kh.user;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -92,31 +93,22 @@ public class UserServiceTest {
         }
 
         @Test
-        void 실패_프로필이미지수정_유저없음() {
+        void 성공_내정보수정() {
             //given
+            final String newNickname = "NewNickName";
             final String newProfileImage = "NewProfileImage";
-            doReturn(Optional.empty()).when(userRepository).findById(user1.getId());
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
 
             //when
-            final UserException result = assertThrows(UserException.class, () -> userService.updateProfileImage(user1.getId(), newProfileImage));
+            userService.updateUser(user1.getId(), updateUserRequest);
 
             //then
-            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
-        }
-
-
-        @Test
-        void 성공_프로필이미지수정() {
-            //given
-            final String newProfileImage = "NewProfileImage";
-            given(userRepository.findById(user1.getId())).willReturn(Optional.of(user1));
-
-            //when
-            userService.updateProfileImage(user1.getId(), newProfileImage);
-
-            //then
-            verify(userRepository, times(1)).findById(any());
-            verify(userRepository, times(1)).save(any());
+            verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
 
         }
 

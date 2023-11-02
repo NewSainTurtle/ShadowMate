@@ -5,14 +5,16 @@ import Dday from "@components/common/Dday";
 import WeekItem from "@components/planner/week/list/WeekItem";
 import WeekItemInput from "@components/planner/week/list/WeekItemInput";
 import { dateFormat } from "@util/getThisWeek";
-import { DayListConfig } from "@store/planner/weekSlice";
+import { DayListConfig, selectWeekDday } from "@store/planner/weekSlice";
 import { TodoConfig } from "@util/planner.interface";
+import { useAppSelector } from "@hooks/hook";
 
 interface Props {
   dayInfo: DayListConfig;
 }
 
 const WeekList = ({ dayInfo }: Props) => {
+  const nearDate = useAppSelector(selectWeekDday);
   const [todoItems, setTodoItems] = useState<TodoConfig[]>(dayInfo.dailyTodo || []);
   const nextId = useRef(todoItems.length + 1);
   const [retrospection, setRetrospection] = useState<string>(dayInfo.retrospection || "");
@@ -21,7 +23,7 @@ const WeekList = ({ dayInfo }: Props) => {
     <div className={styles["item"]}>
       <div className={styles["item__title"]}>
         <Text>{dateFormat(dayInfo.date)}</Text>
-        <Dday comparedDate={dateFormat(dayInfo.date)} />
+        <Dday nearDate={nearDate} comparedDate={dateFormat(dayInfo.date)} />
       </div>
       <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${todoItems.length + 1}, 20%` }}>
         {todoItems.map((item, key) => (

@@ -4,11 +4,22 @@ export interface MonthType {
   dayStatus: number;
 }
 
+export interface CategoryColorConfig {
+  categoryColorId: number;
+  categoryColorCode: string;
+}
+
 export interface CategoryConfig {
   categoryId: number;
   categoryTitle: string;
   categoryColorCode: string;
   categoryEmoticon?: string | null;
+}
+
+export interface DdayConfig {
+  ddayId: number;
+  ddayDate: Date | string;
+  ddayTitle: string;
 }
 
 export interface TimeTableConfig {
@@ -34,10 +45,4 @@ export interface WeekTodoItemConfig {
   weeklyTodoContent: string;
   weeklyTodoStatus: boolean;
   weeklyTodoUpdate?: boolean;
-}
-
-export interface ddayType {
-  ddayId: number;
-  ddayDate: Date | string;
-  ddayTitle: string;
 }

@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
@@ -62,26 +63,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateProfileImage(final Long userId, final String newProfileImage) {
-        Optional<User> oldUser = userRepository.findById(userId);
-        if(!oldUser.isPresent()) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
-        User newUser = User.builder()
-                .id(oldUser.get().getId())
-                .email(oldUser.get().getEmail())
-                .password(oldUser.get().getPassword())
-                .socialLogin(oldUser.get().getSocialLogin())
-                .profileImage(newProfileImage)
-                .nickname(oldUser.get().getNickname())
-                .statusMessage(oldUser.get().getStatusMessage())
-                .withdrawal(oldUser.get().getWithdrawal())
-                .plannerAccessScope(oldUser.get().getPlannerAccessScope())
-                .createTime(oldUser.get().getCreateTime())
-                .updateTime(oldUser.get().getUpdateTime())
-                .deleteTime(oldUser.get().getDeleteTime())
-                .build();
-        userRepository.save(newUser);
+    public void updateUser(final Long userId, final UpdateUserRequest updateUserRequest) {
+        userRepository.updateUser(updateUserRequest.getNewNickname(),
+                updateUserRequest.getNewProfileImage(),
+                updateUserRequest.getNewStatusMessage(),
+                userId);
     }
   
     @Override

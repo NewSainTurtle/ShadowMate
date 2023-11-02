@@ -35,7 +35,7 @@ const commonPage = () => {
         <Button children="로그아웃" types="gray" />
       </div>
       <div>
-        <Dday comparedDate={new Date()} />
+        <Dday nearDate={new Date()} comparedDate={new Date()} />
       </div>
       <br />
       <div style={{ width: "25em", display: "flex", flexDirection: "column" }}>
