@@ -29,6 +29,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   const [searchFriend, setSearchFriend] = useState<friendSearchType[]>([]);
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const debounceKeyword = useDebounce(searchKeyWord, 500);
+  const [alertMessage, setAlertMessage] = useState("닉네임을 통해 검색이 가능합니다.");
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyWord(e.target.value);
@@ -49,7 +50,11 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
           })();
           setSearchFriend([{ ...response, isFollow }]);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          const response = err.response.data;
+          if (response.code == "NOT_FOUND_NICKNAME") setAlertMessage("일치하는 닉네임을 찾을 수 없습니다.");
+          else console.error(err);
+        });
   }, [debounceKeyword]);
 
   const friendCheck = (friend: MyFriendListType) => {
@@ -90,7 +95,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
             );
           })
         ) : (
-          <Text types="small">{title}이(가) 없습니다.</Text>
+          <Text types="small">{search ? alertMessage : `${title}이(가) 없습니다.`}</Text>
         )}
       </div>
     </div>
