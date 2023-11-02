@@ -122,23 +122,19 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err));
     } else {
-      if (ddayInput.ddayTitle === "" || ddayInput.ddayTitle.length < 2 || ddayInput.ddayTitle.length > 20) {
-        setDdayError(true);
-        return;
-      }
-      setDdayError(false);
-      setDdayList(
-        ddayList.map((item, idx) => {
-          if (ddayInput.ddayId === item.ddayId) {
-            return {
-              ...item,
-              ddayTitle: ddayInput.ddayTitle,
-              ddayDate: ddayInput.ddayDate,
-            };
-          }
-          return item;
-        }),
-      );
+      const input = {
+        ddayId: ddayInput.ddayId,
+        ddayTitle: ddayInput.ddayTitle,
+        ddayDate: dayjs(ddayInput.ddayDate).format("YYYY-MM-DD"),
+      };
+      if (input.ddayTitle.length < 2 || input.ddayTitle.length >= 20) return;
+      settingApi
+        .editDdays(userId, input)
+        .then((res) => {
+          copyDdays[ddayClick] = { ...input };
+          dispatch(setDdayList(copyDdays));
+        })
+        .catch((err) => console.log(err));
     }
   };
 
