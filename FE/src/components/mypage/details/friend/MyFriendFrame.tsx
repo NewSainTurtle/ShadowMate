@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import FriendProfile from "@components/common/FriendProfile";
+import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import { followerType, followingType, followRequestType, friendInfo, friendSearchType } from "@util/friend.interface";
 import { selectUserId } from "@store/authSlice";
 import { useAppSelector } from "@hooks/hook";
@@ -59,10 +59,10 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
 
   const friendCheck = (friend: MyFriendListType) => {
     if (friend.followId) {
-      if (friend.isFollow) return { id: friend.followId, isFollow: friend.isFollow };
-      else return { id: friend.followId, isFollow: "삭제" };
-    } else if (friend.followRequestId) return { id: friend.followRequestId, isFollow: "요청" };
-    else return { id: friend.userId, isFollow: friend.isFollow };
+      if (friend.isFollow) return { id: friend.followId, isFollow: friend.isFollow }; // 팔로워 목록
+      else return { id: friend.followId, isFollow: "삭제" }; // 팔로잉 목록
+    } else if (friend.followRequestId) return { id: friend.followRequestId, isFollow: "요청" }; // 팔로우 요청
+    else return { id: friend.userId, isFollow: friend.isFollow }; // 친구 검색
   };
 
   const followList: (followerType | followingType | followRequestType | friendSearchType)[] = search
@@ -81,7 +81,8 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         {followList && followList.length > 0 ? (
           followList.map((item, index) => {
             const { id, isFollow } = friendCheck(item);
-            const followInfo = {
+            const followInfo: ProfileConfig = {
+              userId: id!,
               nickname: item.nickname,
               message: item.statusMessage,
               src: item.profileImage,

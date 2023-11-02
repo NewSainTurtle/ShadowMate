@@ -7,6 +7,7 @@ import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import Profile from "@components/common/Profile";
 
 export const profileInfo: ProfileConfig = {
+  userId: 0,
   nickname: "ribbonE",
   message: "방가방가",
   src: "https://avatars.githubusercontent.com/u/85155789?v=4",
