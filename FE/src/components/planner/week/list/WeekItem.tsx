@@ -45,7 +45,19 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
 
   const handleUpdateSave = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === "") e.target.value = todo.oldTodo;
-    updateTodo(idx, { ...item, todoContent: e.target.value, todoUpdate: !item.todoUpdate });
+    const data = {
+      date: dayjs(date).format("YYYY-MM-DD"),
+      todoId: item.todoId,
+      todoContent: e.target.value,
+      categoryId: item.category?.categoryId || 0,
+      todoStatus: item.todoStatus,
+    };
+    plannerApi
+      .editDailyTodos(userId, data)
+      .then(() => {
+        updateTodo(idx, { ...item, todoContent: e.target.value, todoUpdate: !item.todoUpdate });
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleDelete = () => {
@@ -54,8 +66,20 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
 
   const handleClickCategory = (props: CategoryConfig) => {
     const newCategory = { ...item, category: props };
-    updateTodo(idx, newCategory);
-    setModalOpen(false);
+    const data = {
+      date: dayjs(date).format("YYYY-MM-DD"),
+      todoId: item.todoId,
+      todoContent: item.todoContent,
+      categoryId: newCategory.category.categoryId,
+      todoStatus: item.todoStatus,
+    };
+    plannerApi
+      .editDailyTodos(userId, data)
+      .then(() => {
+        updateTodo(idx, newCategory);
+        setModalOpen(false);
+      })
+      .catch((err) => console.log(err));
   };
 
   const setStatus = (status: string) => {
@@ -63,10 +87,24 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
   };
 
   const handleStatusSave = () => {
-    updateTodo(idx, {
-      ...item,
-      todoStatus: item.todoStatus === "공백" ? "완료" : item.todoStatus === "완료" ? "미완료" : "공백",
-    });
+    const newStatus: TodoConfig["todoStatus"] =
+      item.todoStatus === "공백" ? "완료" : item.todoStatus === "완료" ? "미완료" : "공백";
+    const data = {
+      date: dayjs(date).format("YYYY-MM-DD"),
+      todoId: item.todoId,
+      todoContent: item.todoContent,
+      categoryId: item.category?.categoryId || 0,
+      todoStatus: newStatus,
+    };
+    plannerApi
+      .editDailyTodos(userId, data)
+      .then(() => {
+        updateTodo(idx, {
+          ...item,
+          todoStatus: newStatus,
+        });
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
