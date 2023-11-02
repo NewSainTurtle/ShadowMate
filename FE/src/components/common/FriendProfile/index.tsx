@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { Avatar } from "@mui/material";
+import { followApi } from "@api/Api";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
 
 export interface ProfileConfig {
   userId: number;
@@ -21,13 +24,37 @@ interface ProfileButtonProps extends Omit<Props, "profile"> {
 }
 
 const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
+  const userId = useAppSelector(selectUserId);
+  const [render, setRender] = useState(types);
+
+  const handleClick = (() => {
+    const followRequested = () => {
+      followApi
+        .addRequested(userId, { followingId: profileId })
+        .then(() => setRender("요청"))
+        .catch((err) => console.error(err));
+    };
+
+    return {
+      followRequested,
+    };
+  })();
+
+  const { followRequested } = handleClick;
+
   return {
     기본: <></>,
     삭제: <button>삭제</button>,
-    "친구 신청": <button style={{ backgroundColor: "var(--color-btn-blue)" }}>친구 신청</button>,
+    "친구 신청": (
+      <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
+        친구 신청
+      </button>
+    ),
     "팔로워 신청": (
       <>
-        <button style={{ backgroundColor: "var(--color-btn-blue)" }}>친구 신청</button>
+        <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
+          친구 신청
+        </button>
         <button>거절</button>
       </>
     ),
@@ -43,7 +70,7 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
       </button>
     ),
     아이콘: (
-      <div>
+      <div onClick={followRequested}>
         <PersonAddIcon />
       </div>
     ),
