@@ -1,6 +1,6 @@
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { CategoryColorConfig, CategoryConfig } from "@util/planner.interface";
+import { CategoryColorConfig, CategoryConfig, DdayConfig } from "@util/planner.interface";
 
 interface mypageConfig {
   category: {
@@ -9,6 +9,11 @@ interface mypageConfig {
     categoryClick: number;
     categoryInput: CategoryConfig;
     categoryColorClick: number;
+  };
+  dday: {
+    ddayList: DdayConfig[];
+    ddayClick: number;
+    ddayInput: DdayConfig;
   };
 }
 
@@ -24,6 +29,15 @@ const initialState: mypageConfig = {
       categoryColorCode: "",
     },
     categoryColorClick: 0,
+  },
+  dday: {
+    ddayList: [],
+    ddayClick: 0,
+    ddayInput: {
+      ddayId: 0,
+      ddayTitle: "",
+      ddayDate: new Date(),
+    },
   },
 };
 
@@ -46,14 +60,37 @@ const mypageSlice = createSlice({
     setCategoryColorClick: (state, { payload }: PayloadAction<number>) => {
       state.category.categoryColorClick = payload;
     },
+    setDdayList: (state, { payload }: PayloadAction<DdayConfig[]>) => {
+      state.dday.ddayList = payload;
+    },
+    setDdayClick: (state, { payload }: PayloadAction<number>) => {
+      state.dday.ddayClick = payload;
+    },
+    setDdayInput: (state, { payload }: PayloadAction<DdayConfig>) => {
+      state.dday.ddayInput = payload;
+    },
   },
 });
 
-export const { setCategoryList, setCategoryColors, setCategoryClick, setCategoryInput, setCategoryColorClick } =
-  mypageSlice.actions;
+export const {
+  setCategoryList,
+  setCategoryColors,
+  setCategoryClick,
+  setCategoryInput,
+  setCategoryColorClick,
+  setDdayList,
+  setDdayClick,
+  setDdayInput,
+} = mypageSlice.actions;
+
 export const selectCategoryList = (state: rootState) => state.mypage.category.categoryList;
 export const selectCategoryColors = (state: rootState) => state.mypage.category.categoryColors;
 export const selectCategoryClick = (state: rootState) => state.mypage.category.categoryClick;
 export const selectCategoryInput = (state: rootState) => state.mypage.category.categoryInput;
 export const selectCategoryColorClick = (state: rootState) => state.mypage.category.categoryColorClick;
+
+export const selectDdayList = (state: rootState) => state.mypage.dday.ddayList;
+export const selectDdayClick = (state: rootState) => state.mypage.dday.ddayClick;
+export const selectDdayInput = (state: rootState) => state.mypage.dday.ddayInput;
+
 export default mypageSlice.reducer;

@@ -16,6 +16,12 @@ export interface CategoryConfig {
   categoryEmoticon?: string | null;
 }
 
+export interface DdayConfig {
+  ddayId: number;
+  ddayDate: Date | string;
+  ddayTitle: string;
+}
+
 export interface TimeTableConfig {
   timeTableId: number;
   startTime: string;
@@ -39,10 +45,4 @@ export interface WeekTodoItemConfig {
   weeklyTodoContent: string;
   weeklyTodoStatus: boolean;
   weeklyTodoUpdate?: boolean;
-}
-
-export interface ddayType {
-  ddayId: number;
-  ddayDate: Date | string;
-  ddayTitle: string;
 }

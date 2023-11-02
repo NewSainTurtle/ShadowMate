@@ -43,7 +43,7 @@ const MyPageCategory = () => {
   };
 
   useEffect(() => {
-    if (categoryList && categoryInput) {
+    if (categoryList.length > 0 && categoryInput) {
       let currentColor: number = 0;
       categoryColors.map((item: CategoryColorConfig, idx: number) => {
         if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;
@@ -64,7 +64,7 @@ const MyPageCategory = () => {
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
-          helperText={error ? "카테고리 이름은 2글자 이상, 10글자 미만입니다." : `글자 수: ${length}/10`}
+          helperText={error ? "2 ~ 10자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/10`}
         />
       </div>
       <div className={styles["frame__line"]}>

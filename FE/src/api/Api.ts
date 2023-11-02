@@ -113,9 +113,9 @@ export const settingApi = {
     Axios.delete(api.setting.categories(userId), { data: data }),
 
   ddays: (userId: number) => Axios.get(api.setting.ddays(userId)),
-  addDdays: (userId: number, data: { ddayDate: string; ddayTime: string }) =>
+  addDdays: (userId: number, data: { ddayDate: string; ddayTitle: string }) =>
     Axios.post(api.setting.ddays(userId), data),
-  editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTime: string }) =>
+  editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
 };

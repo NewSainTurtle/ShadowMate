@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/diary/Category";
 import CategoryList from "@components/mypage/list/CategoryList";
 import MyPageDday from "./details/diary/Dday";
-import MyPageDdayItem from "./item/MyPageDdayItem";
-import { CategoryConfig, ddayType } from "@util/planner.interface";
-import { DDAY_LIST } from "@util/data/DdayData";
+import { CategoryConfig, DdayConfig } from "@util/planner.interface";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
@@ -17,10 +15,18 @@ import {
   selectCategoryColors,
   selectCategoryInput,
   selectCategoryList,
+  selectDdayClick,
+  selectDdayInput,
+  selectDdayList,
   setCategoryClick,
   setCategoryInput,
   setCategoryList,
+  setDdayClick,
+  setDdayInput,
+  setDdayList,
 } from "@store/mypageSlice";
+import DdayList from "@components/mypage/list/DdayList";
+import dayjs from "dayjs";
 
 interface Props {
   title: string;
@@ -28,7 +34,7 @@ interface Props {
 
 export interface EditInfoConfig {
   type: string;
-  info: CategoryConfig | ddayType | null;
+  info: CategoryConfig | DdayConfig | null;
   clicked: number;
 }
 
@@ -43,15 +49,10 @@ const MyPageFrame = ({ title }: Props) => {
   const colorClick: number = useAppSelector(selectCategoryColorClick);
 
   /* 디데이 관련 변수 */
-  const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
-  const [ddayClick, setDdayClick] = useState<number>(0);
-  const [ddayInput, setDdayInput] = useState<ddayType>({
-    ddayId: 0,
-    ddayTitle: ddayList[0].ddayTitle,
-    ddayDate: ddayList[0].ddayDate,
-  });
-  const [ddayError, setDdayError] = useState<boolean>(false);
-  const dday_nextId = useRef(ddayList.length);
+  const ddayList = useAppSelector(selectDdayList);
+  const ddayClick = useAppSelector(selectDdayClick);
+  const ddayInput = useAppSelector(selectDdayInput);
+  const copyDdays = useMemo(() => JSON.parse(JSON.stringify(ddayList)), [ddayList]);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
@@ -79,14 +80,19 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err));
     } else {
-      const newDday: ddayType = {
-        ddayId: dday_nextId.current,
+      const init = {
+        ddayDate: dayjs(new Date()).format("YYYY-MM-DD"),
         ddayTitle: "새 디데이",
-        ddayDate: new Date(),
       };
-      setDdayList([...ddayList, newDday]);
-      setDdayClick(ddayList.length);
-      dday_nextId.current += 1;
+      settingApi
+        .addDdays(userId, init)
+        .then((res) => {
+          const returnId = res.data.data.ddayId;
+          dispatch(setDdayList([...ddayList, { ...init, ddayId: returnId }]));
+          dispatch(setDdayClick(ddayList.length));
+          dispatch(setDdayInput({ ...init, ddayId: returnId }));
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -114,23 +120,19 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err));
     } else {
-      if (ddayInput.ddayTitle === "" || ddayInput.ddayTitle.length < 2 || ddayInput.ddayTitle.length > 20) {
-        setDdayError(true);
-        return;
-      }
-      setDdayError(false);
-      setDdayList(
-        ddayList.map((item, idx) => {
-          if (ddayInput.ddayId === item.ddayId) {
-            return {
-              ...item,
-              ddayTitle: ddayInput.ddayTitle,
-              ddayDate: ddayInput.ddayDate,
-            };
-          }
-          return item;
-        }),
-      );
+      const input = {
+        ddayId: ddayInput.ddayId,
+        ddayTitle: ddayInput.ddayTitle,
+        ddayDate: dayjs(ddayInput.ddayDate).format("YYYY-MM-DD"),
+      };
+      if (input.ddayTitle.length < 2 || input.ddayTitle.length >= 20) return;
+      settingApi
+        .editDdays(userId, input)
+        .then((res) => {
+          copyDdays[ddayClick] = { ...input };
+          dispatch(setDdayList(copyDdays));
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -147,19 +149,26 @@ const MyPageFrame = ({ title }: Props) => {
               }),
             ),
           );
-          dispatch(setCategoryClick(categoryClick === categoryList.length - 1 ? categoryClick - 1 : categoryClick));
+          dispatch(setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1));
         })
         .catch((err) => {
           console.log(err);
         });
       // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
     } else {
-      setDdayList(
-        ddayList.filter((item, idx) => {
-          return idx !== ddayClick;
-        }),
-      );
-      setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1);
+      settingApi
+        .deleteDdays(userId, ddayList[ddayClick].ddayId)
+        .then(() => {
+          dispatch(
+            setDdayList(
+              ddayList.filter((item: DdayConfig, idx: number) => {
+                return idx !== ddayClick;
+              }),
+            ),
+          );
+          dispatch(setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1));
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -175,37 +184,19 @@ const MyPageFrame = ({ title }: Props) => {
         {
           {
             카테고리: <CategoryList />,
-            디데이: (
-              <>
-                {ddayList.map((item, key) => (
-                  <MyPageDdayItem key={key} item={item} index={key} click={ddayClick} setClick={setDdayClick} />
-                ))}
-              </>
-            ),
+            디데이: <DdayList />,
           }[title]
         }
       </MyPageList>
       <MyPageDetail title={title} isDisable={isDisable} handleUpdate={handleUpdate} handleDelete={handleDelete}>
-        {categoryList.length != 0 ? (
-          <>
+        <>
+          {
             {
-              {
-                카테고리: <MyPageCategory />,
-                디데이: (
-                  <MyPageDday
-                    click={ddayClick}
-                    ddayList={ddayList}
-                    input={ddayInput}
-                    setInput={setDdayInput}
-                    error={ddayError}
-                  />
-                ),
-              }[title]
-            }
-          </>
-        ) : (
-          <></>
-        )}
+              카테고리: categoryList.length != 0 ? <MyPageCategory /> : <></>,
+              디데이: ddayList.length != 0 ? <MyPageDday /> : <></>,
+            }[title]
+          }
+        </>
       </MyPageDetail>
     </div>
   );
