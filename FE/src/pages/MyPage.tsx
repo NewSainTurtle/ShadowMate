@@ -43,9 +43,20 @@ const MyPage = () => {
       });
   };
 
+  const getDdayList = () => {
+    settingApi
+      .ddays(userId)
+      .then((res) => {
+        const response = res.data.data.ddayList;
+        dispatch(setDdayList(response));
+      })
+      .catch((err) => console.log(err));
+  };
+
   useEffect(() => {
     getCategoryList();
     getCategoryColors();
+    getDdayList();
   }, []);
 
   return (
