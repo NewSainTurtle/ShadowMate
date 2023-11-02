@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import styles from "@styles/planner/day.module.scss";
 import { useAppSelector } from "@hooks/hook";
 import { BASIC_CATEGORY_ITEM, selectTodoItem } from "@store/planner/daySlice";
-import { throttle } from "@util/eventControlModule";
+import { throttle } from "@util/EventControlModule";
 
 const CustomCursor = () => {
   const cursorRef = useRef<SVGSVGElement>(null);
