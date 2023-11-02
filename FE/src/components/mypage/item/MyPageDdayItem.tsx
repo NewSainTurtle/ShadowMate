@@ -5,13 +5,16 @@ import { DdayConfig } from "@util/planner.interface";
 import Dday from "@components/common/Dday";
 import { dateFormat } from "@util/getThisWeek";
 import dayjs, { Dayjs } from "dayjs";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectDdayClick, setDdayClick } from "@store/mypageSlice";
 
 interface Props {
   item: DdayConfig;
 }
 
-const MyPageDdayItem = ({ item, index, click, setClick }: Props) => {
-  const clicked = click === index ? "--clicked" : "";
+  const dispatch = useAppDispatch();
+  const click = useAppSelector(selectDdayClick);
+  const clicked = click === idx ? "--clicked" : "";
   const endRef = useRef<HTMLDivElement | null>(null);
   const [calc, setCalc] = useState<number>(0);
 
@@ -33,7 +36,7 @@ const MyPageDdayItem = ({ item, index, click, setClick }: Props) => {
     <div
       ref={index === click ? endRef : null}
       className={styles[`dday__item${clicked}`]}
-      onClick={() => setClick(index)}
+      onClick={() => dispatch(setDdayClick(idx))}
     >
       <div className={styles["dday__item__title"]}>
         <Text>{item.ddayTitle}</Text>

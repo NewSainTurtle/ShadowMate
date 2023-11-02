@@ -8,16 +8,14 @@ import dayjs from "dayjs";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectDdayClick, selectDdayInput, selectDdayList, setDdayInput } from "@store/mypageSlice";
 
-interface Props {
-  click: number;
-  ddayList: ddayType[];
-  input: ddayType;
-  setInput: Dispatch<SetStateAction<ddayType>>;
-  error: boolean;
-}
-
-const MyPageDday = ({ click, ddayList, input, setInput, error }: Props) => {
+const MyPageDday = () => {
+  const dispatch = useAppDispatch();
+  const click = useAppSelector(selectDdayClick);
+  const ddayList = useAppSelector(selectDdayList);
+  const ddayInput: DdayConfig = useAppSelector(selectDdayInput);
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const { ddayId, ddayTitle, ddayDate } = input;
 
@@ -71,7 +69,7 @@ const MyPageDday = ({ click, ddayList, input, setInput, error }: Props) => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
               value={dayjs(ddayDate)}
-              onChange={(value) => setInput({ ...input, ddayDate: dayjs(value).toDate() })}
+              onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
             />
           </LocalizationProvider>
         </div>

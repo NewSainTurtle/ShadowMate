@@ -10,7 +10,7 @@ import MyFriend from "@components/mypage/details/friend/MyFriend";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { setCategoryColors, setCategoryInput, setCategoryList } from "@store/mypageSlice";
+import { setCategoryColors, setCategoryInput, setCategoryList, setDdayList } from "@store/mypageSlice";
 import { CategoryConfig } from "@util/planner.interface";
 
 const MyPage = () => {

@@ -15,11 +15,18 @@ import {
   selectCategoryColors,
   selectCategoryInput,
   selectCategoryList,
+  selectDdayClick,
+  selectDdayInput,
+  selectDdayList,
   setCategoryClick,
   setCategoryInput,
   setCategoryList,
+  setDdayClick,
+  setDdayInput,
+  setDdayList,
 } from "@store/mypageSlice";
-import DdayList from "./list/DdayList";
+import DdayList from "@components/mypage/list/DdayList";
+import dayjs from "dayjs";
 
 interface Props {
   title: string;
@@ -42,15 +49,12 @@ const MyPageFrame = ({ title }: Props) => {
   const colorClick: number = useAppSelector(selectCategoryColorClick);
 
   /* 디데이 관련 변수 */
-  const [ddayList, setDdayList] = useState<ddayType[]>(DDAY_LIST);
-  const [ddayClick, setDdayClick] = useState<number>(0);
-  const [ddayInput, setDdayInput] = useState<ddayType>({
-    ddayId: 0,
-    ddayTitle: ddayList[0].ddayTitle,
-    ddayDate: ddayList[0].ddayDate,
-  });
+  const ddayList = useAppSelector(selectDdayList);
+  const ddayClick = useAppSelector(selectDdayClick);
+  const ddayInput = useAppSelector(selectDdayInput);
+  const copyDdays = useMemo(() => JSON.parse(JSON.stringify(ddayList)), [ddayList]);
+
   const [ddayError, setDdayError] = useState<boolean>(false);
-  const dday_nextId = useRef(ddayList.length);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
@@ -146,7 +150,7 @@ const MyPageFrame = ({ title }: Props) => {
               }),
             ),
           );
-          dispatch(setCategoryClick(categoryClick === categoryList.length - 1 ? categoryClick - 1 : categoryClick));
+          dispatch(setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1));
         })
         .catch((err) => {
           console.log(err);
