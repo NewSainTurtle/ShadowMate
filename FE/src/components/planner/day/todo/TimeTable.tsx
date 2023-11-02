@@ -16,6 +16,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { TodoConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
+import { debouncing } from "@util/eventControlModule";
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
@@ -30,18 +31,6 @@ interface tableTimeType {
   time: string;
   closeButton?: boolean;
 }
-
-const debouncing = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
-  let timeId: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>): ReturnType<T> => {
-    let result: any;
-    if (timeId) clearTimeout(timeId);
-    timeId = setTimeout(() => {
-      result = fn(...args);
-    }, delay);
-    return result;
-  };
-};
 
 const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useAppDispatch();
