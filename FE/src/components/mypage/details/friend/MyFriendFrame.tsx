@@ -88,7 +88,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
       )}
       <div className={styles["friend__frame__list"]}>
         {followList && followList.length > 0 ? (
-          followList.map((item, index) => {
+          followList.map((item) => {
             const { id, isFollow } = friendCheck(item);
             const followInfo: ProfileConfig = {
               userId: id!,
@@ -96,7 +96,13 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
               message: item.statusMessage,
               src: item.profileImage,
             };
-            return <FriendProfile key={id} types={isFollow as followType["types"]} profile={followInfo} />;
+            return (
+              <FriendProfile
+                key={isFollow?.concat(id!.toString())}
+                types={isFollow as followType["types"]}
+                profile={followInfo}
+              />
+            );
           })
         ) : (
           <Text types="small">{search ? alertMessage : `${title}이(가) 없습니다.`}</Text>
