@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import MyPageList from "./MyPageList";
 import MyPageDetail from "./MyPageDetail";
@@ -53,8 +53,6 @@ const MyPageFrame = ({ title }: Props) => {
   const ddayClick = useAppSelector(selectDdayClick);
   const ddayInput = useAppSelector(selectDdayInput);
   const copyDdays = useMemo(() => JSON.parse(JSON.stringify(ddayList)), [ddayList]);
-
-  const [ddayError, setDdayError] = useState<boolean>(false);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
