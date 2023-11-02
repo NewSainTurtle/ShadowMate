@@ -28,10 +28,14 @@ const monthSlice = createSlice({
       state.plannerAccessScope = payload.plannerAccessScope;
       state.dayList = payload.dayList;
     },
+    setPlannerAccessScope: (state, { payload }: PayloadAction<MonthConfig["plannerAccessScope"]>) => {
+      state.plannerAccessScope = payload;
+    },
   },
 });
 
-export const { setMonthInfo } = monthSlice.actions;
+export const { setMonthInfo, setPlannerAccessScope } = monthSlice.actions;
 export const selectMonthDayList = (state: rootState) => state.month.dayList;
+export const selectPlannerAccessScope = (state: rootState) => state.month.plannerAccessScope;
 
 export default monthSlice.reducer;
