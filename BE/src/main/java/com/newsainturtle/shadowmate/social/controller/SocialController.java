@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 import static com.newsainturtle.shadowmate.social.constant.SocialConstant.*;
 
 @RestController
@@ -33,7 +35,7 @@ public class SocialController {
     @PostMapping("/{userId}/searches/nicknames")
     public ResponseEntity<BaseResponse> searchNicknamePublicDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                                          @PathVariable("userId") final Long userId,
-                                                                         @RequestBody SearchNicknamePublicDailyPlannerRequest searchNicknamePublicDailyPlannerRequest) {
+                                                                         @RequestBody @Valid final SearchNicknamePublicDailyPlannerRequest searchNicknamePublicDailyPlannerRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_NICKNAME_PUBLIC_DAILY_PLANNER, socialService.searchNicknamePublicDailyPlanner(searchNicknamePublicDailyPlannerRequest)));
     }
