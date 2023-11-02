@@ -273,4 +273,31 @@ public class SocialControllerTest {
         // then
         resultActions.andExpect(status().isOk());
     }
+
+    @Test
+    public void 실패_공유된플래너삭제_유저정보다름() throws Exception {
+        //given
+        final String url = "/api/social/{userId}/{socialId}";
+        doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, userId, social.getId()));
+
+        //then
+        resultActions.andExpect(status().isForbidden());
+    }
+
+    @Test
+    void 성공_공유된플래너삭제() throws Exception {
+        // given
+        final String url = "/api/social/{userId}/{socialId}";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, userId, social.getId()));
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
 }
