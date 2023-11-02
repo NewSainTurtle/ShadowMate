@@ -50,7 +50,7 @@ const TodoList = ({ clicked }: Props) => {
         .editDailyTodos(userId, {
           date,
           todoId: props.todoId,
-          categoryId: props.category!.categoryId,
+          categoryId: props.category?.categoryId || 0,
           todoContent: props.todoContent,
           todoStatus: props.todoStatus,
         })
