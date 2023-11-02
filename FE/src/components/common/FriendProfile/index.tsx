@@ -40,19 +40,33 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
         // .then((res) => console.log("팔로우취소", res))
         .catch((err) => console.error(err));
     };
+    const deleteFollower = () => {
+      followApi
+        .deletefollowers(userId, { followerId: profileId })
+        // .then((res) => console.log("팔로워 삭제", res))
+        .catch((err) => console.error(err));
+    };
+    const deleteFollowing = () => {
+      followApi
+        .deleteFollowing(userId, { followingId: profileId })
+        // .then((res) => console.log("팔로잉 삭제", res))
+        .catch((err) => console.error(err));
+    };
 
     return {
       followRequested,
       cancelRequested,
+      deleteFollower,
+      deleteFollowing,
     };
   })();
 
-  const { followRequested, cancelRequested } = handleClick;
+  const { followRequested, cancelRequested, deleteFollower, deleteFollowing } = handleClick;
 
   return {
     기본: <></>,
-    "팔로워 삭제": <button>삭제</button>,
-    "팔로잉 삭제": <button>삭제</button>,
+    "팔로워 삭제": <button onClick={deleteFollower}>삭제</button>,
+    "팔로잉 삭제": <button onClick={deleteFollowing}>삭제</button>,
     "친구 신청": (
       <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
         친구 신청

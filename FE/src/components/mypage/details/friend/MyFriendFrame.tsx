@@ -64,10 +64,14 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   }, [debounceKeyword]);
 
   const friendCheck = (friend: MyFriendListType) => {
-    if (friend.followerId) return { id: friend.followerId, isFollow: friend.isFollow || "팔로워 삭제" };
-    else if (friend.followingId) return { id: friend.followingId, isFollow: "팔로잉 삭제" }; // 팔로잉 목록
-    else if (friend.requesterId) return { id: friend.requesterId, isFollow: "요청" }; // 팔로우 요청
-    else return { id: friend.userId, isFollow: friend.isFollow }; // 친구 검색
+    if (friend.followerId)
+      return {
+        id: friend.followerId,
+        isFollow: friend.isFollow || "팔로워 삭제", // isFollow 누락, API 수정후 변경 예정
+      };
+    else if (friend.followingId) return { id: friend.followingId, isFollow: "팔로잉 삭제" };
+    else if (friend.requesterId) return { id: friend.requesterId, isFollow: "요청" };
+    else return { id: friend.userId, isFollow: friend.isFollow };
   };
 
   const followList: (followerType | followingType | followRequestType | friendSearchType)[] = search
