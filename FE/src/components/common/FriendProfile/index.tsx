@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -6,6 +6,7 @@ import { Avatar } from "@mui/material";
 import { followApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
+import { followType } from "@util/friend.interface";
 
 export interface ProfileConfig {
   userId: number;
@@ -16,7 +17,7 @@ export interface ProfileConfig {
 
 interface Props {
   profile: ProfileConfig;
-  types: "기본" | "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소" | "아이콘";
+  types: "기본" | "아이콘" | followType["types"];
 }
 
 interface ProfileButtonProps extends Omit<Props, "profile"> {
@@ -25,26 +26,33 @@ interface ProfileButtonProps extends Omit<Props, "profile"> {
 
 const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
   const userId = useAppSelector(selectUserId);
-  const [render, setRender] = useState(types);
 
   const handleClick = (() => {
     const followRequested = () => {
       followApi
         .addRequested(userId, { followingId: profileId })
-        .then(() => setRender("요청"))
+        // .then(() => setRender("요청"))
+        .catch((err) => console.error(err));
+    };
+    const cancelRequested = () => {
+      followApi
+        .cancelRequested(userId, { receiverId: profileId })
+        // .then((res) => console.log("팔로우취소", res))
         .catch((err) => console.error(err));
     };
 
     return {
       followRequested,
+      cancelRequested,
     };
   })();
 
-  const { followRequested } = handleClick;
+  const { followRequested, cancelRequested } = handleClick;
 
   return {
     기본: <></>,
-    삭제: <button>삭제</button>,
+    "팔로워 삭제": <button>삭제</button>,
+    "팔로잉 삭제": <button>삭제</button>,
     "친구 신청": (
       <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
         친구 신청
@@ -55,7 +63,7 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
         <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
           친구 신청
         </button>
-        <button>거절</button>
+        <button>삭제</button>
       </>
     ),
     요청: (
@@ -65,7 +73,7 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
       </>
     ),
     취소: (
-      <button style={{ backgroundColor: "var(--color-gray-2)" }}>
+      <button style={{ backgroundColor: "var(--color-gray-2)" }} onClick={cancelRequested}>
         <span style={{ color: "var(--color-text)" }}>요청 취소</span>
       </button>
     ),

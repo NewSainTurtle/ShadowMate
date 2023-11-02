@@ -48,7 +48,7 @@ const commonPage = () => {
       <div>
         <FriendProfile types="기본" profile={profileInfo} />
         <FriendProfile types="아이콘" profile={profileInfo} />
-        <FriendProfile types="삭제" profile={profileInfo} />
+        <FriendProfile types="팔로워 삭제" profile={profileInfo} />
         <FriendProfile types="친구 신청" profile={profileInfo} />
         <FriendProfile types="팔로워 신청" profile={profileInfo} />
         <FriendProfile types="요청" profile={profileInfo} />

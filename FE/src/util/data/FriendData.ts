@@ -18,7 +18,7 @@ export const followerListData: followerType[] = [
     nickname: "토롱이",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/d4ee7bff-299f-49de-a372-91b7a15076d2",
     statusMessage: "인생은 생각하는대로 흘러간다.",
-    isFollow: "삭제",
+    isFollow: "팔로워 삭제",
   },
   {
     followId: 3,
@@ -45,7 +45,7 @@ export const followerListData: followerType[] = [
     nickname: "토롱이",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/d4ee7bff-299f-49de-a372-91b7a15076d2",
     statusMessage: "인생은 생각하는대로 흘러간다.",
-    isFollow: "삭제",
+    isFollow: "팔로워 삭제",
   },
   {
     followId: 6,
