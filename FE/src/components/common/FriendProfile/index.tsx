@@ -29,39 +29,36 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
 
   const handleClick = (() => {
     const followRequested = () => {
-      followApi
-        .addRequested(userId, { followingId: profileId })
-        // .then(() => setRender("요청"))
-        .catch((err) => console.error(err));
+      followApi.addRequested(userId, { followingId: profileId }).catch((err) => console.error(err));
     };
     const cancelRequested = () => {
-      followApi
-        .cancelRequested(userId, { receiverId: profileId })
-        // .then((res) => console.log("팔로우취소", res))
-        .catch((err) => console.error(err));
+      followApi.cancelRequested(userId, { receiverId: profileId }).catch((err) => console.error(err));
+    };
+    const receiveAcceptiance = () => {
+      followApi.receive(userId, { requesterId: profileId, followReceive: true }).catch((err) => console.error(err));
+    };
+    const receiveRefusal = () => {
+      followApi.receive(userId, { requesterId: profileId, followReceive: false }).catch((err) => console.error(err));
     };
     const deleteFollower = () => {
-      followApi
-        .deletefollowers(userId, { followerId: profileId })
-        // .then((res) => console.log("팔로워 삭제", res))
-        .catch((err) => console.error(err));
+      followApi.deletefollowers(userId, { followerId: profileId }).catch((err) => console.error(err));
     };
     const deleteFollowing = () => {
-      followApi
-        .deleteFollowing(userId, { followingId: profileId })
-        // .then((res) => console.log("팔로잉 삭제", res))
-        .catch((err) => console.error(err));
+      followApi.deleteFollowing(userId, { followingId: profileId }).catch((err) => console.error(err));
     };
 
     return {
       followRequested,
       cancelRequested,
+      receiveAcceptiance,
+      receiveRefusal,
       deleteFollower,
       deleteFollowing,
     };
   })();
 
-  const { followRequested, cancelRequested, deleteFollower, deleteFollowing } = handleClick;
+  const { followRequested, cancelRequested, receiveAcceptiance, receiveRefusal, deleteFollower, deleteFollowing } =
+    handleClick;
 
   return {
     기본: <></>,
@@ -82,8 +79,10 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
     ),
     요청: (
       <>
-        <button style={{ backgroundColor: "var(--color-btn-blue)" }}>수락</button>
-        <button>거절</button>
+        <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={receiveAcceptiance}>
+          수락
+        </button>
+        <button onClick={receiveRefusal}>거절</button>
       </>
     ),
     취소: (
