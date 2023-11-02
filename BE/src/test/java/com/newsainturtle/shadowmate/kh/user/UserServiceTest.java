@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -36,6 +37,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Spy
     private FollowRepository followRepository;
@@ -110,6 +114,34 @@ public class UserServiceTest {
             //then
             verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
 
+        }
+
+        @Test
+        void 실패_비밀번호수정_비밀번호다름() {
+            // given
+            final String newPassword = "NewPassword";
+            doReturn(Optional.of(user1)).when(userRepository).findById(user1.getId());
+            doReturn(false).when(bCryptPasswordEncoder).matches(any(), any());
+
+            // when
+            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(user1.getId(), user1.getPassword(), newPassword));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DIFFERENT_PASSWORD);
+        }
+
+        @Test
+        void 성공_비밀번호수정() {
+            // given
+            final String newPassword = "NewPassword";
+            doReturn(Optional.of(user1)).when(userRepository).findById(user1.getId());
+            doReturn(true).when(bCryptPasswordEncoder).matches(any(), any());
+
+            // when
+            userService.updatePassword(user1.getId(), user1.getPassword(), newPassword);
+
+            // then
+            verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
         }
 
     }

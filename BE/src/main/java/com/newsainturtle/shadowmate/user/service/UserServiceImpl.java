@@ -13,6 +13,7 @@ import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
 import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final FollowRepository followRepository;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final FollowRequestRepository followRequestRepository;
 
@@ -69,7 +72,19 @@ public class UserServiceImpl implements UserService {
                 updateUserRequest.getNewStatusMessage(),
                 userId);
     }
-  
+
+    @Override
+    @Transactional
+    public void updatePassword(final Long userId, final String oldPassword, final String newPassword) {
+        User user = userRepository.findById(userId).orElse(null);
+        if(bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+            userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
+        }
+        else {
+            throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
+        }
+    }
+
     @Override
     @Transactional
     public void deleteUser(final Long userId) {

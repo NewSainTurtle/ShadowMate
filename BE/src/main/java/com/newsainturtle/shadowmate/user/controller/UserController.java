@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,15 @@ public class UserController {
         authService.certifyUser(userId, principalDetails.getUser());
         userService.updateUser(userId, updateUserRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_USER));
+    }
+
+    @PostMapping("/{userId}/password")
+    public ResponseEntity<BaseResponse> updatePassword(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                   @PathVariable("userId") final Long userId,
+                                                   @RequestBody @Valid final UpdatePasswordRequest updatePasswordRequest) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        userService.updatePassword(userId, updatePasswordRequest.getOldPassword(), updatePasswordRequest.getNewPassword());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_PASSWORD));
     }
   
     @DeleteMapping("/{userId}")
