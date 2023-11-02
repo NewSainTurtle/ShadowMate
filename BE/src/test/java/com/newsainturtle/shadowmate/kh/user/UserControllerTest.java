@@ -111,7 +111,7 @@ public class UserControllerTest {
         }
 
         @Test
-        void 실패_프로필사진수정_유저틀림() throws Exception {
+        void 실패_내정보수정_유저틀림() throws Exception {
             //given
             final String url = "/api/users/{userId}/mypages";
             final String newNickname = "NewNickName";
@@ -135,7 +135,7 @@ public class UserControllerTest {
         }
 
         @Test
-        void 실패_프로필사진수정_닉네임NULL() throws Exception {
+        void 실패_내정보수정_닉네임NULL() throws Exception {
             //given
             final String url = "/api/users/{userId}/mypages";
             final String newProfileImage = "NewProfileImage";
