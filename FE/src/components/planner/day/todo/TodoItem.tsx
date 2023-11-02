@@ -150,7 +150,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
       </div>
 
-      <Modal open={ModalOpen} onClose={handleClose}>
+      <Modal types="noBtn" open={ModalOpen} onClose={handleClose}>
         <CategorySelector type="day" handleClick={handleClickCategory} />
       </Modal>
     </div>

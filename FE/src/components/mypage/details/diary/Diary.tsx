@@ -76,7 +76,7 @@ const MyPageDiary = () => {
           </div>
         </div>
       </div>
-      <Modal open={Modalopen} onClose={handleClose}>
+      <Modal types="twoBtn" open={Modalopen} onClose={handleClose} onClick={handleSave}>
         <div className={styles["diary__modal"]}>
           <WarningAmberRoundedIcon />
           <Text types="small">
