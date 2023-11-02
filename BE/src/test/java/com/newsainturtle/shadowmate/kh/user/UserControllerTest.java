@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.user.controller.UserController;
+import com.newsainturtle.shadowmate.user.dto.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -177,6 +178,48 @@ public class UserControllerTest {
             //then
             resultActions.andExpect(status().isOk())
                     .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_USER));
+        }
+
+        @Test
+        void 실패_비밀번호수정_유저틀림() throws Exception {
+            //given
+            final String url = "/api/users/{userId}/password";
+            final String newPassword = "NewPassword";
+            final UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                    .oldPassword(user1.getPassword())
+                    .newPassword(newPassword)
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url,userId)
+                            .content(gson.toJson(updatePasswordRequest))
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 성공_비밀번호수정() throws Exception {
+            //given
+            final String url = "/api/users/{userId}/password";
+            final String newPassword = "NewPassword";
+            final UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                    .oldPassword(user1.getPassword())
+                    .newPassword(newPassword)
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url,userId)
+                            .content(gson.toJson(updatePasswordRequest))
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_PASSWORD));
         }
 
     }
