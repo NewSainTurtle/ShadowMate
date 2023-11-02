@@ -25,6 +25,7 @@ const MyPageDiary = () => {
       .accessScopes(userId, { plannerAccessScope: scope })
       .then(() => {
         dispatch(setPlannerAccessScope(scope));
+        handleClose();
       })
       .catch((err) => console.log(err));
   };
