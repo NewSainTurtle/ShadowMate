@@ -30,5 +30,5 @@ export interface followRequestType extends friendInfo {
 // 친구 검색
 export interface friendSearchType extends friendInfo {
   userId: number;
-  isFollow: "친구 신청" | "취소";
+  isFollow: "친구 신청" | "삭제" | "취소";
 }

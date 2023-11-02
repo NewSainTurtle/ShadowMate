@@ -3,18 +3,18 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import FriendProfile from "@components/common/FriendProfile";
-import { followerType, followingType, followRequestType } from "@util/friend.interface";
+import { followerType, followingType, followRequestType, friendInfo, friendSearchType } from "@util/friend.interface";
+import { selectUserId } from "@store/authSlice";
+import { useAppSelector } from "@hooks/hook";
+import { userApi } from "@api/Api";
+import { useDebounce } from "@util/EventControlModule";
 
-interface MyFriendListType {
+interface MyFriendListType extends friendInfo {
   followId?: number;
   followerId?: number;
   followRequestId?: number;
   receiveId?: number;
   userId?: number;
-  email: string;
-  nickname: string;
-  profileImage: string;
-  statusMessage: string;
   isFollow?: "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소";
 }
 
@@ -25,11 +25,32 @@ interface Props {
 }
 
 const MyFriendFrame = ({ title, search, friendList }: Props) => {
+  const userId: number = useAppSelector(selectUserId);
+  const [searchFriend, setSearchFriend] = useState<friendSearchType[]>([]);
   const [searchKeyWord, setSearchKeyWord] = useState("");
+  const debounceKeyword = useDebounce(searchKeyWord, 500);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyWord(e.target.value);
   };
+
+  useEffect(() => {
+    if (!!searchKeyWord.length)
+      userApi
+        .searches(userId, { nickname: searchKeyWord })
+        .then((res) => {
+          const response = res.data.data;
+          const isFollow = (() => {
+            if (userId == response.userId) return "";
+            let type = response.isFollow;
+            if (type == "EMPTY") return "친구 신청";
+            else if (type == "REQUESTED") return "취소";
+            else if (type == "FOLLOW") return "삭제";
+          })();
+          setSearchFriend([{ ...response, isFollow }]);
+        })
+        .catch((err) => console.error(err));
+  }, [debounceKeyword]);
 
   const friendCheck = (friend: MyFriendListType) => {
     if (friend.followId) {
@@ -38,6 +59,10 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     } else if (friend.followRequestId) return { id: friend.followRequestId, isFollow: "요청" };
     else return { id: friend.userId, isFollow: friend.isFollow };
   };
+
+  const followList: (followerType | followingType | followRequestType | friendSearchType)[] = search
+    ? searchFriend
+    : friendList!;
 
   return (
     <div className={styles["friend__frame"]}>
@@ -48,8 +73,8 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         <Input types="search" value={searchKeyWord} onChange={onChangeHandler} placeholder="사용자 닉네임으로 검색" />
       )}
       <div className={styles["friend__frame__list"]}>
-        {friendList && friendList.length > 0 ? (
-          friendList.map((item, index) => {
+        {followList && followList.length > 0 ? (
+          followList.map((item, index) => {
             const { id, isFollow } = friendCheck(item);
             const followInfo = {
               nickname: item.nickname,
