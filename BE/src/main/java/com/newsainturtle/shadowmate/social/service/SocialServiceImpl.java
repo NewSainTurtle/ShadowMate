@@ -76,56 +76,34 @@ public class SocialServiceImpl implements SocialService {
         if(0 < socialList.size() % 6) totalPage++;
         if(totalPage < pageNumber) throw new SocialException(NOT_FOUND_PAGE_NUMBER);
         if(sort.equals("latest")) {
-            if(totalPage == 1) {
-                return SearchPublicDailyPlannerResponse.builder()
-                        .pageNumber(pageNumber)
-                        .totalPage(totalPage)
-                        .sort(sort)
-                        .socialList(makeSearchSocialResponseList(socialList))
-                        .build();
+            List<Social> newList = new ArrayList<>();
+            for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
+                if(cnt==6) break;
+                newList.add(socialList.get(i));
             }
-            else {
-                List<Social> newList = new ArrayList<>();
-                for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
-                    if(cnt==6) break;
-                    newList.add(socialList.get(i));
-                }
-                return SearchPublicDailyPlannerResponse.builder()
-                        .pageNumber(pageNumber)
-                        .totalPage(totalPage)
-                        .sort(sort)
-                        .socialList(makeSearchSocialResponseList(newList))
-                        .build();
-            }
+            return SearchPublicDailyPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(makeSearchSocialResponseList(newList))
+                    .build();
         }
         else if(sort.equals("popularity")) {
             List<SocialLike> socialLikeList = socialList.stream()
                     .map(social -> new SocialLike(social,dailyPlannerLikeRepository.countByDailyPlanner(social.getDailyPlanner())))
                     .collect(Collectors.toList());
             Collections.sort(socialLikeList);
-            if(totalPage == 1) {
-                return SearchPublicDailyPlannerResponse.builder()
-                        .pageNumber(pageNumber)
-                        .totalPage(totalPage)
-                        .sort(sort)
-                        .socialList(makeSearchSocialResponseList(socialLikeList.stream()
-                                .map(socialLike -> socialLike.social)
-                                .collect(Collectors.toList())))
-                        .build();
+            List<Social> newList = new ArrayList<>();
+            for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
+                if(cnt==6) break;
+                newList.add(socialLikeList.get(i).social);
             }
-            else {
-                List<Social> newList = new ArrayList<>();
-                for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
-                    if(cnt==6) break;
-                    newList.add(socialLikeList.get(i).social);
-                }
-                return SearchPublicDailyPlannerResponse.builder()
-                        .pageNumber(pageNumber)
-                        .totalPage(totalPage)
-                        .sort(sort)
-                        .socialList(makeSearchSocialResponseList(newList))
-                        .build();
-            }
+            return SearchPublicDailyPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(makeSearchSocialResponseList(newList))
+                    .build();
         }
         else {
             throw new SocialException(BAD_REQUEST_SORT);
