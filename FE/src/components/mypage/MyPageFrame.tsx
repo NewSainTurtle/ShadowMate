@@ -82,14 +82,19 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err));
     } else {
-      const newDday: ddayType = {
-        ddayId: dday_nextId.current,
+      const init = {
+        ddayDate: dayjs(new Date()).format("YYYY-MM-DD"),
         ddayTitle: "새 디데이",
-        ddayDate: new Date(),
       };
-      setDdayList([...ddayList, newDday]);
-      setDdayClick(ddayList.length);
-      dday_nextId.current += 1;
+      settingApi
+        .addDdays(userId, init)
+        .then((res) => {
+          const returnId = res.data.data.ddayId;
+          dispatch(setDdayList([...ddayList, { ...init, ddayId: returnId }]));
+          dispatch(setDdayClick(ddayList.length));
+          dispatch(setDdayInput({ ...init, ddayId: returnId }));
+        })
+        .catch((err) => console.log(err));
     }
   };
 
