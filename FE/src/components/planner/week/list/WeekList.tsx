@@ -15,9 +15,22 @@ interface Props {
 
 const WeekList = ({ dayInfo }: Props) => {
   const nearDate = useAppSelector(selectWeekDday);
-  const [todoItems, setTodoItems] = useState<TodoConfig[]>(dayInfo.dailyTodo || []);
-  const nextId = useRef(todoItems.length + 1);
-  const [retrospection, setRetrospection] = useState<string>(dayInfo.retrospection || "");
+  const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection || "");
+  const copyDayList = useMemo(() => JSON.parse(JSON.stringify(dayList)), [dayList]);
+  const handleSaveRetrospection = () => {
+    if (dayList[idx].retrospection === null && retrospection === "") return;
+    if (dayList[idx].retrospection === retrospection) return;
+    plannerApi
+      .retrospections(userId, {
+        date: dayjs(date).format("YYYY-MM-DD"),
+        retrospection: retrospection,
+      })
+      .then(() => {
+        copyDayList[idx].retrospection = retrospection;
+        dispatch(setDayList(copyDayList));
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className={styles["item"]}>
@@ -33,9 +46,10 @@ const WeekList = ({ dayInfo }: Props) => {
       </div>
       <div className={`${styles["item__memo"]} ${todoItems.length < 4 && styles["top_border"]}`}>
         <textarea
-          defaultValue={retrospection}
-          placeholder="💡 오늘의 메모를 입력하세요."
-          onChange={(e) => setRetrospection(e.target.value.replace(/\n|\r|\s*/g, ""))}
+          value={retrospection}
+          placeholder="💡 오늘의 회고를 입력하세요."
+          onChange={(e) => setRetrospection(e.target.value)}
+          onBlur={handleSaveRetrospection}
         />
       </div>
     </div>
