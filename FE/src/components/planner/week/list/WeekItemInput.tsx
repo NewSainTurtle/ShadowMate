@@ -23,9 +23,19 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
     if (newTodo === "") return;
     if (e.key == "Enter") {
       if (e.nativeEvent.isComposing) return;
-      insertTodo({ todoId: nextId.current, todoContent: newTodo, todoStatus: "공백" });
-      nextId.current += 1;
-      setNewTodo("");
+      const init = {
+        date: dayjs(date).format("YYYY-MM-DD"),
+        todoContent: newTodo,
+        categoryId: 0,
+      };
+      plannerApi
+        .addDailyTodos(userId, init)
+        .then((res) => {
+          const returnId = res.data.data.todoId;
+          insertTodo({ todoId: returnId, todoContent: newTodo, todoStatus: "공백" });
+          setNewTodo("");
+        })
+        .catch((err) => console.log(err));
     }
   };
 
