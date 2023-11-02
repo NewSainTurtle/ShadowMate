@@ -41,18 +41,22 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     setSearchKeyWord(e.target.value);
   };
 
+  const typeToFollow = (type: string) => {
+    if (type == "EMPTY") return "친구 신청";
+    if (type == "REQUESTED") return "취소";
+    if (search && "FOLLOW") return "팔로잉 삭제";
+    return "팔로워 삭제";
+  };
+
   useEffect(() => {
     if (!!searchKeyWord.length)
       userApi
         .searches(userId, { nickname: searchKeyWord })
         .then((res) => {
           const response = res.data.data;
-          const isFollow: friendSearchType["isFollow"] | "" = (() => {
+          const isFollow = (() => {
             if (userId == response.userId) return "";
-            let type = response.isFollow;
-            if (type == "EMPTY") return "친구 신청";
-            else if (type == "REQUESTED") return "취소";
-            else return "팔로잉 삭제";
+            return typeToFollow(response.isFollow);
           })();
           setSearchFriend([{ ...response, isFollow }]);
         })
@@ -67,7 +71,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     if (friend.followerId)
       return {
         id: friend.followerId,
-        isFollow: friend.isFollow || "팔로워 삭제", // isFollow 누락, API 수정후 변경 예정
+        isFollow: typeToFollow(friend.isFollow || "FOLLOW"), // isFollow 누락, API 수정후 변경 예정
       };
     else if (friend.followingId) return { id: friend.followingId, isFollow: "팔로잉 삭제" };
     else if (friend.requesterId) return { id: friend.requesterId, isFollow: "요청" };
