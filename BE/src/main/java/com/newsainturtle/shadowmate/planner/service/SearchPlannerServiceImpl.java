@@ -67,7 +67,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
     }
 
     private boolean havePermissionToSearch(final User user, final User plannerWriter) {
-        if (user.equals(plannerWriter) ||
+        if (user.getId().equals(plannerWriter.getId()) ||
                 plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
                 (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
         ) {
