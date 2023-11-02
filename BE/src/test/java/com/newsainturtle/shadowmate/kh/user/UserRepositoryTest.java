@@ -73,31 +73,20 @@ public class UserRepositoryTest {
         }
 
         @Test
-        void 성공_프로필사진수정() {
+        void 성공_내정보수정() {
             //given
+            final String newNickname = "NewNickName";
             final String newProfileImage = "NewProfileImage";
-            Optional<User> oldUser = userRepository.findById(userId);
-            final User newUser = User.builder()
-                    .id(oldUser.get().getId())
-                    .email(oldUser.get().getEmail())
-                    .password(oldUser.get().getPassword())
-                    .socialLogin(oldUser.get().getSocialLogin())
-                    .profileImage(newProfileImage)
-                    .nickname(oldUser.get().getNickname())
-                    .statusMessage(oldUser.get().getStatusMessage())
-                    .withdrawal(oldUser.get().getWithdrawal())
-                    .plannerAccessScope(oldUser.get().getPlannerAccessScope())
-                    .createTime(oldUser.get().getCreateTime())
-                    .updateTime(oldUser.get().getUpdateTime())
-                    .deleteTime(oldUser.get().getDeleteTime())
-                    .build();
-            userRepository.save(newUser);
+            final String newStatusMessage = "NewStatusMessage";
 
             //when
-            final User result = userRepository.findByNickname(newUser.getNickname());
+            userRepository.updateUser(newNickname, newProfileImage, newStatusMessage, userId);
+            final User result = userRepository.findByNickname(newNickname);
 
             //then
+            assertThat(result.getNickname()).isEqualTo(newNickname);
             assertThat(result.getProfileImage()).isEqualTo(newProfileImage);
+            assertThat(result.getStatusMessage()).isEqualTo(newStatusMessage);
 
         }
 

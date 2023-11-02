@@ -4,12 +4,14 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
-import com.newsainturtle.shadowmate.user.dto.UpdateProfileImageRequest;
+import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static com.newsainturtle.shadowmate.user.constant.UserConstant.*;
 
@@ -38,13 +40,13 @@ public class UserController {
                 SUCCESS_SEARCH_NICKNAME, userService.searchNickname(principalDetails.getUser(), nickname)));
     }
 
-    @PutMapping("/{userId}/images")
-    public ResponseEntity<BaseResponse> updateProfileImage(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                       @PathVariable("userId") final Long userId,
-                                                       @RequestBody final UpdateProfileImageRequest updateProfileImageRequest) {
+    @PutMapping("/{userId}/mypages")
+    public ResponseEntity<BaseResponse> updateUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                           @PathVariable("userId") final Long userId,
+                                                           @RequestBody @Valid final UpdateUserRequest updateUserRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.updateProfileImage(userId, updateProfileImageRequest.getNewProfileImage());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_PROFILEIMAGE));
+        userService.updateUser(userId, updateUserRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_USER));
     }
   
     @DeleteMapping("/{userId}")
