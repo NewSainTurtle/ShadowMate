@@ -90,6 +90,19 @@ public class UserRepositoryTest {
 
         }
 
+        @Test
+        void 비밀번호수정() {
+            // given
+            final String newPassword = "newPassword";
+
+            // when
+            userRepository.updatePassword(newPassword, userId);
+            final User result = userRepository.findByNickname(user.getNickname());
+
+            // then
+            assertThat(result.getPassword()).isEqualTo(newPassword);
+        }
+
     }
 
     @Nested
