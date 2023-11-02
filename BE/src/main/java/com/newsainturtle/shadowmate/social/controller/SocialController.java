@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.social.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
+import com.newsainturtle.shadowmate.social.dto.SearchNicknamePublicDailyPlannerRequest;
 import com.newsainturtle.shadowmate.social.service.SocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +28,13 @@ public class SocialController {
                                                                  @RequestParam final Long pageNumber) {
         authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_PUBLIC_DAILY_PLANNER, socialService.searchPublicDailyPlanner(sort, pageNumber)));
+    }
+
+    @PostMapping("/{userId}/searches/nicknames")
+    public ResponseEntity<BaseResponse> searchNicknamePublicDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                                         @PathVariable("userId") final Long userId,
+                                                                         @RequestBody SearchNicknamePublicDailyPlannerRequest searchNicknamePublicDailyPlannerRequest) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_NICKNAME_PUBLIC_DAILY_PLANNER, socialService.searchNicknamePublicDailyPlanner(searchNicknamePublicDailyPlannerRequest)));
     }
 }
