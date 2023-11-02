@@ -12,13 +12,12 @@ import { profileInfo } from "@pages/commonPage";
 import { plannerApi } from "@api/Api";
 
 const Week = () => {
-  const [week, setWeek] = useState(new Date());
-  const thisWeekCnt = getThisWeekCnt(week);
-  const [isMine, setIsMine] = useState<boolean>(true);
-
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const dayList = useAppSelector(selectDayList);
+  const [week, setWeek] = useState(new Date());
+  const thisWeekCnt = getThisWeekCnt(week);
+  const [isMine, setIsMine] = useState<boolean>(true);
 
   const handleButton = (to: string) => {
     const date = week.getDate();
@@ -84,7 +83,7 @@ const Week = () => {
       </div>
       <div className={styles["week__list"]}>
         <WeekTodo />
-        {dayList?.map((today: DayListConfig, key: number) => <WeekList dayInfo={today} key={key} />)}
+        {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} key={key} />)}
       </div>
     </div>
   );

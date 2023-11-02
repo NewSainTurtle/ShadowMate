@@ -3,11 +3,25 @@ import Month from "@components/planner/month/Month";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { setDdayList } from "@store/mypageSlice";
+import { setCategoryInput, setCategoryList, setDdayList } from "@store/mypageSlice";
+import { CategoryConfig } from "@util/planner.interface";
 
 const MonthPage = () => {
   const dispatch = useAppDispatch();
   const userId: number = useAppSelector(selectUserId);
+
+  const getCategoryList = () => {
+    settingApi
+      .categories(userId)
+      .then((res) => {
+        let response: CategoryConfig[] = res.data.data.categoryList;
+        if (response.length != 0) {
+          dispatch(setCategoryList(response));
+          dispatch(setCategoryInput(response[0]));
+        }
+      })
+      .catch((err) => console.log(err));
+  };
 
   const getDdayList = () => {
     settingApi
@@ -20,6 +34,7 @@ const MonthPage = () => {
   };
 
   useEffect(() => {
+    getCategoryList();
     getDdayList();
   }, []);
 

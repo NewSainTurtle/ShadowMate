@@ -2,8 +2,9 @@ import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
-import { todoData_category } from "@util/data/DayTodos";
+import { useAppSelector } from "@hooks/hook";
 import { CategoryConfig } from "@util/planner.interface";
+import { selectCategoryList } from "@store/mypageSlice";
 
 interface Props {
   type: "week" | "day";
@@ -11,7 +12,7 @@ interface Props {
 }
 
 const CategorySelector = ({ type, handleClick }: Props) => {
-  const categoryList: CategoryConfig[] = todoData_category;
+  const categoryList: CategoryConfig[] = useAppSelector(selectCategoryList);
   return (
     <div className={styles["category__selector"]}>
       <div>
