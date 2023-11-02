@@ -63,7 +63,13 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
   const handleSaveTextTodo = () => {
     if (text === "") return;
-    updateTodo(idx, { ...todoItem, todoContent: text });
+    if (addTodo) {
+      if (text === "") return;
+      insertTodo({ ...todoItem, todoContent: text });
+      setText("");
+    } else {
+      updateTodo(idx, { ...todoItem, todoContent: text });
+    }
   };
 
   const handleSaveStatusTodo = () => {
