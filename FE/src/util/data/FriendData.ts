@@ -66,7 +66,6 @@ export const followingListData: followingType[] = [
     nickname: "mung",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/9e66fca0-45bd-4708-8ea7-0dc5baca0acf",
     statusMessage: "멍멍이는 멍멍하지",
-    isFollow: "삭제",
   },
   {
     followId: 2,
@@ -75,7 +74,6 @@ export const followingListData: followingType[] = [
     nickname: "냥냥",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/dbb27de8-a9ce-4fc3-a495-302a6b62c34e",
     statusMessage: "냥냥이은 냥냥하다",
-    isFollow: "삭제",
   },
   {
     followId: 3,
@@ -84,7 +82,6 @@ export const followingListData: followingType[] = [
     nickname: "세계평화",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/4effef28-b7ea-4c77-90bb-6c570c4c66cd",
     statusMessage: "세계 정복을 목표로 공부하기",
-    isFollow: "삭제",
   },
 ];
 
@@ -96,7 +93,6 @@ export const followRequestData: followRequestType[] = [
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/9e66fca0-45bd-4708-8ea7-0dc5baca0acf",
     statusMessage: "멍멍이는 멍멍하지",
     receiveId: 5,
-    isFollow: "요청",
   },
   {
     followRequestId: 2,
@@ -105,7 +101,6 @@ export const followRequestData: followRequestType[] = [
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/dbb27de8-a9ce-4fc3-a495-302a6b62c34e",
     statusMessage: "냥냥이은 냥냥하다",
     receiveId: 6,
-    isFollow: "요청",
   },
   {
     followRequestId: 3,
@@ -114,7 +109,6 @@ export const followRequestData: followRequestType[] = [
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/4effef28-b7ea-4c77-90bb-6c570c4c66cd",
     statusMessage: "세계 정복을 목표로 공부하기",
     receiveId: 7,
-    isFollow: "요청",
   },
 ];
 

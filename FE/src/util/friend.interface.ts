@@ -17,14 +17,12 @@ export interface followerType extends friendInfo {
 export interface followingType extends friendInfo {
   followId: number;
   followerId: number;
-  isFollow: "삭제";
 }
 
 // 팔로우 요청 목록
 export interface followRequestType extends friendInfo {
   followRequestId: number;
   receiveId: number;
-  isFollow: "요청";
 }
 
 // 친구 검색
