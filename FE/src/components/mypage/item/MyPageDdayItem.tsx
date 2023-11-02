@@ -10,8 +10,10 @@ import { selectDdayClick, setDdayClick } from "@store/mypageSlice";
 
 interface Props {
   item: DdayConfig;
+  idx: number;
 }
 
+const MyPageDdayItem = ({ item, idx }: Props) => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectDdayClick);
   const clicked = click === idx ? "--clicked" : "";
@@ -34,7 +36,7 @@ interface Props {
 
   return (
     <div
-      ref={index === click ? endRef : null}
+      ref={idx === click ? endRef : null}
       className={styles[`dday__item${clicked}`]}
       onClick={() => dispatch(setDdayClick(idx))}
     >
