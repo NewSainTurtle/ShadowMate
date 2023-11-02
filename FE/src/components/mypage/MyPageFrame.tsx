@@ -158,12 +158,19 @@ const MyPageFrame = ({ title }: Props) => {
         });
       // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
     } else {
-      setDdayList(
-        ddayList.filter((item, idx) => {
-          return idx !== ddayClick;
-        }),
-      );
-      setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1);
+      settingApi
+        .deleteDdays(userId, ddayList[ddayClick].ddayId)
+        .then(() => {
+          dispatch(
+            setDdayList(
+              ddayList.filter((item: DdayConfig, idx: number) => {
+                return idx !== ddayClick;
+              }),
+            ),
+          );
+          dispatch(setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1));
+        })
+        .catch((err) => console.log(err));
     }
   };
 
