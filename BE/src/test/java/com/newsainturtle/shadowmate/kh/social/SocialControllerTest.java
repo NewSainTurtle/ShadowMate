@@ -165,6 +165,74 @@ public class SocialControllerTest {
     }
 
     @Test
+    public void 실패_공개된플래너_닉네임검색_닉네임NULL() throws Exception {
+        //given
+        final String url = "/api/social/{userId}/searches/nicknames";
+        final String sort = "latest";
+        final Long pageNumber = 1L;
+        final SearchNicknamePublicDailyPlannerRequest request = SearchNicknamePublicDailyPlannerRequest.builder()
+                .sort(sort)
+                .pageNumber(pageNumber)
+                .build();
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, userId)
+                        .content(gson.toJson(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 실패_공개된플래너_닉네임검색_정렬NULL() throws Exception {
+        //given
+        final String url = "/api/social/{userId}/searches/nicknames";
+        final String sort = "latest";
+        final Long pageNumber = 1L;
+        final SearchNicknamePublicDailyPlannerRequest request = SearchNicknamePublicDailyPlannerRequest.builder()
+                .nickname(user1.getNickname())
+                .pageNumber(pageNumber)
+                .build();
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, userId)
+                        .content(gson.toJson(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 실패_공개된플래너_닉네임검색_페이지넘버NULL() throws Exception {
+        //given
+        final String url = "/api/social/{userId}/searches/nicknames";
+        final String sort = "latest";
+        final Long pageNumber = 1L;
+        final SearchNicknamePublicDailyPlannerRequest request = SearchNicknamePublicDailyPlannerRequest.builder()
+                .nickname(user1.getNickname())
+                .sort(sort)
+                .build();
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, userId)
+                        .content(gson.toJson(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        System.out.println(request.getPageNumber());
+
+        //then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     void 성공_공개된플래너_닉네임검색() throws Exception {
         // given
         final String url = "/api/social/{userId}/searches/nicknames";
