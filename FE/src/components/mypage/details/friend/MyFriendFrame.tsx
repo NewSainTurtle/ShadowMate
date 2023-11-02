@@ -3,7 +3,14 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
-import { followerType, followingType, followRequestType, friendInfo, friendSearchType } from "@util/friend.interface";
+import {
+  followerType,
+  followingType,
+  followRequestType,
+  followType,
+  friendInfo,
+  friendSearchType,
+} from "@util/friend.interface";
 import { selectUserId } from "@store/authSlice";
 import { useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
@@ -15,7 +22,7 @@ interface MyFriendListType extends friendInfo {
   followRequestId?: number;
   receiveId?: number;
   userId?: number;
-  isFollow?: "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소";
+  isFollow?: followType["types"];
 }
 
 interface Props {
@@ -41,12 +48,12 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         .searches(userId, { nickname: searchKeyWord })
         .then((res) => {
           const response = res.data.data;
-          const isFollow = (() => {
+          const isFollow: friendSearchType["isFollow"] | "" = (() => {
             if (userId == response.userId) return "";
             let type = response.isFollow;
             if (type == "EMPTY") return "친구 신청";
             else if (type == "REQUESTED") return "취소";
-            else if (type == "FOLLOW") return "삭제";
+            else return "팔로잉 삭제";
           })();
           setSearchFriend([{ ...response, isFollow }]);
         })
@@ -60,7 +67,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   const friendCheck = (friend: MyFriendListType) => {
     if (friend.followId) {
       if (friend.isFollow) return { id: friend.followId, isFollow: friend.isFollow }; // 팔로워 목록
-      else return { id: friend.followId, isFollow: "삭제" }; // 팔로잉 목록
+      else return { id: friend.followId, isFollow: "팔로잉 삭제" }; // 팔로잉 목록
     } else if (friend.followRequestId) return { id: friend.followRequestId, isFollow: "요청" }; // 팔로우 요청
     else return { id: friend.userId, isFollow: friend.isFollow }; // 친구 검색
   };
@@ -87,13 +94,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
               message: item.statusMessage,
               src: item.profileImage,
             };
-            return (
-              <FriendProfile
-                key={id}
-                types={isFollow as "삭제" | "친구 신청" | "팔로워 신청" | "요청" | "취소"}
-                profile={followInfo}
-              />
-            );
+            return <FriendProfile key={id} types={isFollow as followType["types"]} profile={followInfo} />;
           })
         ) : (
           <Text types="small">{search ? alertMessage : `${title}이(가) 없습니다.`}</Text>
