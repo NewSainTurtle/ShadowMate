@@ -2,7 +2,7 @@ import React, { ChangeEvent, Dispatch, MouseEvent, SetStateAction, useEffect, us
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import { ddayType } from "@util/planner.interface";
+import { DdayConfig } from "@util/planner.interface";
 import { dateFormat } from "@util/getThisWeek";
 import dayjs from "dayjs";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";

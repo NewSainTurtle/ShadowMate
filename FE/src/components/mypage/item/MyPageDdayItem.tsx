@@ -1,16 +1,13 @@
 import React, { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
-import { ddayType } from "@util/planner.interface";
+import { DdayConfig } from "@util/planner.interface";
 import Dday from "@components/common/Dday";
 import { dateFormat } from "@util/getThisWeek";
 import dayjs, { Dayjs } from "dayjs";
 
 interface Props {
-  item: ddayType;
-  index: number;
-  click: number;
-  setClick: Dispatch<SetStateAction<number>>;
+  item: DdayConfig;
 }
 
 const MyPageDdayItem = ({ item, index, click, setClick }: Props) => {

@@ -5,9 +5,7 @@ import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/diary/Category";
 import CategoryList from "@components/mypage/list/CategoryList";
 import MyPageDday from "./details/diary/Dday";
-import MyPageDdayItem from "./item/MyPageDdayItem";
-import { CategoryConfig, ddayType } from "@util/planner.interface";
-import { DDAY_LIST } from "@util/data/DdayData";
+import { CategoryConfig, DdayConfig } from "@util/planner.interface";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
@@ -29,7 +27,7 @@ interface Props {
 
 export interface EditInfoConfig {
   type: string;
-  info: CategoryConfig | ddayType | null;
+  info: CategoryConfig | DdayConfig | null;
   clicked: number;
 }
 
