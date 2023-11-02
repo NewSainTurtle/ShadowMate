@@ -61,7 +61,16 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
   };
 
   const handleDelete = () => {
-    deleteTodo(idx);
+    const data = {
+      date: dayjs(date).format("YYYY-MM-DD"),
+      todoId: item.todoId,
+    };
+    plannerApi
+      .deleteDailyTodos(userId, data)
+      .then(() => {
+        deleteTodo(idx);
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleClickCategory = (props: CategoryConfig) => {
