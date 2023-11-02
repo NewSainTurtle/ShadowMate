@@ -20,7 +20,7 @@ interface MyFriendListType extends friendInfo {
   followId?: number;
   followerId?: number;
   followRequestId?: number;
-  receiveId?: number;
+  requesterId?: number;
   userId?: number;
   isFollow?: followType["types"];
 }
@@ -68,7 +68,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     if (friend.followId) {
       if (friend.isFollow) return { id: friend.followId, isFollow: friend.isFollow }; // 팔로워 목록
       else return { id: friend.followId, isFollow: "팔로잉 삭제" }; // 팔로잉 목록
-    } else if (friend.followRequestId) return { id: friend.followRequestId, isFollow: "요청" }; // 팔로우 요청
+    } else if (friend.requesterId) return { id: friend.requesterId, isFollow: "요청" }; // 팔로우 요청
     else return { id: friend.userId, isFollow: friend.isFollow }; // 친구 검색
   };
 

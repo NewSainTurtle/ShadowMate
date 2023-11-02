@@ -27,7 +27,7 @@ export interface followingType extends friendInfo {
 // 팔로우 요청 목록
 export interface followRequestType extends friendInfo {
   followRequestId: number;
-  receiveId: number;
+  requesterId: number;
 }
 
 // 친구 검색

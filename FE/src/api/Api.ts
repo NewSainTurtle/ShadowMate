@@ -30,12 +30,12 @@ export const followApi = {
   deleteFollowing: (userId: number, data: { followingId: number }) =>
     Axios.delete(api.follow.following(userId), { data: data }),
   getFollwers: (userId: number) => Axios.get(api.follow.followers(userId)),
-  deleteFollows: (userId: number, data: { followerId: number }) =>
+  deletefollowers: (userId: number, data: { followerId: number }) =>
     Axios.delete(api.follow.followers(userId), { data: data }),
   addRequested: (userId: number, data: { followingId: number }) => Axios.post(api.follow.requested(userId), data),
   cancelRequested: (userId: number, data: { receiverId: number }) =>
     Axios.delete(api.follow.requested(userId), { data: data }),
-  receive: (userId: number, data: { requestId: number; followReceive: boolean }) =>
+  receive: (userId: number, data: { requesterId: number; followReceive: boolean }) =>
     Axios.post(api.follow.receive(userId), data),
   receiveList: (userId: number) => Axios.get(api.follow.receiveList(userId)),
 };
