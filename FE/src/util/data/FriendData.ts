@@ -61,7 +61,7 @@ export const followerListData: followerType[] = [
 export const followingListData: followingType[] = [
   {
     followId: 1,
-    followerId: 5,
+    followingId: 5,
     email: "mung@todo.mate",
     nickname: "mung",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/9e66fca0-45bd-4708-8ea7-0dc5baca0acf",
@@ -69,7 +69,7 @@ export const followingListData: followingType[] = [
   },
   {
     followId: 2,
-    followerId: 6,
+    followingId: 6,
     email: "냥냥@todo.mate",
     nickname: "냥냥",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/dbb27de8-a9ce-4fc3-a495-302a6b62c34e",
@@ -77,7 +77,7 @@ export const followingListData: followingType[] = [
   },
   {
     followId: 3,
-    followerId: 7,
+    followingId: 7,
     email: "세계@todo.mate",
     nickname: "세계평화",
     profileImage: "https://github.com/NewSainTurtle/ShadowMate/assets/83412032/4effef28-b7ea-4c77-90bb-6c570c4c66cd",

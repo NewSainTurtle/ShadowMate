@@ -21,7 +21,7 @@ export interface followerType extends friendInfo {
 // 팔로잉 목록
 export interface followingType extends friendInfo {
   followId: number;
-  followerId: number;
+  followingId: number;
 }
 
 // 팔로우 요청 목록
