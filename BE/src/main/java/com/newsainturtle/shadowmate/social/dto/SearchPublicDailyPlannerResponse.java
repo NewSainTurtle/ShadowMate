@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.social.dto;
 
-import com.newsainturtle.shadowmate.social.entity.Social;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,5 +15,5 @@ public class SearchPublicDailyPlannerResponse {
 
     private String sort;
 
-    private List<Social> socialList;
+    private List<SearchSocialResponse> socialList;
 }
