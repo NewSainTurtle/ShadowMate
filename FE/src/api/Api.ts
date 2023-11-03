@@ -14,14 +14,11 @@ export const authApi = {
 
 export const userApi = {
   getProfiles: (userId: number) => Axios.get(api.users.getProfiles(userId)),
-  myPage: (userId: number, data: { nickname: string; statusMessage: string }) =>
-    Axios.put(api.users.myPage(userId), data),
+  myPages: (userId: number, data: { newNickname: string; newProfileImage: string; newStatusMessage: string }) =>
+    Axios.put(api.users.myPages(userId), data),
   password: (userId: number, data: { oldPassword: string; newPassword: string }) =>
     Axios.post(api.users.password(userId), data),
   userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
-  editProfileImg: (userId: number, data: { newProfileImage: string }) =>
-    Axios.put(api.users.editProfileImg(userId), data),
-  deleteProfileImg: (userId: number) => Axios.delete(api.users.editProfileImg(userId)),
   searches: (userId: number, params: { nickname: string }) => Axios.get(api.users.searches(userId), { params }),
 };
 
