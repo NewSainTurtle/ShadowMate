@@ -51,7 +51,10 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   };
 
   useEffect(() => {
-    if (!debounceKeyword.length) setAlertMessage("닉네임을 통해 검색이 가능합니다.");
+    if (!debounceKeyword.length) {
+      setSearchFriend([]);
+      setAlertMessage("닉네임을 통해 검색이 가능합니다.");
+    }
   }, [debounceKeyword.length]);
 
   useEffect(() => {
