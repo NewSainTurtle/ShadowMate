@@ -429,7 +429,7 @@ $color-warning: var(--color-warning);
     display: flex;
     flex-direction: column;
     margin-left: 3em;
-    padding: 1em 0em 2em 0em;
+    padding: 0.5em 0em 2em 0em;
     box-sizing: border-box;
     row-gap: 3em;
   }
@@ -503,17 +503,18 @@ $color-warning: var(--color-warning);
         }
       }
     }
+  }
 
-    &-password {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5em;
-    }
+  &__password {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+  }
 
-    &-cancleMembership {
-      cursor: pointer;
-      color: $color-warning;
-    }
+  &__cancleMembership {
+    width: fit-content;
+    cursor: pointer;
+    color: $color-warning;
   }
 
   &__modal {

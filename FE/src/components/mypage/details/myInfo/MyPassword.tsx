@@ -48,7 +48,7 @@ const MyPassword = () => {
             <Text>비밀번호 변경</Text>
           </div>
           <div>
-            <div className={styles["info__profile-password"]}>
+            <div className={styles["info__password"]}>
               <Input
                 types="password"
                 placeholder="현재 비밀번호 입력"

@@ -23,7 +23,7 @@ const CancleMembership = () => {
   return (
     <div className={styles["info__cantainer"]}>
       <div className={styles["info__contents"]}>
-        <div className={styles["info__profile-cancleMembership"]} onClick={handleOpen}>
+        <div className={styles["info__cancleMembership"]} onClick={handleOpen}>
           <Text>회원 탈퇴</Text>
         </div>
       </div>
