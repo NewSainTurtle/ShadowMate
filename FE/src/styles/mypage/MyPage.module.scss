@@ -463,12 +463,23 @@ $color-warning: var(--color-warning);
       gap: 0.1em;
       align-items: baseline;
 
-      > :nth-child(2) {
+      > button {
         width: 20%;
+      }
+
+      &.--error > button {
+        @keyframes blinkEffect {
+          50% {
+            opacity: 60%;
+          }
+        }
+
+        animation: blinkEffect 1s infinite alternate;
       }
     }
 
     &-img {
+      padding-top: 0.5em;
       position: relative;
       width: fit-content;
 
