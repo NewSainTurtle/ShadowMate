@@ -22,6 +22,7 @@ export const userApi = {
   editProfileImg: (userId: number, data: { newProfileImage: string }) =>
     Axios.put(api.users.editProfileImg(userId), data),
   deleteProfileImg: (userId: number) => Axios.delete(api.users.editProfileImg(userId)),
+  searches: (userId: number, params: { nickname: string }) => Axios.get(api.users.searches(userId), { params }),
 };
 
 export const followApi = {
@@ -29,14 +30,12 @@ export const followApi = {
   deleteFollowing: (userId: number, data: { followingId: number }) =>
     Axios.delete(api.follow.following(userId), { data: data }),
   getFollwers: (userId: number) => Axios.get(api.follow.followers(userId)),
-  deleteFollows: (userId: number, data: { followingId: number }) =>
+  deleteFollowers: (userId: number, data: { followerId: number }) =>
     Axios.delete(api.follow.followers(userId), { data: data }),
-  searches: (userId: number, params: { nickname: string }) =>
-    Axios.post(api.follow.searches(userId), {}, { params: params }),
   addRequested: (userId: number, data: { followingId: number }) => Axios.post(api.follow.requested(userId), data),
-  canelRequested: (userId: number, data: { followingId: number }) =>
+  cancelRequested: (userId: number, data: { receiverId: number }) =>
     Axios.delete(api.follow.requested(userId), { data: data }),
-  receive: (userId: number, data: { requesertId: number; followReceive: boolean }) =>
+  receive: (userId: number, data: { requesterId: number; followReceive: boolean }) =>
     Axios.post(api.follow.receive(userId), data),
   receiveList: (userId: number) => Axios.get(api.follow.receiveList(userId)),
 };

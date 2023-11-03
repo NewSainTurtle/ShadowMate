@@ -24,11 +24,11 @@ interface apiInterface {
     password: (userId: number) => string; // 비밀번호 수정
     userOut: (userId: number) => string; // 회원 탈퇴
     editProfileImg: (userId: number) => string; // 프로필 사진 등록, 수정
+    searches: (userId: number) => string; // 회원 검색
   };
   follow: {
     following: (userId: number) => string; // 팔로잉 조회, 삭제
     followers: (userId: number) => string; // 팔로워 조회, 삭제
-    searches: (userId: number) => string; // 회원 검색
     requested: (userId: number) => string; // 팔로우 신청, 취소
     receive: (userId: number) => string; // 팔로우 신청 수락, 거절
     receiveList: (userId: number) => string; // 받은 팔로우 신청 목록(친구신청 목록)
@@ -76,11 +76,11 @@ const api: apiInterface = {
     password: (userId: number) => HOST + USERS + userId + "/password",
     userOut: (userId: number) => HOST + USERS + userId,
     editProfileImg: (userId: number) => HOST + USERS + userId + "/images",
+    searches: (userId: number) => HOST + USERS + userId + "/searches",
   },
   follow: {
     following: (userId: number) => HOST + FOLLOW + userId + "/following",
     followers: (userId: number) => HOST + FOLLOW + userId + "/followers",
-    searches: (userId: number) => HOST + FOLLOW + userId + "/searches",
     requested: (userId: number) => HOST + FOLLOW + userId + "/requested",
     receive: (userId: number) => HOST + FOLLOW + userId + "/receive",
     receiveList: (userId: number) => HOST + FOLLOW + userId + "/receive-lists",

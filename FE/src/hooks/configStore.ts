@@ -4,6 +4,7 @@ import monthReducer from "@store/planner/monthSlice";
 import weekReducer from "@store/planner/weekSlice";
 import dayReducer from "@store/planner/daySlice";
 import mypageReducer from "@store/mypageSlice";
+import frinedReducer from "@store/friendSlice";
 
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   week: weekReducer,
   day: dayReducer,
   mypage: mypageReducer,
+  friend: frinedReducer,
 });
 
 const persistConfig = {
