@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import { followerType, followingType, followRequestType } from "@util/friend.interface";
-import { selectUserId } from "@store/authSlice";
 import { useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
+import { selectFollowState } from "@store/friendSlice";
 import { followApi } from "@api/Api";
 import MyFriendFrame from "./MyFriendFrame";
 
@@ -11,6 +12,7 @@ const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색"
   const [followRequestData, setFollowRequestData] = useState<followRequestType[]>([]); // 팔로우 요청
   const [followerData, setFolloweData] = useState<followerType[]>([]); // 내 팔로워
   const [followingData, setFollowingData] = useState<followingType[]>([]); // 내 팔로잉
+  const followState: boolean = useAppSelector(selectFollowState);
 
   useEffect(() => {
     switch (title) {
@@ -40,7 +42,7 @@ const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색"
           .catch((err) => console.error(err));
         break;
     }
-  }, [title]);
+  }, [title, followState]);
 
   return (
     <div className={styles["friend__cantainer"]}>

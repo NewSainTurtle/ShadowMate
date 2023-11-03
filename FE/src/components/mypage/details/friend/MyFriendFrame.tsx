@@ -15,6 +15,7 @@ import { selectUserId } from "@store/authSlice";
 import { useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
 import { useDebounce } from "@util/EventControlModule";
+import { selectFollowState } from "@store/friendSlice";
 
 interface MyFriendListType extends friendInfo {
   followerId?: number;
@@ -34,8 +35,9 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   const userId: number = useAppSelector(selectUserId);
   const [searchFriend, setSearchFriend] = useState<friendSearchType[]>([]);
   const [searchKeyWord, setSearchKeyWord] = useState("");
-  const debounceKeyword = useDebounce(searchKeyWord, 500);
+  const debounceKeyword = useDebounce(searchKeyWord, 400);
   const [alertMessage, setAlertMessage] = useState("닉네임을 통해 검색이 가능합니다.");
+  const followState: boolean = useAppSelector(selectFollowState);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyWord(e.target.value);
@@ -65,7 +67,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
           if (response.code == "NOT_FOUND_NICKNAME") setAlertMessage("일치하는 닉네임을 찾을 수 없습니다.");
           else console.error(err);
         });
-  }, [debounceKeyword]);
+  }, [debounceKeyword, followState]);
 
   const friendCheck = (friend: MyFriendListType) => {
     if (friend.followerId)

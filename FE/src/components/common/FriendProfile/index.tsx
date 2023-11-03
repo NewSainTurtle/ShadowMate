@@ -4,9 +4,10 @@ import Text from "@components/common/Text";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { Avatar } from "@mui/material";
 import { followApi } from "@api/Api";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { followType } from "@util/friend.interface";
+import { setFollowState } from "@store/friendSlice";
 
 export interface ProfileConfig {
   userId: number;
@@ -25,26 +26,50 @@ interface ProfileButtonProps extends Omit<Props, "profile"> {
 }
 
 const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
+  const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
+  const [state, setState] = useState(0);
+
+  useEffect(() => {
+    if (state != 0) dispatch(setFollowState({ followState: state }));
+  }, [state]);
 
   const handleClick = (() => {
-    const followRequested = () => {
-      followApi.addRequested(userId, { followingId: profileId }).catch((err) => console.error(err));
+    const followRequested = async () => {
+      await followApi
+        .addRequested(userId, { followingId: profileId })
+        .then(() => setState(1))
+        .catch((err) => console.error(err));
     };
-    const cancelRequested = () => {
-      followApi.cancelRequested(userId, { receiverId: profileId }).catch((err) => console.error(err));
+    const cancelRequested = async () => {
+      await followApi
+        .cancelRequested(userId, { receiverId: profileId })
+        .then(() => setState(2))
+        .catch((err) => console.error(err));
     };
-    const receiveAcceptiance = () => {
-      followApi.receive(userId, { requesterId: profileId, followReceive: true }).catch((err) => console.error(err));
+    const receiveAcceptiance = async () => {
+      await followApi
+        .receive(userId, { requesterId: profileId, followReceive: true })
+        .then(() => setState(3))
+        .catch((err) => console.error(err));
     };
-    const receiveRefusal = () => {
-      followApi.receive(userId, { requesterId: profileId, followReceive: false }).catch((err) => console.error(err));
+    const receiveRefusal = async () => {
+      await followApi
+        .receive(userId, { requesterId: profileId, followReceive: false })
+        .then(() => setState(4))
+        .catch((err) => console.error(err));
     };
-    const deleteFollower = () => {
-      followApi.deletefollowers(userId, { followerId: profileId }).catch((err) => console.error(err));
+    const deleteFollower = async () => {
+      await followApi
+        .deletefollowers(userId, { followerId: profileId })
+        .then(() => setState(5))
+        .catch((err) => console.error(err));
     };
-    const deleteFollowing = () => {
-      followApi.deleteFollowing(userId, { followingId: profileId }).catch((err) => console.error(err));
+    const deleteFollowing = async () => {
+      await followApi
+        .deleteFollowing(userId, { followingId: profileId })
+        .then(() => setState(6))
+        .catch((err) => console.error(err));
     };
 
     return {
