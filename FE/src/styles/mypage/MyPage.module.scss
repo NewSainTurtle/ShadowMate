@@ -519,7 +519,11 @@ $color-warning: var(--color-warning);
   &__password {
     display: flex;
     flex-direction: column;
-    gap: 1.5em;
+    gap: 2em;
+
+    & > :nth-child(1) {
+      margin-bottom: 0.875rem;
+    }
   }
 
   &__cancleMembership {

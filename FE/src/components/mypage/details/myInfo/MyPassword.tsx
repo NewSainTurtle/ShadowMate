@@ -6,6 +6,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { userApi } from "@api/Api";
+import { removeWhitespaceRegex, userRegex } from "@util/regex";
 
 const MyPassword = () => {
   const userId: number = useAppSelector(selectUserId);
@@ -16,28 +17,42 @@ const MyPassword = () => {
   });
 
   const { oldPassword, newPassword, newPasswordCheck } = password;
-  const errorCheck = !(newPassword == "" || newPasswordCheck == "") && newPassword != newPasswordCheck;
+  const [error, setError] = useState({
+    newPassword: false,
+    newPasswordCheck: !(newPassword == "" || newPasswordCheck == "") && newPassword != newPasswordCheck,
+  });
+  const [length, setLength] = useState(newPassword.length);
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name == "newPassword") {
+      setLength(value.length);
+      if (value.length > 0 && !userRegex.password.test(value)) setError({ ...error, [name]: true });
+      else setError({ ...error, [name]: false });
+    }
+    if (name == "newPasswordCheck") {
+      if (value.length > 0 && newPassword != value) setError({ ...error, [name]: true });
+      else setError({ ...error, [name]: false });
+    }
     setPassword({
       ...password,
-      [e.target.name]: e.target.value,
+      [name]: value.replace(removeWhitespaceRegex, ""),
     });
   };
 
   const saveMyInfo = async () => {
-    if (!errorCheck) {
-      userApi
-        .password(userId, { oldPassword, newPassword })
-        .then(() => {
-          setPassword({
-            oldPassword: "",
-            newPassword: "",
-            newPasswordCheck: "",
-          });
-        })
-        .catch((err) => console.error(err));
-    }
+    if (!(error.newPassword || error.newPasswordCheck)) return;
+
+    userApi
+      .password(userId, { oldPassword, newPassword })
+      .then(() => {
+        setPassword({
+          oldPassword: "",
+          newPassword: "",
+          newPasswordCheck: "",
+        });
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -62,6 +77,8 @@ const MyPassword = () => {
                 name="newPassword"
                 value={newPassword}
                 onChange={handlePassword}
+                error={error.newPassword}
+                helperText={error.newPassword ? "6 ~ 20자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/20`}
               />
               <Input
                 types="password"
@@ -69,7 +86,8 @@ const MyPassword = () => {
                 name="newPasswordCheck"
                 value={newPasswordCheck}
                 onChange={handlePassword}
-                error={errorCheck}
+                error={error.newPasswordCheck}
+                helperText={error.newPasswordCheck ? "비밀번호가 일치하지 않습니다." : " "}
               />
             </div>
           </div>
