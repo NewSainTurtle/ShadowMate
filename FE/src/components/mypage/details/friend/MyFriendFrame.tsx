@@ -51,6 +51,13 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   };
 
   useEffect(() => {
+    if (!search) {
+      setSearchKeyWord("");
+      setSearchFriend([]);
+    }
+  }, [search]);
+
+  useEffect(() => {
     if (!!searchKeyWord.length)
       userApi
         .searches(userId, { nickname: searchKeyWord })
