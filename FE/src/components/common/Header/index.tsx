@@ -4,22 +4,26 @@ import Toggle from "./Toggle";
 import Menu from "./Menu";
 import { Avatar } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserInfo } from "@store/authSlice";
 
 const Header = () => {
+  const profileImage = useAppSelector(selectUserInfo).profileImage;
+
   return (
     <div className={styles.header_container}>
       <NavLink to="/month">
         <div className={styles.header_logo}>
           <span>Shadow</span>
           <br />
-          <span>Mate</span> 
+          <span>Mate</span>
         </div>
       </NavLink>
       <Menu />
       <div className={styles.header_profile}>
         <Toggle />
         <NavLink to="/mypage">
-          <Avatar src="https://avatars.githubusercontent.com/u/85155789?v=4" />
+          <Avatar src={profileImage} />
         </NavLink>
       </div>
     </div>
