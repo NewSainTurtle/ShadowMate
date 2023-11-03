@@ -7,18 +7,17 @@ import FriendProfile from "@components/common/FriendProfile";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
-import { selectUserInfo } from "@store/authSlice";
+import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { profileInfo } from "@pages/commonPage";
 import { plannerApi } from "@api/Api";
 
 const Week = () => {
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
+  const dayList = useAppSelector(selectDayList);
   const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt(week);
   const [isMine, setIsMine] = useState<boolean>(true);
-
-  const dispatch = useAppDispatch();
-  const userId = useAppSelector(selectUserInfo).userId;
-  const dayList = useAppSelector(selectDayList);
 
   const handleButton = (to: string) => {
     const date = week.getDate();
@@ -84,7 +83,7 @@ const Week = () => {
       </div>
       <div className={styles["week__list"]}>
         <WeekTodo />
-        {dayList?.map((today: DayListConfig, key: number) => <WeekList dayInfo={today} key={key} />)}
+        {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} key={key} />)}
       </div>
     </div>
   );

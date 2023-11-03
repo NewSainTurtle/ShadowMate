@@ -1,21 +1,24 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectCategoryColorClick, setCategoryColorClick } from "@store/mypageSlice";
 
 interface Props {
   item: string;
   index: number;
-  click: number;
-  setClick: Dispatch<SetStateAction<number>>;
 }
 
-const CategoryColorItem = ({ item, click, index, setClick }: Props) => {
+const CategoryColorItem = ({ item, index }: Props) => {
+  const dispatch = useAppDispatch();
+  const click: number = useAppSelector(selectCategoryColorClick);
+
   const clicked = click === index ? "--clicked" : "";
   return (
     <div
       className={styles[`color__item${clicked}`]}
       style={{ backgroundColor: item }}
       onClick={() => {
-        setClick(index);
+        dispatch(setCategoryColorClick(index));
       }}
     ></div>
   );

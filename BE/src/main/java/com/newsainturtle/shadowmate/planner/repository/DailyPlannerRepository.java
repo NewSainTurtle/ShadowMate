@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.util.List;
 
 @Repository
 public interface DailyPlannerRepository extends JpaRepository<DailyPlanner, Long> {
-    DailyPlanner findByUserAndDailyPlannerDay(final User user, final Date DailyPlannerDay);
+    DailyPlanner findByUserAndDailyPlannerDay(final User user, final Date dailyPlannerDay);
+    List<DailyPlanner> findAllByUser(final User user);
 }

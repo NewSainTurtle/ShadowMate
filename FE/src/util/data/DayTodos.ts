@@ -1,8 +1,10 @@
+import { ProfileConfig } from "@components/common/FriendProfile";
 import { CategoryConfig } from "@util/planner.interface";
-import { todoType } from "@store/planner/daySlice";
+import { TodoConfig } from "@util/planner.interface";
 import dayjs from "dayjs";
 
-export const todoData_friend = {
+export const todoData_friend: ProfileConfig = {
+  userId: 0,
   nickname: "토롱이",
   message: "인생은 생각하는대로 흘러간다.",
   src: "https://avatars.githubusercontent.com/u/85155789?v=4",
@@ -10,26 +12,26 @@ export const todoData_friend = {
 
 export const todoData_category: CategoryConfig[] = [
   {
-    categoryId: 1,
+    categoryId: 44,
     categoryTitle: "국어",
     categoryColorCode: "#FFCBE1",
     categoryEmoticon: "📓",
   },
   {
-    categoryId: 2,
+    categoryId: 45,
     categoryTitle: "수학",
     categoryColorCode: "#B6F7E1",
     categoryEmoticon: "📐",
   },
   {
-    categoryId: 3,
+    categoryId: 46,
     categoryTitle: "과학 뿌셔뿌셔 대항전",
     categoryColorCode: "#B6DEF7",
     categoryEmoticon: "🧪",
   },
 ];
 
-export const todoData_list: todoType[] = [
+export const todoData_list: TodoConfig[] = [
   {
     todoId: 1,
     todoContent: "수능완성 수학 과목별 10문제",

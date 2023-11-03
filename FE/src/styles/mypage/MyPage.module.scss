@@ -77,15 +77,14 @@ $color-warning: var(--color-warning);
     &--save,
     &--delete {
       cursor: pointer;
+      &--disable {
+        color: $color-gray-4;
+        cursor: not-allowed;
+      }
     }
 
     &--delete {
       color: $color-warning;
-      &--disable {
-        @extend .frame__button--delete;
-        color: $color-gray-4;
-        cursor: not-allowed;
-      }
     }
   }
 
@@ -259,6 +258,18 @@ $color-warning: var(--color-warning);
     }
     > div:nth-child(2) {
       margin-top: 3.5em;
+    }
+  }
+
+  &__none {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    > span {
+      color: $color-gray-4;
+      margin-bottom: 1em;
     }
   }
 }
@@ -538,11 +549,13 @@ $color-warning: var(--color-warning);
   }
 
   &__frame {
+    display: grid;
+    row-gap: 1em;
+
     &__title {
       padding: 1em;
       box-sizing: border-box;
       border-bottom: 1px solid $color-text;
-      margin-bottom: 1em;
     }
 
     &__list {

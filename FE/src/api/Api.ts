@@ -1,5 +1,6 @@
 import Axios from "@api/JsonAxios";
 import api from "@api/BaseUrl";
+import { MonthConfig } from "@store/planner/monthSlice";
 
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
@@ -12,61 +13,60 @@ export const authApi = {
 };
 
 export const userApi = {
-  getProfiles: (userId: string) => Axios.get(api.users.getProfiles(userId)),
-  myPage: (userId: string, data: { nickname: string; statusMessage: string }) =>
+  getProfiles: (userId: number) => Axios.get(api.users.getProfiles(userId)),
+  myPage: (userId: number, data: { nickname: string; statusMessage: string }) =>
     Axios.put(api.users.myPage(userId), data),
-  password: (userId: string, data: { oldPassword: string; newPassword: string }) =>
+  password: (userId: number, data: { oldPassword: string; newPassword: string }) =>
     Axios.post(api.users.password(userId), data),
-  userOut: (userId: string) => Axios.delete(api.users.userOut(userId)),
-  editProfileImg: (userId: string, data: { newProfileImage: string }) =>
+  userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
+  editProfileImg: (userId: number, data: { newProfileImage: string }) =>
     Axios.put(api.users.editProfileImg(userId), data),
-  deleteProfileImg: (userId: string) => Axios.delete(api.users.editProfileImg(userId)),
+  deleteProfileImg: (userId: number) => Axios.delete(api.users.editProfileImg(userId)),
+  searches: (userId: number, params: { nickname: string }) => Axios.get(api.users.searches(userId), { params }),
 };
 
 export const followApi = {
-  getFollowing: (userId: string) => Axios.get(api.follow.following(userId)),
-  deleteFollowing: (userId: string, data: { followingId: number }) =>
+  getFollowing: (userId: number) => Axios.get(api.follow.following(userId)),
+  deleteFollowing: (userId: number, data: { followingId: number }) =>
     Axios.delete(api.follow.following(userId), { data: data }),
-  getFollwers: (userId: string) => Axios.get(api.follow.followers(userId)),
-  deleteFollows: (userId: string, data: { followingId: number }) =>
+  getFollwers: (userId: number) => Axios.get(api.follow.followers(userId)),
+  deleteFollowers: (userId: number, data: { followerId: number }) =>
     Axios.delete(api.follow.followers(userId), { data: data }),
-  searches: (userId: string, params: { nickname: string }) =>
-    Axios.post(api.follow.searches(userId), {}, { params: params }),
-  addRequested: (userId: string, data: { followingId: number }) => Axios.post(api.follow.requested(userId), data),
-  canelRequested: (userId: string, data: { followingId: number }) =>
+  addRequested: (userId: number, data: { followingId: number }) => Axios.post(api.follow.requested(userId), data),
+  cancelRequested: (userId: number, data: { receiverId: number }) =>
     Axios.delete(api.follow.requested(userId), { data: data }),
-  receive: (userId: string, data: { requesertId: number; followReceive: boolean }) =>
+  receive: (userId: number, data: { requesterId: number; followReceive: boolean }) =>
     Axios.post(api.follow.receive(userId), data),
-  receiveList: (userId: string) => Axios.get(api.follow.receiveList(userId)),
+  receiveList: (userId: number) => Axios.get(api.follow.receiveList(userId)),
 };
 
 export const plannerApi = {
-  calendars: (userId: string, params: { date: string }) =>
+  calendars: (userId: number, params: { date: string }) =>
     Axios.get(api.planners.calendars(userId), { params: params }),
 
-  weekly: (userId: string, params: { "start-date": string; "end-date": string }) =>
+  weekly: (userId: number, params: { "start-date": string; "end-date": string }) =>
     Axios.get(api.planners.weekly(userId), { params: params }),
-  addWeeklyTodos: (userId: string, data: { startDate: string; endDate: string; weeklyTodoContent: string }) =>
+  addWeeklyTodos: (userId: number, data: { startDate: string; endDate: string; weeklyTodoContent: string }) =>
     Axios.post(api.planners.weeklyTodos(userId), data),
   editWeeklyTodos: (
-    userId: string,
+    userId: number,
     data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoContent: string },
   ) => Axios.put(api.planners.weeklyTodos(userId), data),
-  deleteWeeklyTodos: (userId: string, data: { startDate: string; endDate: string; weeklyTodoId: number }) =>
+  deleteWeeklyTodos: (userId: number, data: { startDate: string; endDate: string; weeklyTodoId: number }) =>
     Axios.delete(api.planners.weeklyTodos(userId), { data: data }),
   weeklyTodosStatus: (
-    userId: string,
+    userId: number,
     data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoStatus: boolean },
   ) => Axios.put(api.planners.weeklyTodosStatus(userId), data),
 
-  daily: (userId: string, params: { date: string }) => Axios.get(api.planners.daily(userId), { params: params }),
-  likes: (userId: string, data: { date: string; anotherUserId: number }) =>
+  daily: (userId: number, params: { date: string }) => Axios.get(api.planners.daily(userId), { params: params }),
+  likes: (userId: number, data: { date: string; anotherUserId: number }) =>
     Axios.post(api.planners.likes(userId), data),
-  cancleLikes: (userId: string, data: { date: string }) => Axios.delete(api.planners.likes(userId), { data: data }),
-  addDailyTodos: (userId: string, data: { date: string; todoContent: string; categoryId: number }) =>
+  cancleLikes: (userId: number, data: { date: string }) => Axios.delete(api.planners.likes(userId), { data: data }),
+  addDailyTodos: (userId: number, data: { date: string; todoContent: string; categoryId: number }) =>
     Axios.post(api.planners.dailyTodos(userId), data),
   editDailyTodos: (
-    userId: string,
+    userId: number,
     data: {
       date: string;
       todoId: number;
@@ -75,48 +75,48 @@ export const plannerApi = {
       todoStatus: "공백" | "완료" | "미완료";
     },
   ) => Axios.put(api.planners.dailyTodos(userId), data),
-  deleteDailyTodos: (userId: string, data: { date: string; todoId: number }) =>
+  deleteDailyTodos: (userId: number, data: { date: string; todoId: number }) =>
     Axios.delete(api.planners.dailyTodos(userId), { data: data }),
 
-  timetables: (userId: string, data: { date: string; todoId: number; startTime: string; endTime: string }) =>
+  timetables: (userId: number, data: { date: string; todoId: number; startTime: string; endTime: string }) =>
     Axios.post(api.planners.timetables(userId), data),
-  deleteTimetable: (userId: string, data: { date: string; todoId: number }) =>
+  deleteTimetable: (userId: number, data: { date: string; todoId: number }) =>
     Axios.delete(api.planners.timetables(userId), { data: data }),
-  retrospections: (userId: string, data: { date: string; retrospection: string }) =>
+  retrospections: (userId: number, data: { date: string; retrospection: string }) =>
     Axios.put(api.planners.retrospections(userId), data),
-  todayGoals: (userId: string, data: { date: string; todayGoal: string }) =>
+  todayGoals: (userId: number, data: { date: string; todayGoal: string }) =>
     Axios.put(api.planners.todayGoals(userId), data),
-  tomorrowGoals: (userId: string, data: { date: string; tomorrowGoal: string }) =>
+  tomorrowGoals: (userId: number, data: { date: string; tomorrowGoal: string }) =>
     Axios.put(api.planners.tomorrowGoals(userId), data),
-  retrospectionImages: (userId: string, data: { date: string; retrospectionImage: string | null }) =>
+  retrospectionImages: (userId: number, data: { date: string; retrospectionImage: string | null }) =>
     Axios.put(api.planners.retrospectionImages(userId), data),
-  social: (userId: string, data: { date: string; socialImage: string }) =>
+  social: (userId: number, data: { date: string; socialImage: string }) =>
     Axios.post(api.planners.social(userId), data),
 };
 
 export const settingApi = {
-  accessScopes: (userId: string, data: { plannerAccessScope: "전체공개" | "친구공개" | "비공개" }) =>
+  accessScopes: (userId: number, data: { plannerAccessScope: MonthConfig["plannerAccessScope"] }) =>
     Axios.put(api.setting.accessScopes(userId), data),
 
-  categories: (userId: string) => Axios.get(api.setting.categories(userId)),
-  categoriesColors: (userId: string) => Axios.get(api.setting.categoriesColors(userId)),
+  categories: (userId: number) => Axios.get(api.setting.categories(userId)),
+  categoriesColors: (userId: number) => Axios.get(api.setting.categoriesColors(userId)),
   addCategories: (
-    userId: string,
+    userId: number,
     data: { categoryTitle: string; categoryColorId: number; categoryEmoticon: string | null },
   ) => Axios.post(api.setting.categories(userId), data),
   editCategories: (
-    userId: string,
+    userId: number,
     data: { categoryId: number; categoryTitle: string; categoryColorId: number; categoryEmoticon: string | null },
   ) => Axios.put(api.setting.categories(userId), data),
-  deleteCategories: (userId: string, data: { categoryId: number }) =>
+  deleteCategories: (userId: number, data: { categoryId: number }) =>
     Axios.delete(api.setting.categories(userId), { data: data }),
 
-  ddays: (userId: string) => Axios.get(api.setting.ddays(userId)),
-  addDdays: (userId: string, data: { ddayDate: string; ddayTime: string }) =>
+  ddays: (userId: number) => Axios.get(api.setting.ddays(userId)),
+  addDdays: (userId: number, data: { ddayDate: string; ddayTitle: string }) =>
     Axios.post(api.setting.ddays(userId), data),
-  editDdays: (userId: string, data: { ddayId: number; ddayDate: string; ddayTime: string }) =>
+  editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
-  deleteDdays: (userId: string, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
+  deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
 };
 
 export const socialApi = {

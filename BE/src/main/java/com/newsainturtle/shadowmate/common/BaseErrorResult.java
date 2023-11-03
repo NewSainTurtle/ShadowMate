@@ -6,6 +6,5 @@ public interface BaseErrorResult {
 
     HttpStatus getHttpStatus();
     String getMessage();
-
     String name();
 }

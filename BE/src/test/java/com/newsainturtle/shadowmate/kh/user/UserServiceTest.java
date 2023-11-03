@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.kh.user;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -35,6 +37,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Spy
     private FollowRepository followRepository;
@@ -92,32 +97,51 @@ public class UserServiceTest {
         }
 
         @Test
-        void 실패_프로필이미지수정_유저없음() {
+        void 성공_내정보수정() {
             //given
+            final String newNickname = "NewNickName";
             final String newProfileImage = "NewProfileImage";
-            doReturn(Optional.empty()).when(userRepository).findById(user1.getId());
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
 
             //when
-            final UserException result = assertThrows(UserException.class, () -> userService.updateProfileImage(user1.getId(), newProfileImage));
+            userService.updateUser(user1.getId(), updateUserRequest);
 
             //then
-            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+            verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
+
         }
 
+        @Test
+        void 실패_비밀번호수정_비밀번호다름() {
+            // given
+            final String newPassword = "NewPassword";
+            doReturn(Optional.of(user1)).when(userRepository).findById(user1.getId());
+            doReturn(false).when(bCryptPasswordEncoder).matches(any(), any());
+
+            // when
+            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(user1.getId(), user1.getPassword(), newPassword));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DIFFERENT_PASSWORD);
+        }
 
         @Test
-        void 성공_프로필이미지수정() {
-            //given
-            final String newProfileImage = "NewProfileImage";
-            given(userRepository.findById(user1.getId())).willReturn(Optional.of(user1));
+        void 성공_비밀번호수정() {
+            // given
+            final String newPassword = "NewPassword";
+            doReturn(Optional.of(user1)).when(userRepository).findById(user1.getId());
+            doReturn(true).when(bCryptPasswordEncoder).matches(any(), any());
 
-            //when
-            userService.updateProfileImage(user1.getId(), newProfileImage);
+            // when
+            userService.updatePassword(user1.getId(), user1.getPassword(), newPassword);
 
-            //then
-            verify(userRepository, times(1)).findById(any());
-            verify(userRepository, times(1)).save(any());
-
+            // then
+            verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
         }
 
     }

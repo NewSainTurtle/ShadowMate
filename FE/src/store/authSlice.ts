@@ -1,8 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 
-export interface userInfoConfig {
-  userId: number;
+interface userInfoConfig {
   email: string;
   nickname: string;
   profileImage: string;
@@ -12,15 +11,16 @@ export interface userInfoConfig {
 
 interface authConfig {
   accessToken: string;
+  userId: number;
   login: boolean;
   userInfo: userInfoConfig;
 }
 
 const initialState: authConfig = {
   accessToken: "",
+  userId: 0,
   login: false,
   userInfo: {
-    userId: 0,
     email: "",
     nickname: "",
     profileImage: "",
@@ -36,12 +36,12 @@ const authSlice = createSlice({
     setLogin: (state, { payload }: PayloadAction<{ accessToken: string; userId: number }>) => {
       state.accessToken = payload.accessToken;
       state.login = true;
-      state.userInfo.userId = payload.userId;
-      sessionStorage.setItem("accessToken", payload.accessToken);
+      state.userId = payload.userId;
     },
     setLogout: (state) => {
       state = initialState;
-      sessionStorage.clear();
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("id");
     },
     setUserInfo: (
       state,
@@ -72,5 +72,5 @@ export const { setLogin, setLogout, setUserInfo } = authSlice.actions;
 export const selectUserInfo = (state: rootState) => state.auth.userInfo;
 export const selectLoginState = (state: rootState) => state.auth.login;
 export const selectAccessToken = (state: rootState) => state.auth.accessToken;
-
+export const selectUserId = (state: rootState) => state.auth.userId;
 export default authSlice.reducer;

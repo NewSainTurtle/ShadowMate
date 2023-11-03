@@ -1,26 +1,14 @@
 import React, { useRef } from "react";
 import styles from "@styles/planner/day.module.scss";
 import { useAppSelector } from "@hooks/hook";
-import { selectTodoItem } from "@store/planner/daySlice";
-
-const throttle = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
-  let timeId: ReturnType<typeof setTimeout> | null;
-  return (...args: Parameters<T>) => {
-    let result: any;
-    if (!timeId) {
-      timeId = setTimeout(() => {
-        result = fn(...args);
-        timeId = null;
-      }, delay);
-      return result;
-    }
-  };
-};
+import { BASIC_CATEGORY_ITEM, selectTodoItem } from "@store/planner/daySlice";
+import { throttle } from "@util/EventControlModule";
 
 const CustomCursor = () => {
   const cursorRef = useRef<SVGSVGElement>(null);
-  const { category } = useAppSelector(selectTodoItem);
-  const { categoryColorCode } = category;
+  const todoItem = useAppSelector(selectTodoItem);
+  const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
+  const categoryColorCode = category.categoryColorCode;
 
   const moveCursor = (e: { clientY: any; clientX: any }) => {
     const mouseY = e.clientY;

@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,9 @@ public interface UserService {
 
     UserResponse searchNickname(final User user, final String nickname);
 
-    void updateProfileImage(final Long userId, final String newProfileImage);
+    void updateUser(final Long userId, final UpdateUserRequest updateUserRequest);
+
+    void updatePassword(final Long userId, final String oldPassword, final String newPassword);
 
     void deleteUser(final Long userId);
 }

@@ -2,35 +2,44 @@ import React, { ChangeEvent, Dispatch, MouseEvent, SetStateAction, useEffect, us
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import { ddayType } from "@util/planner.interface";
+import { DdayConfig } from "@util/planner.interface";
 import { dateFormat } from "@util/getThisWeek";
 import dayjs from "dayjs";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectDdayClick, selectDdayInput, selectDdayList, setDdayInput } from "@store/mypageSlice";
 
-interface Props {
-  click: number;
-  ddayList: ddayType[];
-  input: ddayType;
-  setInput: Dispatch<SetStateAction<ddayType>>;
-  error: boolean;
-}
-
-const MyPageDday = ({ click, ddayList, input, setInput, error }: Props) => {
+const MyPageDday = () => {
+  const dispatch = useAppDispatch();
+  const click = useAppSelector(selectDdayClick);
+  const ddayList = useAppSelector(selectDdayList);
+  const ddayInput: DdayConfig = useAppSelector(selectDdayInput);
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
-  const { ddayId, ddayTitle, ddayDate } = input;
-
+  const [error, setError] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);
+
+  const { ddayTitle, ddayDate } = ddayInput || "";
+  const [length, setLength] = useState<number>(ddayTitle ? ddayTitle.length : 0);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
-    setInput({ ...input, [name]: value });
+    if (name === "ddayTitle") {
+      setLength(value.length);
+      if (value.length < 2 || value.length >= 20) {
+        setError(true);
+      } else setError(false);
+    }
+    dispatch(setDdayInput({ ...ddayInput, [name]: value }));
   };
 
   useEffect(() => {
-    setInput(ddayList[click]);
-  }, [click, ddayList]);
+    if (ddayList.length > 0 && ddayInput) {
+      dispatch(setDdayInput(ddayList[click]));
+      setLength(ddayList[click].ddayTitle.length);
+    }
+  }, [click]);
 
   /* 캘린더 외부 영역 클릭 시 캘린더 닫힘. */
   useEffect(() => {
@@ -53,12 +62,12 @@ const MyPageDday = ({ click, ddayList, input, setInput, error }: Props) => {
       <div className={styles["frame__line"]}>
         <Text>디데이 이름</Text>
         <Input
-          error={error}
           name="ddayTitle"
           value={ddayTitle}
           placeholder="디데이 이름을 입력하세요."
           onChange={onChangeInput}
-          helperText={"2 ~ 20자의 이름을 입력할 수 있습니다."}
+          error={error}
+          helperText={error ? "2 ~ 20자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/20`}
         />
       </div>
       <div id={styles["date"]} className={styles["frame__line"]}>
@@ -71,7 +80,7 @@ const MyPageDday = ({ click, ddayList, input, setInput, error }: Props) => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
               value={dayjs(ddayDate)}
-              onChange={(value) => setInput({ ...input, ddayDate: dayjs(value).toDate() })}
+              onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
             />
           </LocalizationProvider>
         </div>

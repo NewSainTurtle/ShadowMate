@@ -10,6 +10,7 @@ import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
+import com.newsainturtle.shadowmate.planner.service.SearchPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -45,6 +46,9 @@ class PlannerControllerTest {
 
     @Mock
     private WeeklyPlannerServiceImpl weeklyPlannerServiceImpl;
+
+    @Mock
+    private SearchPlannerServiceImpl searchPlannerServiceImpl;
 
     @Mock
     private AuthService authServiceImpl;
@@ -2113,7 +2117,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(dailyPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2128,7 +2132,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2164,7 +2168,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2180,7 +2184,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2196,7 +2200,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(searchPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2233,7 +2237,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(dailyPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2248,7 +2252,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2273,5 +2277,109 @@ class PlannerControllerTest {
             //then
             resultActions.andExpect(status().isOk());
         }
+    }
+
+    @Nested
+    class 소셜공유 {
+        final String url = "/api/planners/{userId}/daily/social";
+        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+        final ShareSocialRequest shareSocialRequest = ShareSocialRequest.builder()
+                .date(date)
+                .socialImage(socialImage)
+                .build();
+
+        @Test
+        void 실패_없는사용자() throws Exception {
+            //given
+
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 실패_유효하지않은플래너() throws Exception {
+            //given
+
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).shareSocial(any(), any(ShareSocialRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class 소셜공유_실패케이스모음_유효하지않은요청값 {
+
+        final String url = "/api/planners/{userId}/daily/social";
+        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+
+        @ParameterizedTest
+        @MethodSource("invalidShareSocialRequest")
+        void 소셜공유_실패(final ShareSocialRequest shareSocialRequest) throws Exception {
+            // given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        private Stream<Arguments> invalidShareSocialRequest() {
+            return Stream.of(
+                    // 올바르지 않은 날짜 형식
+                    Arguments.of(ShareSocialRequest.builder()
+                            .date("2023/10/16")
+                            .socialImage(socialImage)
+                            .build()),
+                    // 날짜 Null
+                    Arguments.of(ShareSocialRequest.builder()
+                            .date(null)
+                            .socialImage(socialImage)
+                            .build()),
+                    // 소셜 이미지 Null
+                    Arguments.of(ShareSocialRequest.builder()
+                            .date(date)
+                            .socialImage(null)
+                            .build())
+            );
+        }
+
     }
 }

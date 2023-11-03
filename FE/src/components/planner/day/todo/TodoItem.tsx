@@ -1,46 +1,37 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
-import { todoType, BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import { TodoConfig } from "@util/planner.interface";
 import { CategoryConfig } from "@util/planner.interface";
-import { todoData_category } from "@util/data/DayTodos";
 
 interface Props {
   idx?: number;
-  todoItem: todoType;
+  todoItem: TodoConfig;
   addTodo?: boolean;
   disable?: boolean;
   todoModule: {
-    insertTodo: (props: todoType) => void;
-    updateTodo: (idx: number, props: todoType) => void;
-    deleteTodo: (idx: number) => void;
+    insertTodo: (props: TodoConfig) => void;
+    updateTodo: (idx: number, props: TodoConfig) => void;
+    deleteTodo: (idx: number, todoId: number) => void;
   };
 }
 
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
-  const { category, todoContent, todoStatus } = todoItem;
+  const { todoContent, todoStatus } = todoItem;
+  const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
   const { insertTodo, updateTodo, deleteTodo } = todoModule;
-  const categoryList: CategoryConfig[] = todoData_category;
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
-  const [isDropdownView, setDropdownView] = useState(false);
   const maxLength = 50;
 
   const [ModalOpen, setModalOpen] = useState<boolean>(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
-
-  useEffect(() => {
-    const handleOutsideClose = (e: { target: any }) => {
-      if (isDropdownView && !dropMenuRef.current?.contains(e.target)) setDropdownView(false);
-    };
-    document.addEventListener("click", handleOutsideClose);
-    return () => document.removeEventListener("click", handleOutsideClose);
-  }, [isDropdownView]);
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > maxLength) {
@@ -72,19 +63,33 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
   const handleSaveTextTodo = () => {
     if (text === "") return;
-    updateTodo(idx, { ...todoItem, todoContent: text });
+    if (addTodo) {
+      if (text === "") return;
+      insertTodo({ ...todoItem, todoContent: text });
+      setText("");
+    } else {
+      updateTodo(idx, { ...todoItem, todoContent: text });
+    }
   };
 
   const handleSaveStatusTodo = () => {
     if (text === "") return;
-    updateTodo(idx, {
-      ...todoItem,
-      todoStatus: todoStatus == "공백" ? "완료" : todoStatus == "완료" ? "미완료" : "공백",
-    });
+    if (todoStatus == "완료") {
+      updateTodo(idx, {
+        ...todoItem,
+        todoStatus: "미완료",
+        timeTable: { ...todoItem.timeTable!, startTime: "", endTime: "" },
+      });
+    } else {
+      updateTodo(idx, {
+        ...todoItem,
+        todoStatus: todoStatus == "공백" ? "완료" : "공백",
+      });
+    }
   };
 
   const clickDeleteTodo = () => {
-    deleteTodo(idx);
+    deleteTodo(idx, todoItem.todoId);
   };
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
@@ -112,22 +117,6 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
         </div>
-        {isDropdownView && (
-          <div className={styles["todo-item__category-menu"]}>
-            <span onClick={() => handleClickCategory(BASIC_CATEGORY_ITEM)}>&emsp;&emsp;</span>
-            {categoryList.map((item) => {
-              return (
-                <span
-                  key={item.categoryId}
-                  style={categoryStyle(item.categoryColorCode)}
-                  onClick={() => handleClickCategory(item)}
-                >
-                  {item.categoryTitle}
-                </span>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       <div className={styles[`todo-item__content${clicked ? "--add" : ""}`]}>
@@ -144,7 +133,6 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
               placeholder={"할 일을 입력하세요"}
               minLength={2}
               maxLength={maxLength}
-              autoFocus={addTodo}
               onChange={editText}
               onKeyDown={handleOnKeyPress}
               onBlur={handleSaveTextTodo}

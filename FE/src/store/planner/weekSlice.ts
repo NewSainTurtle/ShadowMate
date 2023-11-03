@@ -1,19 +1,11 @@
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { DayTodoConfig, WeekTodoItemConfig, CategoryConfig } from "@util/planner.interface";
-
-export interface DailyTodoConfig {
-  todoId: number;
-  category?: CategoryConfig;
-  todoContent: string;
-  todoStatus: string;
-  todoUpdate?: boolean;
-}
+import { TodoConfig, WeekTodoItemConfig } from "@util/planner.interface";
 
 export interface DayListConfig {
   date: string;
   retrospection: string | null;
-  dailyTodo: DayTodoConfig[] | null;
+  dailyTodos: TodoConfig[] | null;
 }
 
 export interface WeekConfig {
@@ -48,12 +40,17 @@ const weekSlice = createSlice({
     setWeeklyTodos: (state, { payload }: PayloadAction<WeekTodoItemConfig[]>) => {
       state.weeklyTodos = payload;
     },
+    setDayList: (state, { payload }: PayloadAction<DayListConfig[]>) => {
+      state.dayList = payload;
+    },
   },
 });
 
-export const { setWeekInfo, setWeeklyTodos, setThisWeek } = weekSlice.actions;
+export const { setWeekInfo, setWeeklyTodos, setThisWeek, setDayList } = weekSlice.actions;
 export const selectDayList = (state: rootState) => state.week.dayList;
 export const selectWeeklyTodos = (state: rootState) => state.week.weeklyTodos;
+export const selectDailyTodos = (state: rootState) => state.week.dayList.dailyTodos;
 export const selectThisWeek = (state: rootState) => state.week.thisWeek;
+export const selectWeekDday = (state: rootState) => state.week.dday;
 
 export default weekSlice.reducer;

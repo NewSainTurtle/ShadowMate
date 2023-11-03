@@ -4,6 +4,11 @@ export interface MonthType {
   dayStatus: number;
 }
 
+export interface CategoryColorConfig {
+  categoryColorId: number;
+  categoryColorCode: string;
+}
+
 export interface CategoryConfig {
   categoryId: number;
   categoryTitle: string;
@@ -11,10 +16,10 @@ export interface CategoryConfig {
   categoryEmoticon?: string | null;
 }
 
-export interface DayTodoConfig {
-  todoId: number;
-  todoContent: string;
-  todoStatus: "공백" | "완료" | "미완료"; // none, O, X
+export interface DdayConfig {
+  ddayId: number;
+  ddayDate: Date | string;
+  ddayTitle: string;
 }
 
 export interface TimeTableConfig {
@@ -28,9 +33,9 @@ export interface TodoConfig {
   todoId: number;
   category?: CategoryConfig | null;
   todoContent: string;
-  todoStatus: string;
+  todoStatus: "공백" | "완료" | "미완료";
   todoUpdate?: boolean;
-  timeTable?: TimeTableConfig;
+  timeTable?: TimeTableConfig | null;
 }
 
 /* --- Week Interfaces --- */
@@ -40,10 +45,4 @@ export interface WeekTodoItemConfig {
   weeklyTodoContent: string;
   weeklyTodoStatus: boolean;
   weeklyTodoUpdate?: boolean;
-}
-
-export interface ddayType {
-  ddayId: number;
-  ddayDate: Date | string;
-  ddayTitle: string;
 }

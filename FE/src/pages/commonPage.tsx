@@ -7,6 +7,7 @@ import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import Profile from "@components/common/Profile";
 
 export const profileInfo: ProfileConfig = {
+  userId: 0,
   nickname: "ribbonE",
   message: "방가방가",
   src: "https://avatars.githubusercontent.com/u/85155789?v=4",
@@ -35,7 +36,7 @@ const commonPage = () => {
         <Button children="로그아웃" types="gray" />
       </div>
       <div>
-        <Dday comparedDate={new Date()} />
+        <Dday nearDate={new Date()} comparedDate={new Date()} />
       </div>
       <br />
       <div style={{ width: "25em", display: "flex", flexDirection: "column" }}>
@@ -47,7 +48,7 @@ const commonPage = () => {
       <div>
         <FriendProfile types="기본" profile={profileInfo} />
         <FriendProfile types="아이콘" profile={profileInfo} />
-        <FriendProfile types="삭제" profile={profileInfo} />
+        <FriendProfile types="팔로워 삭제" profile={profileInfo} />
         <FriendProfile types="친구 신청" profile={profileInfo} />
         <FriendProfile types="팔로워 신청" profile={profileInfo} />
         <FriendProfile types="요청" profile={profileInfo} />

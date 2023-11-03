@@ -111,15 +111,15 @@ public class FollowServiceImpl implements FollowService {
     @Transactional
     public String receiveFollow(final User user, final Long targetUserId, final boolean followReceive) {
         User targetUser = certifyFollowUser(targetUserId);
-        FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, targetUser);
+        FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(targetUser, user);
         if(followRequest == null) {
             throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST);
         }
-        followRequestRepository.deleteByRequesterIdAndReceiverId(user, targetUser);
+        followRequestRepository.deleteByRequesterIdAndReceiverId(targetUser, user);
         if(followReceive) {
             followRepository.save(Follow.builder()
-                    .followerId(user)
-                    .followingId(targetUser)
+                    .followerId(targetUser)
+                    .followingId(user)
                     .build());
             return FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE;
         }

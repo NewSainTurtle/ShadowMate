@@ -7,16 +7,17 @@ import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { setDate, selectDate } from "@store/planner/daySlice";
+import { setDate, selectDate, selectDayInfo } from "@store/planner/daySlice";
 import { todoData_friend } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");
 
-const FriendHeader = ({ heart }: { heart: number }) => {
+const FriendHeader = () => {
   const navigate = useNavigate();
-  const [isHeartClick, setIsHeartClick] = useState(false);
-  const [heartNum, setHeartNum] = useState(heart);
+  const { likeCount, like } = useAppSelector(selectDayInfo);
+  const [heartNum, setHeartNum] = useState(likeCount);
+  const [isHeartClick, setIsHeartClick] = useState(like);
 
   function heartClick() {
     setIsHeartClick(!isHeartClick);
@@ -45,8 +46,9 @@ const FriendHeader = ({ heart }: { heart: number }) => {
   );
 };
 
-const MyHeader = ({ heart }: { heart: number }) => {
+const MyHeader = () => {
   const [isSocialClick, setIsSocialClick] = useState(false);
+  const { likeCount } = useAppSelector(selectDayInfo);
 
   function socialClick() {
     setIsSocialClick(!isSocialClick);
@@ -54,7 +56,9 @@ const MyHeader = ({ heart }: { heart: number }) => {
 
   return (
     <div className={styles["planner-header__default"]}>
-      <Button types="red">♥ {heart}</Button>
+      <Button types="red" disabled>
+        ♥ {likeCount}
+      </Button>
       <div className={`${isSocialClick && styles["button__visit"]}`}>
         <Button types="blue" onClick={() => socialClick()}>
           소설공유
@@ -64,22 +68,21 @@ const MyHeader = ({ heart }: { heart: number }) => {
   );
 };
 
-const Header = () => {
+const Header = ({ isFriend }: { isFriend?: boolean }) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
+  const { dday: nearDate } = useAppSelector(selectDayInfo);
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
-  const heartNum = 50; // 임시 좋아요 수
-  const isFriend = false;
 
   const moveDate = (n: -1 | 0 | 1) => {
-    const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
+    const newDate = n == 0 ? dayjs().format("YYYY-MM-DD") : dayjs(date).add(n, "day").format("YYYY-MM-DD");
     dispatch(setDate(newDate));
   };
 
   return (
     <div className={styles["planner-header"]}>
       <div className={styles["planner-header__date"]}>
-        <Dday comparedDate={date} />
+        <Dday nearDate={nearDate} comparedDate={date} />
         <div>
           <Text types="semi-large" bold>
             {titleDay}
@@ -97,7 +100,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      {isFriend ? <FriendHeader heart={heartNum} /> : <MyHeader heart={heartNum} />}
+      {isFriend ? <FriendHeader /> : <MyHeader />}
     </div>
   );
 };
