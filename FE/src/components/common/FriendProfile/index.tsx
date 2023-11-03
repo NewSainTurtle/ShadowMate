@@ -61,7 +61,7 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
     };
     const deleteFollower = async () => {
       await followApi
-        .deletefollowers(userId, { followerId: profileId })
+        .deleteFollowers(userId, { followerId: profileId })
         .then(() => setState(5))
         .catch((err) => console.error(err));
     };
