@@ -36,7 +36,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   const [searchFriend, setSearchFriend] = useState<friendSearchType[]>([]);
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const debounceKeyword = useDebounce(searchKeyWord, 400);
-  const [alertMessage, setAlertMessage] = useState("닉네임을 통해 검색이 가능합니다.");
+  const [alertMessage, setAlertMessage] = useState("");
   const followState: boolean = useAppSelector(selectFollowState);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +49,10 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     if (search && "FOLLOW") return "팔로잉 삭제";
     return "팔로워 삭제";
   };
+
+  useEffect(() => {
+    if (!debounceKeyword.length) setAlertMessage("닉네임을 통해 검색이 가능합니다.");
+  }, [debounceKeyword.length]);
 
   useEffect(() => {
     if (!search) {
