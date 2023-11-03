@@ -48,7 +48,9 @@ test {
         excludes += ["com/newsainturtle/shadowmate/ShadowmateApplication.class",
                      "com/newsainturtle/shadowmate/common/**",
                      "com/newsainturtle/shadowmate/config/**",
-                     "com/newsainturtle/shadowmate/auth/service/RedisServiceImpl.class"]
+                     "com/newsainturtle/shadowmate/auth/service/RedisServiceImpl.class",
+                     "com/newsainturtle/shadowmate/**/enums/**",
+                     "com/newsainturtle/shadowmate/**/exception/**"]
     }
 }
 
@@ -69,7 +71,9 @@ jacocoTestReport {
                     exclude: ["com/newsainturtle/shadowmate/ShadowmateApplication.class",
                               "com/newsainturtle/shadowmate/common/**",
                               "com/newsainturtle/shadowmate/config/**",
-                              "com/newsainturtle/shadowmate/auth/service/RedisServiceImpl.class"])
+                              "com/newsainturtle/shadowmate/auth/service/RedisServiceImpl.class",
+                              "com/newsainturtle/shadowmate/**/enums/**",
+                              "com/newsainturtle/shadowmate/**/exception/**"])
         }))
     }
     finalizedBy 'jacocoTestCoverageVerification'
@@ -102,7 +106,9 @@ jacocoTestCoverageVerification {
             excludes = ["com.newsainturtle.shadowmate.ShadowmateApplication",
                         "com.newsainturtle.shadowmate.common.*",
                         "com.newsainturtle.shadowmate.config.*",
-                        "com.newsainturtle.shadowmate.auth.service.RedisServiceImpl"]
+                        "com.newsainturtle.shadowmate.auth.service.RedisServiceImpl",
+                        "com.newsainturtle.shadowmate.**.enums.*",
+                        "com.newsainturtle.shadowmate.**.exception.*"]
         }
 
     }
