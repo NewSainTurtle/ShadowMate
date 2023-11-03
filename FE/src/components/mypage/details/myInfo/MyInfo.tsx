@@ -7,21 +7,24 @@ import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
+import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { firebaseStorage } from "@api/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
 
 const MyPageInfo = () => {
   const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
   const myInfoData = useAppSelector(selectUserInfo);
   const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
-  const [imgPreview, setImgPreview] = useState<string>("");
+  const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
   const [password, setPassword] = useState({
     oldPassword: "",
     newPassword: "",
     newPasswordCheck: "",
   });
-  const { userId, email, nickname, profileImage, statusMessage } = userMyInfo;
+  const { email, nickname, profileImage, statusMessage } = userMyInfo;
   const { oldPassword, newPassword, newPasswordCheck } = password;
   const errorCheck = !(newPassword == "" || newPasswordCheck == "") && newPassword != newPasswordCheck;
   const [Modalopen, setModalOpen] = useState(false);
@@ -47,62 +50,40 @@ const MyPageInfo = () => {
       ...userMyInfo,
       profileImage: "",
     });
-    setImgPreview("");
   };
 
-  const saveImgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const renderImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
     reader.onloadend = () => {
-      if (e.target.files != null)
-        setUserMyInfo({
-          ...userMyInfo,
-          profileImage: e.target.files[0] as unknown as string,
-        });
-      setImgPreview(reader.result as string);
-      e.target.value = "";
+      setUserMyInfo({ ...userMyInfo, profileImage: reader.result as string });
+      if (e.target.files != null) {
+        setSaveImageFile(e.target.files[0]);
+      }
     };
   };
 
-  const saveMyInfo = () => {
-    userApi
-      .myPage(userId.toString(), { nickname, statusMessage })
-      .then((res) => {
-        console.log("프로필 변경 성공", res);
-        // dispatch(setUserInfo({ ...myInfoData, email, nickname, profileImage, statusMessage }));
-      })
-      .catch((err) => console.error("프로필 변경 실패", err))
+  const saveMyInfo = async () => {
+    let newProfileImage = profileImage;
+    if (saveImageFile != null) {
+      const file = saveImageFile;
+      const storageRef = ref(firebaseStorage, `profile/${file.name}`);
+      await uploadBytes(storageRef, file).then((snapshot) =>
+        getDownloadURL(snapshot.ref).then((downloadURL) => (newProfileImage = downloadURL)),
+      );
+    }
+    await userApi
+      .myPages(userId, { newNickname: nickname, newProfileImage, newStatusMessage: statusMessage })
       .then(() => {
-        // 사진이 달라지면
-        if (userMyInfo.profileImage != myInfoData.profileImage) {
-          if (userMyInfo.profileImage == "") {
-            userApi
-              .deleteProfileImg(userId.toString())
-              .then((res) => console.log("사진 삭제 성공", res))
-              .catch((err) => console.error("사진 삭제 실패", err));
-          } else {
-            userApi
-              .editProfileImg(userId.toString(), { newProfileImage: userMyInfo.profileImage })
-              .then((res) => console.log("사진 변경 성공", res))
-              .catch((err) => console.error("사진 변경 실패", err));
-          }
-        }
+        dispatch(setUserInfo({ ...userMyInfo, profileImage: newProfileImage }));
       })
-      .then(() => {
-        // 비밀번호가 변경되면
-        if (!errorCheck) {
-          userApi
-            .password(userId.toString(), { oldPassword, newPassword })
-            .then((res) => console.log("비밀번호 변경 성공", res))
-            .catch((err) => console.error("비밀번호 변경 실패", err));
-        }
-      });
+      .catch((err) => console.error(err));
   };
 
   const deleteProfile = () => {
     userApi
-      .userOut(userId.toString())
+      .userOut(userId)
       .then((res) => console.log("회원탈퇴 성공", res))
       .catch((err) => console.error("회원탈퇴 실패", err));
   };
@@ -127,11 +108,11 @@ const MyPageInfo = () => {
         title: "프로필 사진",
         node: (
           <div className={styles["info__profile-img"]}>
-            <input type="file" id="imageFile" accept="image/*" onChange={saveImgFile} />
+            <input type="file" id="imageFile" accept="image/*" onChange={renderImage} />
             <label htmlFor="imageFile">
-              <Avatar src={imgPreview} />
+              <Avatar src={profileImage} />
             </label>
-            {imgPreview && <div className={styles["button--delete"]} onClick={deleteImgFile} />}
+            {profileImage && <div className={styles["button--delete"]} onClick={deleteImgFile} />}
           </div>
         ),
       },
