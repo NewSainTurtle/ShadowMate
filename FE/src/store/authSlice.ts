@@ -44,7 +44,8 @@ const authSlice = createSlice({
       localStorage.removeItem("id");
     },
     setUserInfo: (state, { payload }: PayloadAction<userInfoConfig>) => {
-      state.userInfo = payload;
+      const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
+      state.userInfo = { ...payload, statusMessage, profileImage };
     },
   },
 });

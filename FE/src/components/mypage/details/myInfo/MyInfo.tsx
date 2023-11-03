@@ -5,8 +5,6 @@ import Text from "@components/common/Text";
 import { Avatar } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
-import Modal from "@components/common/Modal";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
@@ -16,7 +14,7 @@ import { userApi } from "@api/Api";
 const MyPageInfo = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const myInfoData = useAppSelector(selectUserInfo);
+  const myInfoData: userInfoConfig = useAppSelector(selectUserInfo);
   const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
   const { email, nickname, profileImage, statusMessage } = userMyInfo;

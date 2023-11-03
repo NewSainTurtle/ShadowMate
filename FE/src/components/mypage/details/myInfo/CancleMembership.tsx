@@ -3,11 +3,12 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { selectUserId } from "@store/authSlice";
-import { useAppSelector } from "@hooks/hook";
+import { selectUserId, setLogout } from "@store/authSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
 
 const CancleMembership = () => {
+  const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const [Modalopen, setModalOpen] = useState(false);
   const handleOpen = () => setModalOpen(true);
@@ -16,8 +17,11 @@ const CancleMembership = () => {
   const deleteProfile = () => {
     userApi
       .userOut(userId)
-      .then((res) => console.log("회원탈퇴 성공", res))
-      .catch((err) => console.error("회원탈퇴 실패", err));
+      .then(() => {
+        handleClose();
+        dispatch(setLogout());
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -36,7 +40,7 @@ const CancleMembership = () => {
             <br />
             <></>
           </Text>
-          <Text types="small">계정 탈퇴는 취소할 수 없습니다</Text>
+          <Text types="small">탈퇴된 계정은 다시 로그인 할 수 없습니다.</Text>
           <div>
             <div onClick={handleClose}>
               <Text types="small">취소</Text>
