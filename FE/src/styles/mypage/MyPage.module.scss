@@ -509,6 +509,11 @@ $color-warning: var(--color-warning);
       flex-direction: column;
       gap: 1.5em;
     }
+
+    &-cancleMembership {
+      cursor: pointer;
+      color: $color-warning;
+    }
   }
 
   &__modal {

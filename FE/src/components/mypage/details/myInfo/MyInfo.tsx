@@ -20,9 +20,6 @@ const MyPageInfo = () => {
   const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
-  const [Modalopen, setModalOpen] = useState(false);
-  const handleOpen = () => setModalOpen(true);
-  const handleClose = () => setModalOpen(false);
 
   const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserMyInfo({
@@ -68,13 +65,6 @@ const MyPageInfo = () => {
       .catch((err) => console.error(err));
   };
 
-  const deleteProfile = () => {
-    userApi
-      .userOut(userId)
-      .then((res) => console.log("회원탈퇴 성공", res))
-      .catch((err) => console.error("회원탈퇴 실패", err));
-  };
-
   const MY_INFO = (() => {
     return [
       { title: "이메일", node: <Input value={email} disabled /> },
@@ -117,9 +107,6 @@ const MyPageInfo = () => {
             <div>{item.node}</div>
           </div>
         ))}
-        <div onClick={handleOpen}>
-          <Text>회원 탈퇴</Text>
-        </div>
       </div>
       <div className={styles["info__button"]}>
         <div className={styles["info__button--save"]} onClick={saveMyInfo}>
@@ -127,26 +114,6 @@ const MyPageInfo = () => {
           <Text>저장</Text>
         </div>
       </div>
-
-      <Modal open={Modalopen} onClose={handleClose}>
-        <div className={styles["info__modal"]}>
-          <WarningAmberRoundedIcon />
-          <Text types="small">
-            <>정말 탈퇴하시겠습니까?</>
-            <br />
-            <></>
-          </Text>
-          <Text types="small">계정 탈퇴는 취소할 수 없습니다</Text>
-          <div>
-            <div onClick={handleClose}>
-              <Text types="small">취소</Text>
-            </div>
-            <div onClick={deleteProfile}>
-              <Text types="small">탈퇴</Text>
-            </div>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };
