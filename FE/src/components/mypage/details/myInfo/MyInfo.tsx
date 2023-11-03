@@ -173,14 +173,16 @@ const MyPageInfo = () => {
   return (
     <div className={styles["info__cantainer"]}>
       <div className={styles["info__contents"]}>
-        {MY_INFO.map((item, idx) => (
-          <div className={styles["info__line"]} key={idx}>
-            <div>
-              <Text>{item.title}</Text>
+        <div className={styles["info__myinfo"]}>
+          {MY_INFO.map((item, idx) => (
+            <div className={styles["info__line"]} key={idx}>
+              <div>
+                <Text>{item.title}</Text>
+              </div>
+              <div>{item.node}</div>
             </div>
-            <div>{item.node}</div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       <div className={styles["info__button"]}>
         <div className={styles["info__button--save"]} onClick={saveMyInfo}>

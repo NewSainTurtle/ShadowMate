@@ -58,37 +58,39 @@ const MyPassword = () => {
   return (
     <div className={styles["info__cantainer"]}>
       <div className={styles["info__contents"]}>
-        <div className={styles["info__line"]}>
-          <div>
-            <Text>비밀번호 변경</Text>
-          </div>
-          <div>
-            <div className={styles["info__password"]}>
-              <Input
-                types="password"
-                placeholder="현재 비밀번호 입력"
-                name="oldPassword"
-                value={oldPassword}
-                onChange={handlePassword}
-              />
-              <Input
-                types="password"
-                placeholder="변경할 비밀번호 입력"
-                name="newPassword"
-                value={newPassword}
-                onChange={handlePassword}
-                error={error.newPassword}
-                helperText={error.newPassword ? "6 ~ 20자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/20`}
-              />
-              <Input
-                types="password"
-                placeholder="변경할 비밀번호 확인"
-                name="newPasswordCheck"
-                value={newPasswordCheck}
-                onChange={handlePassword}
-                error={error.newPasswordCheck}
-                helperText={error.newPasswordCheck ? "비밀번호가 일치하지 않습니다." : " "}
-              />
+        <div className={styles["info__mypassword"]}>
+          <div className={styles["info__line"]}>
+            <div>
+              <Text>비밀번호 변경</Text>
+            </div>
+            <div>
+              <div className={styles["info__password"]}>
+                <Input
+                  types="password"
+                  placeholder="현재 비밀번호 입력"
+                  name="oldPassword"
+                  value={oldPassword}
+                  onChange={handlePassword}
+                />
+                <Input
+                  types="password"
+                  placeholder="변경할 비밀번호 입력"
+                  name="newPassword"
+                  value={newPassword}
+                  onChange={handlePassword}
+                  error={error.newPassword}
+                  helperText={error.newPassword ? "6 ~ 20자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/20`}
+                />
+                <Input
+                  types="password"
+                  placeholder="변경할 비밀번호 확인"
+                  name="newPasswordCheck"
+                  value={newPasswordCheck}
+                  onChange={handlePassword}
+                  error={error.newPasswordCheck}
+                  helperText={error.newPasswordCheck ? "비밀번호가 일치하지 않습니다." : " "}
+                />
+              </div>
             </div>
           </div>
         </div>

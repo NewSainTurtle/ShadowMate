@@ -417,6 +417,7 @@ $color-warning: var(--color-warning);
 
 .info {
   &__cantainer {
+    width: 100%;
     display: grid;
     height: 100%;
     grid-template-rows: 1fr min-content;
@@ -425,12 +426,16 @@ $color-warning: var(--color-warning);
   }
 
   &__contents {
+    width: 100%;
+    padding: 0.5em 3em 2em 3em;
+    box-sizing: border-box;
+  }
+
+  &__myinfo,
+  &__mypassword {
     width: 55%;
     display: flex;
     flex-direction: column;
-    margin-left: 3em;
-    padding: 0.5em 0em 2em 0em;
-    box-sizing: border-box;
     row-gap: 3em;
   }
 
@@ -527,9 +532,33 @@ $color-warning: var(--color-warning);
   }
 
   &__cancleMembership {
-    width: fit-content;
-    cursor: pointer;
-    color: $color-warning;
+    margin-top: 0.5em;
+
+    &__message {
+      border-top: 0.1rem solid $color-text;
+      padding: 2em 0.5em;
+      box-sizing: border-box;
+
+      p:nth-child(2) {
+        line-height: 200%;
+      }
+    }
+
+    &__button {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 6em;
+      box-sizing: border-box;
+
+      > div {
+        width: fit-content;
+        span {
+          cursor: pointer;
+          color: $color-warning;
+        }
+      }
+    }
   }
 
   &__modal {
