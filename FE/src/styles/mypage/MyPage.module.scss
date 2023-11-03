@@ -420,7 +420,7 @@ $color-warning: var(--color-warning);
     display: grid;
     height: 100%;
     grid-template-rows: 1fr min-content;
-    padding: 1em;
+    padding: 0 1em;
     box-sizing: border-box;
   }
 
@@ -428,17 +428,10 @@ $color-warning: var(--color-warning);
     width: 60%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     margin-left: 3em;
-    padding: 0.5em 0em 2em 0em;
+    padding: 1em 0em 2em 0em;
     box-sizing: border-box;
-
-    > :last-child {
-      color: $color-warning;
-      > span {
-        cursor: pointer;
-      }
-    }
+    row-gap: 3em;
   }
 
   &__line {
@@ -514,7 +507,7 @@ $color-warning: var(--color-warning);
     &-password {
       display: flex;
       flex-direction: column;
-      gap: 1em;
+      gap: 2em;
     }
   }
 

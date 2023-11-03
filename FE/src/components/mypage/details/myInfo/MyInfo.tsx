@@ -19,14 +19,7 @@ const MyPageInfo = () => {
   const myInfoData = useAppSelector(selectUserInfo);
   const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
-  const [password, setPassword] = useState({
-    oldPassword: "",
-    newPassword: "",
-    newPasswordCheck: "",
-  });
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
-  const { oldPassword, newPassword, newPasswordCheck } = password;
-  const errorCheck = !(newPassword == "" || newPasswordCheck == "") && newPassword != newPasswordCheck;
   const [Modalopen, setModalOpen] = useState(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
@@ -34,13 +27,6 @@ const MyPageInfo = () => {
   const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserMyInfo({
       ...userMyInfo,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword({
-      ...password,
       [e.target.name]: e.target.value,
     });
   };
@@ -114,35 +100,6 @@ const MyPageInfo = () => {
               <Avatar src={profileImage} />
             </label>
             {profileImage && <div className={styles["button--delete"]} onClick={deleteImgFile} />}
-          </div>
-        ),
-      },
-      {
-        title: "비밀번호 변경",
-        node: (
-          <div className={styles["info__profile-password"]}>
-            <Input
-              types="password"
-              placeholder="현재 비밀번호 입력"
-              name="nowPassword"
-              value={oldPassword}
-              onChange={handlePassword}
-            />
-            <Input
-              types="password"
-              placeholder="변경할 비밀번호 입력"
-              name="newPassword"
-              value={newPassword}
-              onChange={handlePassword}
-            />
-            <Input
-              types="password"
-              placeholder="변경할 비밀번호 확인"
-              name="newPasswordCheck"
-              value={newPasswordCheck}
-              onChange={handlePassword}
-              error={errorCheck}
-            />
           </div>
         ),
       },
