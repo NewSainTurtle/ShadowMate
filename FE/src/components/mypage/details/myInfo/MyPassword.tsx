@@ -3,8 +3,12 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Input from "@components/common/Input";
 import Text from "@components/common/Text";
 import SaveIcon from "@mui/icons-material/Save";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
+import { userApi } from "@api/Api";
 
 const MyPassword = () => {
+  const userId: number = useAppSelector(selectUserId);
   const [password, setPassword] = useState({
     oldPassword: "",
     newPassword: "",
@@ -21,7 +25,20 @@ const MyPassword = () => {
     });
   };
 
-  const saveMyInfo = async () => {};
+  const saveMyInfo = async () => {
+    if (!errorCheck) {
+      userApi
+        .password(userId, { oldPassword, newPassword })
+        .then(() => {
+          setPassword({
+            oldPassword: "",
+            newPassword: "",
+            newPasswordCheck: "",
+          });
+        })
+        .catch((err) => console.error(err));
+    }
+  };
 
   return (
     <div className={styles["info__cantainer"]}>
@@ -35,7 +52,7 @@ const MyPassword = () => {
               <Input
                 types="password"
                 placeholder="현재 비밀번호 입력"
-                name="nowPassword"
+                name="oldPassword"
                 value={oldPassword}
                 onChange={handlePassword}
               />
