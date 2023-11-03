@@ -71,8 +71,10 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         })
         .catch((err) => {
           const response = err.response.data;
-          if (response.code == "NOT_FOUND_NICKNAME") setAlertMessage("일치하는 닉네임을 찾을 수 없습니다.");
-          else console.error(err);
+          if (response.code == "NOT_FOUND_NICKNAME") {
+            setSearchFriend([]);
+            setAlertMessage("일치하는 닉네임을 찾을 수 없습니다.");
+          } else console.error(err);
         });
   }, [debounceKeyword, followState]);
 
