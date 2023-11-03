@@ -61,6 +61,7 @@ const MyPageInfo = () => {
       if (e.target.files != null) {
         setSaveImageFile(e.target.files[0]);
       }
+      e.target.value = "";
     };
   };
 
