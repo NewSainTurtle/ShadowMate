@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.14'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id "org.sonarqube" version "3.4.0.2513"
+    id 'jacoco'
 }
 
 group = 'com.newsainturtle'
@@ -15,6 +16,7 @@ java {
 repositories {
     mavenCentral()
 }
+
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
@@ -38,6 +40,70 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/jacoco.exec")
+        excludes += ["com/newsainturtle/shadowmate/ShadowmateApplication.class",
+                     "com/newsainturtle/shadowmate/common/**",
+                     "com/newsainturtle/shadowmate/config/**",
+                     "com/newsainturtle/shadowmate/auth/service/RedisServiceImpl.class"]
+    }
+}
+
+jacoco {
+    toolVersion = '0.8.5'
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+        xml.enabled false
+        csv.enabled false
+    }
+    afterEvaluate {
+
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ["com/newsainturtle/shadowmate/ShadowmateApplication.class",
+                              "com/newsainturtle/shadowmate/common/**",
+                              "com/newsainturtle/shadowmate/config/**",
+                              "com/newsainturtle/shadowmate/auth/service/RedisServiceImpl.class"])
+        }))
+    }
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.70
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.70
+            }
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 200
+            }
+
+            excludes = ["com.newsainturtle.shadowmate.ShadowmateApplication",
+                        "com.newsainturtle.shadowmate.common.*",
+                        "com.newsainturtle.shadowmate.config.*",
+                        "com.newsainturtle.shadowmate.auth.service.RedisServiceImpl"]
+        }
+
+    }
 }
