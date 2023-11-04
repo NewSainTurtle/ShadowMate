@@ -15,18 +15,17 @@ const MyPassword = () => {
     newPassword: "",
     newPasswordCheck: "",
   });
-
   const { oldPassword, newPassword, newPasswordCheck } = password;
   const [error, setError] = useState({
+    oldPassword: false,
     newPassword: false,
-    newPasswordCheck: !(newPassword == "" || newPasswordCheck == "") && newPassword != newPasswordCheck,
+    newPasswordCheck: false,
   });
-  const [length, setLength] = useState(newPassword.length);
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name == "oldPassword" && error.oldPassword) setError({ ...error, [name]: false });
     if (name == "newPassword") {
-      setLength(value.length);
       if (value.length > 0 && !userRegex.password.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
     }
@@ -41,18 +40,19 @@ const MyPassword = () => {
   };
 
   const saveMyInfo = async () => {
-    if (!(error.newPassword || error.newPasswordCheck)) return;
-
-    userApi
-      .password(userId, { oldPassword, newPassword })
-      .then(() => {
-        setPassword({
-          oldPassword: "",
-          newPassword: "",
-          newPasswordCheck: "",
-        });
-      })
-      .catch((err) => console.error(err));
+    if (!password.oldPassword.length) setError({ ...error, oldPassword: true });
+    else if (!(error.newPassword || error.newPasswordCheck)) {
+      userApi
+        .password(userId, { oldPassword, newPassword })
+        .then(() => {
+          setPassword({
+            oldPassword: "",
+            newPassword: "",
+            newPasswordCheck: "",
+          });
+        })
+        .catch((err) => setError({ ...error, oldPassword: true }));
+    }
   };
 
   return (
@@ -70,6 +70,8 @@ const MyPassword = () => {
                 name="oldPassword"
                 value={oldPassword}
                 onChange={handlePassword}
+                error={error.oldPassword}
+                helperText={error.oldPassword ? "현재 비밀번호와 일치하지 않습니다." : " "}
               />
               <Input
                 types="password"
