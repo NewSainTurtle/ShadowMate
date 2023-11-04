@@ -65,6 +65,7 @@ public class SocialServiceImpl implements SocialService {
     }
 
     @Override
+    @Transactional
     public void deleteSocial(final long socialId) {
         Optional<Social> social = socialRepository.findById(socialId);
         if(social.isPresent()) {
