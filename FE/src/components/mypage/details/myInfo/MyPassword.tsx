@@ -78,7 +78,7 @@ const MyPassword = () => {
                 value={newPassword}
                 onChange={handlePassword}
                 error={error.newPassword}
-                helperText={error.newPassword ? "6 ~ 20자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/20`}
+                helperText={"6 ~ 20자의 비밀번호를 입력할 수 있습니다."}
               />
               <Input
                 types="password"
