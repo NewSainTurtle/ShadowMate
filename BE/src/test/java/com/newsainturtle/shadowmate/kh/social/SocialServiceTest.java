@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-public class SocialServiceTest {
+class SocialServiceTest {
 
     @InjectMocks
     private SocialServiceImpl socialService;
@@ -107,7 +107,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -128,7 +128,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -159,7 +159,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
@@ -195,7 +195,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));

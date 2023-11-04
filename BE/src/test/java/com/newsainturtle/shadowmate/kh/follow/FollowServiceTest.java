@@ -70,7 +70,7 @@ public class FollowServiceTest {
     class 팔로잉TEST {
 
         @Test
-        public void 실패_팔로잉조회Null() {
+        void 실패_팔로잉조회Null() {
             //given
             List<FollowingResponse> followingResponses = new ArrayList<>();
             doReturn(followingResponses).when(followRepository).findAllByFollowerId(user1);
@@ -84,7 +84,7 @@ public class FollowServiceTest {
         }
 
         @Test
-        public void 성공_팔로잉조회() {
+        void 성공_팔로잉조회() {
             //given
 
             List<Follow> followingList = new ArrayList<>();
@@ -102,6 +102,7 @@ public class FollowServiceTest {
         @Test
         void 실패_팔로잉유저없음() {
             // given
+            assertThrows(FollowException.class, () -> followService.deleteFollowing(user1, user2.getId()));
 
             // when
             final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowing(user1, user2.getId()));
@@ -140,7 +141,7 @@ public class FollowServiceTest {
         }
 
         @Test
-        public void 성공_팔로워조회() {
+        void 성공_팔로워조회() {
             //given
 
             List<Follow> followingList = new ArrayList<>();
@@ -183,7 +184,7 @@ public class FollowServiceTest {
     class 팔로우신청TEST {
 
         @Test
-        public void 성공_친구신청목록조회Null() {
+        void 성공_친구신청목록조회Null() {
             //given
             List<FollowRequest> followRequestList = new ArrayList<>();
             doReturn(followRequestList).when(followRequestRepository).findAllByReceiverId(user2);
@@ -197,7 +198,7 @@ public class FollowServiceTest {
 
 
         @Test
-        public void 성공_친구신청목록조회() {
+        void 성공_친구신청목록조회() {
             //given
             FollowRequest followRequest = FollowRequest.builder()
                     .id(1L)
@@ -218,7 +219,7 @@ public class FollowServiceTest {
 
 
         @Test
-        public void 실패_중복친구신청() {
+        void 실패_중복친구신청() {
             //given
             final User user2 = User.builder()
                     .email("test2@test.com")
@@ -241,7 +242,7 @@ public class FollowServiceTest {
 
 
         @Test
-        public void 실패_중복팔로우신청() {
+        void 실패_중복팔로우신청() {
             //given
             final Long userId = 9999L;
             doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
@@ -256,7 +257,7 @@ public class FollowServiceTest {
 
 
         @Test
-        public void 실패_팔로우신청_유저없음() {
+        void 실패_팔로우신청_유저없음() {
             //given
             final Long userId = 9999L;
 
@@ -271,7 +272,7 @@ public class FollowServiceTest {
 
 
         @Test
-        public void 성공_팔로우신청_비공개() {
+        void 성공_팔로우신청_비공개() {
             //given
             final User user2 = User.builder()
                     .email("test2@test.com")
@@ -302,7 +303,7 @@ public class FollowServiceTest {
 
 
         @Test
-        public void 성공_팔로우신청_전체공개() {
+        void 성공_팔로우신청_전체공개() {
             //given
             final Follow follow = Follow.builder()
                     .id(1L)
@@ -346,7 +347,7 @@ public class FollowServiceTest {
         }
 
         @Test
-        public void 실패_친구신청유저없음() {
+        void 실패_친구신청유저없음() {
             //given
 
             //when
@@ -357,7 +358,7 @@ public class FollowServiceTest {
         }
 
         @Test
-        public void 실패_친구신청존재하지않음() {
+        void 실패_친구신청존재하지않음() {
             //given
             doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
             doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST)).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
@@ -370,7 +371,7 @@ public class FollowServiceTest {
         }
 
         @Test
-        public void 성공_친구신청거절() {
+        void 성공_친구신청거절() {
             //given
             final FollowRequest followRequest = FollowRequest.builder()
                     .requesterId(user1)
@@ -387,7 +388,7 @@ public class FollowServiceTest {
         }
 
         @Test
-        public void 성공_친구신청수락() {
+        void 성공_친구신청수락() {
             //given
             final FollowRequest followRequest = FollowRequest.builder()
                     .requesterId(user1)

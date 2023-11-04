@@ -13,8 +13,8 @@ import java.util.Map;
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
-    private User user;
-    private Map<String,Object> attributes;
+    private transient User user;
+    private transient Map<String,Object> attributes;
 
     public PrincipalDetails() {}
 
@@ -34,8 +34,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        return authorities;
+        return new ArrayList<>();
     }
 
     @Override

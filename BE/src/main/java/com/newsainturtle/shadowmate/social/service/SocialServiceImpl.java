@@ -43,7 +43,7 @@ public class SocialServiceImpl implements SocialService {
 
         @Override
         public int compareTo(SocialLike o) {
-            return (int)(o.cnt - this.cnt);
+            return (int)Math.abs(o.cnt - this.cnt);
         }
     }
 

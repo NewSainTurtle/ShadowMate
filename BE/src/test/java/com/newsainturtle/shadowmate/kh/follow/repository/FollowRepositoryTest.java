@@ -89,7 +89,7 @@ public class FollowRepositoryTest {
         }
 
         @Test
-        public void 성공_팔로잉삭제() {
+        void 성공_팔로잉삭제() {
             //given
             final Follow follow = Follow.builder().followerId(user1).followingId(user2).build();
             followRepository.save(follow);
@@ -108,7 +108,7 @@ public class FollowRepositoryTest {
     class 팔로우신청TEST {
 
         @Test
-        public void 성공_팔로우신청_조회() {
+        void 성공_팔로우신청_조회() {
             //given
             followRepository.save(Follow.builder()
                     .followerId(user1)
@@ -122,7 +122,7 @@ public class FollowRepositoryTest {
         }
 
         @Test
-        public void 성공_팔로우신청_전체공개() {
+        void 성공_팔로우신청_전체공개() {
             //given
             followRepository.save(Follow.builder()
                     .followerId(user1)

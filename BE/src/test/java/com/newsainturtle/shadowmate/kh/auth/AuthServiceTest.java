@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.kh.auth;
 
-import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
@@ -66,10 +65,10 @@ public class AuthServiceTest {
     class 이메일인증 {
 
         @Test
-        public void 랜덤숫자생성() {
+        void 랜덤숫자생성() {
             for(int i=0; i<10; i++) {
                 String code = createRandomCode();
-                assertThat(code.length()).isEqualTo(6);
+                assertThat(code).hasSize(6);
             }
         }
 

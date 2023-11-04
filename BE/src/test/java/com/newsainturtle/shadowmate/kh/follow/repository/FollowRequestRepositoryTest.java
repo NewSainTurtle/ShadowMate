@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class FollowRequestRepositoryTest {
+class FollowRequestRepositoryTest {
 
     @Autowired
     private FollowRequestRepository followRequestRepository;
@@ -61,7 +61,7 @@ public class FollowRequestRepositoryTest {
     }
 
     @Test
-    public void 성공_팔로우신청_조회() {
+    void 성공_팔로우신청_조회() {
         //given
 
         //when
@@ -73,7 +73,7 @@ public class FollowRequestRepositoryTest {
     }
     
     @Test
-    public void 성공_받은친구신청조회() {
+    void 성공_받은친구신청조회() {
         //given
         
         //when
@@ -86,7 +86,7 @@ public class FollowRequestRepositoryTest {
     
 
     @Test
-    public void 성공_팔로우신청_비공개() {
+    void 성공_팔로우신청_비공개() {
         //given
 
         //when
@@ -111,7 +111,7 @@ public class FollowRequestRepositoryTest {
     }
 
     @Test
-    public void 성공_친구신청거절() {
+    void 성공_친구신청거절() {
         //given
         followRequestRepository.save(FollowRequest.builder()
                 .requesterId(user1)
@@ -127,7 +127,7 @@ public class FollowRequestRepositoryTest {
     }
 
     @Test
-    public void 성공_친구신청수락() {
+    void 성공_친구신청수락() {
         //given
         followRequestRepository.save(FollowRequest.builder()
                 .requesterId(user1)

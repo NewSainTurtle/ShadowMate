@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class FollowControllerTest {
+class FollowControllerTest {
 
     @InjectMocks
     private FollowController followController;
@@ -90,7 +90,7 @@ public class FollowControllerTest {
             final Long userId = 1L;
 
             @Test
-            public void 실패_유저정보다름() throws Exception {
+            void 실패_유저정보다름() throws Exception {
                 //given
                 doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
 
@@ -105,7 +105,7 @@ public class FollowControllerTest {
 
 
             @Test
-            public void 실패_팔로잉조회Null() throws Exception {
+            void 실패_팔로잉조회Null() throws Exception {
                 //given
                 final List<FollowingResponse> followingResponses = new ArrayList<>();
                 doReturn(followingResponses).when(followService).getFollowing(any());
@@ -122,7 +122,7 @@ public class FollowControllerTest {
             }
 
             @Test
-            public void 성공_팔로잉조회() throws Exception {
+            void 성공_팔로잉조회() throws Exception {
                 //given
                 list.add(FollowingResponse.builder()
                         .followId(1L)
@@ -201,7 +201,7 @@ public class FollowControllerTest {
         final Long userId = 2L;
 
         @Test
-        public void 실패_팔로워조회Null() throws Exception {
+        void 실패_팔로워조회Null() throws Exception {
             //given
             final List<FollowerResponse> followerResponses = new ArrayList<>();
             doReturn(followerResponses).when(followService).getFollower(any());
@@ -218,7 +218,7 @@ public class FollowControllerTest {
         }
 
         @Test
-        public void 성공_팔로워조회() throws Exception {
+        void 성공_팔로워조회() throws Exception {
             //given
             list.add(FollowerResponse.builder()
                     .followId(1L)
@@ -284,7 +284,7 @@ public class FollowControllerTest {
                 .build();
 
         @Test
-        public void 실패_친구신청목록조회_유저정보틀림() throws Exception {
+        void 실패_친구신청목록조회_유저정보틀림() throws Exception {
             //given
             final String url = "/api/follow/{userId}/receive-lists";
             doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
@@ -300,7 +300,7 @@ public class FollowControllerTest {
         }
 
         @Test
-        public void 성공_친구신청목록조회() throws Exception {
+        void 성공_친구신청목록조회() throws Exception {
             //given
             final FollowRequest followRequest = FollowRequest.builder()
                     .id(1L)
@@ -332,7 +332,7 @@ public class FollowControllerTest {
         }
 
         @Test
-        public void 실패_중복신청() throws Exception {
+        void 실패_중복신청() throws Exception {
             //given
             doThrow(new FollowException(FollowErrorResult.DUPLICATED_FOLLOW)).when(followService).addFollow(any(), any());
 
@@ -349,7 +349,7 @@ public class FollowControllerTest {
 
 
         @Test
-        public void 실패_팔로우신청_유저없음() throws Exception {
+        void 실패_팔로우신청_유저없음() throws Exception {
             //given
             doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(followService).addFollow(any(), any());
 
@@ -366,7 +366,7 @@ public class FollowControllerTest {
 
 
         @Test
-        public void 성공_팔로우신청_비공개() throws Exception {
+        void 성공_팔로우신청_비공개() throws Exception {
             //given
             final AddFollowResponse addFollowResponse = AddFollowResponse
                     .builder()
@@ -391,7 +391,7 @@ public class FollowControllerTest {
 
         
         @Test
-        public void 성공_팔로우신청_전체공개() throws Exception {
+        void 성공_팔로우신청_전체공개() throws Exception {
             final AddFollowRequest addFollowRequest = AddFollowRequest
                     .builder()
                     .followingId(userId)
@@ -449,7 +449,7 @@ public class FollowControllerTest {
             resultActions.andExpect(status().isOk());
         }
         @Test
-        public void 실패_친구신청유저인증실패() throws Exception {
+        void 실패_친구신청유저인증실패() throws Exception {
             //given
             final Long userId = 2L;
             final String url = "/api/follow/{userId}/receive";
@@ -471,7 +471,7 @@ public class FollowControllerTest {
 
         }
         @Test
-        public void 실패_친구신청유저없음() throws Exception {
+        void 실패_친구신청유저없음() throws Exception {
             //given
             final Long userId = 2L;
             final String url = "/api/follow/{userId}/receive";
@@ -494,7 +494,7 @@ public class FollowControllerTest {
         }
 
         @Test
-        public void 실패_친구신청존재하지않음() throws Exception {
+        void 실패_친구신청존재하지않음() throws Exception {
             //given
             final Long userId = 2L;
             final String url = "/api/follow/{userId}/receive";
@@ -517,7 +517,7 @@ public class FollowControllerTest {
         }
 
         @Test
-        public void 성공_친구신청거절() throws Exception {
+        void 성공_친구신청거절() throws Exception {
             //given
             final Long userId = 2L;
             final String url = "/api/follow/{userId}/receive";
@@ -543,7 +543,7 @@ public class FollowControllerTest {
         }
 
         @Test
-        public void 성공_친구신청수락() throws Exception {
+        void 성공_친구신청수락() throws Exception {
             //given
             final Long userId = 2L;
             final String url = "/api/follow/{userId}/receive";
