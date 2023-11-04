@@ -429,11 +429,6 @@ $color-warning: var(--color-warning);
     width: 100%;
     padding: 0.5em 3em 2em 3em;
     box-sizing: border-box;
-  }
-
-  &__myinfo,
-  &__mypassword {
-    width: 55%;
     display: flex;
     flex-direction: column;
     row-gap: 3em;
@@ -442,13 +437,17 @@ $color-warning: var(--color-warning);
   &__line {
     display: grid;
     grid-template-columns: 2fr 8fr;
-    column-gap: 5em;
     align-items: center;
 
     > div:nth-child(1) {
       height: 100%;
       padding-top: 0.5em;
       box-sizing: border-box;
+    }
+
+    > div:nth-child(2) {
+      width: 55%;
+      min-width: fit-content;
     }
   }
 
@@ -532,31 +531,20 @@ $color-warning: var(--color-warning);
   }
 
   &__cancleMembership {
-    margin-top: 0.5em;
+    margin-top: 0.6em;
 
-    &__message {
-      border-top: 0.1rem solid $color-text;
-      padding: 2em 0.5em;
-      box-sizing: border-box;
-
-      p:nth-child(2) {
-        line-height: 200%;
-      }
+    > p:nth-child(2) {
+      line-height: 180%;
     }
 
-    &__button {
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      padding-right: 6em;
+    > div:last-child {
+      width: fit-content;
+      padding-top: 2em;
       box-sizing: border-box;
 
-      > div {
-        width: fit-content;
-        span {
-          cursor: pointer;
-          color: $color-warning;
-        }
+      span {
+        cursor: pointer;
+        color: $color-warning;
       }
     }
   }

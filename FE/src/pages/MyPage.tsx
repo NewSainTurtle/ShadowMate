@@ -84,7 +84,7 @@ const MyPage = () => {
             {
               "내 정보 확인": <MyPageInfo />,
               "비밀번호 변경": <MyPassword />,
-              "회원 탈퇴": <CancleMembership />,
+              회원탈퇴: <CancleMembership />,
               "다이어리 설정": <MyPageDiary />,
               "카테고리 설정": <MyPageFrame title="카테고리" />,
               "디데이 설정": <MyPageFrame title="디데이" />,

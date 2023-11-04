@@ -27,26 +27,24 @@ const CancleMembership = () => {
   return (
     <div className={styles["info__cantainer"]}>
       <div className={styles["info__contents"]}>
-        <div className={styles["info__cancleMembership"]}>
-          <Text types="medium" bold>
-            회원 탈퇴 안내
-          </Text>
-          <div className={styles["info__cancleMembership__message"]}>
-            <p>
-              <Text types="semi-medium">회원탈퇴 전 유의사항을 확인해 주세요.</Text>
-            </p>
-            <p>
-              <Text>• 회원 탈퇴 시, 해당 계정으로 다시 로그인하실 수 없습니다.</Text>
-              <br />
-              <Text>• 서비스에 저장된 회원 정보는 모두 삭제되며, 다시 복구 할 수 없습니다.</Text>
-              <br />
-              <Text>• 회원 탈퇴를 하시면 추후 재가입시 동일 아이디(이메일 주소)로 재가입이 불가능합니다.</Text>
-            </p>
+        <div className={styles["info__line"]}>
+          <div>
+            <Text>회원탈퇴 안내</Text>
           </div>
+          <div className={styles["info__cancleMembership"]}>
+            <Text bold>회원탈퇴 전 유의사항을 확인해 주세요.</Text>
+            <p>
+              <Text types="small">• 회원탈퇴 시, 해당 계정으로 다시 로그인하실 수 없습니다.</Text>
+              <br />
+              <Text types="small">• 서비스에 저장된 회원 정보는 모두 삭제되며, 다시 복구 할 수 없습니다.</Text>
+              <br />
+              <Text types="small">
+                • 회원탈퇴를 하시면 추후 재가입시 동일 아이디(이메일 주소)로 재가입이 불가능합니다.
+              </Text>
+            </p>
 
-          <div className={styles["info__cancleMembership__button"]} onClick={handleOpen}>
-            <div>
-              <Text>회원 탈퇴</Text>
+            <div onClick={handleOpen}>
+              <Text types="small">회원탈퇴</Text>
             </div>
           </div>
         </div>
