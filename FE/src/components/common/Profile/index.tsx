@@ -1,4 +1,4 @@
-import React, { DOMAttributes, MouseEventHandler } from "react";
+import React, { MouseEventHandler } from "react";
 import styles from "@styles/common/Profile.module.scss";
 import { ProfileConfig } from "../FriendProfile";
 import Text from "../Text";
@@ -12,17 +12,19 @@ interface Props {
 }
 
 const Profile = ({ types, profile, ...rest }: Props) => {
+  const { profileImage, nickname, statusMessage } = profile;
+
   return (
     <>
       <div className={styles.profile_container}>
         <div className={styles.profile_img}>
-          <Avatar src={profile.src} sx={{ width: 80, height: 80 }} />
+          <Avatar src={profileImage} sx={{ width: 80, height: 80 }} />
         </div>
         <div className={styles.profile_content}>
           <Text types="semi-medium" bold>
-            {profile.nickname}
+            {nickname}
           </Text>
-          <Text types="default">{profile.message}</Text>
+          <Text types="default">{statusMessage}</Text>
         </div>
         <>
           {

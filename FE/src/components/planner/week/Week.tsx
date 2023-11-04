@@ -8,12 +8,13 @@ import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
-import { profileInfo } from "@pages/commonPage";
 import { plannerApi } from "@api/Api";
+import { selectFriendInfo } from "@store/friendSlice";
 
 const Week = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
+  const friendInfo = useAppSelector(selectFriendInfo);
   const dayList = useAppSelector(selectDayList);
   const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt(week);
@@ -77,7 +78,7 @@ const Week = () => {
         </div>
         {!isMine && (
           <div>
-            <FriendProfile types="아이콘" profile={profileInfo} />
+            <FriendProfile types="아이콘" profile={friendInfo} />
           </div>
         )}
       </div>

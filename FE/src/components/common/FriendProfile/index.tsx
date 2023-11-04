@@ -12,8 +12,8 @@ import { setFollowState } from "@store/friendSlice";
 export interface ProfileConfig {
   userId: number;
   nickname: string;
-  message: string;
-  src: string;
+  profileImage: string;
+  statusMessage: string;
 }
 
 interface Props {
@@ -31,7 +31,7 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
   const [state, setState] = useState(0);
 
   useEffect(() => {
-    if (state != 0) dispatch(setFollowState({ followState: state }));
+    if (state != 0) dispatch(setFollowState(state));
   }, [state]);
 
   const handleClick = (() => {
@@ -124,18 +124,20 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
 };
 
 const FriendProfile = ({ types, profile }: Props) => {
+  const { userId, profileImage, nickname, statusMessage } = profile;
+
   return (
     <div className={styles["fprofile_container"]}>
       <div className={styles["profile_img"]}>
-        <Avatar src={profile?.src} />
+        <Avatar src={profileImage} />
       </div>
       <div className={styles["fprofile_content"]}>
         <Text types="semi-medium" bold>
-          {profile?.nickname}
+          {nickname}
         </Text>
-        <Text types="default">{profile?.message}</Text>
+        <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["fprofile_button"]}>{<ProfileButton profileId={profile.userId} types={types} />}</div>
+      <div className={styles["fprofile_button"]}>{<ProfileButton profileId={userId} types={types} />}</div>
     </div>
   );
 };

@@ -20,10 +20,9 @@ interface apiInterface {
   };
   users: {
     getProfiles: (userId: number) => string; // 프로필 조회
-    myPage: (userId: number) => string; // 내 정보 설정
+    myPages: (userId: number) => string; // 내 정보 설정
     password: (userId: number) => string; // 비밀번호 수정
     userOut: (userId: number) => string; // 회원 탈퇴
-    editProfileImg: (userId: number) => string; // 프로필 사진 등록, 수정
     searches: (userId: number) => string; // 회원 검색
   };
   follow: {
@@ -72,10 +71,9 @@ const api: apiInterface = {
   },
   users: {
     getProfiles: (userId: number) => HOST + USERS + userId + "/profiles",
-    myPage: (userId: number) => HOST + USERS + userId + "/mypages",
+    myPages: (userId: number) => HOST + USERS + userId + "/mypages",
     password: (userId: number) => HOST + USERS + userId + "/password",
     userOut: (userId: number) => HOST + USERS + userId,
-    editProfileImg: (userId: number) => HOST + USERS + userId + "/images",
     searches: (userId: number) => HOST + USERS + userId + "/searches",
   },
   follow: {

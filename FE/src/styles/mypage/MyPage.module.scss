@@ -179,6 +179,7 @@ $color-warning: var(--color-warning);
     }
     > :nth-child(3) {
       margin-top: 1.5em;
+      color: black;
     }
     > div:nth-child(4) {
       display: flex;
@@ -416,40 +417,37 @@ $color-warning: var(--color-warning);
 
 .info {
   &__cantainer {
+    width: 100%;
     display: grid;
     height: 100%;
     grid-template-rows: 1fr min-content;
-    padding: 1em;
+    padding: 0 1em;
     box-sizing: border-box;
   }
 
   &__contents {
-    width: 60%;
+    width: 100%;
+    padding: 0.5em 3em 2em 3em;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    margin-left: 3em;
-    padding: 0.5em 0em 2em 0em;
-    box-sizing: border-box;
-
-    > :last-child {
-      color: $color-warning;
-      > span {
-        cursor: pointer;
-      }
-    }
+    row-gap: 3em;
   }
 
   &__line {
     display: grid;
     grid-template-columns: 2fr 8fr;
-    column-gap: 5em;
     align-items: center;
 
     > div:nth-child(1) {
       height: 100%;
       padding-top: 0.5em;
       box-sizing: border-box;
+    }
+
+    > div:nth-child(2) {
+      width: 55%;
+      min-width: fit-content;
     }
   }
 
@@ -463,18 +461,32 @@ $color-warning: var(--color-warning);
   }
 
   &__profile {
-    &--nickname {
+    &-nickname {
       display: flex;
       width: 100%;
       gap: 0.1em;
       align-items: baseline;
 
-      > :nth-child(2) {
+      > button {
         width: 20%;
+      }
+
+      &.--error > button {
+        @keyframes blinkEffect {
+          50% {
+            opacity: 60%;
+          }
+        }
+
+        animation: blinkEffect 1s infinite alternate;
       }
     }
 
-    &--img {
+    &-img {
+      padding-top: 0.5em;
+      position: relative;
+      width: fit-content;
+
       > input[type="file"] {
         display: none;
       }
@@ -487,12 +499,64 @@ $color-warning: var(--color-warning);
           cursor: pointer;
         }
       }
+
+      &:hover .button--delete {
+        position: absolute;
+        bottom: 0;
+        background-color: rgba(white, 0.7);
+        width: 60px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border-radius: 0 0 30px 30px;
+        cursor: pointer;
+
+        &::after {
+          content: "삭제";
+          font-size: 0.875rem;
+          color: $color-warning;
+        }
+      }
+    }
+  }
+
+  &__password {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+
+    & > :nth-child(2) {
+      margin-bottom: 0.875rem;
+    }
+  }
+
+  &__cancelMembership {
+    margin-top: 0.6em;
+
+    > p:nth-child(2) {
+      line-height: 180%;
     }
 
-    &--password {
-      display: flex;
-      flex-direction: column;
-      gap: 1em;
+    > div:last-child {
+      width: fit-content;
+      padding-top: 2em;
+      box-sizing: border-box;
+
+      span {
+        cursor: pointer;
+        color: $color-warning;
+      }
+    }
+  }
+
+  &__modal {
+    @extend .diary__modal;
+    > div:nth-child(4) {
+      > div {
+        &:nth-child(2) {
+          background-color: #ffa9a9;
+        }
+      }
     }
   }
 }

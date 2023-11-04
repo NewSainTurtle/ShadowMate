@@ -18,18 +18,18 @@ interface SocialProfileProps {
 }
 
 const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
-  const { src, message, nickname } = profile;
+  const { profileImage, statusMessage, nickname } = profile;
 
   return (
     <div className={styles["social-profile__container"]}>
       <div className={styles["social-profile__img"]}>
-        <Avatar src={src} />
+        <Avatar src={profileImage} />
       </div>
       <div className={styles["social-profile__content"]}>
         <Text types="semi-medium" bold>
           {nickname}
         </Text>
-        <Text types="default">{message}</Text>
+        <Text types="default">{statusMessage}</Text>
       </div>
       <div className={styles["social-profile__button"]} {...rest}>
         {mine && (

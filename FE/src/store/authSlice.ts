@@ -1,10 +1,12 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 
-interface userInfoConfig {
+export interface userInfoConfig {
   email: string;
   nickname: string;
-  profile: string;
+  profileImage: string;
+  statusMessage: string;
+  plannerAccessScope: string;
 }
 
 interface authConfig {
@@ -21,7 +23,9 @@ const initialState: authConfig = {
   userInfo: {
     email: "",
     nickname: "",
-    profile: "",
+    profileImage: "",
+    statusMessage: "",
+    plannerAccessScope: "",
   },
 };
 
@@ -39,10 +43,9 @@ const authSlice = createSlice({
       localStorage.removeItem("accessToken");
       localStorage.removeItem("id");
     },
-    setUserInfo: (state, { payload }: PayloadAction<{ email: string; nickname: string; profile: string }>) => {
-      state.userInfo.email = payload.email;
-      state.userInfo.nickname = payload.nickname;
-      state.userInfo.profile = payload.profile;
+    setUserInfo: (state, { payload }: PayloadAction<userInfoConfig>) => {
+      const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
+      state.userInfo = { ...payload, statusMessage, profileImage };
     },
   },
 });

@@ -16,7 +16,7 @@ interface TabListType {
 }
 
 const TAB_LIST: TabListType[] = [
-  { id: "info", title: "내 정보", contents: { index: 0, list: ["내 정보 확인"] } },
+  { id: "info", title: "내 정보", contents: { index: 0, list: ["내 정보 확인", "비밀번호 변경", "회원탈퇴"] } },
   {
     id: "diary",
     title: "다이어리",
