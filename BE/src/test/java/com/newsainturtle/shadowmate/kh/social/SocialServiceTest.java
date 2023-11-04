@@ -435,7 +435,6 @@ public class SocialServiceTest {
                 .dailyPlanner(dailyPlanner)
                 .socialImage(Image)
                 .build();
-        //doReturn(Optional.of(social)).when(socialRepository).findById(social.getId());
 
         // when
         final SocialException result = assertThrows(SocialException.class, () -> socialService.deleteSocial(social.getId()));
