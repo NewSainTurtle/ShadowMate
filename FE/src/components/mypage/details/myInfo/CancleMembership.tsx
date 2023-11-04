@@ -7,7 +7,7 @@ import { selectUserId, setLogout } from "@store/authSlice";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
 
-const CancleMembership = () => {
+const CancelMembership = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const [Modalopen, setModalOpen] = useState(false);
@@ -31,7 +31,7 @@ const CancleMembership = () => {
           <div>
             <Text>회원탈퇴 안내</Text>
           </div>
-          <div className={styles["info__cancleMembership"]}>
+          <div className={styles["info__cancelMembership"]}>
             <Text bold>회원탈퇴 전 유의사항을 확인해 주세요.</Text>
             <p>
               <Text types="small">• 회원탈퇴 시, 해당 계정으로 다시 로그인하실 수 없습니다.</Text>
@@ -73,4 +73,4 @@ const CancleMembership = () => {
   );
 };
 
-export default CancleMembership;
+export default CancelMembership;

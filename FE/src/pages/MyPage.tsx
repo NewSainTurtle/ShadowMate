@@ -7,12 +7,12 @@ import MyPageFrame from "@components/mypage/MyPageFrame";
 import MyPageInfo from "@components/mypage/details/myInfo/MyInfo";
 import MyFriend from "@components/mypage/details/friend/MyFriend";
 import MyPassword from "@components/mypage/details/myInfo/MyPassword";
+import CancelMembership from "@components/mypage/details/myInfo/CancleMembership";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo, userInfoConfig } from "@store/authSlice";
 import { setCategoryColors, setCategoryInput, setCategoryList, setDdayList } from "@store/mypageSlice";
 import { CategoryConfig } from "@util/planner.interface";
-import CancleMembership from "@components/mypage/details/myInfo/CancleMembership";
 
 const MyPage = () => {
   const dispatch = useAppDispatch();
@@ -84,7 +84,7 @@ const MyPage = () => {
             {
               "내 정보 확인": <MyPageInfo />,
               "비밀번호 변경": <MyPassword />,
-              회원탈퇴: <CancleMembership />,
+              회원탈퇴: <CancelMembership />,
               "다이어리 설정": <MyPageDiary />,
               "카테고리 설정": <MyPageFrame title="카테고리" />,
               "디데이 설정": <MyPageFrame title="디데이" />,
