@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updatePassword(final Long userId, final String oldPassword, final String newPassword) {
         User user = userRepository.findById(userId).orElse(null);
-        if(checkPassword(oldPassword, user.getPassword())) {
+        if(user != null && checkPassword(oldPassword, user.getPassword())) {
             userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
         }
     }
