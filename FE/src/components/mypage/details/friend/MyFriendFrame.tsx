@@ -112,11 +112,12 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         {followList && followList.length > 0 ? (
           followList.map((item) => {
             const { id, isFollow } = friendCheck(item);
+            const { nickname, profileImage, statusMessage } = item;
             const followInfo: ProfileConfig = {
               userId: id!,
-              nickname: item.nickname,
-              message: item.statusMessage,
-              src: item.profileImage,
+              nickname,
+              statusMessage,
+              profileImage,
             };
             return <FriendProfile key={title + id} types={isFollow as followType["types"]} profile={followInfo} />;
           })

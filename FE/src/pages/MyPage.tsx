@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Profile from "@components/common/Profile";
-import { profileInfo } from "./commonPage";
 import MyPageTab from "@components/mypage/MyPageTab";
 import MyPageDiary from "@components/mypage/details/diary/Diary";
 import MyPageFrame from "@components/mypage/MyPageFrame";
@@ -10,7 +9,7 @@ import MyFriend from "@components/mypage/details/friend/MyFriend";
 import MyPassword from "@components/mypage/details/myInfo/MyPassword";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectUserId } from "@store/authSlice";
+import { selectUserId, selectUserInfo, userInfoConfig } from "@store/authSlice";
 import { setCategoryColors, setCategoryInput, setCategoryList, setDdayList } from "@store/mypageSlice";
 import { CategoryConfig } from "@util/planner.interface";
 import CancleMembership from "@components/mypage/details/myInfo/CancleMembership";
@@ -19,6 +18,7 @@ const MyPage = () => {
   const dispatch = useAppDispatch();
   const [tabName, setTabName] = useState<string>("내 정보 확인");
   const userId: number = useAppSelector(selectUserId);
+  const userInfo: userInfoConfig = useAppSelector(selectUserInfo);
 
   const getCategoryList = () => {
     settingApi
@@ -64,7 +64,18 @@ const MyPage = () => {
   return (
     <div className={styles["mypage__container"]}>
       <div className={styles["mypage__profile"]}>
-        <Profile types="로그아웃" profile={profileInfo} />
+        <Profile
+          types="로그아웃"
+          profile={(() => {
+            const { nickname, profileImage, statusMessage } = userInfo;
+            return {
+              userId,
+              nickname,
+              profileImage,
+              statusMessage,
+            };
+          })()}
+        />
       </div>
       <div className={styles["mypage__setting"]}>
         <MyPageTab setTabName={setTabName} />
