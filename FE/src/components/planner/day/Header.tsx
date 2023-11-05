@@ -25,7 +25,7 @@ const FriendHeader = () => {
     else setHeartNum(heartNum + 1);
   }
 
-  function socialClick() {
+  function weekClick() {
     navigate("/week");
   }
 
@@ -37,7 +37,7 @@ const FriendHeader = () => {
             ♥ {heartNum}
           </Button>
         </div>
-        <Button types="gray" onClick={() => socialClick()}>
+        <Button types="gray" onClick={() => weekClick()}>
           주간보기
         </Button>
       </div>
@@ -46,11 +46,14 @@ const FriendHeader = () => {
   );
 };
 
-const MyHeader = () => {
+const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
   const [isSocialClick, setIsSocialClick] = useState(false);
   const { likeCount } = useAppSelector(selectDayInfo);
 
-  function socialClick() {
+  function handleClick() {
+    if (!isSocialClick) {
+      socialClick();
+    }
     setIsSocialClick(!isSocialClick);
   }
 
@@ -60,7 +63,7 @@ const MyHeader = () => {
         ♥ {likeCount}
       </Button>
       <div className={`${isSocialClick && styles["button__visit"]}`}>
-        <Button types="blue" onClick={() => socialClick()}>
+        <Button types="blue" onClick={() => handleClick()}>
           소설공유
         </Button>
       </div>
@@ -68,7 +71,12 @@ const MyHeader = () => {
   );
 };
 
-const Header = ({ isFriend }: { isFriend?: boolean }) => {
+interface Props {
+  isFriend?: boolean;
+  socialClick: () => Promise<void>;
+}
+
+const Header = ({ isFriend, socialClick }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDate);
   const { dday: nearDate } = useAppSelector(selectDayInfo);
@@ -100,7 +108,7 @@ const Header = ({ isFriend }: { isFriend?: boolean }) => {
           </div>
         </div>
       </div>
-      {isFriend ? <FriendHeader /> : <MyHeader />}
+      {isFriend ? <FriendHeader /> : <MyHeader socialClick={socialClick} />}
     </div>
   );
 };
