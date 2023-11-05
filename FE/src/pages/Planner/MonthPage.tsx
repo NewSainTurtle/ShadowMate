@@ -24,18 +24,33 @@ const MonthPage = () => {
       .catch((err) => console.log(err));
   };
 
+  const getCategoryColors = () => {
+    settingApi
+      .categoriesColors(userId)
+      .then((res) => {
+        const response = res.data.data.categoryColorList;
+        dispatch(setCategoryColors(response));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const getDdayList = () => {
     settingApi
       .ddays(userId)
       .then((res) => {
         const response = res.data.data.ddayList;
-        dispatch(setDdayList(response));
+        if (response.length != 0) {
+          dispatch(setDdayList(response));
+        }
       })
       .catch((err) => console.log(err));
   };
 
   useEffect(() => {
     getCategoryList();
+    getCategoryColors();
     getDdayList();
   }, []);
 
