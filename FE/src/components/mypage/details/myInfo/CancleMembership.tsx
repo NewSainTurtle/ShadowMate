@@ -50,7 +50,7 @@ const CancelMembership = () => {
         </div>
       </div>
 
-      <Modal open={Modalopen} onClose={handleClose}>
+      <Modal types="twoBtn" open={Modalopen} onClose={handleClose} onClick={deleteProfile}>
         <div className={styles["info__modal"]}>
           <WarningAmberRoundedIcon />
           <Text types="small">
@@ -59,14 +59,6 @@ const CancelMembership = () => {
             <></>
           </Text>
           <Text types="small">해당 유의사항을 모두 확인하였으며 회원 탈퇴에 동의합니다</Text>
-          <div>
-            <div onClick={handleClose}>
-              <Text types="small">취소</Text>
-            </div>
-            <div onClick={deleteProfile}>
-              <Text types="small">탈퇴</Text>
-            </div>
-          </div>
         </div>
       </Modal>
     </div>
