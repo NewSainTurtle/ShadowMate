@@ -1,18 +1,18 @@
 import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import { useAppSelector } from "@hooks/hook";
-import { selectDdayList } from "@store/mypageSlice";
-import { DdayConfig } from "@util/planner.interface";
+import { DdayItemConfig } from "@util/planner.interface";
 import MyPageDdayItem from "@components/mypage/item/MyPageDdayItem";
 import Text from "@components/common/Text";
+import { selectDdayList } from "@store/mypage/ddaySlice";
 
 const DdayList = () => {
-  const ddayList = useAppSelector(selectDdayList);
+  const ddayList = useAppSelector(selectDdayList) || [];
   return (
     <>
       {ddayList.length != 0 ? (
         <>
-          {ddayList.map((item: DdayConfig, idx: number) => (
+          {ddayList.map((item: DdayItemConfig, idx: number) => (
             <MyPageDdayItem key={idx} idx={idx} item={item} />
           ))}
         </>

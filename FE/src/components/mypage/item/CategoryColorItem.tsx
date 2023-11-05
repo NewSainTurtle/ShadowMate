@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectCategoryColorClick, setCategoryColorClick } from "@store/mypageSlice";
+import { selectCategoryColorClick, setCategoryColorClick } from "@store/mypage/categorySlice";
 
 interface Props {
   item: string;

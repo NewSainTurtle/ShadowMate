@@ -1,5 +1,5 @@
 import { ProfileConfig } from "@components/common/FriendProfile";
-import { CategoryConfig } from "@util/planner.interface";
+import { CategoryItemConfig } from "@util/planner.interface";
 import { TodoConfig } from "@util/planner.interface";
 import dayjs from "dayjs";
 
@@ -10,7 +10,7 @@ export const todoData_friend: ProfileConfig = {
   profileImage: "https://avatars.githubusercontent.com/u/85155789?v=4",
 };
 
-export const todoData_category: CategoryConfig[] = [
+export const todoData_category: CategoryItemConfig[] = [
   {
     categoryId: 44,
     categoryTitle: "국어",

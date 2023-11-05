@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import { CategoryConfig } from "@util/planner.interface";
+import { CategoryItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectCategoryClick, setCategoryClick } from "@store/mypageSlice";
+import { selectCategoryClick, setCategoryClick } from "@store/mypage/categorySlice";
 
 interface Props {
   idx: number;
-  item: CategoryConfig;
+  item: CategoryItemConfig;
 }
 
 const MyPageCategoryItem = ({ item, idx }: Props) => {

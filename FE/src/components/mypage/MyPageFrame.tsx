@@ -5,28 +5,31 @@ import MyPageDetail from "./MyPageDetail";
 import MyPageCategory from "./details/diary/Category";
 import CategoryList from "@components/mypage/list/CategoryList";
 import MyPageDday from "./details/diary/Dday";
-import { CategoryConfig, DdayConfig } from "@util/planner.interface";
+import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
+
+import DdayList from "@components/mypage/list/DdayList";
+import dayjs from "dayjs";
 import {
   selectCategoryClick,
   selectCategoryColorClick,
   selectCategoryColors,
   selectCategoryInput,
   selectCategoryList,
-  selectDdayClick,
-  selectDdayInput,
-  selectDdayList,
   setCategoryClick,
   setCategoryInput,
   setCategoryList,
+} from "@store/mypage/categorySlice";
+import {
+  selectDdayClick,
+  selectDdayInput,
+  selectDdayList,
   setDdayClick,
   setDdayInput,
   setDdayList,
-} from "@store/mypageSlice";
-import DdayList from "@components/mypage/list/DdayList";
-import dayjs from "dayjs";
+} from "@store/mypage/ddaySlice";
 
 interface Props {
   title: string;
@@ -34,7 +37,7 @@ interface Props {
 
 export interface EditInfoConfig {
   type: string;
-  info: CategoryConfig | DdayConfig | null;
+  info: CategoryItemConfig | DdayItemConfig | null;
   clicked: number;
 }
 
@@ -42,10 +45,10 @@ const MyPageFrame = ({ title }: Props) => {
   /* 카테고리 관련 변수 */
   const dispatch = useAppDispatch();
   const userId: number = useAppSelector(selectUserId);
-  const categoryList: CategoryConfig[] = useAppSelector(selectCategoryList);
+  const categoryList: CategoryItemConfig[] = useAppSelector(selectCategoryList);
   const categoryColors = useAppSelector(selectCategoryColors);
   const categoryClick: number = useAppSelector(selectCategoryClick);
-  const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
+  const categoryInput: CategoryItemConfig = useAppSelector(selectCategoryInput);
   const colorClick: number = useAppSelector(selectCategoryColorClick);
 
   /* 디데이 관련 변수 */
@@ -68,7 +71,7 @@ const MyPageFrame = ({ title }: Props) => {
         .addCategories(userId, init)
         .then((res) => {
           const returnId = res.data.data.categoryId;
-          const newCategory: CategoryConfig = {
+          const newCategory: CategoryItemConfig = {
             categoryId: returnId,
             categoryTitle: "새 카테고리",
             categoryEmoticon: "",
@@ -109,7 +112,7 @@ const MyPageFrame = ({ title }: Props) => {
       settingApi
         .editCategories(userId, input)
         .then((res) => {
-          let copyList: CategoryConfig[] = [...categoryList];
+          let copyList: CategoryItemConfig[] = [...categoryList];
           copyList[categoryClick] = {
             categoryId: input.categoryId,
             categoryTitle: input.categoryTitle,
@@ -161,7 +164,7 @@ const MyPageFrame = ({ title }: Props) => {
         .then(() => {
           dispatch(
             setDdayList(
-              ddayList.filter((item: DdayConfig, idx: number) => {
+              ddayList.filter((item: DdayItemConfig, idx: number) => {
                 return idx !== ddayClick;
               }),
             ),
@@ -192,8 +195,8 @@ const MyPageFrame = ({ title }: Props) => {
         <>
           {
             {
-              카테고리: categoryList.length != 0 ? <MyPageCategory /> : <></>,
-              디데이: ddayList.length != 0 ? <MyPageDday /> : <></>,
+              카테고리: categoryList.length != 0 && <MyPageCategory />,
+              디데이: ddayList.length != 0 && <MyPageDday />,
             }[title]
           }
         </>

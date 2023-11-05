@@ -3,7 +3,7 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CategoryColorList from "@components/mypage/item/CategoryColorList";
-import { CategoryColorConfig, CategoryConfig } from "@util/planner.interface";
+import { CategoryColorConfig, CategoryItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import {
   selectCategoryClick,
@@ -12,14 +12,14 @@ import {
   selectCategoryList,
   setCategoryColorClick,
   setCategoryInput,
-} from "@store/mypageSlice";
+} from "@store/mypage/categorySlice";
 
 const MyPageCategory = () => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectCategoryClick);
   const categoryList = useAppSelector(selectCategoryList);
   const categoryColors = useAppSelector(selectCategoryColors);
-  const categoryInput: CategoryConfig = useAppSelector(selectCategoryInput);
+  const categoryInput: CategoryItemConfig = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
 
   const { categoryTitle, categoryEmoticon } = categoryInput || "";

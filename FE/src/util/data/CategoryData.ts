@@ -1,4 +1,4 @@
-import { CategoryConfig } from "@util/planner.interface";
+import { CategoryItemConfig } from "@util/planner.interface";
 
 export const CATEGORY_COLORS: string[] = [
   "#D9B5D9",
@@ -19,7 +19,7 @@ export const CATEGORY_COLORS: string[] = [
   "#AEB8C1",
 ];
 
-export const CATEGORY_LIST: CategoryConfig[] = [
+export const CATEGORY_LIST: CategoryItemConfig[] = [
   { categoryId: 0, categoryTitle: "국어", categoryEmoticon: "📕", categoryColorCode: "#F1607D" },
   { categoryId: 1, categoryTitle: "수학", categoryEmoticon: "📗", categoryColorCode: "#637F69" },
   { categoryId: 2, categoryTitle: "영어", categoryEmoticon: "📒", categoryColorCode: "#F1FCAD" },

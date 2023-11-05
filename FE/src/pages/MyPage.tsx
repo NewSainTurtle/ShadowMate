@@ -8,11 +8,8 @@ import MyPageInfo from "@components/mypage/details/myInfo/MyInfo";
 import MyFriend from "@components/mypage/details/friend/MyFriend";
 import MyPassword from "@components/mypage/details/myInfo/MyPassword";
 import CancelMembership from "@components/mypage/details/myInfo/CancelMembership";
-import { settingApi } from "@api/Api";
-import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo, userInfoConfig } from "@store/authSlice";
-import { setCategoryColors, setCategoryInput, setCategoryList, setDdayList } from "@store/mypageSlice";
-import { CategoryConfig } from "@util/planner.interface";
 
 const MyPage = () => {
   const dispatch = useAppDispatch();
