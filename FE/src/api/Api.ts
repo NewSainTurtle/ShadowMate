@@ -59,7 +59,7 @@ export const plannerApi = {
   daily: (userId: number, params: { date: string }) => Axios.get(api.planners.daily(userId), { params: params }),
   likes: (userId: number, data: { date: string; anotherUserId: number }) =>
     Axios.post(api.planners.likes(userId), data),
-  cancleLikes: (userId: number, data: { date: string }) => Axios.delete(api.planners.likes(userId), { data: data }),
+  cancelLikes: (userId: number, data: { date: string }) => Axios.delete(api.planners.likes(userId), { data: data }),
   addDailyTodos: (userId: number, data: { date: string; todoContent: string; categoryId: number }) =>
     Axios.post(api.planners.dailyTodos(userId), data),
   editDailyTodos: (
