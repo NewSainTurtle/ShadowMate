@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class SocialRepositoryTest {
+class SocialRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;

@@ -74,8 +74,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updatePassword(final Long userId, final String oldPassword, final String newPassword) {
         User user = userRepository.findById(userId).orElse(null);
-        if(user != null && checkPassword(oldPassword, user.getPassword())) {
+        if(user == null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        if(bCryptPasswordEncoder.matches(oldPassword, newPassword)) {
             userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
+        }
+        else {
+            throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
         }
     }
 
@@ -110,15 +116,6 @@ public class UserServiceImpl implements UserService {
             return FollowStatus.REQUESTED;
         }
         return FollowStatus.FOLLOW;
-    }
-
-    private boolean checkPassword(String oldPassword, String newPassword) {
-        if(bCryptPasswordEncoder.matches(oldPassword, newPassword)) {
-            return true;
-        }
-        else {
-            throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
-        }
     }
 
     private User searchUserNickname(String nickname) {

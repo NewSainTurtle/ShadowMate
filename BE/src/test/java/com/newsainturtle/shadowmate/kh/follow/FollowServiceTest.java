@@ -65,6 +65,7 @@ public class FollowServiceTest {
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .withdrawal(false)
             .build();
+    final Long userId2 = user2.getId();
 
     @Nested
     class 팔로잉TEST {
@@ -102,10 +103,10 @@ public class FollowServiceTest {
         @Test
         void 실패_팔로잉유저없음() {
             // given
-            assertThrows(FollowException.class, () -> followService.deleteFollowing(user1, user2.getId()));
+            assertThrows(FollowException.class, () -> followService.deleteFollowing(user1, userId2));
 
             // when
-            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowing(user1, user2.getId()));
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowing(user1, userId2));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
@@ -117,7 +118,7 @@ public class FollowServiceTest {
             doReturn(Optional.ofNullable(user2)).when(userRepository).findById(any());
 
             // when
-            followService.deleteFollowing(user1, user2.getId());
+            followService.deleteFollowing(user1, userId2);
 
             // then
             verify(followRepository, times(1)).deleteByFollowingIdAndFollowerId(any(), any());
@@ -161,7 +162,7 @@ public class FollowServiceTest {
             // given
 
             // when
-            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollower(user1, user2.getId()));
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollower(user1, userId2));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
@@ -294,7 +295,7 @@ public class FollowServiceTest {
             doReturn(followRequest).when(followRequestRepository).save(any());
 
             //when
-            final AddFollowResponse result = followService.addFollow(user1, user2.getId());
+            final AddFollowResponse result = followService.addFollow(user1, userId2);
 
             //then
             assertThat(result.getFollowId()).isEqualTo(followRequest.getId());
@@ -316,7 +317,7 @@ public class FollowServiceTest {
             doReturn(follow).when(followRepository).save(any());
 
             //when
-            final AddFollowResponse result = followService.addFollow(user1, user2.getId());
+            final AddFollowResponse result = followService.addFollow(user1, userId2);
 
             //then
             assertThat(result.getFollowId()).isEqualTo(follow.getId());
@@ -328,7 +329,7 @@ public class FollowServiceTest {
             // given
 
             // when
-            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowRequest(user1, user2.getId()));
+            final FollowException result = assertThrows(FollowException.class, () -> followService.deleteFollowRequest(user1, userId2));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
@@ -351,7 +352,7 @@ public class FollowServiceTest {
             //given
 
             //when
-            final FollowException result = assertThrows(FollowException.class, () -> followService.receiveFollow(user1, user2.getId(), true));
+            final FollowException result = assertThrows(FollowException.class, () -> followService.receiveFollow(user1, userId2, true));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_USER);
@@ -364,7 +365,7 @@ public class FollowServiceTest {
             doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST)).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
 
             //when
-            final FollowException result = assertThrows(FollowException.class, () -> followService.receiveFollow(user1, user2.getId(), true));
+            final FollowException result = assertThrows(FollowException.class, () -> followService.receiveFollow(user1, userId2, true));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST);
@@ -381,7 +382,7 @@ public class FollowServiceTest {
             doReturn(followRequest).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
 
             //when
-            final String result = followService.receiveFollow(user1, user2.getId(), false);
+            final String result = followService.receiveFollow(user1, userId2, false);
 
             //then
             assertThat(result).isEqualTo(FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE);
@@ -398,7 +399,7 @@ public class FollowServiceTest {
             doReturn(followRequest).when(followRequestRepository).findByRequesterIdAndReceiverId(any(), any());
 
             //when
-            final String result = followService.receiveFollow(user1, user2.getId(), true);
+            final String result = followService.receiveFollow(user1, userId2, true);
 
             //then
             assertThat(result).isEqualTo(FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE);

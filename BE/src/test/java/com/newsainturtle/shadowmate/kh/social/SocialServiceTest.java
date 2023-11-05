@@ -308,7 +308,7 @@ class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -335,7 +335,7 @@ class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -372,7 +372,7 @@ class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
@@ -414,7 +414,7 @@ class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
@@ -435,9 +435,10 @@ class SocialServiceTest {
                 .dailyPlanner(dailyPlanner)
                 .socialImage(Image)
                 .build();
+        final Long socialId = social.getId();
 
         // when
-        final SocialException result = assertThrows(SocialException.class, () -> socialService.deleteSocial(social.getId()));
+        final SocialException result = assertThrows(SocialException.class, () -> socialService.deleteSocial(socialId));
 
         // then
         assertThat(result.getErrorResult()).isEqualTo(SocialErrorResult.NOT_FOUND_SOCIAL);
