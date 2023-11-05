@@ -82,10 +82,8 @@ const daySlice = createSlice({
       });
 
       const findIndex = tempArr.findIndex((item) => item.todoId == todoId);
-      if (tempArr[findIndex].timeTable) {
-        const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
-        tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
-      }
+      const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
+      tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
 
       state.info.dailyTodos = tempArr;
       state.todoItem = initialState.todoItem;
