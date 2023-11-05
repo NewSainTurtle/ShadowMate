@@ -10,6 +10,8 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
+import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
+import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -118,6 +120,10 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
         } else if (!findEmailAuth.isAuthStatus()) {
             throw new AuthException(AuthErrorResult.UNAUTHENTICATED_EMAIL);
+        }
+        final Boolean getHashNickname = redisServiceImpl.getHashNicknameData(joinRequest.getNickname());
+        if (getHashNickname == null || !getHashNickname) {
+            throw new UserException(UserErrorResult.RETRY_NICKNAME);
         }
 
         User userEntity =
