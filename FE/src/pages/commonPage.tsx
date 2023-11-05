@@ -5,6 +5,7 @@ import Dday from "@components/common/Dday";
 import Input from "@components/common/Input";
 import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import Profile from "@components/common/Profile";
+import Alert from "@components/common/Alert";
 
 export const profileInfo: ProfileConfig = {
   nickname: "ribbonE",
@@ -13,6 +14,12 @@ export const profileInfo: ProfileConfig = {
 };
 
 const commonPage = () => {
+  const [alertSuccess, setAlertSuccess] = useState<boolean>(false);
+  const [alertError, setAlertError] = useState<boolean>(false);
+
+  const handleSuccessClose = () => setAlertSuccess(false);
+  const handleErrorClose = () => setAlertError(false);
+
   return (
     <>
       <div>
@@ -58,6 +65,16 @@ const commonPage = () => {
         <Profile types="기본" profile={profileInfo} />
         <br />
         <Profile types="로그아웃" profile={profileInfo} />
+      </div>
+      <div>
+        <div onClick={() => setAlertSuccess(true)}>
+          <Text>Alert-Success 열기</Text>
+          <Alert types="success" open={alertSuccess} onClose={handleSuccessClose} />
+        </div>
+        <div onClick={() => setAlertError(true)}>
+          <Text>Alert-Error 열기</Text>
+          <Alert types="error" open={alertError} onClose={handleErrorClose} />
+        </div>
       </div>
     </>
   );
