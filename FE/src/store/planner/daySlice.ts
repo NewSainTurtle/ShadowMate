@@ -67,20 +67,7 @@ const daySlice = createSlice({
     setTimeTable: (state, action: PayloadAction<{ todoId: number; startTime: string; endTime: string }>) => {
       const { todoId, startTime, endTime } = action.payload;
 
-      const tempArr = state.info.dailyTodos.map((item) => {
-        if (startTime != "" && item.timeTable && item.timeTable.startTime != "") {
-          if (
-            !(
-              dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
-              dayjs(item.timeTable.startTime).isSameOrAfter(endTime)
-            )
-          ) {
-            return { ...item, timeTable: initialState.todoItem.timeTable };
-          }
-        }
-        return item;
-      });
-
+      const tempArr = state.info.dailyTodos;
       const findIndex = tempArr.findIndex((item) => item.todoId == todoId);
       const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
       tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
