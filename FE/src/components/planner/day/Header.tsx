@@ -64,7 +64,7 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
       </Button>
       <div className={`${isSocialClick && styles["button__visit"]}`}>
         <Button types="blue" onClick={() => handleClick()}>
-          소설공유
+          소셜공유
         </Button>
       </div>
     </div>
