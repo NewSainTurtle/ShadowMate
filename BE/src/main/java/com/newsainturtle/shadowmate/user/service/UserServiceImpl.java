@@ -49,10 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse searchNickname(final User user, final String nickname) {
-        User searchUser = userRepository.findByNickname(nickname);
-        if(searchUser==null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
-        }
+        final User searchUser = searchUserNickname(nickname);
         return UserResponse.builder()
                 .userId(searchUser.getId())
                 .email(searchUser.getEmail())
@@ -77,33 +74,27 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updatePassword(final Long userId, final String oldPassword, final String newPassword) {
         User user = userRepository.findById(userId).orElse(null);
-        if(bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+        if(user != null && checkPassword(oldPassword, user.getPassword())) {
             userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
-        }
-        else {
-            throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
         }
     }
 
     @Override
     @Transactional
     public void deleteUser(final Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+        User user = searchUserId(userId);
         User deleteUser = User.builder()
-                .id(user.get().getId())
-                .email(user.get().getEmail())
-                .password(user.get().getPassword())
-                .socialLogin(user.get().getSocialLogin())
-                .profileImage(user.get().getProfileImage())
-                .nickname(user.get().getNickname())
-                .statusMessage(user.get().getStatusMessage())
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .socialLogin(user.getSocialLogin())
+                .profileImage(user.getProfileImage())
+                .nickname(user.getNickname())
+                .statusMessage(user.getStatusMessage())
                 .withdrawal(true)
-                .plannerAccessScope(user.get().getPlannerAccessScope())
-                .createTime(user.get().getCreateTime())
-                .updateTime(user.get().getUpdateTime())
+                .plannerAccessScope(user.getPlannerAccessScope())
+                .createTime(user.getCreateTime())
+                .updateTime(user.getUpdateTime())
                 .deleteTime(LocalDateTime.now())
                 .build();
         userRepository.save(deleteUser);
@@ -119,5 +110,30 @@ public class UserServiceImpl implements UserService {
             return FollowStatus.REQUESTED;
         }
         return FollowStatus.FOLLOW;
+    }
+
+    private boolean checkPassword(String oldPassword, String newPassword) {
+        if(bCryptPasswordEncoder.matches(oldPassword, newPassword)) {
+            return true;
+        }
+        else {
+            throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
+        }
+    }
+
+    private User searchUserNickname(String nickname) {
+        User searchUser = userRepository.findByNickname(nickname);
+        if(searchUser==null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
+        }
+        return searchUser;
+    }
+
+    private User searchUserId(long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        return user.get();
     }
 }

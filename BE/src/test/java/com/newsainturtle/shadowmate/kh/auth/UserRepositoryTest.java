@@ -49,7 +49,7 @@ public class UserRepositoryTest {
     class 이메일인증 {
 
         @Test
-        public void 실패_이메일이_중복된_경우() {
+        void 실패_이메일이_중복된_경우() {
             //given
             userRepository.save(user);
 
@@ -59,8 +59,7 @@ public class UserRepositoryTest {
             final User result = userRepository.findByEmail(email);
 
             //then
-            assertThat(result).isNotNull();
-            assertThat(result).isEqualTo(user);
+            assertThat(result).isEqualTo(user).isNotNull();
         }
     }
     @Nested
