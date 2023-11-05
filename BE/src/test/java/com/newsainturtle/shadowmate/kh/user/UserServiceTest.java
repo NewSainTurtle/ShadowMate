@@ -102,7 +102,7 @@ public class UserServiceTest {
         }
 
         @Test
-        void 성공_내정보수정() {
+        void 실패_내정보수정_닉네임검증Null() {
             //given
             final String newNickname = "NewNickName";
             final String newProfileImage = "NewProfileImage";
@@ -112,13 +112,81 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
+            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
+            doReturn(null).when(redisService).getHashNicknameData(newNickname);
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
+
+        }
+
+        @Test
+        void 실패_내정보수정_닉네임검증false() {
+            //given
+            final String newNickname = "NewNickName";
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
+            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
+            doReturn(false).when(redisService).getHashNicknameData(newNickname);
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
+
+        }
+
+        @Test
+        void 성공_내정보수정_닉네임수정안함() {
+            //given
+            final String nickname = user1.getNickname();
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(nickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
+
+            doReturn(user1).when(userRepository).findByIdAndNickname(userId1, nickname);
 
             //when
             userService.updateUser(userId1, updateUserRequest);
 
             //then
             verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
+
+        }
+
+        @Test
+        void 성공_내정보수정_닉네임수정() {
+            //given
+            final String newNickname = "NewNickName";
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
+            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
+            doReturn(true).when(redisService).getHashNicknameData(newNickname);
+
+            //when
+            userService.updateUser(userId1, updateUserRequest);
+
+            //then
             verify(redisService, times(1)).deleteNicknameData(any());
+            verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
 
         }
 
