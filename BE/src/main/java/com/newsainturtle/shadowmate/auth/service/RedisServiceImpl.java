@@ -21,14 +21,29 @@ public class RedisServiceImpl implements RedisService{
     }
 
     @Override
+    public Boolean getHashNicknameData(String key) {
+        return (Boolean) redisTemplate.opsForValue().get("nickname " + key);
+    }
+
+    @Override
     @Transactional
     public void setHashEmailData(final String key, final EmailAuthentication value, final int timeout) {
         redisTemplate.opsForValue().set("email " + key, value, timeout, TimeUnit.MINUTES);
     }
 
     @Override
+    public void setHashNicknameData(String key, boolean value, int timeout) {
+        redisTemplate.opsForValue().set("nickname " + key, value, timeout, TimeUnit.MINUTES);
+    }
+
+    @Override
     @Transactional
     public void deleteEmailData(final String key) {
         redisTemplate.opsForHash().delete("email", key);
+    }
+
+    @Override
+    public void deleteNicknameData(String key) {
+        redisTemplate.opsForHash().delete(key);
     }
 }

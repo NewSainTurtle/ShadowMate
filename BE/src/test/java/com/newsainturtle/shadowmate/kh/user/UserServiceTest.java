@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.kh.user;
 
+import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
@@ -37,6 +38,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RedisServiceImpl redisService;
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -113,6 +117,7 @@ public class UserServiceTest {
 
             //then
             verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
+            verify(redisService, times(1)).deleteNicknameData(any());
 
         }
 

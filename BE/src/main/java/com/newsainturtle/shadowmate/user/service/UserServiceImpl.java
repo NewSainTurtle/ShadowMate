@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.user.service;
 
+import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
@@ -30,6 +31,8 @@ public class UserServiceImpl implements UserService {
     private final FollowRepository followRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final RedisServiceImpl redisService;
 
     private final FollowRequestRepository followRequestRepository;
 
@@ -68,6 +71,7 @@ public class UserServiceImpl implements UserService {
                 updateUserRequest.getNewProfileImage(),
                 updateUserRequest.getNewStatusMessage(),
                 userId);
+        redisService.deleteNicknameData(updateUserRequest.getNewNickname());
     }
 
     @Override
