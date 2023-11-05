@@ -6,6 +6,7 @@ import Input from "@components/common/Input";
 import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import Profile from "@components/common/Profile";
 import Alert from "@components/common/Alert";
+import Loading from "@components/common/Loading";
 
 export const profileInfo: ProfileConfig = {
   nickname: "ribbonE",
@@ -16,12 +17,22 @@ export const profileInfo: ProfileConfig = {
 const commonPage = () => {
   const [alertSuccess, setAlertSuccess] = useState<boolean>(false);
   const [alertError, setAlertError] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSuccessClose = () => setAlertSuccess(false);
   const handleErrorClose = () => setAlertError(false);
 
+  const handleLoading = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
+  };
+
   return (
     <>
+      <div onClick={handleLoading}>
+        <Text>로딩창 열기</Text>
+        {loading && <Loading />}
+      </div>
       <div>
         <Text types="small">프리텐다드 - small</Text>
         <br /> <br />
