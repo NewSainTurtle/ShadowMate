@@ -51,7 +51,7 @@ public class SocialServiceImpl implements SocialService {
     @Override
     public SearchPublicDailyPlannerResponse searchPublicDailyPlanner(final String sort, final long pageNumber) {
         List<Social> socialList = socialRepository.findAllByDeleteTime();
-        return makeSearchPublicDailyPlannerResponse(socialList, sort, pageNumber);
+        return makeSearchPlannerResponse(socialList, sort, pageNumber);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class SocialServiceImpl implements SocialService {
         if(user!=null) {
             socialList = socialRepository.findAllByDailyPlannerAndSocial(user.getId());
         }
-        return makeSearchPublicDailyPlannerResponse(socialList, searchNicknamePublicDailyPlannerRequest.getSort(), searchNicknamePublicDailyPlannerRequest.getPageNumber());
+        return makeSearchPlannerResponse(socialList, searchNicknamePublicDailyPlannerRequest.getSort(), searchNicknamePublicDailyPlannerRequest.getPageNumber());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class SocialServiceImpl implements SocialService {
         }
     }
 
-    private SearchPublicDailyPlannerResponse makeSearchPublicDailyPlannerResponse(List<Social> socialList, String sort, long pageNumber) {
+    private SearchPublicDailyPlannerResponse makeSearchPlannerResponse(List<Social> socialList, String sort, long pageNumber) {
         if(socialList.isEmpty()) {
             return SearchPublicDailyPlannerResponse.builder()
                     .pageNumber(pageNumber)
