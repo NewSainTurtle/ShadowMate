@@ -22,7 +22,7 @@ public class RedisServiceImpl implements RedisService{
 
     @Override
     public Boolean getHashNicknameData(String key) {
-        return (Boolean) redisTemplate.opsForValue().get(key);
+        return (Boolean) redisTemplate.opsForValue().get("nickname " + key);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class RedisServiceImpl implements RedisService{
 
     @Override
     public void setHashNicknameData(String key, boolean value, int timeout) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set("nickname " + key, value, timeout, TimeUnit.MINUTES);
     }
 
     @Override
