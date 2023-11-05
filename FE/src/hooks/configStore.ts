@@ -6,6 +6,7 @@ import dayReducer from "@store/planner/daySlice";
 import categoryReducer from "@store/mypage/categorySlice";
 import ddayReducer from "@store/mypage/ddaySlice";
 import frinedReducer from "@store/friendSlice";
+import modalReducer from "@store/modalSlice";
 
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   category: categoryReducer,
   dday: ddayReducer,
   friend: frinedReducer,
+  modal: modalReducer,
 });
 
 const persistConfig = {
