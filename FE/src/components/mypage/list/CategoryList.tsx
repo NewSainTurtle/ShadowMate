@@ -3,11 +3,11 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import MyPageCategoryItem from "@components/mypage/item/MyPageCategoryItem";
 import { useAppSelector } from "@hooks/hook";
-import { selectCategoryList } from "@store/mypageSlice";
-import { CategoryConfig } from "@util/planner.interface";
+import { CategoryItemConfig } from "@util/planner.interface";
+import { selectCategoryList } from "@store/mypage/categorySlice";
 
 const CategoryList = () => {
-  const categoryList: CategoryConfig[] = useAppSelector(selectCategoryList);
+  const categoryList: CategoryItemConfig[] = useAppSelector(selectCategoryList) || [];
 
   return (
     <>

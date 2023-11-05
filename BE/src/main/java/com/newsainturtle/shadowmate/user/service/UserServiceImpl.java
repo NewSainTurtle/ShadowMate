@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.user.service;
 
+import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private final RedisServiceImpl redisService;
+
     private final FollowRequestRepository followRequestRepository;
 
     @Override
@@ -49,10 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse searchNickname(final User user, final String nickname) {
-        User searchUser = userRepository.findByNickname(nickname);
-        if(searchUser==null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
-        }
+        final User searchUser = searchUserNickname(nickname);
         return UserResponse.builder()
                 .userId(searchUser.getId())
                 .email(searchUser.getEmail())
@@ -71,13 +71,17 @@ public class UserServiceImpl implements UserService {
                 updateUserRequest.getNewProfileImage(),
                 updateUserRequest.getNewStatusMessage(),
                 userId);
+        redisService.deleteNicknameData(updateUserRequest.getNewNickname());
     }
 
     @Override
     @Transactional
     public void updatePassword(final Long userId, final String oldPassword, final String newPassword) {
         User user = userRepository.findById(userId).orElse(null);
-        if(bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+        if(user == null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        if(bCryptPasswordEncoder.matches(oldPassword, newPassword)) {
             userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
         }
         else {
@@ -88,22 +92,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(final Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+        User user = searchUserId(userId);
         User deleteUser = User.builder()
-                .id(user.get().getId())
-                .email(user.get().getEmail())
-                .password(user.get().getPassword())
-                .socialLogin(user.get().getSocialLogin())
-                .profileImage(user.get().getProfileImage())
-                .nickname(user.get().getNickname())
-                .statusMessage(user.get().getStatusMessage())
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .socialLogin(user.getSocialLogin())
+                .profileImage(user.getProfileImage())
+                .nickname(user.getNickname())
+                .statusMessage(user.getStatusMessage())
                 .withdrawal(true)
-                .plannerAccessScope(user.get().getPlannerAccessScope())
-                .createTime(user.get().getCreateTime())
-                .updateTime(user.get().getUpdateTime())
+                .plannerAccessScope(user.getPlannerAccessScope())
+                .createTime(user.getCreateTime())
+                .updateTime(user.getUpdateTime())
                 .deleteTime(LocalDateTime.now())
                 .build();
         userRepository.save(deleteUser);
@@ -119,5 +120,21 @@ public class UserServiceImpl implements UserService {
             return FollowStatus.REQUESTED;
         }
         return FollowStatus.FOLLOW;
+    }
+
+    private User searchUserNickname(String nickname) {
+        User searchUser = userRepository.findByNickname(nickname);
+        if(searchUser==null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
+        }
+        return searchUser;
+    }
+
+    private User searchUserId(long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if(!user.isPresent()) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        return user.get();
     }
 }

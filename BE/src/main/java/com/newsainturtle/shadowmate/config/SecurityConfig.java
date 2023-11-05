@@ -1,6 +1,6 @@
 package com.newsainturtle.shadowmate.config;
 
-import com.newsainturtle.shadowmate.config.jwt.JwtException;
+import com.newsainturtle.shadowmate.config.jwt.JwtExceptionHandler;
 import com.newsainturtle.shadowmate.config.jwt.JwtAuthenticationFilter;
 import com.newsainturtle.shadowmate.config.jwt.JwtAuthorizationFilter;
 import com.newsainturtle.shadowmate.config.jwt.JwtProvider;
@@ -29,7 +29,7 @@ public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
 
-    private final JwtException jwtException;
+    private final JwtExceptionHandler jwtException;
 
     private final PrincipalOauth2UserService principalOauth2UserService;
 

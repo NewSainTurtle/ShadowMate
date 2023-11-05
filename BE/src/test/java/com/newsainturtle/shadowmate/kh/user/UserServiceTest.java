@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.kh.user;
 
+import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
@@ -39,6 +40,9 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private RedisServiceImpl redisService;
+
+    @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Spy
@@ -54,6 +58,7 @@ public class UserServiceTest {
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
+    final Long userId1 = user1.getId();
     final User user2 = User.builder()
             .id(2L)
             .email("test2@test.com")
@@ -109,10 +114,11 @@ public class UserServiceTest {
                     .build();
 
             //when
-            userService.updateUser(user1.getId(), updateUserRequest);
+            userService.updateUser(userId1, updateUserRequest);
 
             //then
             verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
+            verify(redisService, times(1)).deleteNicknameData(any());
 
         }
 
@@ -120,11 +126,11 @@ public class UserServiceTest {
         void 실패_비밀번호수정_비밀번호다름() {
             // given
             final String newPassword = "NewPassword";
-            doReturn(Optional.of(user1)).when(userRepository).findById(user1.getId());
+            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
             doReturn(false).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(user1.getId(), user1.getPassword(), newPassword));
+            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(userId1, user1.getPassword(), newPassword));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DIFFERENT_PASSWORD);
@@ -134,11 +140,11 @@ public class UserServiceTest {
         void 성공_비밀번호수정() {
             // given
             final String newPassword = "NewPassword";
-            doReturn(Optional.of(user1)).when(userRepository).findById(user1.getId());
+            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
             doReturn(true).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            userService.updatePassword(user1.getId(), user1.getPassword(), newPassword);
+            userService.updatePassword(userId1, user1.getPassword(), newPassword);
 
             // then
             verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
@@ -152,9 +158,10 @@ public class UserServiceTest {
         @Test
         void 실패_회원없음() {
             // given
+            final String user2Nickname = user2.getNickname();
 
             // when
-            final UserException result = assertThrows(UserException.class, () -> userService.searchNickname(user1, user2.getNickname()));
+            final UserException result = assertThrows(UserException.class, () -> userService.searchNickname(user1, user2Nickname));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_NICKNAME);
@@ -177,10 +184,10 @@ public class UserServiceTest {
         @Test
         void 실패_회원탈퇴_유저없음() {
             //given
-            doReturn(Optional.empty()).when(userRepository).findById(user1.getId());
+            doReturn(Optional.empty()).when(userRepository).findById(userId1);
 
             //when
-            final UserException result = assertThrows(UserException.class, () -> userService.deleteUser(user1.getId()));
+            final UserException result = assertThrows(UserException.class, () -> userService.deleteUser(userId1));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
@@ -204,10 +211,10 @@ public class UserServiceTest {
                     .updateTime(user1.getUpdateTime())
                     .deleteTime(LocalDateTime.now())
                     .build();
-            given(userRepository.findById(user1.getId())).willReturn(Optional.of(deleteUser));
+            given(userRepository.findById(userId1)).willReturn(Optional.of(deleteUser));
 
             //when
-            userService.deleteUser(user1.getId());
+            userService.deleteUser(userId1);
 
             //then
             verify(userRepository, times(1)).findById(any());

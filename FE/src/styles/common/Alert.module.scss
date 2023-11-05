@@ -1,0 +1,19 @@
+$color-text: var(--color-text);
+$color-blue: var(--color-btn-blue);
+$color-warning: var(--color-warning);
+
+.alert {
+  width: 100%;
+  margin-top: 2em;
+  border-radius: 0;
+  &__success {
+    @extend .alert;
+    color: $color-text;
+    background-color: $color-blue;
+  }
+  &__error {
+    @extend .alert;
+    color: white;
+    background-color: $color-warning;
+  }
+}

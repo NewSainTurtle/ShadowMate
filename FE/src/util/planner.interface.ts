@@ -9,14 +9,14 @@ export interface CategoryColorConfig {
   categoryColorCode: string;
 }
 
-export interface CategoryConfig {
+export interface CategoryItemConfig {
   categoryId: number;
   categoryTitle: string;
   categoryColorCode: string;
   categoryEmoticon?: string | null;
 }
 
-export interface DdayConfig {
+export interface DdayItemConfig {
   ddayId: number;
   ddayDate: Date | string;
   ddayTitle: string;
@@ -31,7 +31,7 @@ export interface TimeTableConfig {
 // 공통 Todo Item
 export interface TodoConfig {
   todoId: number;
-  category?: CategoryConfig | null;
+  category?: CategoryItemConfig | null;
   todoContent: string;
   todoStatus: "공백" | "완료" | "미완료";
   todoUpdate?: boolean;

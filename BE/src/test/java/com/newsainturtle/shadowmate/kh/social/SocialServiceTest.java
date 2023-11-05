@@ -22,13 +22,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class SocialServiceTest {
+class SocialServiceTest {
 
     @InjectMocks
     private SocialServiceImpl socialService;
@@ -107,7 +108,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -128,7 +129,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -159,7 +160,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
@@ -195,7 +196,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchPublicDailyPlanner(sort, pageNumber);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
@@ -307,7 +308,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -334,7 +335,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(1);
+        assertThat(result.getSocialList()).hasSize(1);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
     }
@@ -371,7 +372,7 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
@@ -413,10 +414,58 @@ public class SocialServiceTest {
         SearchPublicDailyPlannerResponse result = socialService.searchNicknamePublicDailyPlanner(request);
 
         // then
-        assertThat(result.getSocialList().size()).isEqualTo(2);
+        assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
         assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
         assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(Date.valueOf(date));
+    }
+
+    @Test
+    void 실패_공유플래너삭제_공유플래너없음() {
+        // given
+        final String date = "2023-10-30";
+        final String Image = "testImage";
+        final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                .dailyPlannerDay(Date.valueOf(date))
+                .user(user1)
+                .build();
+        final Social social = Social.builder()
+                .id(9999L)
+                .dailyPlanner(dailyPlanner)
+                .socialImage(Image)
+                .build();
+        final Long socialId = social.getId();
+
+        // when
+        final SocialException result = assertThrows(SocialException.class, () -> socialService.deleteSocial(socialId));
+
+        // then
+        assertThat(result.getErrorResult()).isEqualTo(SocialErrorResult.NOT_FOUND_SOCIAL);
+
+    }
+
+    @Test
+    void 성공_공유플래너삭제() {
+        // given
+        final String date = "2023-10-30";
+        final String Image = "testImage";
+        final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                .dailyPlannerDay(Date.valueOf(date))
+                .user(user1)
+                .build();
+        final Social social = Social.builder()
+                .id(9999L)
+                .dailyPlanner(dailyPlanner)
+                .socialImage(Image)
+                .build();
+        doReturn(Optional.of(social)).when(socialRepository).findById(social.getId());
+
+        // when
+        socialService.deleteSocial(social.getId());
+
+        // then
+        verify(socialRepository, times(1)).delete(any());
+
     }
 }

@@ -2,20 +2,20 @@ import React, { ChangeEvent, Dispatch, MouseEvent, SetStateAction, useEffect, us
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import { DdayConfig } from "@util/planner.interface";
+import { DdayItemConfig } from "@util/planner.interface";
 import { dateFormat } from "@util/getThisWeek";
 import dayjs from "dayjs";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDdayClick, selectDdayInput, selectDdayList, setDdayInput } from "@store/mypageSlice";
+import { selectDdayClick, selectDdayInput, selectDdayList, setDdayInput } from "@store/mypage/ddaySlice";
 
 const MyPageDday = () => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectDdayClick);
   const ddayList = useAppSelector(selectDdayList);
-  const ddayInput: DdayConfig = useAppSelector(selectDdayInput);
+  const ddayInput: DdayItemConfig = useAppSelector(selectDdayInput);
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);

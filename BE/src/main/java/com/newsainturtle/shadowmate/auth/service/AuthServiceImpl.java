@@ -96,10 +96,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void duplicatedCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest) {
-        User user = userRepository.findByNickname(duplicatedNicknameRequest.getNickname());
+        final User user = userRepository.findByNickname(duplicatedNicknameRequest.getNickname());
         if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
         }
+        final Boolean checkNickname = redisServiceImpl.getHashNicknameData(duplicatedNicknameRequest.getNickname());
+        if(checkNickname != null) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
+        }
+        redisServiceImpl.setHashNicknameData(duplicatedNicknameRequest.getNickname(), true, 10);
     }
 
     @Override
@@ -126,6 +131,7 @@ public class AuthServiceImpl implements AuthService {
                         .build();
         userRepository.save(userEntity);
         redisServiceImpl.deleteEmailData(email);
+        redisServiceImpl.deleteNicknameData(joinRequest.getNickname());
     }
 
     private void checkDuplicatedEmail(final String email) {

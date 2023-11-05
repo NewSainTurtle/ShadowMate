@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.kh.auth;
 
-import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
@@ -66,10 +65,10 @@ public class AuthServiceTest {
     class 이메일인증 {
 
         @Test
-        public void 랜덤숫자생성() {
+        void 랜덤숫자생성() {
             for(int i=0; i<10; i++) {
                 String code = createRandomCode();
-                assertThat(code.length()).isEqualTo(6);
+                assertThat(code).hasSize(6);
             }
         }
 
@@ -112,40 +111,52 @@ public class AuthServiceTest {
             //then
             assertThat(userEntity.getEmail()).isEqualTo(joinRequest.getEmail());
             assertThat(userEntity.getNickname()).isEqualTo(joinRequest.getNickname());
+            verify(redisService, times(1)).deleteNicknameData(any());
         }
     }
 
     @Nested
     class 닉네임인증 {
+        String nickname = "거북이닉네임사용";
+        final DuplicatedNicknameRequest duplicatedNicknameRequest = DuplicatedNicknameRequest.builder().nickname(nickname).build();
 
         @Test
-        @DisplayName("닉네임이 중복된 경우")
-        void 실패_닉네임중복() {
+        void 실패_닉네임중복_DB사용중() {
             // given
-            String nickname = "거북이";
             doReturn(user).when(userRepository).findByNickname(nickname);
-
-            // when
-            User userEntity = userRepository.findByNickname(nickname);
-
-            // then
-            assertThat(userEntity.getNickname()).isEqualTo(user.getNickname());
-
-        }
-
-        @Test
-        @DisplayName("닉네임이 중복되지 않은 경우")
-        void 성공_닉네임중복안됨() {
-            // given
-            final String nickname = "거북이";
-            doReturn(user).when(userRepository).findByNickname(nickname);
-            DuplicatedNicknameRequest duplicatedNicknameRequest = DuplicatedNicknameRequest.builder().nickname(nickname).build();
 
             // when
             final AuthException authException = Assertions.assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
 
             // then
             assertThat(authException.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_NICKNAME);
+        }
+
+        @Test
+        void 실패_닉네임중복_Redis사용중() {
+            // given
+            doReturn(null).when(userRepository).findByNickname(nickname);
+            doReturn(true).when(redisService).getHashNicknameData(duplicatedNicknameRequest.getNickname());
+
+            // when
+            final AuthException authException = Assertions.assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
+
+            // then
+            assertThat(authException.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_NICKNAME);
+        }
+
+        @Test
+        void 성공_닉네임중복아님() {
+            // given
+            doReturn(null).when(userRepository).findByNickname(duplicatedNicknameRequest.getNickname());
+            doReturn(null).when(redisService).getHashNicknameData(duplicatedNicknameRequest.getNickname());
+
+            // when
+            authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
+
+            // then
+            verify(redisService, times(1)).setHashNicknameData(any(String.class), any(boolean.class), any(int.class));
+
         }
     }
 }

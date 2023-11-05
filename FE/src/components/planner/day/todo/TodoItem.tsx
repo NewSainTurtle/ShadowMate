@@ -6,7 +6,7 @@ import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
-import { CategoryConfig } from "@util/planner.interface";
+import { CategoryItemConfig } from "@util/planner.interface";
 
 interface Props {
   idx?: number;
@@ -51,7 +51,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
     }
   };
 
-  const handleClickCategory = (props: CategoryConfig) => {
+  const handleClickCategory = (props: CategoryItemConfig) => {
     const newCategory = { ...todoItem, category: props };
     if (addTodo) {
       insertTodo(newCategory);
@@ -150,7 +150,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
       </div>
 
-      <Modal open={ModalOpen} onClose={handleClose}>
+      <Modal types="noBtn" open={ModalOpen} onClose={handleClose}>
         <CategorySelector type="day" handleClick={handleClickCategory} />
       </Modal>
     </div>

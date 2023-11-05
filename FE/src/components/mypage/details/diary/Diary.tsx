@@ -76,7 +76,7 @@ const MyPageDiary = () => {
           </div>
         </div>
       </div>
-      <Modal open={Modalopen} onClose={handleClose}>
+      <Modal types="twoBtn" open={Modalopen} onClose={handleClose} onClick={handleSave}>
         <div className={styles["diary__modal"]}>
           <WarningAmberRoundedIcon />
           <Text types="small">
@@ -85,14 +85,6 @@ const MyPageDiary = () => {
             <>소셜에 공유된 게시글이 삭제됩니다.</>
           </Text>
           <Text types="small">계속 진행하시겠습니까?</Text>
-          <div>
-            <div onClick={handleClose}>
-              <Text types="small">취소</Text>
-            </div>
-            <div onClick={handleSave}>
-              <Text types="small">저장</Text>
-            </div>
-          </div>
         </div>
       </Modal>
     </>

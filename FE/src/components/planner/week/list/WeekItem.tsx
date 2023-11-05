@@ -6,7 +6,7 @@ import CategorySelector from "@components/common/CategorySelector";
 import todoModule from "@util/TodoModule";
 import dayjs from "dayjs";
 import { useAppSelector } from "@hooks/hook";
-import { CategoryConfig, TodoConfig } from "@util/planner.interface";
+import { CategoryItemConfig, TodoConfig } from "@util/planner.interface";
 import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
 import { DeleteOutlined } from "@mui/icons-material";
@@ -73,7 +73,7 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
       .catch((err) => console.log(err));
   };
 
-  const handleClickCategory = (props: CategoryConfig) => {
+  const handleClickCategory = (props: CategoryItemConfig) => {
     const newCategory = { ...item, category: props };
     const data = {
       date: dayjs(date).format("YYYY-MM-DD"),
@@ -146,7 +146,7 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
           <Text>{setStatus(item.todoStatus)}</Text>
         </div>
       </div>
-      <Modal open={Modalopen} onClose={handleClose}>
+      <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
         <CategorySelector type="week" handleClick={handleClickCategory} />
       </Modal>
     </>

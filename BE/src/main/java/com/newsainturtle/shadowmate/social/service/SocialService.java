@@ -8,4 +8,6 @@ public interface SocialService {
     SearchPublicDailyPlannerResponse searchPublicDailyPlanner(final String sort, final long pageNumber);
 
     SearchPublicDailyPlannerResponse searchNicknamePublicDailyPlanner(final SearchNicknamePublicDailyPlannerRequest searchNicknamePublicDailyPlannerRequest);
+
+    void deleteSocial(final long socialId);
 }

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.*;
@@ -50,7 +51,7 @@ public class SocialServiceImpl implements SocialService {
     @Override
     public SearchPublicDailyPlannerResponse searchPublicDailyPlanner(final String sort, final long pageNumber) {
         List<Social> socialList = socialRepository.findAllByDeleteTime();
-        return makeSearchPublicDailyPlannerResponse(socialList, sort, pageNumber);
+        return makeSearchPlannerResponse(socialList, sort, pageNumber);
     }
 
     @Override
@@ -60,10 +61,22 @@ public class SocialServiceImpl implements SocialService {
         if(user!=null) {
             socialList = socialRepository.findAllByDailyPlannerAndSocial(user.getId());
         }
-        return makeSearchPublicDailyPlannerResponse(socialList, searchNicknamePublicDailyPlannerRequest.getSort(), searchNicknamePublicDailyPlannerRequest.getPageNumber());
+        return makeSearchPlannerResponse(socialList, searchNicknamePublicDailyPlannerRequest.getSort(), searchNicknamePublicDailyPlannerRequest.getPageNumber());
     }
 
-    private SearchPublicDailyPlannerResponse makeSearchPublicDailyPlannerResponse(List<Social> socialList, String sort, long pageNumber) {
+    @Override
+    @Transactional
+    public void deleteSocial(final long socialId) {
+        Optional<Social> social = socialRepository.findById(socialId);
+        if(social.isPresent()) {
+            socialRepository.delete(social.get());
+        }
+        else {
+            throw new SocialException(NOT_FOUND_SOCIAL);
+        }
+    }
+
+    private SearchPublicDailyPlannerResponse makeSearchPlannerResponse(List<Social> socialList, String sort, long pageNumber) {
         if(socialList.isEmpty()) {
             return SearchPublicDailyPlannerResponse.builder()
                     .pageNumber(pageNumber)

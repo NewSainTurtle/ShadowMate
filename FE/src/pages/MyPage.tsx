@@ -7,59 +7,14 @@ import MyPageFrame from "@components/mypage/MyPageFrame";
 import MyPageInfo from "@components/mypage/details/myInfo/MyInfo";
 import MyFriend from "@components/mypage/details/friend/MyFriend";
 import MyPassword from "@components/mypage/details/myInfo/MyPassword";
-import CancelMembership from "@components/mypage/details/myInfo/CancleMembership";
-import { settingApi } from "@api/Api";
-import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import CancelMembership from "@components/mypage/details/myInfo/CancelMembership";
+import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo, userInfoConfig } from "@store/authSlice";
-import { setCategoryColors, setCategoryInput, setCategoryList, setDdayList } from "@store/mypageSlice";
-import { CategoryConfig } from "@util/planner.interface";
 
 const MyPage = () => {
-  const dispatch = useAppDispatch();
   const [tabName, setTabName] = useState<string>("내 정보 확인");
   const userId: number = useAppSelector(selectUserId);
   const userInfo: userInfoConfig = useAppSelector(selectUserInfo);
-
-  const getCategoryList = () => {
-    settingApi
-      .categories(userId)
-      .then((res) => {
-        let response: CategoryConfig[] = res.data.data.categoryList;
-        if (response.length != 0) {
-          dispatch(setCategoryList(response));
-          dispatch(setCategoryInput(response[0]));
-        }
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getCategoryColors = () => {
-    settingApi
-      .categoriesColors(userId)
-      .then((res) => {
-        const response = res.data.data.categoryColorList;
-        dispatch(setCategoryColors(response));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getDdayList = () => {
-    settingApi
-      .ddays(userId)
-      .then((res) => {
-        const response = res.data.data.ddayList;
-        dispatch(setDdayList(response));
-      })
-      .catch((err) => console.log(err));
-  };
-
-  useEffect(() => {
-    getDdayList();
-    getCategoryList();
-    getCategoryColors();
-  }, []);
 
   return (
     <div className={styles["mypage__container"]}>

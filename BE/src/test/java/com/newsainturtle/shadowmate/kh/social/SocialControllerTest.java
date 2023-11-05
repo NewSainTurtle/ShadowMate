@@ -38,7 +38,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class SocialControllerTest {
+class SocialControllerTest {
 
     @InjectMocks
     private SocialController socialController;
@@ -85,7 +85,7 @@ public class SocialControllerTest {
     }
 
     @Test
-    public void 실패_공개된플래너조회_유저정보다름() throws Exception {
+    void 실패_공개된플래너조회_유저정보다름() throws Exception {
         //given
         final String url = "/api/social/{userId}";
         final String sort = "latest";
@@ -141,7 +141,7 @@ public class SocialControllerTest {
     }
 
     @Test
-    public void 실패_공개된플래너_닉네임검색_유저정보다름() throws Exception {
+    void 실패_공개된플래너_닉네임검색_유저정보다름() throws Exception {
         //given
         final String url = "/api/social/{userId}/searches/nicknames";
         final String sort = "latest";
@@ -165,7 +165,7 @@ public class SocialControllerTest {
     }
 
     @Test
-    public void 실패_공개된플래너_닉네임검색_닉네임NULL() throws Exception {
+    void 실패_공개된플래너_닉네임검색_닉네임NULL() throws Exception {
         //given
         final String url = "/api/social/{userId}/searches/nicknames";
         final String sort = "latest";
@@ -187,7 +187,7 @@ public class SocialControllerTest {
     }
 
     @Test
-    public void 실패_공개된플래너_닉네임검색_정렬NULL() throws Exception {
+    void 실패_공개된플래너_닉네임검색_정렬NULL() throws Exception {
         //given
         final String url = "/api/social/{userId}/searches/nicknames";
         final String sort = "latest";
@@ -209,7 +209,7 @@ public class SocialControllerTest {
     }
 
     @Test
-    public void 실패_공개된플래너_닉네임검색_페이지넘버NULL() throws Exception {
+    void 실패_공개된플래너_닉네임검색_페이지넘버NULL() throws Exception {
         //given
         final String url = "/api/social/{userId}/searches/nicknames";
         final String sort = "latest";
@@ -269,6 +269,33 @@ public class SocialControllerTest {
                         .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON)
         );
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void 실패_공유된플래너삭제_유저정보다름() throws Exception {
+        //given
+        final String url = "/api/social/{userId}/{socialId}";
+        doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, userId, social.getId()));
+
+        //then
+        resultActions.andExpect(status().isForbidden());
+    }
+
+    @Test
+    void 성공_공유된플래너삭제() throws Exception {
+        // given
+        final String url = "/api/social/{userId}/{socialId}";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, userId, social.getId()));
 
         // then
         resultActions.andExpect(status().isOk());

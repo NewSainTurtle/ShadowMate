@@ -3,8 +3,10 @@ import authReducer from "@store/authSlice";
 import monthReducer from "@store/planner/monthSlice";
 import weekReducer from "@store/planner/weekSlice";
 import dayReducer from "@store/planner/daySlice";
-import mypageReducer from "@store/mypageSlice";
+import categoryReducer from "@store/mypage/categorySlice";
+import ddayReducer from "@store/mypage/ddaySlice";
 import frinedReducer from "@store/friendSlice";
+import modalReducer from "@store/modalSlice";
 
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -15,13 +17,15 @@ const rootReducer = combineReducers({
   month: monthReducer,
   week: weekReducer,
   day: dayReducer,
-  mypage: mypageReducer,
+  category: categoryReducer,
+  dday: ddayReducer,
   friend: frinedReducer,
+  modal: modalReducer,
 });
 
 const persistConfig = {
   key: "root",
-  whitelist: ["auth", "mypage"],
+  whitelist: ["auth", "category", "dday"],
   storage,
 };
 

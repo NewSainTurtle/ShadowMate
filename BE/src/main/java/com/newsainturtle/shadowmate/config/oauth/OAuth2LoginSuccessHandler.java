@@ -46,8 +46,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         this.handle(request,response,authentication);
     }
 
-    private Cookie addCookie(String Key, String value) {
-        Cookie cookie = new Cookie(Key, value);
+    private Cookie addCookie(String key, String value) {
+        Cookie cookie = new Cookie(key, value);
         cookie.setPath("/");
         cookie.setMaxAge(100000);
         return cookie;

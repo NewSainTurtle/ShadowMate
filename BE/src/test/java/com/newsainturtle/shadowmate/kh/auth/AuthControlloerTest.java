@@ -31,7 +31,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthControlloerTest {
+class AuthControlloerTest {
 
     @InjectMocks
     private AuthController authController;
@@ -64,7 +64,7 @@ public class AuthControlloerTest {
     }
 
     @Test
-    public void 실패_이메일중복() throws Exception {
+    void 실패_이메일중복() throws Exception {
         //given
         final String url = "/api/auth/email-authentication";
 
@@ -83,7 +83,7 @@ public class AuthControlloerTest {
     }
 
     @Test
-    public void 실패_이메일Null() throws Exception {
+    void 실패_이메일Null() throws Exception {
         //given
         final String url = "/api/auth/email-authentication";
 
@@ -101,7 +101,7 @@ public class AuthControlloerTest {
     }
 
     @Test
-    public void 실패_이메일형식이아님() throws Exception {
+    void 실패_이메일형식이아님() throws Exception {
         //given
         final String url = "/api/auth/email-authentication";
 
@@ -119,7 +119,7 @@ public class AuthControlloerTest {
     }
 
     @Test
-    public void 성공_이메일중복아님() throws Exception {
+    void 성공_이메일중복아님() throws Exception {
         //given
         final String url = "/api/auth/email-authentication";
 
