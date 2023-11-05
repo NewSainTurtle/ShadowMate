@@ -24,7 +24,7 @@ public class RedisServiceImpl implements RedisService{
     }
 
     @Override
-    public Boolean getHashNicknameData(String key) {
+    public Boolean getHashNicknameData(final String key) {
         return (Boolean) redisTemplate.opsForValue().get("nickname " + key);
     }
 
@@ -35,7 +35,7 @@ public class RedisServiceImpl implements RedisService{
     }
 
     @Override
-    public void setHashNicknameData(String key, boolean value, int timeout) {
+    public void setHashNicknameData(final String key, final boolean value, final int timeout) {
         redisTemplate.execute(new SessionCallback<Object>() {
             @Override
             public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
@@ -53,7 +53,7 @@ public class RedisServiceImpl implements RedisService{
     }
 
     @Override
-    public void deleteNicknameData(String key) {
+    public void deleteNicknameData(final String key) {
         redisTemplate.execute(new SessionCallback<Object>() {
             @Override
             public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
