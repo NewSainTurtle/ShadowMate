@@ -54,9 +54,9 @@ interface apiInterface {
     ddays: (userId: number) => string; // 디데이 목록 조회, 등록, 수정, 삭제
   };
   social: {
-    getSocial: () => string; // 공개된 플래너 조회
-    searches: () => string; // 닉네임 검색
-    delete: (socialId: string) => string; // 내가 공유한 소셜 플래너 삭제
+    getSocial: (userId: number) => string; // 공개된 플래너 조회
+    searches: (userId: number) => string; // 닉네임 검색
+    delete: (userId: number, socialId: string) => string; // 내가 공유한 소셜 플래너 삭제
   };
 }
 
@@ -105,9 +105,9 @@ const api: apiInterface = {
     ddays: (userId: number) => HOST + SETTINGS + userId + "/d-days",
   },
   social: {
-    getSocial: () => HOST + SOCIAL,
-    searches: () => HOST + SOCIAL + "/searches" + "/nicknames",
-    delete: (socialId: string) => HOST + SOCIAL + socialId,
+    getSocial: (userId: number) => HOST + SOCIAL + userId,
+    searches: (userId: number) => HOST + SOCIAL + userId + "/searches" + "/nicknames",
+    delete: (userId: number, socialId: string) => HOST + SOCIAL + userId + "/" + socialId,
   },
 };
 
