@@ -14,6 +14,7 @@ import { selectUserId } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import html2canvas from "html2canvas";
+import Alert from "@components/common/Alert";
 
 const DayPage = () => {
   const dispatch = useAppDispatch();
@@ -32,8 +33,11 @@ const DayPage = () => {
     studyTimeHour: 0,
     studyTimeMinute: 0,
   });
+  const [alertSuccess, setAlertSuccess] = useState<boolean>(false);
   const todoDivRef = useRef<HTMLDivElement>(null);
   const screenDivRef = useRef<HTMLDivElement>(null);
+
+  const handleSuccessClose = () => setAlertSuccess(false);
 
   useEffect(() => {
     const day = dayjs(date).format("YYYY-MM-DD");
@@ -133,6 +137,7 @@ const DayPage = () => {
               await plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
           ),
         );
+        setAlertSuccess(true);
       }
     });
   };
@@ -144,6 +149,7 @@ const DayPage = () => {
 
   return (
     <div ref={screenDivRef} className={styles["page-container"]} key={date}>
+      <Alert types="other" open={alertSuccess} onClose={handleSuccessClose} message="공유 되었습니다." />
       <Header isFriend={userId != friendUserId} socialClick={handleDownload} />
       <div className={`${styles["page-content"]} ${isFriend ? styles["--friend"] : ""}`}>
         <Ment
