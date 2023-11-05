@@ -10,15 +10,14 @@ module.exports = merge(common, {
   mode: "production",
   devtool: "hidden-source-map",
   devServer: {
-    //port: 8080,
     disableHostCheck: true,
     historyApiFallback: true,
     allowedHosts: "auto",
   },
   performance: {
     hints: false,
-    maxEntrypointSize: 512000,
-    maxAssetSize: 512000,
+    maxEntrypointSize: 1024000,
+    maxAssetSize: 1024000,
   },
   optimization: {
     minimizer: [
