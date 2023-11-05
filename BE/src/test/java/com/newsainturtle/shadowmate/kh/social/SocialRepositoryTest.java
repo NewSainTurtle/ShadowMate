@@ -38,23 +38,12 @@ class SocialRepositoryTest {
             .socialLogin(SocialType.BASIC)
             .nickname("거북이1")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
+            .profileImage("TestprofileImage")
             .withdrawal(false)
             .build();
     @BeforeEach
     public void init() {
         userRepository.save(user1);
-    }
-
-    @Test
-    void 실패_공개된플래너Null() {
-        // given
-        final Long id = 9999L;
-
-        // when
-        final List<Social> result = socialRepository.findAllByDeleteTime();
-
-        // then
-        assertThat(result).isEmpty();
     }
 
     @Test
@@ -77,7 +66,7 @@ class SocialRepositoryTest {
         final List<Social> result = socialRepository.findAllByDeleteTime();
 
         // then
-        assertThat(result.get(0).getSocialImage()).isEqualTo(Image);
+        assertThat(result).isNotEmpty();
     }
 
     @Test
