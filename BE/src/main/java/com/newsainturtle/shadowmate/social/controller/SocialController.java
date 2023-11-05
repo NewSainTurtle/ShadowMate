@@ -39,4 +39,13 @@ public class SocialController {
         authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_NICKNAME_PUBLIC_DAILY_PLANNER, socialService.searchNicknamePublicDailyPlanner(searchNicknamePublicDailyPlannerRequest)));
     }
+
+    @DeleteMapping("/{userId}/{socialId}")
+    public ResponseEntity<BaseResponse> deleteSocial(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                     @PathVariable("userId") final Long userId,
+                                                     @PathVariable("socialId") final Long socialId) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        socialService.deleteSocial(socialId);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_SOCIAL));
+    }
 }

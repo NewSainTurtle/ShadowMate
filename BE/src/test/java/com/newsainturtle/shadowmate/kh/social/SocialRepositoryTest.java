@@ -125,4 +125,28 @@ public class SocialRepositoryTest {
         assertThat(socialList.get(0).getSocialImage()).isEqualTo(Image);
 
     }
+
+    @Test
+    void 공유한플래너_삭제() {
+        // given
+        final String date = "2023-10-30";
+        final String Image = "testImage";
+        final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                .dailyPlannerDay(Date.valueOf(date))
+                .user(user1)
+                .build();
+        final Social social = Social.builder()
+                .dailyPlanner(dailyPlanner)
+                .socialImage(Image)
+                .build();
+        dailyPlannerRepository.save(dailyPlanner);
+
+        // when
+        final Social result1 = socialRepository.save(social);
+        socialRepository.delete(social);
+        final Social result2 = socialRepository.findById(result1.getId()).orElse(null);
+
+        // then
+        assertThat(result2).isNull();
+    }
 }

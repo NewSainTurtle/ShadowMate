@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.*;
@@ -61,6 +62,18 @@ public class SocialServiceImpl implements SocialService {
             socialList = socialRepository.findAllByDailyPlannerAndSocial(user.getId());
         }
         return makeSearchPublicDailyPlannerResponse(socialList, searchNicknamePublicDailyPlannerRequest.getSort(), searchNicknamePublicDailyPlannerRequest.getPageNumber());
+    }
+
+    @Override
+    @Transactional
+    public void deleteSocial(final long socialId) {
+        Optional<Social> social = socialRepository.findById(socialId);
+        if(social.isPresent()) {
+            socialRepository.delete(social.get());
+        }
+        else {
+            throw new SocialException(NOT_FOUND_SOCIAL);
+        }
     }
 
     private SearchPublicDailyPlannerResponse makeSearchPublicDailyPlannerResponse(List<Social> socialList, String sort, long pageNumber) {
