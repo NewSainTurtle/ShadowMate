@@ -67,11 +67,20 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(final Long userId, final UpdateUserRequest updateUserRequest) {
+        User user = userRepository.findByIdAndNickname(userId, updateUserRequest.getNewNickname());
+        if(user == null) {
+            Boolean getHashNickname = redisService.getHashNicknameData(updateUserRequest.getNewNickname());
+            if(getHashNickname == null || !getHashNickname) {
+                throw new UserException(UserErrorResult.RETRY_NICKNAME);
+            }
+            else {
+                redisService.deleteNicknameData(updateUserRequest.getNewNickname());
+            }
+        }
         userRepository.updateUser(updateUserRequest.getNewNickname(),
                 updateUserRequest.getNewProfileImage(),
                 updateUserRequest.getNewStatusMessage(),
                 userId);
-        redisService.deleteNicknameData(updateUserRequest.getNewNickname());
     }
 
     @Override
