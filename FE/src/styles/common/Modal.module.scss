@@ -1,0 +1,34 @@
+$color-text: var(--color-text);
+$color-background: var(--color-background);
+$color-gray-1: var(--color-gray-1);
+$color-blue: var(--color-btn-blue);
+
+.contents {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 25em;
+  background-color: $color-background;
+}
+
+.button {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-top: 2em;
+  > div {
+    width: 100%;
+    height: 100%;
+    padding: 1em 0;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+  }
+  &__save {
+    background-color: $color-blue;
+  }
+  &__cancel {
+    background-color: $color-gray-1;
+  }
+}

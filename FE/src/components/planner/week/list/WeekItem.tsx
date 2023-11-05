@@ -146,7 +146,7 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
           <Text>{setStatus(item.todoStatus)}</Text>
         </div>
       </div>
-      <Modal open={Modalopen} onClose={handleClose}>
+      <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
         <CategorySelector type="week" handleClick={handleClickCategory} />
       </Modal>
     </>

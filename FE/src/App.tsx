@@ -52,7 +52,6 @@ const App = () => {
         <Routes>
           <Route element={<PrivateRoute isLogin={isLogin} option={false} />}>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/common" element={<CommonPage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/signup" element={<AuthPage />} />
           </Route>
@@ -67,6 +66,7 @@ const App = () => {
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
+          <Route path="/common" element={<CommonPage />} />
         </Routes>
       </div>
     </ThemeProvider>
