@@ -6,7 +6,7 @@ import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
-import { CategoryConfig } from "@util/planner.interface";
+import { CategoryItemConfig } from "@util/planner.interface";
 
 interface Props {
   idx?: number;
@@ -51,7 +51,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
     }
   };
 
-  const handleClickCategory = (props: CategoryConfig) => {
+  const handleClickCategory = (props: CategoryItemConfig) => {
     const newCategory = { ...todoItem, category: props };
     if (addTodo) {
       insertTodo(newCategory);

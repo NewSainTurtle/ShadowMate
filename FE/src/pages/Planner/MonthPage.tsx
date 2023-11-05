@@ -3,8 +3,9 @@ import Month from "@components/planner/month/Month";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { setCategoryInput, setCategoryList, setDdayList } from "@store/mypageSlice";
-import { CategoryConfig } from "@util/planner.interface";
+import { setCategoryColors, setCategoryInput, setCategoryList } from "@store/mypage/categorySlice";
+import { setDdayList } from "@store/mypage/ddaySlice";
+import { CategoryItemConfig } from "@util/planner.interface";
 
 const MonthPage = () => {
   const dispatch = useAppDispatch();
@@ -14,7 +15,7 @@ const MonthPage = () => {
     settingApi
       .categories(userId)
       .then((res) => {
-        let response: CategoryConfig[] = res.data.data.categoryList;
+        let response: CategoryItemConfig[] = res.data.data.categoryList;
         if (response.length != 0) {
           dispatch(setCategoryList(response));
           dispatch(setCategoryInput(response[0]));
@@ -23,18 +24,33 @@ const MonthPage = () => {
       .catch((err) => console.log(err));
   };
 
+  const getCategoryColors = () => {
+    settingApi
+      .categoriesColors(userId)
+      .then((res) => {
+        const response = res.data.data.categoryColorList;
+        dispatch(setCategoryColors(response));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const getDdayList = () => {
     settingApi
       .ddays(userId)
       .then((res) => {
         const response = res.data.data.ddayList;
-        dispatch(setDdayList(response));
+        if (response.length != 0) {
+          dispatch(setDdayList(response));
+        }
       })
       .catch((err) => console.log(err));
   };
 
   useEffect(() => {
     getCategoryList();
+    getCategoryColors();
     getDdayList();
   }, []);
 

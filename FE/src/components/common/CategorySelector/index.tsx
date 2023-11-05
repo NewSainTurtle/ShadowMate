@@ -3,16 +3,16 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { useAppSelector } from "@hooks/hook";
-import { CategoryConfig } from "@util/planner.interface";
-import { selectCategoryList } from "@store/mypageSlice";
+import { CategoryItemConfig } from "@util/planner.interface";
+import { selectCategoryList } from "@store/mypage/categorySlice";
 
 interface Props {
   type: "week" | "day";
-  handleClick: (props: CategoryConfig) => void;
+  handleClick: (props: CategoryItemConfig) => void;
 }
 
 const CategorySelector = ({ type, handleClick }: Props) => {
-  const categoryList: CategoryConfig[] = useAppSelector(selectCategoryList);
+  const categoryList: CategoryItemConfig[] = useAppSelector(selectCategoryList);
   return (
     <div className={styles["category__selector"]}>
       <div>
