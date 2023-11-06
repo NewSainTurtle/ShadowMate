@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
@@ -57,6 +58,7 @@ public class FollowServiceImpl implements FollowService {
                         .nickname(follow.getFollowerId().getNickname())
                         .profileImage(follow.getFollowerId().getProfileImage())
                         .followerId(follow.getFollowerId().getId())
+                        .isFollow(isFollow(user, follow.getFollowerId()))
                         .build()).collect(Collectors.toList());
     }
 
@@ -125,6 +127,19 @@ public class FollowServiceImpl implements FollowService {
             return FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE;
         }
         return FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE;
+    }
+
+    @Override
+    public FollowStatus isFollow(User user, User searchUser) {
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
+        if (follow == null) {
+            FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
+            if(followRequest == null) {
+                return FollowStatus.EMPTY;
+            }
+            return FollowStatus.REQUESTED;
+        }
+        return FollowStatus.FOLLOW;
     }
 
     private AddFollowResponse addFollowPublic(final User follower, final User following) {
