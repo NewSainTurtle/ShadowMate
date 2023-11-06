@@ -4,8 +4,10 @@ import Text from "@components/common/Text";
 import { SocialListType } from "@components/social/CardList";
 import { DeleteOutline } from "@mui/icons-material";
 import { Avatar } from "@mui/material";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
+import { useNavigate } from "react-router-dom";
+import { setFriendDate, setFriendInfo } from "@store/friendSlice";
 
 interface Props {
   item: SocialListType;
@@ -14,13 +16,20 @@ interface Props {
 }
 
 const SocialProfile = ({ idx, item, handleDelete }: Props) => {
+  const navigator = useNavigate();
+  const dispatch = useAppDispatch();
   const userName = useAppSelector(selectUserInfo).nickname;
   const { socialId, socialImage, dailyPlannerDay, ...user } = item;
   const mine = user.nickname == userName;
   const { profileImage, statusMessage, nickname } = user;
 
+  const handleClickProfile = () => {
+    dispatch(setFriendInfo(user));
+    navigator("/month");
+  };
+
   return (
-    <div className={styles["social-profile__container"]}>
+    <div className={styles["social-profile__container"]} onClick={handleClickProfile}>
       <div className={styles["social-profile__img"]}>
         <Avatar src={profileImage} />
       </div>
@@ -42,9 +51,19 @@ const SocialProfile = ({ idx, item, handleDelete }: Props) => {
 };
 
 const CardItem = ({ idx, item, handleDelete }: Props) => {
+  const navigator = useNavigate();
+  const dispatch = useAppDispatch();
+  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+
+  const handleClickImage = () => {
+    dispatch(setFriendDate(dailyPlannerDay));
+    dispatch(setFriendInfo(user));
+    navigator("/day");
+  };
+
   return (
     <div className={styles["card-item"]}>
-      <div className={styles["card-item__image-box"]}>
+      <div className={styles["card-item__image-box"]} onClick={handleClickImage}>
         <img src={item.socialImage} />
       </div>
       <div className={styles["card-item__profile"]}>
