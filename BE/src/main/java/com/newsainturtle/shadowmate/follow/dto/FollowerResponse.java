@@ -18,5 +18,7 @@ public class FollowerResponse {
 
     private String profileImage;
 
+    private String statusMessage;
+
     private FollowStatus isFollow;
 }
