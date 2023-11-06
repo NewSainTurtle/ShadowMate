@@ -73,6 +73,19 @@ public class UserRepositoryTest {
         }
 
         @Test
+        void 성공_내정보수정시_닉네임조회() {
+            //given
+            final String nickname = user.getNickname();
+
+            //when
+            final User result = userRepository.findByIdAndNickname(userId, nickname);
+
+            //then
+            assertThat(result.getNickname()).isEqualTo(nickname);
+
+        }
+
+        @Test
         void 성공_내정보수정() {
             //given
             final String newNickname = "NewNickName";
