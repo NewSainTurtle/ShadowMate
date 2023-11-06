@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.follow.dto;
 
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,4 +17,6 @@ public class FollowerResponse {
     private String nickname;
 
     private String profileImage;
+
+    private FollowStatus isFollow;
 }
