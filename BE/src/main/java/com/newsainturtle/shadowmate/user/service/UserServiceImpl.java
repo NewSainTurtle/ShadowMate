@@ -1,11 +1,7 @@
 package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.entity.Follow;
-import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
-import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
-import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
+import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
@@ -28,13 +24,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final FollowRepository followRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final RedisServiceImpl redisService;
 
-    private final FollowRequestRepository followRequestRepository;
+    private final FollowServiceImpl followService;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
@@ -63,7 +57,7 @@ public class UserServiceImpl implements UserService {
                 .nickname(searchUser.getNickname())
                 .statusMessage(searchUser.getStatusMessage())
                 .plannerAccessScope(searchUser.getPlannerAccessScope())
-                .isFollow(isFollow(user, searchUser))
+                .isFollow(followService.isFollow(user, searchUser))
                 .build();
     }
 
@@ -121,7 +115,7 @@ public class UserServiceImpl implements UserService {
                 .build();
         userRepository.save(deleteUser);
     }
-
+  
     private FollowStatus isFollow(final User user, final User searchUser) {
         Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
         if (follow == null) {
