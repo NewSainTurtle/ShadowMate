@@ -6,20 +6,23 @@ import { ProfileConfig } from "@components/common/FriendProfile";
 import { DeleteOutline } from "@mui/icons-material";
 import { Avatar } from "@mui/material";
 import { useAppSelector } from "@hooks/hook";
-import { selectUserInfo } from "@store/authSlice";
+import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { socialApi } from "@api/Api";
 
 interface Props {
   item: SocialListType;
 }
 
-interface SocialProfileProps {
-  mine: boolean;
-  profile: ProfileConfig;
-  onClick?: MouseEventHandler<HTMLDivElement>;
-}
+const SocialProfile = ({ item }: Props) => {
+  const userId = useAppSelector(selectUserId);
+  const userName = useAppSelector(selectUserInfo).nickname;
+  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+  const mine = user.nickname == userName;
+  const { profileImage, statusMessage, nickname } = user;
 
-const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
-  const { profileImage, statusMessage, nickname } = profile;
+  const handleDelete = () => {
+    socialApi.delete(userId, socialId).catch((err) => console.error(err));
+  };
 
   return (
     <div className={styles["social-profile__container"]}>
@@ -32,9 +35,9 @@ const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["social-profile__button"]} {...rest}>
+      <div className={styles["social-profile__button"]}>
         {mine && (
-          <div>
+          <div onClick={handleDelete}>
             <DeleteOutline />
           </div>
         )}
@@ -44,16 +47,13 @@ const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
 };
 
 const CardItem = ({ item }: Props) => {
-  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
-  const userName = useAppSelector(selectUserInfo).nickname;
-
   return (
     <div className={styles["card-item"]}>
       <div className={styles["card-item__image-box"]}>
-        <img src={socialImage} />
+        <img src={item.socialImage} />
       </div>
       <div className={styles["card-item__profile"]}>
-        <SocialProfile profile={user} mine={userName == user.nickname} />
+        <SocialProfile item={item} />
       </div>
     </div>
   );

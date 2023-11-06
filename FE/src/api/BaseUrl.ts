@@ -56,7 +56,7 @@ interface apiInterface {
   social: {
     getSocial: (userId: number) => string; // 공개된 플래너 조회
     searches: (userId: number) => string; // 닉네임 검색
-    delete: (userId: number, socialId: string) => string; // 내가 공유한 소셜 플래너 삭제
+    delete: (userId: number, socialId: number) => string; // 내가 공유한 소셜 플래너 삭제
   };
 }
 
@@ -107,7 +107,7 @@ const api: apiInterface = {
   social: {
     getSocial: (userId: number) => HOST + SOCIAL + userId,
     searches: (userId: number) => HOST + SOCIAL + userId + "/searches" + "/nicknames",
-    delete: (userId: number, socialId: string) => HOST + SOCIAL + userId + "/" + socialId,
+    delete: (userId: number, socialId: number) => HOST + SOCIAL + userId + "/" + socialId,
   },
 };
 

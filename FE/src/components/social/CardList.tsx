@@ -46,7 +46,6 @@ const CardList = ({ order, search }: { order: string; search: string }) => {
       .getSocial(userId, { sort, pageNumber })
       .then((res) => {
         const response = res.data.data;
-        console.log(response);
         if (pageNumber == response.totalPage) endRef.current = true;
         setList((prev) => [...prev, ...response.socialList]);
         preventRef.current = true;
@@ -59,7 +58,7 @@ const CardList = ({ order, search }: { order: string; search: string }) => {
       {List.map((social) => (
         <CardItem key={social.socialId} item={social} />
       ))}
-      <div ref={obsRef} style={{ height: "1px" }} />
+      <div ref={obsRef} />
     </div>
   );
 };

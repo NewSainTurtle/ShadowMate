@@ -56,6 +56,7 @@ $color-gray_4: var(--color-gray-4);
     max-height: 100%;
     overflow-y: auto;
     box-sizing: border-box;
+    scroll-behavior: smooth;
   }
 }
 
@@ -68,6 +69,10 @@ $color-gray_4: var(--color-gray-4);
   grid-template-rows: repeat(2, 1fr);
   place-items: center stretch;
   gap: 1em 2em;
+
+  > div:nth-last-child(1) {
+    height: 1px;
+  }
 }
 
 .card-item {
