@@ -233,10 +233,11 @@ public class UserServiceTest {
             final String user2Nickname = user2.getNickname();
 
             // when
-            final UserException result = assertThrows(UserException.class, () -> userService.searchNickname(user1, user2Nickname));
+            final UserResponse result = userService.searchNickname(user1, user2Nickname);
 
             // then
-            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_NICKNAME);
+            assertThat(result.getUserId()).isNull();
+            assertThat(result.getNickname()).isNull();
         }
 
         @Test

@@ -46,7 +46,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse searchNickname(final User user, final String nickname) {
-        final User searchUser = searchUserNickname(nickname);
+        User searchUser = userRepository.findByNickname(nickname);
+        if(searchUser == null) {
+            return UserResponse.builder().build();
+        }
         return UserResponse.builder()
                 .userId(searchUser.getId())
                 .email(searchUser.getEmail())
@@ -112,13 +115,17 @@ public class UserServiceImpl implements UserService {
                 .build();
         userRepository.save(deleteUser);
     }
-
-    private User searchUserNickname(String nickname) {
-        User searchUser = userRepository.findByNickname(nickname);
-        if(searchUser==null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
+  
+    private FollowStatus isFollow(final User user, final User searchUser) {
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
+        if (follow == null) {
+            FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
+            if(followRequest == null) {
+                return FollowStatus.EMPTY;
+            }
+            return FollowStatus.REQUESTED;
         }
-        return searchUser;
+        return FollowStatus.FOLLOW;
     }
 
     private User searchUserId(long userId) {
