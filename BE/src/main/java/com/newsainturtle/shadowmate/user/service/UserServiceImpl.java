@@ -115,18 +115,6 @@ public class UserServiceImpl implements UserService {
                 .build();
         userRepository.save(deleteUser);
     }
-  
-    private FollowStatus isFollow(final User user, final User searchUser) {
-        Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
-        if (follow == null) {
-            FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
-            if(followRequest == null) {
-                return FollowStatus.EMPTY;
-            }
-            return FollowStatus.REQUESTED;
-        }
-        return FollowStatus.FOLLOW;
-    }
 
     private User searchUserId(long userId) {
         Optional<User> user = userRepository.findById(userId);
