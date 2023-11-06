@@ -12,6 +12,7 @@ import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.repository.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
@@ -43,6 +44,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
     private final FollowRepository followRepository;
     private final WeeklyRepository weeklyRepository;
     private final WeeklyTodoRepository weeklyTodoRepository;
+    private final SocialRepository socialRepository;
 
     private String localDateTimeToString(final LocalDateTime time) {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -205,6 +207,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                     .build();
         } else {
             final boolean like = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner) != null;
+            final boolean shareSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner) != null;
             final long likeCount = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
             final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
             final List<DailyPlannerTodoResponse> dailyTodos = new ArrayList<>();
@@ -238,6 +241,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                     .retrospection(dailyPlanner.getRetrospection())
                     .retrospectionImage(dailyPlanner.getRetrospectionImage())
                     .tomorrowGoal(dailyPlanner.getTomorrowGoal())
+                    .shareSocial(shareSocial)
                     .like(like)
                     .likeCount(likeCount)
                     .studyTimeHour(totalMinutes / 60)

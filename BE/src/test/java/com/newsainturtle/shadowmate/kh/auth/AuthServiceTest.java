@@ -10,9 +10,9 @@ import com.newsainturtle.shadowmate.auth.service.RedisService;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
+import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
+import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +27,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -79,6 +80,54 @@ public class AuthServiceTest {
     }
     @Nested
     class 회원가입 {
+
+        @Test
+        void 실패_회원가입_닉네임검사_false() {
+            //given
+            final JoinRequest joinRequest =
+                    JoinRequest.builder()
+                            .email("test@test.com")
+                            .password("123456")
+                            .nickname("테스트닉네임임")
+                            .build();
+            final String code = "testCode";
+            final EmailAuthentication emailAuthentication = EmailAuthentication.builder()
+                    .authStatus(true)
+                    .code(code)
+                    .build();
+            doReturn(false).when(redisService).getHashNicknameData(any());
+            doReturn(emailAuthentication).when(redisService).getHashEmailData(any());
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> authServiceImpl.join(joinRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
+        }
+
+        @Test
+        void 실패_회원가입_닉네임검사_NULL() {
+            //given
+            final JoinRequest joinRequest =
+                    JoinRequest.builder()
+                            .email("test@test.com")
+                            .password("123456")
+                            .nickname("테스트닉네임임")
+                            .build();
+            final String code = "testCode";
+            final EmailAuthentication emailAuthentication = EmailAuthentication.builder()
+                    .authStatus(true)
+                    .code(code)
+                    .build();
+            doReturn(null).when(redisService).getHashNicknameData(any());
+            doReturn(emailAuthentication).when(redisService).getHashEmailData(any());
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> authServiceImpl.join(joinRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
+        }
         @Test
         void 성공_회원가입() {
             //given
@@ -102,6 +151,7 @@ public class AuthServiceTest {
                     .authStatus(true)
                     .code(code)
                     .build();
+            doReturn(true).when(redisService).getHashNicknameData(any());
             doReturn(emailAuthentication).when(redisService).getHashEmailData(any());
             doReturn(userEntity).when(userRepository).save(any(User.class));
 
@@ -126,7 +176,7 @@ public class AuthServiceTest {
             doReturn(user).when(userRepository).findByNickname(nickname);
 
             // when
-            final AuthException authException = Assertions.assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
+            final AuthException authException = assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
 
             // then
             assertThat(authException.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_NICKNAME);
@@ -139,7 +189,7 @@ public class AuthServiceTest {
             doReturn(true).when(redisService).getHashNicknameData(duplicatedNicknameRequest.getNickname());
 
             // when
-            final AuthException authException = Assertions.assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
+            final AuthException authException = assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
 
             // then
             assertThat(authException.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_NICKNAME);

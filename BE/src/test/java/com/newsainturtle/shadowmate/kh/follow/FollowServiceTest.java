@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
@@ -66,6 +67,52 @@ public class FollowServiceTest {
             .withdrawal(false)
             .build();
     final Long userId2 = user2.getId();
+
+    @Test
+    void 팔로우_상태조회_EMPTY() {
+        // given
+        doReturn(null).when(followRepository).findByFollowerIdAndFollowingId(user1, user2);
+        doReturn(null).when(followRequestRepository).findByRequesterIdAndReceiverId(user1, user2);
+
+        // when
+        final FollowStatus followStatus = followService.isFollow(user1, user2);
+
+        // then
+        assertThat(followStatus).isEqualTo(FollowStatus.EMPTY);
+    }
+
+    @Test
+    void 팔로우_상태조회_FOLLOW() {
+        // given
+        final Follow follow = Follow.builder()
+                .followerId(user1)
+                .followingId(user2)
+                .build();
+        doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(user1, user2);
+
+        // when
+        final FollowStatus followStatus = followService.isFollow(user1, user2);
+
+        // then
+        assertThat(followStatus).isEqualTo(FollowStatus.FOLLOW);
+    }
+
+    @Test
+    void 팔로우_상태조회_REQUESTED() {
+        // given
+        final FollowRequest followRequest = FollowRequest.builder()
+                .requesterId(user1)
+                .receiverId(user2)
+                .build();
+        doReturn(null).when(followRepository).findByFollowerIdAndFollowingId(user1, user2);
+        doReturn(followRequest).when(followRequestRepository).findByRequesterIdAndReceiverId(user1, user2);
+
+        // when
+        final FollowStatus followStatus = followService.isFollow(user1, user2);
+
+        // then
+        assertThat(followStatus).isEqualTo(FollowStatus.REQUESTED);
+    }
 
     @Nested
     class 팔로잉TEST {
@@ -129,7 +176,7 @@ public class FollowServiceTest {
     class 팔로워TEST {
 
         @Test
-        void 실패_팔로잉조회Null() {
+        void 실패_팔로워조회Null() {
             //given
             List<FollowerResponse> followerResponses = new ArrayList<>();
             doReturn(followerResponses).when(followRepository).findAllByFollowingId(user2);
