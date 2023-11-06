@@ -47,7 +47,9 @@ const FriendHeader = () => {
 };
 
 const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
-  const [isSocialClick, setIsSocialClick] = useState(false);
+  const plannerAccessScope = useAppSelector(selectDayInfo).plannerAccessScope;
+  const shareSocial = useAppSelector(selectDayInfo).shareSocial;
+  const [isSocialClick, setIsSocialClick] = useState(shareSocial);
   const { likeCount } = useAppSelector(selectDayInfo);
 
   function handleClick() {
@@ -62,11 +64,13 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
       <Button types="red" disabled>
         ♥ {likeCount}
       </Button>
-      <div className={`${isSocialClick && styles["button__visit"]}`}>
-        <Button types="blue" onClick={() => handleClick()}>
-          소셜공유
-        </Button>
-      </div>
+      {plannerAccessScope != "비공개" && (
+        <div className={`${isSocialClick ? styles["button__visit"] : ""}`}>
+          <Button types="blue" onClick={() => handleClick()}>
+            소셜공유
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

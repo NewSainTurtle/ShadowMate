@@ -12,6 +12,7 @@ interface dayInfoConfig {
   dday: string | null;
   like: boolean;
   likeCount: number;
+  shareSocial: boolean;
   dailyTodos: TodoConfig[];
 }
 
@@ -28,6 +29,7 @@ const initialState: dayConfig = {
     dday: null,
     like: false,
     likeCount: 0,
+    shareSocial: false,
     dailyTodos: [],
   },
   todoItem: {

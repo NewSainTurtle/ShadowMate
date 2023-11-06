@@ -50,6 +50,7 @@ const DayPage = () => {
             plannerAccessScope: response.plannerAccessScope,
             dday: response.dday,
             like: response.like,
+            shareSocial: response.shareSocial,
             likeCount: response.likeCount,
             dailyTodos: response.dailyTodos || [],
           }),
