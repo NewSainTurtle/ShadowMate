@@ -27,7 +27,7 @@ Axios.interceptors.response.use(
     return res;
   },
   (err) => {
-    if (err.response.status) {
+    if (err.response.status === 403) {
       store.dispatch(setModalOpen());
     }
     return Promise.reject(err);
