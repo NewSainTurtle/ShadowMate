@@ -42,6 +42,7 @@ public class FollowServiceImpl implements FollowService {
                         .email(follow.getFollowingId().getEmail())
                         .nickname(follow.getFollowingId().getNickname())
                         .profileImage(follow.getFollowingId().getProfileImage())
+                        .statusMessage(follow.getFollowingId().getStatusMessage())
                         .followingId(follow.getFollowingId().getId())
                         .build()).collect(Collectors.toList());
     }
