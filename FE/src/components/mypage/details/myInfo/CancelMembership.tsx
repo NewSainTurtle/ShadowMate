@@ -6,6 +6,7 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { selectUserId, setLogout } from "@store/authSlice";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
+import { persistor } from "@hooks/configStore";
 
 const CancelMembership = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,9 @@ const CancelMembership = () => {
       .then(() => {
         handleClose();
         dispatch(setLogout());
+      })
+      .then(() => {
+        persistor.purge(); // 리덕스 초기화
       })
       .catch((err) => console.error(err));
   };

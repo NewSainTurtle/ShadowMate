@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
+import { PURGE } from "redux-persist";
 
 export interface userInfoConfig {
   email: string;
@@ -47,6 +48,10 @@ const authSlice = createSlice({
       const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
       state.userInfo = { ...payload, statusMessage, profileImage };
     },
+  },
+  extraReducers: (builder) => {
+    // redux-persist 초기화
+    builder.addCase(PURGE, () => initialState);
   },
 });
 
