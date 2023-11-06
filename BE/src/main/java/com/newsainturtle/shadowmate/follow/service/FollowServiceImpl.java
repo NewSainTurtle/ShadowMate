@@ -131,7 +131,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public FollowStatus isFollow(User user, User searchUser) {
+    public FollowStatus isFollow(final User user, final User searchUser) {
         Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
         if (follow == null) {
             FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
