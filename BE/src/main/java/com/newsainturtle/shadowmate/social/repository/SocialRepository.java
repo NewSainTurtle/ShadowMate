@@ -19,6 +19,8 @@ public interface SocialRepository extends JpaRepository<Social, Long> {
 
     Social findByDailyPlanner(final DailyPlanner dailyPlanner);
 
+    Social findByDailyPlannerAndDeleteTimeIsNull(final DailyPlanner dailyPlanner);
+
     @Modifying(clearAutomatically = true)
     @Query("update Social s set s.deleteTime = :time where s.dailyPlanner in (:dailyPlanners)")
     void updateDeleteTimeAll(@Param("time") final LocalDateTime time, @Param("dailyPlanners") final List<DailyPlanner> dailyPlanners);
