@@ -52,7 +52,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse searchNickname(final User user, final String nickname) {
-        final User searchUser = searchUserNickname(nickname);
+        User searchUser = userRepository.findByNickname(nickname);
+        if(searchUser == null) {
+            return UserResponse.builder().build();
+        }
         return UserResponse.builder()
                 .userId(searchUser.getId())
                 .email(searchUser.getEmail())
@@ -129,14 +132,6 @@ public class UserServiceImpl implements UserService {
             return FollowStatus.REQUESTED;
         }
         return FollowStatus.FOLLOW;
-    }
-
-    private User searchUserNickname(String nickname) {
-        User searchUser = userRepository.findByNickname(nickname);
-        if(searchUser==null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
-        }
-        return searchUser;
     }
 
     private User searchUserId(long userId) {
