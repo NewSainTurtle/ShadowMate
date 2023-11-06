@@ -157,6 +157,11 @@ $color-blue: var(--color-btn-blue);
       margin-bottom: 1em;
     }
   }
+
+  &__none {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 1200px) {
