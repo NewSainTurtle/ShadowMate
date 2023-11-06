@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "./App.scss";
 import Header from "@components/common/Header";
@@ -13,8 +13,12 @@ import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
 import LandingPage from "@pages/LandingPage";
 import PrivateRoute from "@util/PrivateRoute";
-import { selectLoginState, setLogin } from "@store/authSlice";
+import { selectLoginState, setLogin, setLogout } from "@store/authSlice";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import Modal from "@components/common/Modal";
+import TokenExpiration from "@components/common/Modal/TokenExpiration";
+import { selectModal, setModalClose } from "@store/modalSlice";
+import { persistor } from "@hooks/configStore";
 
 const theme = createTheme({
   typography: {
@@ -24,9 +28,17 @@ const theme = createTheme({
 
 const App = () => {
   const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const location = useLocation();
   const [pathName, setPathName] = useState(false);
   const isLogin = useAppSelector(selectLoginState);
+  const { isOpen } = useAppSelector(selectModal);
+
+  const handleTokenExpiration = () => {
+    dispatch(setLogout());
+    persistor.purge(); // 리덕스 초기화
+    navigator("/login");
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "light");
@@ -48,6 +60,18 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       {!pathName && <Header />}
+      {isLogin && (
+        <Modal
+          types="oneBtn"
+          open={isOpen}
+          onClose={() => dispatch(setModalClose())}
+          onClick={handleTokenExpiration}
+          onClickMessage="로그인 페이지로 이동"
+          prevent
+        >
+          <TokenExpiration />
+        </Modal>
+      )}
       <div id="App" style={pathName ? {} : { marginLeft: "10em" }}>
         <Routes>
           <Route element={<PrivateRoute isLogin={isLogin} option={false} />}>

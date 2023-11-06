@@ -8,13 +8,19 @@ interface ModalProps {
   open: boolean;
   onClose?: () => void;
   onClick?: () => void;
+  onClickMessage?: string;
+  prevent?: boolean;
   children: ReactNode;
 }
 
-const Modal = ({ types, open, onClose, onClick, children, ...rest }: ModalProps) => {
+const Modal = ({ types, open, onClose, onClick, onClickMessage, prevent, children, ...rest }: ModalProps) => {
+  const preventClose = (reason: string) => {
+    if (reason && reason === "backdropClick") return;
+  };
+
   return (
-    <MuiModal open={open} onClose={onClose} disableAutoFocus {...rest}>
-      <div className={styles["contents"]}>
+    <MuiModal open={open} onClose={prevent ? preventClose : onClose} disableAutoFocus {...rest}>
+      <div className={styles["container"]}>
         <>{children}</>
         {types != "noBtn" && (
           <div className={styles["button"]}>
@@ -24,13 +30,18 @@ const Modal = ({ types, open, onClose, onClick, children, ...rest }: ModalProps)
               </div>
             )}
             <div className={styles["button__save"]} onClick={onClick}>
-              <Text types="small">저장</Text>
+              <Text types="small">{onClickMessage}</Text>
             </div>
           </div>
         )}
       </div>
     </MuiModal>
   );
+};
+
+Modal.defaultProps = {
+  onClickMessage: "저장",
+  prevent: false,
 };
 
 export default Modal;
