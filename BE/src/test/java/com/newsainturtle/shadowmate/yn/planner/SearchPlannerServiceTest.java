@@ -15,6 +15,7 @@ import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -67,6 +68,9 @@ class SearchPlannerServiceTest {
 
     @Mock
     private FollowRepository followRepository;
+
+    @Mock
+    private SocialRepository socialRepository;
 
     private final String date = "2023-09-25";
     private final String startDay = "2023-10-09";
@@ -298,6 +302,7 @@ class SearchPlannerServiceTest {
             doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
+            doReturn(null).when(socialRepository).findByDailyPlannerAndDeleteTimeIsNull(any(DailyPlanner.class));
             doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(todoList).when(todoRepository).findAllByDailyPlanner(any(DailyPlanner.class));
@@ -314,6 +319,7 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
+            assertThat(searchDailyPlannerResponse.isShareSocial()).isFalse();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
@@ -363,6 +369,7 @@ class SearchPlannerServiceTest {
             doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(userId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(Date.class));
+            doReturn(null).when(socialRepository).findByDailyPlannerAndDeleteTimeIsNull(any(DailyPlanner.class));
             doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(todoList).when(todoRepository).findAllByDailyPlanner(any(DailyPlanner.class));
@@ -380,6 +387,7 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
+            assertThat(searchDailyPlannerResponse.isShareSocial()).isFalse();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
