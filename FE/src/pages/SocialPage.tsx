@@ -20,7 +20,7 @@ const SocialPage = () => {
         />
       </div>
       <div className={styles["item-list"]}>
-        <CardList search={searchValue} />
+        <CardList order={order} search={searchValue} />
       </div>
     </div>
   );

@@ -1,14 +1,15 @@
 import React, { MouseEventHandler } from "react";
 import styles from "@styles/social/Social.module.scss";
 import Text from "@components/common/Text";
-import { SocialDataType } from "@components/social/CardList";
+import { SocialListType } from "@components/social/CardList";
 import { ProfileConfig } from "@components/common/FriendProfile";
 import { DeleteOutline } from "@mui/icons-material";
 import { Avatar } from "@mui/material";
-import { userNickname } from "@util/data/SocialData";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserInfo } from "@store/authSlice";
 
 interface Props {
-  item: SocialDataType;
+  item: SocialListType;
 }
 
 interface SocialProfileProps {
@@ -43,8 +44,8 @@ const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
 };
 
 const CardItem = ({ item }: Props) => {
-  const { socialImage, user } = item;
-  const userName = userNickname;
+  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+  const userName = useAppSelector(selectUserInfo).nickname;
 
   return (
     <div className={styles["card-item"]}>
