@@ -58,6 +58,7 @@ public class FollowServiceImpl implements FollowService {
                         .nickname(follow.getFollowerId().getNickname())
                         .profileImage(follow.getFollowerId().getProfileImage())
                         .followerId(follow.getFollowerId().getId())
+                        .statusMessage(follow.getFollowerId().getStatusMessage())
                         .isFollow(isFollow(user, follow.getFollowerId()))
                         .build()).collect(Collectors.toList());
     }
