@@ -16,4 +16,6 @@ public class FollowingResponse {
     private String nickname;
 
     private String profileImage;
+
+    private String statusMessage;
 }
