@@ -15,6 +15,9 @@ import LandingPage from "@pages/LandingPage";
 import PrivateRoute from "@util/PrivateRoute";
 import { selectLoginState, setLogin } from "@store/authSlice";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import Modal from "@components/common/Modal";
+import TokenExpiration from "@components/common/Modal/TokenExpiration";
+import { selectModal, setModalClose } from "@store/modalSlice";
 
 const theme = createTheme({
   typography: {
@@ -48,6 +51,18 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       {!pathName && <Header />}
+      {isLogin && (
+        <Modal
+          types="oneBtn"
+          open={isOpen}
+          onClose={() => dispatch(setModalClose())}
+          onClick={handleTokenExpiration}
+          onClickMessage="로그인 페이지로 이동"
+          prevent
+        >
+          <TokenExpiration />
+        </Modal>
+      )}
       <div id="App" style={pathName ? {} : { marginLeft: "10em" }}>
         <Routes>
           <Route element={<PrivateRoute isLogin={isLogin} option={false} />}>

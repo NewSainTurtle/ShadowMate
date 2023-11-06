@@ -1,5 +1,6 @@
 import baseAxios from "axios";
 import { store } from "@hooks/configStore";
+import { setModalOpen } from "@store/modalSlice";
 
 export const baseURL = process.env.REACT_APP_API_URL;
 
@@ -26,6 +27,9 @@ Axios.interceptors.response.use(
     return res;
   },
   (err) => {
+    if (err.response.status) {
+      store.dispatch(setModalOpen());
+    }
     return Promise.reject(err);
   },
 );
