@@ -23,6 +23,15 @@ const Signup = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { email, code, password, passwordCheck, nickname } = userData;
 
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name == "nickname" && isNickanmeAuthentication) setNickanmeAuthentication(false);
+    setUserData({
+      ...userData,
+      [name]: value.replace(removeWhitespaceRegex, ""),
+    });
+  };
+
   const signupApiModule = (() => {
     const onClickEmail = () => {
       if (userRegex.email.test(email))
@@ -54,14 +63,15 @@ const Signup = () => {
       if (userRegex.nickname.test(nickname)) {
         setNickanmeAuthentication(true);
         setErrorMessage("");
-        //백 API 수정 필요
         // authApi
         //   .nickname({ nickname })
-        //   .then(() => {
+        //   .then((res) => {
         //     setNickanmeAuthentication(true);
         //     setErrorMessage("");
+        //     console.log("중복검사 완료", res);
         //   })
         //   .catch((err) => {
+        //     console.log("중복검사 안됨", err);
         //     setNickanmeAuthentication(false);
         //     setErrorMessage("중복된 닉네임 입니다");
         //   });
@@ -90,13 +100,6 @@ const Signup = () => {
     };
   })();
   const { onClickEmail, onClickEmailCheck, onClickNickName, onClickJoin } = signupApiModule;
-
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserData({
-      ...userData,
-      [e.target.name]: e.target.value.replace(removeWhitespaceRegex, ""),
-    });
-  };
 
   return (
     <div className={styles["signup_display"]}>
@@ -139,13 +142,7 @@ const Signup = () => {
             onChange={handleInput}
           />
           <div className={styles["input_box__button"]}>
-            <Input
-              placeholder="닉네임"
-              name="nickname"
-              value={nickname}
-              onChange={handleInput}
-              disabled={isNickanmeAuthentication}
-            />
+            <Input placeholder="닉네임" name="nickname" value={nickname} onChange={handleInput} />
             <Button types="gray" onClick={onClickNickName} disabled={isNickanmeAuthentication}>
               {!isNickanmeAuthentication ? "중복검사" : "검사완료"}
             </Button>
