@@ -61,6 +61,7 @@ $color-gray_4: var(--color-gray-4);
 }
 
 .card-list {
+  position: relative;
   height: 100%;
   padding: 0em 1em 1em;
   box-sizing: border-box;
@@ -72,6 +73,22 @@ $color-gray_4: var(--color-gray-4);
 
   > div:nth-last-child(1) {
     height: 1px;
+  }
+
+  &--none {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: $color-gray_4;
+    font-size: 0.875rem;
+  }
+
+  &--load {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: opacity 1s ease;
   }
 }
 

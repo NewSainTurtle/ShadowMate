@@ -20,7 +20,7 @@ const SocialPage = () => {
         />
       </div>
       <div className={styles["item-list"]}>
-        <CardList sort={order} search={debounceKeyword} />
+        <CardList sort={order} nickname={debounceKeyword} />
       </div>
     </div>
   );
