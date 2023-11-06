@@ -11,6 +11,10 @@ import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { firebaseStorage } from "@api/firebaseConfig";
+import html2canvas from "html2canvas";
+import Alert from "@components/common/Alert";
 
 const DayPage = () => {
   const dispatch = useAppDispatch();
@@ -25,11 +29,15 @@ const DayPage = () => {
   });
   const [retrospectionImage, setRetrospectionImage] = useState<string | null>(null);
   const [isClickTimeTable, setIsClickTimeTable] = useState(false);
-  const todoDivRef = useRef<HTMLDivElement>(null);
   const [totalTime, setTotalTime] = useState({
     studyTimeHour: 0,
     studyTimeMinute: 0,
   });
+  const [alertSuccess, setAlertSuccess] = useState<boolean>(false);
+  const todoDivRef = useRef<HTMLDivElement>(null);
+  const screenDivRef = useRef<HTMLDivElement>(null);
+
+  const handleSuccessClose = () => setAlertSuccess(false);
 
   useEffect(() => {
     const day = dayjs(date).format("YYYY-MM-DD");
@@ -42,6 +50,7 @@ const DayPage = () => {
             plannerAccessScope: response.plannerAccessScope,
             dday: response.dday,
             like: response.like,
+            shareSocial: response.shareSocial,
             likeCount: response.likeCount,
             dailyTodos: response.dailyTodos || [],
           }),
@@ -114,14 +123,35 @@ const DayPage = () => {
     if (userId == friendUserId && todoList.length > 0) setIsClickTimeTable(props);
   };
 
+  const handleDownload = async () => {
+    if (!screenDivRef.current) return;
+
+    const div = screenDivRef.current;
+    const canvas = await html2canvas(div, { scale: 2, logging: false });
+    canvas.toBlob(async (blob) => {
+      if (blob != null) {
+        const file = blob;
+        const storageRef = ref(firebaseStorage, `/social/${userId + "_" + date}`);
+        await uploadBytes(storageRef, file).then((snapshot) =>
+          getDownloadURL(snapshot.ref).then(
+            async (downloadURL) =>
+              await plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
+          ),
+        );
+        setAlertSuccess(true);
+      }
+    });
+  };
+
   const { saveTodayGoals, saveRetrospections, saveTomorrowGoals } = handleSaveMent;
   const { todayGoal, tomorrowGoal, retrospection } = ment;
   const { studyTimeHour, studyTimeMinute } = totalTime;
   const isFriend = userId != friendUserId;
 
   return (
-    <div className={styles["page-container"]} key={date}>
-      <Header isFriend={userId != friendUserId} />
+    <div ref={screenDivRef} className={styles["page-container"]} key={date}>
+      <Alert types="other" open={alertSuccess} onClose={handleSuccessClose} message="공유 되었습니다." />
+      <Header isFriend={userId != friendUserId} socialClick={handleDownload} />
       <div className={`${styles["page-content"]} ${isFriend ? styles["--friend"] : ""}`}>
         <Ment
           title={"오늘의 다짐"}

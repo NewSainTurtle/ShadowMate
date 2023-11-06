@@ -2,14 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import {
-  selectDate,
-  selectTodoItem,
-  selectTodoList,
-  removeTodoItem,
-  setTimeTable,
-  BASIC_CATEGORY_ITEM,
-} from "@store/planner/daySlice";
+import { selectDate, selectTodoItem, selectTodoList, setTimeTable, BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -100,12 +93,23 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
     startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
 
+    await todoList.map((item: TodoConfig) => {
+      if (!!startTime && item.timeTable && !!item.timeTable.startTime) {
+        if (
+          !(
+            dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
+            dayjs(item.timeTable.startTime).isSameOrAfter(endTime)
+          )
+        )
+          deleteTimeTable(item.todoId);
+      }
+    });
+
     await plannerApi
       .timetables(userId, { date, todoId, startTime, endTime })
       .then(() => {
         dispatch(setTimeTable({ todoId: todoId, startTime, endTime }));
         setSelectTime({ startTime: "", endTime: "" });
-        dispatch(removeTodoItem());
       })
       .catch((err) => console.error(err));
   };
@@ -139,6 +143,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
         const startIndex = tempArr.findIndex((e) => e.time == startTime);
         tempArr.splice(startIndex, miniArr.length, ...miniArr);
       });
+
     setTimeArr(tempArr);
     setCopyTimeArr(tempArr);
   }, [todoList]);
@@ -152,7 +157,6 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
           return { todoId, categoryColorCode, time: obj.time };
         } else return obj;
       });
-
       setTimeArr(dragArr);
     }
   }, [selectTime]);
