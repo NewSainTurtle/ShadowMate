@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import html2canvas from "html2canvas";
 import Alert from "@components/common/Alert";
@@ -60,7 +60,7 @@ const DayPage = () => {
           todayGoal: response.todayGoal || "",
           tomorrowGoal: response.tomorrowGoal || "",
         });
-        setRetrospectionImage(response.retrospectionImage);
+        setRetrospectionImage(response.retrospectionImage.toString());
         setTotalTime({ studyTimeHour: response.studyTimeHour, studyTimeMinute: response.studyTimeMinute });
       })
       .catch((err) => console.error(err));
@@ -125,21 +125,19 @@ const DayPage = () => {
 
   const handleDownload = async () => {
     if (!screenDivRef.current) return;
-
-    const div = screenDivRef.current;
-    const canvas = await html2canvas(div, { scale: 2, logging: false });
-    canvas.toBlob(async (blob) => {
-      if (blob != null) {
-        const file = blob;
-        const storageRef = ref(firebaseStorage, `/social/${userId + "_" + date}`);
-        await uploadBytes(storageRef, file).then((snapshot) =>
-          getDownloadURL(snapshot.ref).then(
-            async (downloadURL) =>
-              await plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
-          ),
-        );
-        setAlertSuccess(true);
-      }
+    await html2canvas(screenDivRef.current, {
+      logging: false,
+      allowTaint: true,
+      useCORS: true,
+    }).then(async (canvas) => {
+      const imageURL = canvas.toDataURL("image/png");
+      const storageRef = ref(firebaseStorage, `/social/${userId + "_" + date}`);
+      uploadString(storageRef, imageURL, "data_url").then((snapshot) =>
+        getDownloadURL(snapshot.ref).then((downloadURL) =>
+          plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
+        ),
+      );
+      setAlertSuccess(true);
     });
   };
 
