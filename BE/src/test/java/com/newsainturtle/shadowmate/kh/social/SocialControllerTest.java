@@ -298,6 +298,6 @@ class SocialControllerTest {
                 MockMvcRequestBuilders.delete(url, userId, social.getId()));
 
         // then
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isAccepted());
     }
 }

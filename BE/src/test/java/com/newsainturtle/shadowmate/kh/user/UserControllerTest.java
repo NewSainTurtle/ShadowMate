@@ -176,7 +176,7 @@ public class UserControllerTest {
                             .contentType(MediaType.APPLICATION_JSON));
 
             //then
-            resultActions.andExpect(status().isOk())
+            resultActions.andExpect(status().isAccepted())
                     .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_USER));
         }
 
@@ -218,7 +218,7 @@ public class UserControllerTest {
                             .contentType(MediaType.APPLICATION_JSON));
 
             //then
-            resultActions.andExpect(status().isOk())
+            resultActions.andExpect(status().isAccepted())
                     .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_PASSWORD));
         }
 

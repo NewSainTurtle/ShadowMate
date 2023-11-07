@@ -47,7 +47,7 @@ public class UserController {
                                                            @RequestBody @Valid final UpdateUserRequest updateUserRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
         userService.updateUser(userId, updateUserRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_USER));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_USER));
     }
 
     @PostMapping("/{userId}/password")
@@ -56,7 +56,7 @@ public class UserController {
                                                    @RequestBody @Valid final UpdatePasswordRequest updatePasswordRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
         userService.updatePassword(userId, updatePasswordRequest.getOldPassword(), updatePasswordRequest.getNewPassword());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_PASSWORD));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_PASSWORD));
     }
   
     @DeleteMapping("/{userId}")
