@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
 import TimeTable from "@components/planner/day/todo/TimeTable";
@@ -39,7 +39,7 @@ const DayPage = () => {
 
   const handleSuccessClose = () => setAlertSuccess(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const day = dayjs(date).format("YYYY-MM-DD");
     plannerApi
       .daily(friendUserId, { date: day })
