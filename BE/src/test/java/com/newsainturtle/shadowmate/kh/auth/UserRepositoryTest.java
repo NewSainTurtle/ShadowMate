@@ -20,11 +20,6 @@ import static org.assertj.core.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserRepositoryTest {
 
-    //이메일 인증 테스트(+중복검사)
-    // 1. 이메일 중복검사
-    // - 이메일 중복된 경우
-    // - 이메일 중복되지 않은 경우
-
     @Autowired
     private UserRepository userRepository;
 
