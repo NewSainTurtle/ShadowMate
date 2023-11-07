@@ -49,4 +49,10 @@ public class AuthController {
         authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_NICKNAME_CHECK));
     }
+
+    @DeleteMapping("/nickname-duplicated")
+    public ResponseEntity<BaseResponse> deleteCheckNickname(@RequestBody @Valid DuplicatedNicknameRequest duplicatedNicknameRequest) {
+        authServiceImpl.deleteCheckNickname(duplicatedNicknameRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_NICKNAME_CHECK));
+    }
 }
