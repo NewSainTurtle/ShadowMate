@@ -9,7 +9,7 @@ import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@stor
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { userApi } from "@api/Api";
+import { authApi, userApi } from "@api/Api";
 import { userRegex } from "@util/regex";
 
 const MyPageInfo = () => {
@@ -51,19 +51,15 @@ const MyPageInfo = () => {
 
   const onClickNickName = () => {
     if (userRegex.nickname.test(nickname)) {
-      setNickanmeAuthentication(true);
-      setErrorButton(false);
-      //백 API 수정 필요
-      // authApi
-      //   .nickname({ nickname })
-      //   .then(() => {
-      //     setNickanmeAuthentication(true);
-      //     setErrorMessage("");
-      //   })
-      //   .catch((err) => {
-      //     setNickanmeAuthentication(false);
-      //     setErrorMessage("중복된 닉네임 입니다");
-      //   });
+      authApi
+        .nickname({ nickname })
+        .then(() => {
+          setNickanmeAuthentication(true);
+          setErrorButton(false);
+        })
+        .catch(() => {
+          setNickanmeAuthentication(false);
+        });
     } else {
       setNickanmeAuthentication(false);
     }
