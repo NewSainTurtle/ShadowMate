@@ -5,7 +5,7 @@ import TimeTable from "@components/planner/day/todo/TimeTable";
 import TodoList from "@components/planner/day/todo/TodoList";
 import Ment from "@components/planner/day/Ment";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate, selectTodoList, setDayInfo } from "@store/planner/daySlice";
+import { selectDayDate, selectTodoList, setDayInfo } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
@@ -20,7 +20,7 @@ const DayPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const friendUserId = userId;
-  const date = useAppSelector(selectDate);
+  const date = useAppSelector(selectDayDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
     todayGoal: "",

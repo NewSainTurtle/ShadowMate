@@ -83,7 +83,7 @@ const daySlice = createSlice({
 export const BASIC_TODO_ITEM = initialState.todoItem!;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
 export const { setDayInfo, setDate, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
-export const selectDate = (state: rootState) => state.day.date;
+export const selectDayDate = (state: rootState) => state.day.date;
 export const selectDayInfo = (state: rootState) => state.day.info;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;
 export const selectTodoList = (state: rootState) => state.day.info.dailyTodos;
