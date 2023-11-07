@@ -4,10 +4,10 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
 interface Props {
-  types: "success" | "error" | "other";
+  types: "success" | "error";
   open: boolean;
   onClose: () => void;
-  message?: string;
+  message: string;
 }
 
 const Alert = ({ types, open, onClose, message, ...rest }: Props) => {
@@ -19,7 +19,7 @@ const Alert = ({ types, open, onClose, message, ...rest }: Props) => {
       autoHideDuration={2000}
     >
       <MuiAlert icon={false} className={styles[`alert__${types}`]} onClose={onClose}>
-        {{ success: "저장되었습니다.", error: "저장에 실패했습니다. 다시 시도해주세요.", other: `${message}` }[types]}
+        {message}
       </MuiAlert>
     </Snackbar>
   );
