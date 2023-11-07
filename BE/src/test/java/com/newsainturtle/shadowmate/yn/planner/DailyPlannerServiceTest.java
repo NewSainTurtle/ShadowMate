@@ -877,6 +877,26 @@ class DailyPlannerServiceTest {
                 .build();
 
         @Test
+        void 실패_공개상태가아닌경우() {
+            //given
+            final User user = User.builder()
+                    .id(1L)
+                    .email(email)
+                    .password(password)
+                    .socialLogin(socialType)
+                    .nickname(nickname)
+                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                    .withdrawal(false)
+                    .build();
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.FAILED_SHARE_SOCIAL);
+        }
+
+        @Test
         void 실패_유효하지않은플래너() {
             //given
             doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));

@@ -157,11 +157,9 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
                         .followingId(user)
                         .build());
             }
-            followRequestRepository.deleteAllByReceiverId(user);
-
+            followRequestRepository.deleteAllByReceiverId(user.getId());
             final List<DailyPlanner> dailyPlanners = dailyPlannerRepository.findAllByUser(user);
             socialRepository.updateDeleteTimeAll(null, dailyPlanners);
-
         } else if (user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) && !accessScope.equals(PlannerAccessScope.PUBLIC)) {
             final List<DailyPlanner> dailyPlanners = dailyPlannerRepository.findAllByUser(user);
             final LocalDateTime time = LocalDateTime.now();

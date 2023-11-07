@@ -18,6 +18,7 @@ import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepositor
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -270,6 +271,9 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
     @Override
     public void shareSocial(final User user, final ShareSocialRequest shareSocialRequest) {
+        if (!user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
+            throw new PlannerException(PlannerErrorResult.FAILED_SHARE_SOCIAL);
+        }
         final DailyPlanner dailyPlanner = getDailyPlanner(user, shareSocialRequest.getDate());
         final Social findSocial = socialRepository.findByDailyPlanner(dailyPlanner);
         Social social;
