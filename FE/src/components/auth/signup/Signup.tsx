@@ -25,7 +25,10 @@ const Signup = () => {
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name == "nickname" && isNickanmeAuthentication) setNickanmeAuthentication(false);
+    if (name == "nickname" && isNickanmeAuthentication) {
+      authApi.deleteNickname({ nickname }).catch((err) => console.error(err));
+      setNickanmeAuthentication(false);
+    }
     setUserData({
       ...userData,
       [name]: value.replace(removeWhitespaceRegex, ""),
