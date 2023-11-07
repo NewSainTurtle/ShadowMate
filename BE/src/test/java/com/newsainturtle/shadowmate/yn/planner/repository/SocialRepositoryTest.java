@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,6 +94,55 @@ class SocialRepositoryTest {
             assertThat(changeSocial.getCreateTime()).isNotEqualTo(changeSocial.getUpdateTime()).isEqualTo(saveSocial.getCreateTime());
             assertThat(changeSocial.getSocialImage()).isNotNull().isEqualTo(changeSocialImage);
             assertThat(changeSocial.getDailyPlanner()).isEqualTo(dailyPlanner);
+        }
+    }
+
+    @Nested
+    class 소셜공유확인 {
+        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+
+        @Test
+        void 소셜공유안함() {
+            //given
+
+            //when
+            final Social findSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
+
+            //then
+            assertThat(findSocial).isNull();
+        }
+
+        @Test
+        void 소셜공유함() {
+            //given
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner)
+                    .socialImage(socialImage)
+                    .build());
+
+            //when
+            final Social findSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
+
+            //then
+            assertThat(findSocial).isNotNull();
+            assertThat(findSocial.getSocialImage()).isNotNull().isEqualTo(socialImage);
+            assertThat(findSocial.getDailyPlanner()).isEqualTo(dailyPlanner);
+        }
+
+        @Test
+        void 소셜공유함_비공개상태() {
+            //given
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner)
+                    .socialImage(socialImage)
+                    .deleteTime(LocalDateTime.now())
+                    .build());
+
+            //when
+            final Social findSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
+
+            //then
+            assertThat(findSocial).isNull();
         }
     }
 }

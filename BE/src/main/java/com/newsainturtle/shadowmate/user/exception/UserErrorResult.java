@@ -16,6 +16,8 @@ public enum UserErrorResult implements BaseErrorResult {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
 
     DIFFERENT_PASSWORD(HttpStatus.FORBIDDEN, "비밀번호가 다릅니다."),
+
+    RETRY_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임 검사를 해야합니다."),
     ;
 
     private final HttpStatus httpStatus;

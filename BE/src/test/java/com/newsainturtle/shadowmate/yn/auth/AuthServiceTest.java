@@ -372,6 +372,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
+            doReturn(true).when(redisServiceImpl).getHashNicknameData(nickname);
             doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
             doReturn(user).when(userRepository).save(any(User.class));
 
@@ -382,9 +383,11 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
+            verify(redisServiceImpl, times(1)).getHashNicknameData(nickname);
             verify(redisServiceImpl, times(1)).getHashEmailData(email);
             verify(userRepository, times(1)).save(any(User.class));
             verify(redisServiceImpl, times(1)).deleteEmailData(email);
+            verify(redisServiceImpl, times(1)).deleteNicknameData(nickname);
         }
     }
 

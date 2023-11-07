@@ -1,11 +1,7 @@
 package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.entity.Follow;
-import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
-import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
-import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
+import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
@@ -28,13 +24,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final FollowRepository followRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final RedisServiceImpl redisService;
 
-    private final FollowRequestRepository followRequestRepository;
+    private final FollowServiceImpl followService;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
@@ -52,7 +46,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse searchNickname(final User user, final String nickname) {
-        final User searchUser = searchUserNickname(nickname);
+        User searchUser = userRepository.findByNickname(nickname);
+        if(searchUser == null) {
+            return UserResponse.builder().build();
+        }
         return UserResponse.builder()
                 .userId(searchUser.getId())
                 .email(searchUser.getEmail())
@@ -60,18 +57,27 @@ public class UserServiceImpl implements UserService {
                 .nickname(searchUser.getNickname())
                 .statusMessage(searchUser.getStatusMessage())
                 .plannerAccessScope(searchUser.getPlannerAccessScope())
-                .isFollow(isFollow(user, searchUser))
+                .isFollow(followService.isFollow(user, searchUser))
                 .build();
     }
 
     @Override
     @Transactional
     public void updateUser(final Long userId, final UpdateUserRequest updateUserRequest) {
+        final User user = userRepository.findByIdAndNickname(userId, updateUserRequest.getNewNickname());
+        if(user == null) {
+            final Boolean getHashNickname = redisService.getHashNicknameData(updateUserRequest.getNewNickname());
+            if(getHashNickname == null || !getHashNickname) {
+                throw new UserException(UserErrorResult.RETRY_NICKNAME);
+            }
+            else {
+                redisService.deleteNicknameData(updateUserRequest.getNewNickname());
+            }
+        }
         userRepository.updateUser(updateUserRequest.getNewNickname(),
                 updateUserRequest.getNewProfileImage(),
                 updateUserRequest.getNewStatusMessage(),
                 userId);
-        redisService.deleteNicknameData(updateUserRequest.getNewNickname());
     }
 
     @Override
@@ -108,26 +114,6 @@ public class UserServiceImpl implements UserService {
                 .deleteTime(LocalDateTime.now())
                 .build();
         userRepository.save(deleteUser);
-    }
-
-    private FollowStatus isFollow(final User user, final User searchUser) {
-        Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
-        if (follow == null) {
-            FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
-            if(followRequest == null) {
-                return FollowStatus.EMPTY;
-            }
-            return FollowStatus.REQUESTED;
-        }
-        return FollowStatus.FOLLOW;
-    }
-
-    private User searchUserNickname(String nickname) {
-        User searchUser = userRepository.findByNickname(nickname);
-        if(searchUser==null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_NICKNAME);
-        }
-        return searchUser;
     }
 
     private User searchUserId(long userId) {

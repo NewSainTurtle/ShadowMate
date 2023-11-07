@@ -98,7 +98,12 @@ const TodoList = ({ clicked }: Props) => {
       ) : (
         <>
           {todoArr.map((item: TodoConfig, idx: number) => (
-            <TodoItemChoice key={item.todoId} idx={idx} todoItem={item} possible={item.todoStatus === "완료"} />
+            <TodoItemChoice
+              key={item.todoId}
+              idx={idx}
+              todoItem={item}
+              possible={item.todoStatus === "완료" && !item.timeTable?.startTime}
+            />
           ))}
           {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
             <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} />

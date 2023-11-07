@@ -19,10 +19,12 @@ public interface SocialRepository extends JpaRepository<Social, Long> {
 
     Social findByDailyPlanner(final DailyPlanner dailyPlanner);
 
+    Social findByDailyPlannerAndDeleteTimeIsNull(final DailyPlanner dailyPlanner);
+
     @Modifying(clearAutomatically = true)
     @Query("update Social s set s.deleteTime = :time where s.dailyPlanner in (:dailyPlanners)")
     void updateDeleteTimeAll(@Param("time") final LocalDateTime time, @Param("dailyPlanners") final List<DailyPlanner> dailyPlanners);
 
-    @Query("SELECT DISTINCT s FROM Social s LEFT JOIN fetch DailyPlanner d on d.user.id=:id WHERE s.deleteTime is null")
+    @Query("SELECT DISTINCT s FROM Social s LEFT JOIN fetch DailyPlanner d on s.dailyPlanner.id = d.id WHERE s.deleteTime is null and d.user.id = :id")
     List<Social> findAllByDailyPlannerAndSocial(@Param("id") final long id);
 }

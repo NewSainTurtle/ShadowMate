@@ -47,7 +47,7 @@ const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) =>
       setRetrospectionImage(reader.result as string);
       if (e.target.files != null) {
         const file = e.target.files[0];
-        const storageRef = ref(firebaseStorage, `retrospections/${file.name}`);
+        const storageRef = ref(firebaseStorage, `retrospections/${userId + "_" + date}`);
 
         uploadBytes(storageRef, file).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadURL) => {

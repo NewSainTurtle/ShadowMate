@@ -16,6 +16,7 @@ public class SearchDailyPlannerResponse {
     private String retrospection;
     private String retrospectionImage;
     private String tomorrowGoal;
+    private boolean shareSocial;
     private boolean like;
     private long likeCount;
     private int studyTimeHour;

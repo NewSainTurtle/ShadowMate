@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
 import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
@@ -42,6 +43,7 @@ public class FollowServiceImpl implements FollowService {
                         .email(follow.getFollowingId().getEmail())
                         .nickname(follow.getFollowingId().getNickname())
                         .profileImage(follow.getFollowingId().getProfileImage())
+                        .statusMessage(follow.getFollowingId().getStatusMessage())
                         .followingId(follow.getFollowingId().getId())
                         .build()).collect(Collectors.toList());
     }
@@ -56,6 +58,8 @@ public class FollowServiceImpl implements FollowService {
                         .nickname(follow.getFollowerId().getNickname())
                         .profileImage(follow.getFollowerId().getProfileImage())
                         .followerId(follow.getFollowerId().getId())
+                        .statusMessage(follow.getFollowerId().getStatusMessage())
+                        .isFollow(isFollow(user, follow.getFollowerId()))
                         .build()).collect(Collectors.toList());
     }
 
@@ -124,6 +128,19 @@ public class FollowServiceImpl implements FollowService {
             return FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE;
         }
         return FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE;
+    }
+
+    @Override
+    public FollowStatus isFollow(final User user, final User searchUser) {
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
+        if (follow == null) {
+            FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
+            if(followRequest == null) {
+                return FollowStatus.EMPTY;
+            }
+            return FollowStatus.REQUESTED;
+        }
+        return FollowStatus.FOLLOW;
     }
 
     private AddFollowResponse addFollowPublic(final User follower, final User following) {

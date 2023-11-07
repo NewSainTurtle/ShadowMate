@@ -2,14 +2,36 @@ $color-text: var(--color-text);
 $color-background: var(--color-background);
 $color-gray-1: var(--color-gray-1);
 $color-blue: var(--color-btn-blue);
+$color-warning: var(--color-warning);
 
-.contents {
+.container {
   position: absolute;
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 25em;
   background-color: $color-background;
+}
+
+.contents {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2em;
+  color: $color-text;
+  > :nth-child(1),
+  > :nth-child(2) {
+    color: $color-warning;
+  }
+  > :nth-child(2) {
+    margin-top: 0.5em;
+    text-align: center;
+  }
+  > :nth-child(3) {
+    margin-top: 1.5em;
+    color: black;
+  }
 }
 
 .button {

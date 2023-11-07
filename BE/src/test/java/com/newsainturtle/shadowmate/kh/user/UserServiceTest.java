@@ -1,8 +1,9 @@
 package com.newsainturtle.shadowmate.kh.user;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.entity.Follow;
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
+import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
@@ -41,6 +42,9 @@ public class UserServiceTest {
 
     @Mock
     private RedisServiceImpl redisService;
+
+    @Mock
+    private FollowServiceImpl followService;
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -102,7 +106,7 @@ public class UserServiceTest {
         }
 
         @Test
-        void 성공_내정보수정() {
+        void 실패_내정보수정_닉네임검증Null() {
             //given
             final String newNickname = "NewNickName";
             final String newProfileImage = "NewProfileImage";
@@ -112,13 +116,81 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
+            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
+            doReturn(null).when(redisService).getHashNicknameData(newNickname);
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
+
+        }
+
+        @Test
+        void 실패_내정보수정_닉네임검증false() {
+            //given
+            final String newNickname = "NewNickName";
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
+            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
+            doReturn(false).when(redisService).getHashNicknameData(newNickname);
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
+
+        }
+
+        @Test
+        void 성공_내정보수정_닉네임수정안함() {
+            //given
+            final String nickname = user1.getNickname();
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(nickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
+
+            doReturn(user1).when(userRepository).findByIdAndNickname(userId1, nickname);
 
             //when
             userService.updateUser(userId1, updateUserRequest);
 
             //then
             verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
+
+        }
+
+        @Test
+        void 성공_내정보수정_닉네임수정() {
+            //given
+            final String newNickname = "NewNickName";
+            final String newProfileImage = "NewProfileImage";
+            final String newStatusMessage = "NewStatusMessage";
+            final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                    .newNickname(newNickname)
+                    .newProfileImage(newProfileImage)
+                    .newStatusMessage(newStatusMessage)
+                    .build();
+            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
+            doReturn(true).when(redisService).getHashNicknameData(newNickname);
+
+            //when
+            userService.updateUser(userId1, updateUserRequest);
+
+            //then
             verify(redisService, times(1)).deleteNicknameData(any());
+            verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
 
         }
 
@@ -161,17 +233,17 @@ public class UserServiceTest {
             final String user2Nickname = user2.getNickname();
 
             // when
-            final UserException result = assertThrows(UserException.class, () -> userService.searchNickname(user1, user2Nickname));
+            final UserResponse result = userService.searchNickname(user1, user2Nickname);
 
             // then
-            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_NICKNAME);
+            assertThat(result.getUserId()).isNull();
+            assertThat(result.getNickname()).isNull();
         }
 
         @Test
-        void 성공_회원검색() {
+        void 성공_회원검색_친구요청상태() {
             // given
-            Follow follow = Follow.builder().followerId(user1).followingId(user2).build();
-            doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(FollowStatus.REQUESTED).when(followService).isFollow(any(), any());
             doReturn(user2).when(userRepository).findByNickname(any());
 
             // when
@@ -179,6 +251,35 @@ public class UserServiceTest {
 
             // then
             assertThat(result.getNickname()).isEqualTo(user2.getNickname());
+            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.REQUESTED);
+        }
+
+        @Test
+        void 성공_회원검색_팔로우아닌상태() {
+            // given
+            doReturn(FollowStatus.EMPTY).when(followService).isFollow(any(), any());
+            doReturn(user2).when(userRepository).findByNickname(any());
+
+            // when
+            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
+
+            // then
+            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
+            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.EMPTY);
+        }
+
+        @Test
+        void 성공_회원검색_FOLLOW상태() {
+            // given
+            doReturn(FollowStatus.FOLLOW).when(followService).isFollow(any(), any());
+            doReturn(user2).when(userRepository).findByNickname(any());
+
+            // when
+            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
+
+            // then
+            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
+            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.FOLLOW);
         }
 
         @Test
