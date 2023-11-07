@@ -208,5 +208,16 @@ public class AuthServiceTest {
             verify(redisService, times(1)).setHashNicknameData(any(String.class), any(boolean.class), any(int.class));
 
         }
+
+        @Test
+        void 성공_닉네임중복검증삭제() {
+            // given
+
+            // when
+            authServiceImpl.deleteCheckNickname(duplicatedNicknameRequest);
+
+            // then
+            verify(redisService, times(1)).deleteNicknameData(any());
+        }
     }
 }
