@@ -7,22 +7,37 @@ import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { setDate, selectDate, selectDayInfo } from "@store/planner/daySlice";
+import { setDate, selectDayDate, selectDayInfo } from "@store/planner/daySlice";
 import { todoData_friend } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import { selectFriendInfo } from "@store/friendSlice";
+import { plannerApi } from "@api/Api";
+import { selectUserId } from "@store/authSlice";
 dayjs.locale("ko");
 
 const FriendHeader = () => {
   const navigate = useNavigate();
+  const userId = useAppSelector(selectUserId);
+  const date = useAppSelector(selectDayDate);
+  const friendUserId = useAppSelector(selectFriendInfo).userId;
   const { likeCount, like } = useAppSelector(selectDayInfo);
   const [heartNum, setHeartNum] = useState(likeCount);
   const [isHeartClick, setIsHeartClick] = useState(like);
 
   function heartClick() {
+    if (isHeartClick) {
+      plannerApi
+        .cancelLikes(friendUserId, { date })
+        .then(() => setHeartNum(heartNum - 1))
+        .catch((err) => console.error(err));
+    } else {
+      plannerApi
+        .likes(friendUserId, { date, anotherUserId: userId })
+        .then(() => setHeartNum(heartNum + 1))
+        .catch((err) => console.error(err));
+    }
     setIsHeartClick(!isHeartClick);
-    if (isHeartClick) setHeartNum(heartNum - 1);
-    else setHeartNum(heartNum + 1);
   }
 
   function weekClick() {
@@ -82,7 +97,7 @@ interface Props {
 
 const Header = ({ isFriend, socialClick }: Props) => {
   const dispatch = useAppDispatch();
-  const date = useAppSelector(selectDate);
+  const date = useAppSelector(selectDayDate);
   const { dday: nearDate } = useAppSelector(selectDayInfo);
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
 
