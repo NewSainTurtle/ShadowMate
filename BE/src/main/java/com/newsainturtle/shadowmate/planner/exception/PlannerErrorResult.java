@@ -21,6 +21,7 @@ public enum PlannerErrorResult implements BaseErrorResult {
     INVALID_TIME_TABLE(HttpStatus.BAD_REQUEST, "유효하지 않은 타임테이블 데이터입니다."),
     INVALID_USER(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자입니다."),
     INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜형식입니다."),
+    FAILED_SHARE_SOCIAL(HttpStatus.BAD_REQUEST, "소셜공유는 전채공개 상태에서만 가능합니다."),
     ;
 
     private final HttpStatus httpStatus;
