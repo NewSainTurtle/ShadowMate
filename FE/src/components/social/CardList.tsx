@@ -98,7 +98,7 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
       ) : (
         <>
           {list.map((social, idx) => (
-            <CardItem key={social.socialId + idx} idx={idx} item={social} handleDelete={handleDelete} />
+            <CardItem key={idx.toString() + social.socialId} idx={idx} item={social} handleDelete={handleDelete} />
           ))}
         </>
       )}
