@@ -127,7 +127,7 @@ const DayPage = () => {
     if (!screenDivRef.current) return;
 
     const div = screenDivRef.current;
-    const canvas = await html2canvas(div, { scale: 2, logging: false });
+    const canvas = await html2canvas(div, { logging: false });
     canvas.toBlob(async (blob) => {
       if (blob != null) {
         const file = blob;

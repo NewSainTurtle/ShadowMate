@@ -23,6 +23,7 @@ $color-btn-blue: var(--color-btn-blue);
 }
 
 .page-container {
+  background-color: $color-background;
   height: 100%;
   display: flex;
   flex-direction: column;
