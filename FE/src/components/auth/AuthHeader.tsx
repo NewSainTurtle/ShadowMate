@@ -1,13 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowBackIosNew, Home } from "@mui/icons-material";
+import { ArrowBackIosNew } from "@mui/icons-material";
 import Toggle from "@components/common/Header/Toggle";
 import { Box, Stack } from "@mui/material";
 
 const AuthHeader = () => {
   const navigate = useNavigate();
   const onClickBtn = () => {
-    navigate(-1);
+    if (location.pathname == "/signup") navigate("/login");
+    else navigate("/");
   };
 
   return (
