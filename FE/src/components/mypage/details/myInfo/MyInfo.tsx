@@ -30,12 +30,15 @@ const MyPageInfo = () => {
     statusMessage: statusMessage.length,
   });
 
-  const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLength({ ...length, [name]: value.length });
     if (name == "nickname") {
-      if (setErrorButton) setErrorButton(false);
-      if (isNickanmeAuthentication) setNickanmeAuthentication(false);
+      if (isErrorButton) setErrorButton(false);
+      if (isNickanmeAuthentication) {
+        authApi.deleteNickname({ nickname }).catch((err) => console.error(err));
+        setNickanmeAuthentication(false);
+      }
       if (myInfoData.nickname == value) setNickanmeAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
@@ -50,7 +53,7 @@ const MyPageInfo = () => {
   };
 
   const onClickNickName = () => {
-    if (userRegex.nickname.test(nickname)) {
+    if (!error.nickname) {
       authApi
         .nickname({ nickname })
         .then(() => {
@@ -60,8 +63,6 @@ const MyPageInfo = () => {
         .catch(() => {
           setNickanmeAuthentication(false);
         });
-    } else {
-      setNickanmeAuthentication(false);
     }
   };
 
