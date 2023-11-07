@@ -61,20 +61,16 @@ const Signup = () => {
         });
     const onClickNickName = () => {
       if (userRegex.nickname.test(nickname)) {
-        setNickanmeAuthentication(true);
-        setErrorMessage("");
-        // authApi
-        //   .nickname({ nickname })
-        //   .then((res) => {
-        //     setNickanmeAuthentication(true);
-        //     setErrorMessage("");
-        //     console.log("중복검사 완료", res);
-        //   })
-        //   .catch((err) => {
-        //     console.log("중복검사 안됨", err);
-        //     setNickanmeAuthentication(false);
-        //     setErrorMessage("중복된 닉네임 입니다");
-        //   });
+        authApi
+          .nickname({ nickname })
+          .then(() => {
+            setNickanmeAuthentication(true);
+            setErrorMessage("");
+          })
+          .catch(() => {
+            setNickanmeAuthentication(false);
+            setErrorMessage("중복된 닉네임 입니다");
+          });
       } else {
         setNickanmeAuthentication(false);
         setErrorMessage("닉네임은 2 ~ 10글자이내로 입력해주세요");
