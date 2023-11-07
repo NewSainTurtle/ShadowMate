@@ -10,6 +10,7 @@ import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/p
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
 import { selectFriendInfo } from "@store/friendSlice";
+import Loading from "@components/common/Loading";
 
 const Week = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,7 @@ const Week = () => {
   const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt(week);
   const [isMine, setIsMine] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleButton = (to: string) => {
     const date = week.getDate();
@@ -50,7 +52,11 @@ const Week = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     getDayList();
+    setTimeout(() => {
+      setLoading(false);
+    }, 100);
   }, [week]);
 
   return (
@@ -82,10 +88,14 @@ const Week = () => {
           </div>
         )}
       </div>
-      <div className={styles["week__list"]}>
-        <WeekTodo />
-        {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} key={key} />)}
-      </div>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={styles["week__list"]}>
+          <WeekTodo />
+          {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} key={key} />)}
+        </div>
+      )}
     </div>
   );
 };
