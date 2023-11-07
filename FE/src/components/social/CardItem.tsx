@@ -1,27 +1,35 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import styles from "@styles/social/Social.module.scss";
 import Text from "@components/common/Text";
-import { SocialDataType } from "@components/social/CardList";
-import { ProfileConfig } from "@components/common/FriendProfile";
+import { SocialListType } from "@components/social/CardList";
 import { DeleteOutline } from "@mui/icons-material";
 import { Avatar } from "@mui/material";
-import { userNickname } from "@util/data/SocialData";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectUserInfo } from "@store/authSlice";
+import { useNavigate } from "react-router-dom";
+import { setFriendDate, setFriendInfo } from "@store/friendSlice";
 
 interface Props {
-  item: SocialDataType;
+  item: SocialListType;
+  idx: number;
+  handleDelete: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, idx: number, socialId: number) => void;
 }
 
-interface SocialProfileProps {
-  mine: boolean;
-  profile: ProfileConfig;
-  onClick?: MouseEventHandler<HTMLDivElement>;
-}
+const SocialProfile = ({ idx, item, handleDelete }: Props) => {
+  const navigator = useNavigate();
+  const dispatch = useAppDispatch();
+  const userName = useAppSelector(selectUserInfo).nickname;
+  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+  const mine = user.nickname == userName;
+  const { profileImage, statusMessage, nickname } = user;
 
-const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
-  const { profileImage, statusMessage, nickname } = profile;
+  const handleClickProfile = () => {
+    dispatch(setFriendInfo(user));
+    navigator("/month");
+  };
 
   return (
-    <div className={styles["social-profile__container"]}>
+    <div className={styles["social-profile__container"]} onClick={handleClickProfile}>
       <div className={styles["social-profile__img"]}>
         <Avatar src={profileImage} />
       </div>
@@ -31,9 +39,9 @@ const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["social-profile__button"]} {...rest}>
+      <div className={styles["social-profile__button"]}>
         {mine && (
-          <div>
+          <div onClick={(e) => handleDelete(e, idx, socialId)}>
             <DeleteOutline />
           </div>
         )}
@@ -42,17 +50,24 @@ const SocialProfile = ({ mine, profile, ...rest }: SocialProfileProps) => {
   );
 };
 
-const CardItem = ({ item }: Props) => {
-  const { socialImage, user } = item;
-  const userName = userNickname;
+const CardItem = ({ idx, item, handleDelete }: Props) => {
+  const navigator = useNavigate();
+  const dispatch = useAppDispatch();
+  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+
+  const handleClickImage = () => {
+    dispatch(setFriendDate(dailyPlannerDay));
+    dispatch(setFriendInfo(user));
+    navigator("/day");
+  };
 
   return (
     <div className={styles["card-item"]}>
-      <div className={styles["card-item__image-box"]}>
-        <img src={socialImage} />
+      <div className={styles["card-item__image-box"]} onClick={handleClickImage}>
+        <img src={item.socialImage} />
       </div>
       <div className={styles["card-item__profile"]}>
-        <SocialProfile profile={user} mine={userName == user.nickname} />
+        <SocialProfile idx={idx} item={item} handleDelete={handleDelete} />
       </div>
     </div>
   );

@@ -2,49 +2,38 @@ import React, { useEffect, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import Button from "@components/common/Button";
 import Input from "@components/common/Input";
-import { userNickname } from "@util/data/SocialData";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserInfo } from "@store/authSlice";
 
 interface Props {
   order: string;
-  inputValue: string;
-  setInputValue: (value: React.SetStateAction<string>) => void;
-  setSearchValue: (value: React.SetStateAction<string>) => void;
-  setOrder: (value: React.SetStateAction<string>) => void;
+  searchKeyWord: string;
+  setSearchKeyWord: (value: React.SetStateAction<string>) => void;
+  setOrder: (value: React.SetStateAction<"latest" | "popularity">) => void;
 }
 
 const SocialHeader = (props: Props) => {
-  const { order, inputValue, setInputValue, setSearchValue, setOrder } = props;
-  const sortArr = ["최신순", "인기순"];
+  const { order, searchKeyWord, setSearchKeyWord, setOrder } = props;
+  const sortArr: ("latest" | "popularity")[] = ["latest", "popularity"];
+  const userName = useAppSelector(selectUserInfo).nickname;
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      setSearchValue(inputValue);
-    }
+    setSearchKeyWord(e.target.value);
   };
 
   const onClickMyButton = () => {
-    setInputValue(userNickname);
-    setSearchValue(inputValue);
+    setSearchKeyWord(userName);
   };
 
-  const onClickOrder = (name: string) => {
+  const onClickOrder = (name: "latest" | "popularity") => {
     setOrder(name);
+    setSearchKeyWord("");
   };
 
   return (
     <>
       <div className={styles["item-header__search"]}>
-        <Input
-          types="search"
-          placeholder="사용자 닉네임으로 검색 검색"
-          value={inputValue}
-          onChange={handleInput}
-          onKeyPress={handleOnKeyPress}
-        />
+        <Input types="search" placeholder="사용자 닉네임으로 검색 검색" value={searchKeyWord} onChange={handleInput} />
         <Button types="gray" onClick={onClickMyButton}>
           My
         </Button>
@@ -56,7 +45,7 @@ const SocialHeader = (props: Props) => {
             key={idx}
             onClick={() => onClickOrder(sort)}
           >
-            {sort}
+            {sort == "latest" ? "최신순" : "인기순"}
           </span>
         ))}
       </div>

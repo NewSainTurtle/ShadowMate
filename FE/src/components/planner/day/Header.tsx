@@ -64,7 +64,7 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
       <Button types="red" disabled>
         ♥ {likeCount}
       </Button>
-      {plannerAccessScope != "비공개" && (
+      {plannerAccessScope == "전체공개" && (
         <div className={`${isSocialClick ? styles["button__visit"] : ""}`}>
           <Button types="blue" onClick={() => handleClick()}>
             소셜공유
