@@ -41,7 +41,10 @@ const App = () => {
   };
 
   useEffect(() => {
-    const isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDarkMode =
+      localStorage.getItem("theme") == "dark" ||
+      (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
     document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
   }, []);
 
