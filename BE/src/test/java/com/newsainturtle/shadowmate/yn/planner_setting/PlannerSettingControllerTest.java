@@ -226,7 +226,7 @@ class PlannerSettingControllerTest {
                 );
 
                 //then
-                resultActions.andExpect(status().isOk());
+                resultActions.andExpect(status().isAccepted());
             }
 
             @Test
@@ -247,7 +247,7 @@ class PlannerSettingControllerTest {
                 );
 
                 //then
-                resultActions.andExpect(status().isOk());
+                resultActions.andExpect(status().isAccepted());
             }
 
         }
@@ -327,7 +327,7 @@ class PlannerSettingControllerTest {
                 );
 
                 //then
-                resultActions.andExpect(status().isOk());
+                resultActions.andExpect(status().isAccepted());
             }
 
         }
@@ -532,7 +532,7 @@ class PlannerSettingControllerTest {
             );
 
             //then
-            resultActions.andExpect(status().isOk());
+            resultActions.andExpect(status().isAccepted());
         }
     }
 
@@ -659,7 +659,7 @@ class PlannerSettingControllerTest {
                 );
 
                 //then
-                resultActions.andExpect(status().isOk());
+                resultActions.andExpect(status().isAccepted());
             }
 
         }
@@ -717,7 +717,7 @@ class PlannerSettingControllerTest {
                 );
 
                 //then
-                resultActions.andExpect(status().isOk());
+                resultActions.andExpect(status().isAccepted());
             }
 
         }

@@ -2351,7 +2351,7 @@ class PlannerControllerTest {
             );
 
             //then
-            resultActions.andExpect(status().isOk());
+            resultActions.andExpect(status().isAccepted());
         }
     }
 
