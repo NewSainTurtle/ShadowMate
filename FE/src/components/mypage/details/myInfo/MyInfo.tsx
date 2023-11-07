@@ -20,6 +20,7 @@ const MyPageInfo = () => {
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
   const [isNickanmeAuthentication, setNickanmeAuthentication] = useState(myInfoData.nickname == nickname);
+  const [nicknameErrorMessage, setNicknameErrorMessage] = useState(false);
   const [isErrorButton, setErrorButton] = useState(false);
   const [error, setError] = useState({
     nickname: false,
@@ -35,7 +36,7 @@ const MyPageInfo = () => {
     setLength({ ...length, [name]: value.length });
     if (name == "nickname") {
       if (isErrorButton) setErrorButton(false);
-      if (isNickanmeAuthentication) {
+      if (isNickanmeAuthentication && myInfoData.nickname != nickname) {
         authApi.deleteNickname({ nickname }).catch((err) => console.error(err));
         setNickanmeAuthentication(false);
       }
@@ -62,6 +63,7 @@ const MyPageInfo = () => {
         })
         .catch(() => {
           setNickanmeAuthentication(false);
+          setNicknameErrorMessage(true);
         });
     }
   };
@@ -124,7 +126,9 @@ const MyPageInfo = () => {
               onChange={handleUser}
               error={error.nickname}
               helperText={
-                error.nickname
+                nicknameErrorMessage
+                  ? "중복된 닉네임 입니다."
+                  : error.nickname
                   ? "공백을 제외한 2 ~ 10자의 닉네임을 입력할 수 있습니다."
                   : `글자 수: ${length.nickname}/10`
               }
