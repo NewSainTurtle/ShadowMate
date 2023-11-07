@@ -41,11 +41,12 @@ const App = () => {
   };
 
   useEffect(() => {
-    const isDarkMode =
-      localStorage.getItem("theme") == "dark" ||
-      (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const theme = localStorage.getItem("theme");
+    let isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (!theme) localStorage.setItem("theme", isDarkMode);
+    else isDarkMode = theme;
 
-    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", isDarkMode);
   }, []);
 
   useLayoutEffect(() => {
