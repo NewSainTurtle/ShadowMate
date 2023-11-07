@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "./App.scss";
@@ -48,7 +48,7 @@ const App = () => {
     document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setPathName(["/", "/login", "/signup"].includes(location.pathname));
   }, [location.pathname]);
 
