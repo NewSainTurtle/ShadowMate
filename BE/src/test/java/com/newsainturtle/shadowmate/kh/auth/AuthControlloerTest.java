@@ -155,7 +155,7 @@ class AuthControlloerTest {
         );
 
         //then
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isAccepted());
     }
 
     @Test
