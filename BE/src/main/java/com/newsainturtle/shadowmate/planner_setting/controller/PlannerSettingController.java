@@ -36,7 +36,7 @@ public class PlannerSettingController {
                                                        @RequestBody @Valid final RemoveCategoryRequest removeCategoryRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.removeCategory(principalDetails.getUser(), removeCategoryRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_CATEGORY));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_REMOVE_CATEGORY));
     }
 
     @PutMapping("/{userId}/categories")
@@ -45,7 +45,7 @@ public class PlannerSettingController {
                                                        @RequestBody @Valid final UpdateCategoryRequest updateCategoryRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.updateCategory(principalDetails.getUser(), updateCategoryRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_CATEGORY));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_CATEGORY));
     }
 
     @GetMapping("/{userId}/categories")
@@ -68,7 +68,7 @@ public class PlannerSettingController {
                                                        @RequestBody @Valid final SetAccessScopeRequest setAccessScopeRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.setAccessScope(principalDetails.getUser(), setAccessScopeRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SET_PLANNER_ACCESS_SCOPE));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_SET_PLANNER_ACCESS_SCOPE));
     }
 
     @PostMapping("/{userId}/d-days")
@@ -92,7 +92,7 @@ public class PlannerSettingController {
                                                    @RequestBody @Valid final RemoveDdayRequest removeDdayRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.removeDday(principalDetails.getUser(), removeDdayRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DDAY));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_REMOVE_DDAY));
     }
 
     @PutMapping("/{userId}/d-days")
@@ -101,6 +101,6 @@ public class PlannerSettingController {
                                                    @RequestBody @Valid final UpdateDdayRequest updateDdayRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         plannerSettingServiceImpl.updateDday(principalDetails.getUser(), updateDdayRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_DDAY));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_DDAY));
     }
 }

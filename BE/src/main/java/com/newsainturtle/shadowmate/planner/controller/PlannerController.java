@@ -168,7 +168,7 @@ public class PlannerController {
                                                     @RequestBody @Valid final ShareSocialRequest shareSocialRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         dailyPlannerServiceImpl.shareSocial(principalDetails.getUser(), shareSocialRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SHARE_SOCIAL));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_SHARE_SOCIAL));
     }
 
     @GetMapping("/{userId}/daily")
