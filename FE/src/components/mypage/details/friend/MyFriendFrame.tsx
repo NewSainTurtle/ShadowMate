@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
@@ -50,21 +50,21 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     return "팔로워 삭제";
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!debounceKeyword.length) {
       setSearchFriend([]);
       setAlertMessage("닉네임을 통해 검색이 가능합니다.");
     }
   }, [debounceKeyword.length]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!search) {
       setSearchKeyWord("");
       setSearchFriend([]);
     }
   }, [search]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!!searchKeyWord.length)
       userApi
         .searches(userId, { nickname: searchKeyWord })
