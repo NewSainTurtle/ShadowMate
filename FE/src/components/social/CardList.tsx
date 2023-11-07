@@ -79,7 +79,8 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
   };
 
   // 내 공유 플래너 삭제
-  const handleDelete = (idx: number, socialId: number) => {
+  const handleDelete = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, idx: number, socialId: number) => {
+    e.stopPropagation();
     socialApi
       .delete(userId, socialId)
       .then(() => {

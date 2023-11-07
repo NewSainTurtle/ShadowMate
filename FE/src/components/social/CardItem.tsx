@@ -12,7 +12,7 @@ import { setFriendDate, setFriendInfo } from "@store/friendSlice";
 interface Props {
   item: SocialListType;
   idx: number;
-  handleDelete: (idx: number, socialId: number) => void;
+  handleDelete: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, idx: number, socialId: number) => void;
 }
 
 const SocialProfile = ({ idx, item, handleDelete }: Props) => {
@@ -41,7 +41,7 @@ const SocialProfile = ({ idx, item, handleDelete }: Props) => {
       </div>
       <div className={styles["social-profile__button"]}>
         {mine && (
-          <div onClick={() => handleDelete(idx, socialId)}>
+          <div onClick={(e) => handleDelete(e, idx, socialId)}>
             <DeleteOutline />
           </div>
         )}
