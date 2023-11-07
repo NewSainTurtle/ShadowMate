@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import { ProfileConfig } from "@components/common/FriendProfile";
@@ -22,7 +22,7 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
   const obsRef = useRef(null);
 
   // 무한 스크롤
-  useEffect(() => {
+  useLayoutEffect(() => {
     preventRef.current = false;
     endRef.current = false;
     setPageNumber(1);
@@ -43,7 +43,7 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (pageNumber != 1) getPost(pageNumber);
   }, [pageNumber]);
 
