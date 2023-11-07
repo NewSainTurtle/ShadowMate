@@ -35,14 +35,12 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setLogin: (state, { payload }: PayloadAction<{ accessToken: string; userId: number }>) => {
-      state.accessToken = payload.accessToken;
       state.login = true;
       state.userId = payload.userId;
+      state.accessToken = payload.accessToken;
     },
     setLogout: (state) => {
-      state = initialState;
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("id");
+      state.login = false;
     },
     setUserInfo: (state, { payload }: PayloadAction<userInfoConfig>) => {
       const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
