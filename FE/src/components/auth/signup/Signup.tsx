@@ -19,15 +19,15 @@ const Signup = () => {
   });
   const [isEmailAuthentication, setEmailAuthentication] = useState(false);
   const [isEmailRedundancy, setEmailRedundancy] = useState(false);
-  const [isNickanmeAuthentication, setNickanmeAuthentication] = useState(false);
+  const [isNicknameAuthentication, setNicknameAuthentication] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { email, code, password, passwordCheck, nickname } = userData;
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name == "nickname" && isNickanmeAuthentication) {
+    if (name == "nickname" && isNicknameAuthentication) {
       authApi.deleteNickname({ nickname }).catch((err) => console.error(err));
-      setNickanmeAuthentication(false);
+      setNicknameAuthentication(false);
     }
     setUserData({
       ...userData,
@@ -67,15 +67,15 @@ const Signup = () => {
         authApi
           .nickname({ nickname })
           .then(() => {
-            setNickanmeAuthentication(true);
+            setNicknameAuthentication(true);
             setErrorMessage("");
           })
           .catch(() => {
-            setNickanmeAuthentication(false);
+            setNicknameAuthentication(false);
             setErrorMessage("중복된 닉네임 입니다.");
           });
       } else {
-        setNickanmeAuthentication(false);
+        setNicknameAuthentication(false);
         if (nickname.length < 2 || nickname.length > 10) setErrorMessage("닉네임은 2 ~ 10글자를 입력할 수 있습니다.");
         else setErrorMessage("공백과 특수문자를 제외한 닉네임으로 구성해주세요.");
       }
@@ -86,7 +86,7 @@ const Signup = () => {
         setErrorMessage("비밀번호는 6 ~ 20이내로 입력해주세요.");
       else if (password != passwordCheck) setErrorMessage("비밀번호가 일치하지 않습니다.");
       else if (!isEmailRedundancy) setErrorMessage("이메일을 인증 해주세요.");
-      else if (!isNickanmeAuthentication) setErrorMessage("닉네임을 인증 해주세요.");
+      else if (!isNicknameAuthentication) setErrorMessage("닉네임을 인증 해주세요.");
       else if (!!email && !!password && !!nickname) {
         authApi.join({ email, password, nickname });
         navigator("/login");
@@ -144,8 +144,8 @@ const Signup = () => {
           />
           <div className={styles["input_box__button"]}>
             <Input placeholder="닉네임" name="nickname" value={nickname} onChange={handleInput} />
-            <Button types="gray" onClick={onClickNickName} disabled={isNickanmeAuthentication}>
-              {!isNickanmeAuthentication ? "중복검사" : "검사완료"}
+            <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
+              {!isNicknameAuthentication ? "중복검사" : "검사완료"}
             </Button>
           </div>
         </div>

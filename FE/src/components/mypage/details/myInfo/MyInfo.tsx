@@ -20,7 +20,7 @@ const MyPageInfo = () => {
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
   const [newNickname, setNewNickname] = useState(nickname);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
-  const [isNickanmeAuthentication, setNickanmeAuthentication] = useState(myInfoData.nickname == nickname);
+  const [isNicknameAuthentication, setNicknameAuthentication] = useState(myInfoData.nickname == nickname);
   const [nicknameErrorMessage, setNicknameErrorMessage] = useState(false);
   const [isErrorButton, setErrorButton] = useState(false);
   const [error, setError] = useState({
@@ -37,10 +37,10 @@ const MyPageInfo = () => {
     setLength({ ...length, [name]: value.length });
     if (name == "nickname") {
       if (isErrorButton) setErrorButton(false);
-      if (isNickanmeAuthentication) setNickanmeAuthentication(false);
+      if (isNicknameAuthentication) setNicknameAuthentication(false);
       if (nicknameErrorMessage) setNicknameErrorMessage(false);
-      if (isNickanmeAuthentication && myInfoData.nickname != newNickname) deletNickName();
-      if (myInfoData.nickname == value) setNickanmeAuthentication(true);
+      if (isNicknameAuthentication && myInfoData.nickname != newNickname) deletNickName();
+      if (myInfoData.nickname == value) setNicknameAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
     } else if (name == "statusMessage") {
@@ -59,7 +59,7 @@ const MyPageInfo = () => {
       .deleteNickname({ nickname: newNickname })
       .then(() => {
         setNewNickname(nickname);
-        setNickanmeAuthentication(false);
+        setNicknameAuthentication(false);
       })
       .catch((err) => console.error(err));
   };
@@ -70,11 +70,11 @@ const MyPageInfo = () => {
         .nickname({ nickname })
         .then(() => {
           setNewNickname(nickname);
-          setNickanmeAuthentication(true);
+          setNicknameAuthentication(true);
           setErrorButton(false);
         })
         .catch(() => {
-          setNickanmeAuthentication(false);
+          setNicknameAuthentication(false);
           setNicknameErrorMessage(true);
         });
     }
@@ -102,7 +102,7 @@ const MyPageInfo = () => {
 
   const saveMyInfo = async () => {
     if (myInfoData == userMyInfo) return;
-    if (!isNickanmeAuthentication) {
+    if (!isNicknameAuthentication) {
       setErrorButton(true);
     } else {
       let newProfileImage = profileImage;
@@ -142,12 +142,12 @@ const MyPageInfo = () => {
                   ? "중복된 닉네임 입니다."
                   : error.nickname
                   ? "공백을 제외한 2 ~ 10자의 닉네임을 입력할 수 있습니다."
-                  : myInfoData.nickname != nickname && isNickanmeAuthentication
+                  : myInfoData.nickname != nickname && isNicknameAuthentication
                   ? "사용가능한 닉네임 입니다."
                   : `글자 수: ${length.nickname}/10`
               }
             />
-            <Button types="gray" onClick={onClickNickName} disabled={isNickanmeAuthentication}>
+            <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
               중복검사
             </Button>
           </div>
