@@ -7,7 +7,7 @@ import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
 import { useAppDispatch } from "@hooks/hook";
-import { setLogin, setUserInfo } from "@store/authSlice";
+import { setIsGoogle, setLogin, setUserInfo } from "@store/authSlice";
 
 const getCookie = (name: string) => {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
@@ -83,11 +83,12 @@ const Login = () => {
         .then((res) => {
           dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
           dispatch(setUserInfo(res.data.data));
-          deleteCookie("token");
-          deleteCookie("userId");
+          dispatch(setIsGoogle(true));
           navigator("/month");
         })
         .catch((err) => console.log(err));
+      deleteCookie("token");
+      deleteCookie("userId");
     }
   }, [document.cookie]);
 
