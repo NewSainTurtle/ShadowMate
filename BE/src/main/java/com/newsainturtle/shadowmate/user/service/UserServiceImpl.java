@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
         if(user == null) {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
         }
-        if(bCryptPasswordEncoder.matches(oldPassword, newPassword)) {
+        if(bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
             userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
         }
         else {
