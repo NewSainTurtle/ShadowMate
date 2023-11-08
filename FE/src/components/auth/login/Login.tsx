@@ -34,7 +34,7 @@ const Login = () => {
   const { email, password } = loginInfo;
 
   const handleGoogleLogin = () => {
-    window.location.href = "https://shadowmate.kro.kr/api/oauth/google";
+    window.location.href = process.env.REACT_APP_API_URL + "/api/oauth/google";
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
