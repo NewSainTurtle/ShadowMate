@@ -18,6 +18,7 @@ const MyPageInfo = () => {
   const myInfoData: userInfoConfig = useAppSelector(selectUserInfo);
   const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
+  const [newNickname, setNewNickname] = useState(nickname);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
   const [isNickanmeAuthentication, setNickanmeAuthentication] = useState(myInfoData.nickname == nickname);
   const [nicknameErrorMessage, setNicknameErrorMessage] = useState(false);
@@ -36,10 +37,8 @@ const MyPageInfo = () => {
     setLength({ ...length, [name]: value.length });
     if (name == "nickname") {
       if (isErrorButton) setErrorButton(false);
-      if (isNickanmeAuthentication && myInfoData.nickname != nickname) {
-        authApi.deleteNickname({ nickname }).catch((err) => console.error(err));
-        setNickanmeAuthentication(false);
-      }
+      if (isNickanmeAuthentication) setNickanmeAuthentication(false);
+      if (isNickanmeAuthentication && myInfoData.nickname != newNickname) deletNickName();
       if (myInfoData.nickname == value) setNickanmeAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
@@ -47,17 +46,29 @@ const MyPageInfo = () => {
       if (!userRegex.statusMessage.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
     }
+
     setUserMyInfo({
       ...userMyInfo,
       [name]: value,
     });
   };
 
-  const onClickNickName = () => {
+  const deletNickName = async () => {
+    await authApi
+      .deleteNickname({ nickname: newNickname })
+      .then(() => {
+        setNewNickname(nickname);
+        setNickanmeAuthentication(false);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const onClickNickName = async () => {
     if (!error.nickname) {
-      authApi
+      await authApi
         .nickname({ nickname })
         .then(() => {
+          setNewNickname(nickname);
           setNickanmeAuthentication(true);
           setErrorButton(false);
         })
@@ -102,7 +113,7 @@ const MyPageInfo = () => {
         );
       }
       await userApi
-        .myPages(userId, { newNickname: nickname, newProfileImage, newStatusMessage: statusMessage })
+        .myPages(userId, { newNickname, newProfileImage, newStatusMessage: statusMessage })
         .then(() => {
           dispatch(setUserInfo({ ...userMyInfo, profileImage: newProfileImage }));
         })
