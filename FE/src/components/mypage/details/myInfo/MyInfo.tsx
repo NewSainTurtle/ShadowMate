@@ -122,23 +122,23 @@ const MyPageInfo = () => {
     }
   };
 
-  const errorButtonStyle = isErrorButton ? "--error" : "";
-
   const MY_INFO = (() => {
     return [
       { title: "이메일", node: <Input value={email} disabled /> },
       {
         title: "닉네임",
         node: (
-          <div className={`${styles["info__profile-nickname"]} ${styles[errorButtonStyle]}`}>
+          <div className={styles["info__profile-nickname"]}>
             <Input
               placeholder="닉네임"
               name="nickname"
               value={nickname}
               onChange={handleUser}
-              error={error.nickname || nicknameErrorMessage}
+              error={error.nickname || nicknameErrorMessage || isErrorButton}
               helperText={
-                nicknameErrorMessage
+                isErrorButton
+                  ? "닉네임 중복검사를 해주세요!"
+                  : nicknameErrorMessage
                   ? "중복된 닉네임 입니다."
                   : error.nickname
                   ? "공백을 제외한 2 ~ 10자의 닉네임을 입력할 수 있습니다."
