@@ -9,16 +9,18 @@ import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
-import { selectFriendInfo } from "@store/friendSlice";
+import { selectFriendId, selectFriendInfo } from "@store/friendSlice";
 
 const Week = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
+  let friendId = useAppSelector(selectFriendId);
+  friendId = friendId != 0 ? friendId : userId;
   const friendInfo = useAppSelector(selectFriendInfo);
   const dayList = useAppSelector(selectDayList);
   const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt(week);
-  const [isMine, setIsMine] = useState<boolean>(true);
+  const [isMine, setIsMine] = useState<boolean>(friendId === userId);
 
   const handleButton = (to: string) => {
     const date = week.getDate();
@@ -33,7 +35,7 @@ const Week = () => {
   const getDayList = () => {
     const dates = getThisWeek(week);
     plannerApi
-      .weekly(userId, { "start-date": dates[0], "end-date": dates[1] })
+      .weekly(friendId, { "start-date": dates[0], "end-date": dates[1] })
       .then((res) => {
         const response = res.data.data;
         dispatch(
@@ -51,7 +53,8 @@ const Week = () => {
 
   useEffect(() => {
     getDayList();
-  }, [week]);
+    if (friendId === userId) setIsMine(true);
+  }, [week, friendId]);
 
   return (
     <div className={styles["week"]}>
