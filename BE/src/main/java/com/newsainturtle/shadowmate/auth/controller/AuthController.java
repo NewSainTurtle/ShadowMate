@@ -34,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<BaseResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
+    public ResponseEntity<BaseResponse> join(@RequestBody @Valid final JoinRequest joinRequest) {
         authServiceImpl.join(joinRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_JOIN));
     }
@@ -45,13 +45,13 @@ public class AuthController {
     }
 
     @PostMapping("/nickname-duplicated")
-    public ResponseEntity<BaseResponse> duplicatedCheckNickname(@RequestBody @Valid DuplicatedNicknameRequest duplicatedNicknameRequest) {
+    public ResponseEntity<BaseResponse> duplicatedCheckNickname(@RequestBody @Valid final DuplicatedNicknameRequest duplicatedNicknameRequest) {
         authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_NICKNAME_CHECK));
     }
 
     @DeleteMapping("/nickname-duplicated")
-    public ResponseEntity<BaseResponse> deleteCheckNickname(@RequestBody @Valid DuplicatedNicknameRequest duplicatedNicknameRequest) {
+    public ResponseEntity<BaseResponse> deleteCheckNickname(@RequestBody @Valid final DuplicatedNicknameRequest duplicatedNicknameRequest) {
         authServiceImpl.deleteCheckNickname(duplicatedNicknameRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_NICKNAME_CHECK));
     }
