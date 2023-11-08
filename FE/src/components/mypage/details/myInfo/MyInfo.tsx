@@ -38,6 +38,7 @@ const MyPageInfo = () => {
     if (name == "nickname") {
       if (isErrorButton) setErrorButton(false);
       if (isNickanmeAuthentication) setNickanmeAuthentication(false);
+      if (nicknameErrorMessage) setNicknameErrorMessage(false);
       if (isNickanmeAuthentication && myInfoData.nickname != newNickname) deletNickName();
       if (myInfoData.nickname == value) setNickanmeAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
@@ -135,7 +136,7 @@ const MyPageInfo = () => {
               name="nickname"
               value={nickname}
               onChange={handleUser}
-              error={error.nickname}
+              error={error.nickname || nicknameErrorMessage}
               helperText={
                 nicknameErrorMessage
                   ? "중복된 닉네임 입니다."
