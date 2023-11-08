@@ -7,6 +7,7 @@ import { Avatar } from "@mui/material";
 import { persistor } from "@hooks/configStore";
 import { useAppDispatch } from "@hooks/hook";
 import { setLogout } from "@store/authSlice";
+import { clearFriendInfo } from "@store/friendSlice";
 
 interface Props {
   types: "기본" | "로그아웃";
@@ -23,14 +24,18 @@ const Profile = ({ types, profile }: Props) => {
       persistor.purge();
     }, 200);
   };
+    
+  const handleClick = () => {
+    dispatch(clearFriendInfo());
+  };
 
   return (
     <>
       <div className={styles.profile_container}>
-        <div className={styles.profile_img}>
+        <div className={styles.profile_img} onClick={handleClick}>
           <Avatar src={profileImage} sx={{ width: 80, height: 80 }} />
         </div>
-        <div className={styles.profile_content}>
+        <div className={styles.profile_content} onClick={handleClick}>
           <Text types="semi-medium" bold>
             {nickname}
           </Text>

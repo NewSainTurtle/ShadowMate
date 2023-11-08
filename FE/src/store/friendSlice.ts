@@ -34,11 +34,15 @@ const friendSlice = createSlice({
     setFollowState: (state, { payload }: PayloadAction<friendConfig["followState"]>) => {
       state.followState = payload;
     },
+    clearFriendInfo: (state) => {
+      state.friendInfo = initialState.friendInfo;
+    },
   },
 });
 
-export const { setFriendDate, setFriendInfo, setFollowState } = friendSlice.actions;
+export const { setFriendDate, setFriendInfo, setFollowState, clearFriendInfo } = friendSlice.actions;
 export const selectFriendDate = (state: rootState) => state.friend.friendDate;
 export const selectFriendInfo = (state: rootState) => state.friend.friendInfo;
+export const selectFriendId = (state: rootState) => state.friend.friendInfo.userId;
 export const selectFollowState = (state: rootState) => state.friend.followState;
 export default friendSlice.reducer;
