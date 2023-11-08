@@ -24,6 +24,7 @@ const CancelMembership = () => {
       })
       .then(() => {
         persistor.purge(); // 리덕스 초기화
+        localStorage.clear();
       })
       .catch((err) => console.error(err));
   };

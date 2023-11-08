@@ -4,15 +4,25 @@ import { ProfileConfig } from "../FriendProfile";
 import Text from "../Text";
 import Button from "../Button";
 import { Avatar } from "@mui/material";
+import { persistor } from "@hooks/configStore";
+import { useAppDispatch } from "@hooks/hook";
+import { setLogout } from "@store/authSlice";
 
 interface Props {
   types: "기본" | "로그아웃";
   profile: ProfileConfig;
-  onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
-const Profile = ({ types, profile, ...rest }: Props) => {
+const Profile = ({ types, profile }: Props) => {
+  const dispatch = useAppDispatch();
   const { profileImage, nickname, statusMessage } = profile;
+
+  const handleLogout = () => {
+    dispatch(setLogout());
+    setTimeout(() => {
+      persistor.purge();
+    }, 200);
+  };
 
   return (
     <>
@@ -31,8 +41,8 @@ const Profile = ({ types, profile, ...rest }: Props) => {
             {
               기본: <></>,
               로그아웃: (
-                <div className={styles.profile_button} {...rest}>
-                  <Button children="로그아웃" types="gray" />
+                <div className={styles.profile_button}>
+                  <Button children="로그아웃" types="gray" onClick={() => handleLogout()} />
                 </div>
               ),
             }[types]
