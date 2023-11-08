@@ -11,6 +11,7 @@ import { setDate, selectDate, selectDayInfo } from "@store/planner/daySlice";
 import { todoData_friend } from "@util/data/DayTodos";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import { selectFriendInfo } from "@store/friendSlice";
 dayjs.locale("ko");
 
 const FriendHeader = () => {
@@ -18,6 +19,7 @@ const FriendHeader = () => {
   const { likeCount, like } = useAppSelector(selectDayInfo);
   const [heartNum, setHeartNum] = useState(likeCount);
   const [isHeartClick, setIsHeartClick] = useState(like);
+  const friendInfo = useAppSelector(selectFriendInfo);
 
   function heartClick() {
     setIsHeartClick(!isHeartClick);
@@ -41,7 +43,7 @@ const FriendHeader = () => {
           주간보기
         </Button>
       </div>
-      <FriendProfile types={"아이콘"} profile={todoData_friend} />
+      <FriendProfile types={"아이콘"} profile={friendInfo} />
     </div>
   );
 };
