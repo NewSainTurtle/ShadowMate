@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import Month from "@components/planner/month/Month";
-import { settingApi } from "@api/Api";
+import { settingApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectUserId } from "@store/authSlice";
+import { selectUserId, setUserInfo } from "@store/authSlice";
 import { setCategoryColors, setCategoryInput, setCategoryList } from "@store/mypage/categorySlice";
 import { setDdayList } from "@store/mypage/ddaySlice";
 import { CategoryItemConfig } from "@util/planner.interface";
@@ -48,7 +48,18 @@ const MonthPage = () => {
       .catch((err) => console.log(err));
   };
 
-  useEffect(() => {
+  const getProfileInfo = () => {
+    userApi
+      .getProfiles(userId)
+      .then((res) => {
+        console.log(userId, res.data.data);
+        dispatch(setUserInfo(res.data.data));
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useLayoutEffect(() => {
+    getProfileInfo();
     getCategoryList();
     getCategoryColors();
     getDdayList();
