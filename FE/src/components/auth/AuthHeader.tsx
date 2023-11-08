@@ -13,7 +13,7 @@ const AuthHeader = () => {
 
   return (
     <Stack sx={{ position: "fixed", width: 1, mt: 1 }} direction="row" justifyContent="space-between">
-      <ArrowBackIosNew sx={{ pl: 1 }} fontSize="small" onClick={onClickBtn} />
+      <ArrowBackIosNew sx={{ pl: 3 }} fontSize="small" onClick={onClickBtn} />
       <Box sx={{ pr: 3 }}>
         <Toggle />
       </Box>

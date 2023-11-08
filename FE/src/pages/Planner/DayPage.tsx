@@ -15,11 +15,13 @@ import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import html2canvas from "html2canvas";
 import Alert from "@components/common/Alert";
+import { selectFriendId } from "@store/friendSlice";
 
 const DayPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const friendUserId = userId;
+  let friendUserId = useAppSelector(selectFriendId);
+  friendUserId = friendUserId != 0 ? friendUserId : userId;
   const date = useAppSelector(selectDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
@@ -64,7 +66,7 @@ const DayPage = () => {
         setTotalTime({ studyTimeHour: response.studyTimeHour, studyTimeMinute: response.studyTimeMinute });
       })
       .catch((err) => console.error(err));
-  }, [date]);
+  }, [date, friendUserId]);
 
   useEffect(() => {
     const sumMinute = todoList

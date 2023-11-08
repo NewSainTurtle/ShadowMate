@@ -35,13 +35,19 @@ const App = () => {
   const { isOpen } = useAppSelector(selectModal);
 
   const handleTokenExpiration = () => {
+    dispatch(setModalClose());
     dispatch(setLogout());
     persistor.purge(); // 리덕스 초기화
     navigator("/login");
   };
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "light");
+    const theme = localStorage.getItem("theme");
+    let isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (!theme) localStorage.setItem("theme", isDarkMode);
+    else isDarkMode = theme;
+
+    document.documentElement.setAttribute("data-theme", isDarkMode);
   }, []);
 
   useLayoutEffect(() => {

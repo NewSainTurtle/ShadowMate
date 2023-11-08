@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { MonthConfig, MonthDayConfig, setMonthInfo } from "@store/planner/monthSlice";
 import { plannerApi } from "@api/Api";
+import { selectFriendId } from "@store/friendSlice";
 
 const Month = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +17,8 @@ const Month = () => {
   const year: number = dayjs(selectedDay).year();
   const month: number = dayjs(selectedDay).month() + 1;
   const userId = useAppSelector(selectUserId);
+  let friendId = useAppSelector(selectFriendId);
+  friendId = friendId != 0 ? friendId : userId;
 
   const handlePrevMonth = () => {
     const newDate = dayjs(selectedDay).subtract(1, "month").endOf("month").format("MM/DD/YY");
@@ -29,7 +32,7 @@ const Month = () => {
 
   const getMonthInfo = () => {
     plannerApi
-      .calendars(userId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
+      .calendars(friendId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
       .then((res) => {
         const dayList: MonthDayConfig[] = res.data.data.dayList;
         const plannerAccessScope: MonthConfig["plannerAccessScope"] = res.data.data.plannerAccessScope || "전체공개";
@@ -40,7 +43,7 @@ const Month = () => {
 
   useEffect(() => {
     getMonthInfo();
-  }, [selectedDay]);
+  }, [selectedDay, friendId]);
 
   return (
     <div className={styles["month"]}>
