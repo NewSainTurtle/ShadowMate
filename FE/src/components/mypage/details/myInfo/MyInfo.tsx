@@ -142,6 +142,8 @@ const MyPageInfo = () => {
                   ? "중복된 닉네임 입니다."
                   : error.nickname
                   ? "공백을 제외한 2 ~ 10자의 닉네임을 입력할 수 있습니다."
+                  : myInfoData.nickname != nickname && isNickanmeAuthentication
+                  ? "사용가능한 닉네임 입니다."
                   : `글자 수: ${length.nickname}/10`
               }
             />
