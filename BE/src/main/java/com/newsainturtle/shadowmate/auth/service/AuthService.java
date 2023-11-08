@@ -18,5 +18,7 @@ public interface AuthService {
 
     void duplicatedCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest);
 
+    void deleteCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest);
+
     void join(final JoinRequest joinRequest);
 }

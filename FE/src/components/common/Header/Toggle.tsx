@@ -46,12 +46,17 @@ export const SwitchButton = styled(Switch)(({ theme }) => ({
 }));
 
 const Toggle = () => {
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(localStorage.getItem("theme") == "dark");
+
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setChecked(!checked);
-    e.target.checked
-      ? document.documentElement.setAttribute("data-theme", "dark")
-      : document.documentElement.setAttribute("data-theme", "light");
+    if (e.target.checked) {
+      localStorage.setItem("theme", "dark");
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      localStorage.setItem("theme", "light");
+      document.documentElement.setAttribute("data-theme", "light");
+    }
   };
 
   return (
