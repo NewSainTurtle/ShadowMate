@@ -35,6 +35,7 @@ const App = () => {
   const { isOpen } = useAppSelector(selectModal);
 
   const handleTokenExpiration = () => {
+    dispatch(setModalClose());
     dispatch(setLogout());
     persistor.purge(); // 리덕스 초기화
     navigator("/login");
