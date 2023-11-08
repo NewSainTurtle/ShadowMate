@@ -7,7 +7,7 @@ import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
 import { useAppDispatch } from "@hooks/hook";
-import { setLogin, setUserInfo } from "@store/authSlice";
+import { setIsGoogle, setLogin, setUserInfo } from "@store/authSlice";
 
 const getCookie = (name: string) => {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
@@ -34,7 +34,7 @@ const Login = () => {
   const { email, password } = loginInfo;
 
   const handleGoogleLogin = () => {
-    window.location.href = "https://shadowmate.kro.kr/api/oauth/google";
+    window.location.href = process.env.REACT_APP_API_URL + "/api/oauth/google";
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -78,10 +78,17 @@ const Login = () => {
     const token = getCookie("token");
     const id = getCookie("userId");
     if (token && id) {
-      dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
+      userApi
+        .getProfiles(parseInt(id))
+        .then((res) => {
+          dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
+          dispatch(setUserInfo(res.data.data));
+          dispatch(setIsGoogle(true));
+          navigator("/month");
+        })
+        .catch((err) => console.log(err));
       deleteCookie("token");
       deleteCookie("userId");
-      navigator("/month");
     }
   }, [document.cookie]);
 
