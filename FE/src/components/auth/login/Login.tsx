@@ -78,10 +78,16 @@ const Login = () => {
     const token = getCookie("token");
     const id = getCookie("userId");
     if (token && id) {
-      dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
-      deleteCookie("token");
-      deleteCookie("userId");
-      navigator("/month");
+      userApi
+        .getProfiles(parseInt(id))
+        .then((res) => {
+          dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
+          dispatch(setUserInfo(res.data.data));
+          deleteCookie("token");
+          deleteCookie("userId");
+          navigator("/month");
+        })
+        .catch((err) => console.log(err));
     }
   }, [document.cookie]);
 
