@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "@styles/auth/Signup.module.scss";
 import AuthButton from "@components/auth/AuthButton";
@@ -49,7 +49,7 @@ const Signup = () => {
             setEmailAuthentication(false);
             setErrorMessage(err.response.data.message);
           });
-      else setErrorMessage("이메일 형식이 아닙니다");
+      else setErrorMessage("이메일 형식이 아닙니다.");
     };
     const onClickEmailCheck = () =>
       authApi
@@ -60,7 +60,7 @@ const Signup = () => {
         })
         .catch(() => {
           setEmailRedundancy(false);
-          setErrorMessage("이메일 인증 코드가 일치하지 않습니다");
+          setErrorMessage("이메일 인증 코드가 일치하지 않습니다.");
         });
     const onClickNickName = () => {
       if (userRegex.nickname.test(nickname)) {
@@ -72,20 +72,21 @@ const Signup = () => {
           })
           .catch(() => {
             setNickanmeAuthentication(false);
-            setErrorMessage("중복된 닉네임 입니다");
+            setErrorMessage("중복된 닉네임 입니다.");
           });
       } else {
         setNickanmeAuthentication(false);
-        setErrorMessage("닉네임은 2 ~ 10글자이내로 입력해주세요");
+        if (nickname.length < 2 || nickname.length > 10) setErrorMessage("닉네임은 2 ~ 10글자를 입력할 수 있습니다.");
+        else setErrorMessage("공백과 특수문자를 제외한 닉네임으로 구성해주세요.");
       }
     };
 
     const onClickJoin = () => {
       if (!password.length || !userRegex.password.test(password))
-        setErrorMessage("비밀번호는 6 ~ 20이내로 입력해주세요");
+        setErrorMessage("비밀번호는 6 ~ 20이내로 입력해주세요.");
       else if (password != passwordCheck) setErrorMessage("비밀번호가 일치하지 않습니다.");
-      else if (!isEmailRedundancy) setErrorMessage("이메일을 인증 해주세요");
-      else if (!isNickanmeAuthentication) setErrorMessage("닉네임을 인증 해주세요");
+      else if (!isEmailRedundancy) setErrorMessage("이메일을 인증 해주세요.");
+      else if (!isNickanmeAuthentication) setErrorMessage("닉네임을 인증 해주세요.");
       else if (!!email && !!password && !!nickname) {
         authApi.join({ email, password, nickname });
         navigator("/login");
