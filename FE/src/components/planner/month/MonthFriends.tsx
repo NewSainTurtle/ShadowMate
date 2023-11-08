@@ -36,9 +36,9 @@ const MonthFriends = () => {
         {followingData && followingData.length > 0 ? (
           <>
             {followingData.map((item: followingType, key: number) => {
-              const { followId, nickname, profileImage, statusMessage } = item;
+              const { followingId, nickname, profileImage, statusMessage } = item;
               const followInfo: ProfileConfig = {
-                userId: followId,
+                userId: followingId,
                 nickname,
                 statusMessage,
                 profileImage,
