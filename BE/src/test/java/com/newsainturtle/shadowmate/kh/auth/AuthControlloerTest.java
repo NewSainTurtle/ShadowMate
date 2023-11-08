@@ -155,7 +155,7 @@ class AuthControlloerTest {
         );
 
         //then
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isAccepted());
     }
 
     @Test
@@ -196,6 +196,27 @@ class AuthControlloerTest {
         // when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(duplicatedNicknameRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void 성공_닉네임중복검증_삭제() throws Exception {
+        // given
+        final String url = "/api/auth/nickname-duplicated";
+        final String nickname = "거북이";
+        final DuplicatedNicknameRequest duplicatedNicknameRequest =
+                DuplicatedNicknameRequest.builder()
+                        .nickname(nickname)
+                        .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
                         .content(gson.toJson(duplicatedNicknameRequest))
                         .contentType(MediaType.APPLICATION_JSON)
         );

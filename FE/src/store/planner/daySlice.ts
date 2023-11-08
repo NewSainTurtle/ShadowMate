@@ -12,6 +12,7 @@ interface dayInfoConfig {
   dday: string | null;
   like: boolean;
   likeCount: number;
+  shareSocial: boolean;
   dailyTodos: TodoConfig[];
 }
 
@@ -28,6 +29,7 @@ const initialState: dayConfig = {
     dday: null,
     like: false,
     likeCount: 0,
+    shareSocial: false,
     dailyTodos: [],
   },
   todoItem: {
@@ -61,43 +63,26 @@ const daySlice = createSlice({
     setTodoItem: (state, action: PayloadAction<dayConfig["todoItem"]>) => {
       state.todoItem = action.payload;
     },
-    removeTodoItem: (state) => {
-      state.todoItem = initialState.todoItem;
-    },
     setTodoList: (state, action: PayloadAction<dayInfoConfig["dailyTodos"]>) => {
       state.info.dailyTodos = action.payload;
     },
     setTimeTable: (state, action: PayloadAction<{ todoId: number; startTime: string; endTime: string }>) => {
       const { todoId, startTime, endTime } = action.payload;
 
-      const tempArr = state.info.dailyTodos.map((item) => {
-        if (startTime != "" && item.timeTable && item.timeTable.startTime != "") {
-          if (
-            !(
-              dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
-              dayjs(item.timeTable.startTime).isSameOrAfter(endTime)
-            )
-          ) {
-            return { ...item, timeTable: initialState.todoItem.timeTable };
-          }
-        }
-        return item;
-      });
-
+      const tempArr = state.info.dailyTodos;
       const findIndex = tempArr.findIndex((item) => item.todoId == todoId);
-      if (tempArr[findIndex].timeTable) {
-        const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
-        tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
-      }
+      const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
+      tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
 
       state.info.dailyTodos = tempArr;
+      state.todoItem = initialState.todoItem;
     },
   },
 });
 
 export const BASIC_TODO_ITEM = initialState.todoItem!;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
-export const { setDayInfo, setDate, setTodoItem, removeTodoItem, setTodoList, setTimeTable } = daySlice.actions;
+export const { setDayInfo, setDate, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
 export const selectDate = (state: rootState) => state.day.date;
 export const selectDayInfo = (state: rootState) => state.day.info;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;

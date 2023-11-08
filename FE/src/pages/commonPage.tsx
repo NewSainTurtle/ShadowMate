@@ -48,7 +48,7 @@ const commonPage = () => {
         <Text types="large">프리텐다드 - large</Text>
       </div>
       <div>
-        <Button types="blue">소설공유</Button>
+        <Button types="blue">소셜공유</Button>
         <Button children="♥ 50" types="red" />
         <Button children="일간 보기" types="gray" />
         <Button children="로그아웃" types="gray" />

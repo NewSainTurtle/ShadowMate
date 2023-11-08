@@ -361,7 +361,7 @@ class PlannerSettingServiceTest {
             //then
             verify(followRequestRepository, times(1)).findAllByReceiverId(any(User.class));
             verify(followRepository, times(2)).save(any(Follow.class));
-            verify(followRequestRepository, times(1)).deleteAllByReceiverId(any(User.class));
+            verify(followRequestRepository, times(1)).deleteAllByReceiverId(any(Long.class));
             verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(), any(List.class));
             verify(userRepository, times(1)).save(any(User.class));

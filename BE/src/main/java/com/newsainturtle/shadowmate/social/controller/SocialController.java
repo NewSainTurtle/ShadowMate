@@ -46,6 +46,6 @@ public class SocialController {
                                                      @PathVariable("socialId") final Long socialId) {
         authService.certifyUser(userId, principalDetails.getUser());
         socialService.deleteSocial(socialId);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_SOCIAL));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_DELETE_SOCIAL));
     }
 }

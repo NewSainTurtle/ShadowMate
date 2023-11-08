@@ -97,7 +97,7 @@ const MyPageInfo = () => {
       let newProfileImage = profileImage;
       if (saveImageFile != null) {
         const file = saveImageFile;
-        const storageRef = ref(firebaseStorage, `profile/${file.name}`);
+        const storageRef = ref(firebaseStorage, `profile/${userId}`);
         await uploadBytes(storageRef, file).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadURL) => (newProfileImage = downloadURL)),
         );

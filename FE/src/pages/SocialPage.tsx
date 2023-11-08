@@ -2,25 +2,25 @@ import React, { useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import CardList from "@components/social/CardList";
 import SocialHeader from "@components/social/SocialHeader";
+import { useDebounce } from "@util/EventControlModule";
 
 const SocialPage = () => {
-  const [order, setOrder] = useState("최신순");
-  const [inputValue, setInputValue] = useState("");
-  const [searchValue, setSearchValue] = useState("");
+  const [order, setOrder] = useState<"latest" | "popularity">("latest");
+  const [searchKeyWord, setSearchKeyWord] = useState("");
+  const debounceKeyword = useDebounce(searchKeyWord, 400);
 
   return (
     <div className={styles["page-container"]}>
       <div className={styles["item-header"]}>
         <SocialHeader
           order={order}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          setSearchValue={setSearchValue}
+          searchKeyWord={searchKeyWord}
+          setSearchKeyWord={setSearchKeyWord}
           setOrder={setOrder}
         />
       </div>
       <div className={styles["item-list"]}>
-        <CardList search={searchValue} />
+        <CardList sort={order} nickname={debounceKeyword} />
       </div>
     </div>
   );

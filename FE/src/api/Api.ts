@@ -117,9 +117,9 @@ export const settingApi = {
 };
 
 export const socialApi = {
-  getSocial: (params: { sort: "latest" | "popularity"; pageNumber: number }) =>
-    Axios.get(api.social.getSocial(), { params: params }),
-  searches: (data: { nickname: string; sort: "latest" | "popularity"; pageNumber: number }) =>
-    Axios.post(api.social.searches(), data),
-  delete: (socialId: string) => Axios.delete(api.social.delete(socialId)),
+  getSocial: (userId: number, params: { sort: "latest" | "popularity"; pageNumber: number }) =>
+    Axios.get(api.social.getSocial(userId), { params: params }),
+  searches: (userId: number, data: { nickname: string; sort: "latest" | "popularity"; pageNumber: number }) =>
+    Axios.post(api.social.searches(userId), data),
+  delete: (userId: number, socialId: number) => Axios.delete(api.social.delete(userId, socialId)),
 };

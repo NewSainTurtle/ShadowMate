@@ -2306,6 +2306,23 @@ class PlannerControllerTest {
         }
 
         @Test
+        void 실패_공개상태가아닌경우() throws Exception {
+            //given
+
+            doThrow(new PlannerException(PlannerErrorResult.FAILED_SHARE_SOCIAL)).when(dailyPlannerServiceImpl).shareSocial(any(), any(ShareSocialRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
         void 실패_유효하지않은플래너() throws Exception {
             //given
 
@@ -2334,7 +2351,7 @@ class PlannerControllerTest {
             );
 
             //then
-            resultActions.andExpect(status().isOk());
+            resultActions.andExpect(status().isAccepted());
         }
     }
 

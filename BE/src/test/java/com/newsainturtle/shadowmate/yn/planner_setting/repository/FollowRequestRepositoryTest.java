@@ -48,7 +48,7 @@ class FollowRequestRepositoryTest {
         //given
 
         //when
-        followRequestRepository.deleteAllByReceiverId(user);
+        followRequestRepository.deleteAllByReceiverId(user.getId());
         final List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiverId(user);
 
         //then
@@ -84,7 +84,7 @@ class FollowRequestRepositoryTest {
                 .build());
 
         //when
-        followRequestRepository.deleteAllByReceiverId(user);
+        followRequestRepository.deleteAllByReceiverId(user.getId());
         final List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiverId(user);
 
         //then
