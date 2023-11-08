@@ -7,7 +7,8 @@ import { followApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { followType } from "@util/friend.interface";
-import { setFollowState } from "@store/friendSlice";
+import { setFollowState, setFriendInfo } from "@store/friendSlice";
+import { useNavigate } from "react-router-dom";
 
 export interface ProfileConfig {
   userId: number;
@@ -124,14 +125,21 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
 };
 
 const FriendProfile = ({ types, profile }: Props) => {
+  const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const { userId, profileImage, nickname, statusMessage } = profile;
+
+  const handleMoveToFriendProfile = () => {
+    dispatch(setFriendInfo(profile));
+    navigator("/month");
+  };
 
   return (
     <div className={styles["fprofile_container"]}>
-      <div className={styles["profile_img"]}>
+      <div className={styles["profile_img"]} onClick={handleMoveToFriendProfile}>
         <Avatar src={profileImage} />
       </div>
-      <div className={styles["fprofile_content"]}>
+      <div className={styles["fprofile_content"]} onClick={handleMoveToFriendProfile}>
         <Text types="semi-medium" bold>
           {nickname}
         </Text>
