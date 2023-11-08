@@ -4,6 +4,8 @@ import { ProfileConfig } from "../FriendProfile";
 import Text from "../Text";
 import Button from "../Button";
 import { Avatar } from "@mui/material";
+import { useAppDispatch } from "@hooks/hook";
+import { clearFriendInfo } from "@store/friendSlice";
 
 interface Props {
   types: "기본" | "로그아웃";
@@ -12,15 +14,20 @@ interface Props {
 }
 
 const Profile = ({ types, profile, ...rest }: Props) => {
+  const dispatch = useAppDispatch();
   const { profileImage, nickname, statusMessage } = profile;
+
+  const handleClick = () => {
+    dispatch(clearFriendInfo());
+  };
 
   return (
     <>
       <div className={styles.profile_container}>
-        <div className={styles.profile_img}>
+        <div className={styles.profile_img} onClick={handleClick}>
           <Avatar src={profileImage} sx={{ width: 80, height: 80 }} />
         </div>
-        <div className={styles.profile_content}>
+        <div className={styles.profile_content} onClick={handleClick}>
           <Text types="semi-medium" bold>
             {nickname}
           </Text>
