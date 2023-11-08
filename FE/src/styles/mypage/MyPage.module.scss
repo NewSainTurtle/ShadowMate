@@ -454,16 +454,6 @@ $color-warning: var(--color-warning);
       > button {
         width: 20%;
       }
-
-      &.--error > button {
-        @keyframes blinkEffect {
-          50% {
-            opacity: 60%;
-          }
-        }
-
-        animation: blinkEffect 1s infinite alternate;
-      }
     }
 
     &-img {

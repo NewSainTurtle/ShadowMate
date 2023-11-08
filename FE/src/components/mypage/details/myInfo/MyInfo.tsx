@@ -9,7 +9,7 @@ import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@stor
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { userApi } from "@api/Api";
+import { authApi, userApi } from "@api/Api";
 import { userRegex } from "@util/regex";
 
 const MyPageInfo = () => {
@@ -18,8 +18,10 @@ const MyPageInfo = () => {
   const myInfoData: userInfoConfig = useAppSelector(selectUserInfo);
   const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
+  const [newNickname, setNewNickname] = useState(nickname);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
-  const [isNickanmeAuthentication, setNickanmeAuthentication] = useState(myInfoData.nickname == nickname);
+  const [isNicknameAuthentication, setNicknameAuthentication] = useState(myInfoData.nickname == nickname);
+  const [nicknameErrorMessage, setNicknameErrorMessage] = useState(false);
   const [isErrorButton, setErrorButton] = useState(false);
   const [error, setError] = useState({
     nickname: false,
@@ -30,42 +32,51 @@ const MyPageInfo = () => {
     statusMessage: statusMessage.length,
   });
 
-  const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLength({ ...length, [name]: value.length });
     if (name == "nickname") {
-      if (setErrorButton) setErrorButton(false);
-      if (isNickanmeAuthentication) setNickanmeAuthentication(false);
-      if (myInfoData.nickname == value) setNickanmeAuthentication(true);
+      if (isErrorButton) setErrorButton(false);
+      if (isNicknameAuthentication) setNicknameAuthentication(false);
+      if (nicknameErrorMessage) setNicknameErrorMessage(false);
+      if (isNicknameAuthentication && myInfoData.nickname != newNickname) deletNickName();
+      if (myInfoData.nickname == value) setNicknameAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
     } else if (name == "statusMessage") {
       if (!userRegex.statusMessage.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
     }
+
     setUserMyInfo({
       ...userMyInfo,
       [name]: value,
     });
   };
 
-  const onClickNickName = () => {
-    if (userRegex.nickname.test(nickname)) {
-      setNickanmeAuthentication(true);
-      setErrorButton(false);
-      //백 API 수정 필요
-      // authApi
-      //   .nickname({ nickname })
-      //   .then(() => {
-      //     setNickanmeAuthentication(true);
-      //     setErrorMessage("");
-      //   })
-      //   .catch((err) => {
-      //     setNickanmeAuthentication(false);
-      //     setErrorMessage("중복된 닉네임 입니다");
-      //   });
-    } else {
-      setNickanmeAuthentication(false);
+  const deletNickName = async () => {
+    await authApi
+      .deleteNickname({ nickname: newNickname })
+      .then(() => {
+        setNewNickname(nickname);
+        setNicknameAuthentication(false);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const onClickNickName = async () => {
+    if (!error.nickname) {
+      await authApi
+        .nickname({ nickname })
+        .then(() => {
+          setNewNickname(nickname);
+          setNicknameAuthentication(true);
+          setErrorButton(false);
+        })
+        .catch(() => {
+          setNicknameAuthentication(false);
+          setNicknameErrorMessage(true);
+        });
     }
   };
 
@@ -91,7 +102,7 @@ const MyPageInfo = () => {
 
   const saveMyInfo = async () => {
     if (myInfoData == userMyInfo) return;
-    if (!isNickanmeAuthentication) {
+    if (!isNicknameAuthentication) {
       setErrorButton(true);
     } else {
       let newProfileImage = profileImage;
@@ -103,7 +114,7 @@ const MyPageInfo = () => {
         );
       }
       await userApi
-        .myPages(userId, { newNickname: nickname, newProfileImage, newStatusMessage: statusMessage })
+        .myPages(userId, { newNickname, newProfileImage, newStatusMessage: statusMessage })
         .then(() => {
           dispatch(setUserInfo({ ...userMyInfo, profileImage: newProfileImage }));
         })
@@ -111,28 +122,32 @@ const MyPageInfo = () => {
     }
   };
 
-  const errorButtonStyle = isErrorButton ? "--error" : "";
-
   const MY_INFO = (() => {
     return [
       { title: "이메일", node: <Input value={email} disabled /> },
       {
         title: "닉네임",
         node: (
-          <div className={`${styles["info__profile-nickname"]} ${styles[errorButtonStyle]}`}>
+          <div className={styles["info__profile-nickname"]}>
             <Input
               placeholder="닉네임"
               name="nickname"
               value={nickname}
               onChange={handleUser}
-              error={error.nickname}
+              error={error.nickname || nicknameErrorMessage || isErrorButton}
               helperText={
-                error.nickname
-                  ? "공백을 제외한 2 ~ 10자의 닉네임을 입력할 수 있습니다."
+                isErrorButton
+                  ? "닉네임 중복검사를 해주세요!"
+                  : nicknameErrorMessage
+                  ? "중복된 닉네임 입니다."
+                  : error.nickname
+                  ? "공백과 특수문자를 제외한 2~10자의 닉네임을 입력할 수 있습니다."
+                  : myInfoData.nickname != nickname && isNicknameAuthentication
+                  ? "사용가능한 닉네임 입니다."
                   : `글자 수: ${length.nickname}/10`
               }
             />
-            <Button types="gray" onClick={onClickNickName} disabled={isNickanmeAuthentication}>
+            <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
               중복검사
             </Button>
           </div>
