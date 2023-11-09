@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import { ProfileConfig } from "@components/common/FriendProfile";
@@ -12,7 +12,13 @@ export interface SocialListType extends ProfileConfig {
   dailyPlannerDay: string;
 }
 
-const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname: string }) => {
+interface Props {
+  sort: "latest" | "popularity";
+  nickname: string;
+  scrollRef: RefObject<HTMLDivElement>;
+}
+
+const CardList = ({ sort, nickname, scrollRef }: Props) => {
   const userId = useAppSelector(selectUserId);
   const [list, setList] = useState<SocialListType[]>([]);
   const [load, setLoad] = useState(false);
@@ -58,6 +64,7 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
 
         if (pageNumber == response.totalPage) endRef.current = true;
         if (pageNumber == 1) {
+          scrollRef.current?.scrollTo({ left: 0, top: 0 });
           if (response.totalPage >= 2) setPageNumber(2);
           setList(response.socialList);
         } else setList((prev) => [...prev, ...response.socialList]);

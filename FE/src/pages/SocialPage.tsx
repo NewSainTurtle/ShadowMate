@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import CardList from "@components/social/CardList";
 import SocialHeader from "@components/social/SocialHeader";
@@ -8,6 +8,7 @@ const SocialPage = () => {
   const [order, setOrder] = useState<"latest" | "popularity">("latest");
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const debounceKeyword = useDebounce(searchKeyWord, 400);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className={styles["page-container"]}>
@@ -19,8 +20,8 @@ const SocialPage = () => {
           setOrder={setOrder}
         />
       </div>
-      <div className={styles["item-list"]}>
-        <CardList sort={order} nickname={debounceKeyword} />
+      <div ref={scrollRef} className={styles["item-list"]}>
+        <CardList sort={order} nickname={debounceKeyword} scrollRef={scrollRef} />
       </div>
     </div>
   );
