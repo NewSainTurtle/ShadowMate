@@ -2,8 +2,8 @@ import React from "react";
 import styles from "@styles/NotFound.module.scss";
 import Text from "@components/common/Text";
 import AuthButton from "@components/auth/AuthButton";
-import LogoLight from "@assets/Imgs/logo_light.svg";
-import LogoDark from "@assets/Imgs/logo_dark.svg";
+import logoLight from "@assets/Imgs/logo_light.svg";
+import logoDark from "@assets/Imgs/logo_dark.svg";
 import { useNavigate } from "react-router-dom";
 
 const NotFoundPage = () => {
@@ -21,7 +21,9 @@ const NotFoundPage = () => {
         MATE
       </p>
       <div className={styles["contents"]}>
-        <div className={styles["logo"]}>{theme === "dark" ? <LogoDark /> : <LogoLight />}</div>
+        <div className={styles["logo"]}>
+          <img src={theme === "dark" ? logoDark : logoLight} alt="logo" />
+        </div>
         <span>page not found !</span>
         <div>
           <Text>

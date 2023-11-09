@@ -35,7 +35,7 @@ module.exports = {
         test: /\.svg$/,
         use: [
           {
-            loader: "@svgr/webpack",
+            loader: "file-loader",
             options: {
               name: "Imgs/[name].[ext]?[hash]",
             },
