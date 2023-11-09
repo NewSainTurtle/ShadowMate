@@ -1,15 +1,15 @@
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import WeekList from "@components/planner/week/list/WeekList";
 import WeekTodo from "@components/planner/week/todo/WeekTodo";
 import Text from "@components/common/Text";
+import Loading from "@components/common/Loading";
 import FriendProfile from "@components/common/FriendProfile";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
-import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
-import Loading from "@components/common/Loading";
 import { selectFriendId, selectFriendInfo } from "@store/friendSlice";
 
 const Week = () => {
@@ -21,7 +21,7 @@ const Week = () => {
   const dayList = useAppSelector(selectDayList);
   const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt(week);
-  const [isMine, setIsMine] = useState<boolean>(useId === friendId);
+  const [isMine, setIsMine] = useState<boolean>(userId === friendId);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleButton = (to: string) => {
