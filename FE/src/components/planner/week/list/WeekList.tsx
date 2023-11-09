@@ -47,6 +47,7 @@ const WeekList = ({ idx, isMine }: Props) => {
 
   useEffect(() => {
     setDailyTodos(dayList[idx].dailyTodos || []);
+    setRetrospection(dayList[idx].retrospection || "");
   }, [dayList]);
 
   return (
