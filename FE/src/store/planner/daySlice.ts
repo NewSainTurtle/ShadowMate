@@ -54,11 +54,17 @@ const daySlice = createSlice({
   name: "plannerDay",
   initialState,
   reducers: {
+    setDate: (state, action: PayloadAction<dayConfig["date"]>) => {
+      state.date = action.payload;
+    },
     setDayInfo: (state, action: PayloadAction<dayConfig["info"]>) => {
       state.info = action.payload;
     },
-    setDate: (state, action: PayloadAction<dayConfig["date"]>) => {
-      state.date = action.payload;
+    setDayLike: (state, action: PayloadAction<boolean>) => {
+      const isLike = action.payload;
+      if (isLike) state.info.likeCount += 1;
+      else state.info.likeCount -= 1;
+      state.info.like = isLike;
     },
     setTodoItem: (state, action: PayloadAction<dayConfig["todoItem"]>) => {
       state.todoItem = action.payload;
@@ -82,8 +88,8 @@ const daySlice = createSlice({
 
 export const BASIC_TODO_ITEM = initialState.todoItem!;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
-export const { setDayInfo, setDate, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
-export const selectDate = (state: rootState) => state.day.date;
+export const { setDate, setDayInfo, setDayLike, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
+export const selectDayDate = (state: rootState) => state.day.date;
 export const selectDayInfo = (state: rootState) => state.day.info;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;
 export const selectTodoList = (state: rootState) => state.day.info.dailyTodos;

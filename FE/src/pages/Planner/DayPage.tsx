@@ -5,7 +5,7 @@ import TimeTable from "@components/planner/day/todo/TimeTable";
 import TodoList from "@components/planner/day/todo/TodoList";
 import Ment from "@components/planner/day/Ment";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate, selectTodoList, setDayInfo } from "@store/planner/daySlice";
+import { selectDayDate, selectTodoList, setDayInfo } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
@@ -22,7 +22,7 @@ const DayPage = () => {
   const userId = useAppSelector(selectUserId);
   let friendUserId = useAppSelector(selectFriendId);
   friendUserId = friendUserId != 0 ? friendUserId : userId;
-  const date = useAppSelector(selectDate);
+  const date = useAppSelector(selectDayDate);
   const todoList = useAppSelector(selectTodoList);
   const [ment, setMent] = useState({
     todayGoal: "",
@@ -52,8 +52,8 @@ const DayPage = () => {
             plannerAccessScope: response.plannerAccessScope,
             dday: response.dday,
             like: response.like,
-            shareSocial: response.shareSocial,
             likeCount: response.likeCount,
+            shareSocial: response.shareSocial,
             dailyTodos: response.dailyTodos || [],
           }),
         );
@@ -62,7 +62,7 @@ const DayPage = () => {
           todayGoal: response.todayGoal || "",
           tomorrowGoal: response.tomorrowGoal || "",
         });
-        setRetrospectionImage(response.retrospectionImage.toString());
+        setRetrospectionImage(response.retrospectionImage);
         setTotalTime({ studyTimeHour: response.studyTimeHour, studyTimeMinute: response.studyTimeMinute });
       })
       .catch((err) => console.error(err));

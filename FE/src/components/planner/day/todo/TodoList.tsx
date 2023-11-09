@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { BASIC_TODO_ITEM, setTodoList, selectTodoList, selectDate } from "@store/planner/daySlice";
+import { BASIC_TODO_ITEM, setTodoList, selectTodoList, selectDayDate } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
 import TodoItemChoice from "./TodoItemChoice";
 import { plannerApi } from "@api/Api";
@@ -15,7 +15,7 @@ interface Props {
 const TodoList = ({ clicked }: Props) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const date = useAppSelector(selectDate);
+  const date = useAppSelector(selectDayDate);
   const todoArr = useAppSelector(selectTodoList);
   const listSize = 11;
   const todoListSize = useMemo(() => {

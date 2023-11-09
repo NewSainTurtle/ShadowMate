@@ -37,7 +37,6 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
     if (state != 0) dispatch(setFollowState(state));
     if (types == "기본") {
       userApi.searches(userId, { nickname }).then((res) => {
-        console.log("type", type, res.data.data.isFollow);
         if (res.data.data.isFollow == "EMPTY") setType("아이콘");
         else setType("기본");
       });
