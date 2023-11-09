@@ -152,7 +152,6 @@ const DayPage = () => {
 
   return (
     <div ref={screenDivRef} className={styles["page-container"]} key={date}>
-      <Alert types="other" open={alertSuccess} onClose={handleSuccessClose} message="공유 되었습니다." />
       <Header isFriend={userId != friendUserId} socialClick={handleDownload} />
       <div className={`${styles["page-content"]} ${isFriend ? styles["--friend"] : ""}`}>
         <Ment
