@@ -1,0 +1,48 @@
+$color-text: var(--color-text);
+$color-background: var(--color-background);
+$color-scroll: var(--color-scroll);
+$color-gray-4: var(--color-gray-4);
+
+.container {
+  display: grid;
+  place-content: center;
+  height: 100%;
+}
+
+.title {
+  text-align: center;
+  margin-top: 0;
+  font: {
+    family: Sansita;
+    size: 3rem;
+    style: italic;
+    weight: 800;
+  }
+}
+
+.contents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5em;
+  margin-bottom: 3em;
+  > span:nth-child(2) {
+    font: {
+      family: Sansita;
+      size: 2rem;
+      style: italic;
+      weight: 600;
+    }
+  }
+  > div:nth-child(3) {
+    text-align: center;
+    color: $color-gray-4;
+  }
+}
+
+.logo {
+  > svg {
+    width: 10em;
+    height: 10em;
+  }
+}
