@@ -7,13 +7,13 @@ import { Avatar } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import { useNavigate } from "react-router-dom";
-import { setFriendDate, setFriendInfo } from "@store/friendSlice";
+import { setFriendInfo } from "@store/friendSlice";
 import { setDate } from "@store/planner/daySlice";
 
 interface Props {
   item: SocialListType;
   idx: number;
-  handleDelete: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, idx: number, socialId: number) => void;
+  handleDelete: (idx: number, socialId: number) => void;
 }
 
 const SocialProfile = ({ idx, item, handleDelete }: Props) => {
@@ -40,7 +40,7 @@ const SocialProfile = ({ idx, item, handleDelete }: Props) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["social-profile__button"]} onClick={(e) => handleDelete(e, idx, socialId)}>
+      <div className={styles["social-profile__button"]} onClick={() => handleDelete(idx, socialId)}>
         {mine && (
           <div>
             <DeleteOutline />
