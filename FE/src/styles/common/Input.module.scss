@@ -2,6 +2,7 @@ $color-border: 1px solid var(--color-gray-3);
 $color-text-placeholder: var(--color-gray-4);
 $color-text: var(--color-text);
 $color-icon: var(--color-gray-5);
+$color-background: var(--color-background);
 
 input__underline {
   border-bottom: $color-border;
@@ -20,6 +21,11 @@ input__underline {
 
     &::placeholder {
       color: $color-text-placeholder;
+    }
+
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 100px $color-background inset;
+      -webkit-text-fill-color: $color-text;
     }
   }
 

@@ -7,7 +7,8 @@ import { Box, Stack } from "@mui/material";
 const AuthHeader = () => {
   const navigate = useNavigate();
   const onClickBtn = () => {
-    navigate(-1);
+    if (location.pathname == "/signup") navigate("/login");
+    else navigate("/");
   };
 
   return (

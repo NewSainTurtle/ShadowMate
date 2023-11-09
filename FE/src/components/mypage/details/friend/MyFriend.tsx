@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import { followerType, followingType, followRequestType } from "@util/friend.interface";
 import { useAppSelector } from "@hooks/hook";
@@ -14,7 +14,7 @@ const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색"
   const [followingData, setFollowingData] = useState<followingType[]>([]); // 내 팔로잉
   const followState: boolean = useAppSelector(selectFollowState);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     switch (title) {
       case "팔로워":
         followApi
