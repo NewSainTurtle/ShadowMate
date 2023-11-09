@@ -47,7 +47,6 @@ const DayPage = () => {
       .daily(friendUserId, { date: day })
       .then((res) => {
         const response = res.data.data;
-        console.log(response);
         dispatch(
           setDayInfo({
             plannerAccessScope: response.plannerAccessScope,

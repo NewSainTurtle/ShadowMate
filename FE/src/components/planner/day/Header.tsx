@@ -7,7 +7,7 @@ import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { setDate, selectDayDate, selectDayInfo } from "@store/planner/daySlice";
+import { setDate, selectDayDate, selectDayInfo, setDayLike } from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
@@ -17,27 +17,25 @@ dayjs.locale("ko");
 
 const FriendHeader = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const date = useAppSelector(selectDayDate);
   const friendUserId = useAppSelector(selectFriendInfo).userId;
   const { likeCount, like } = useAppSelector(selectDayInfo);
-  const [heartNum, setHeartNum] = useState(likeCount);
-  const [isHeartClick, setIsHeartClick] = useState(like);
   const friendInfo = useAppSelector(selectFriendInfo);
 
   function heartClick() {
-    if (isHeartClick) {
+    if (like) {
       plannerApi
         .cancelLikes(friendUserId, { date })
-        .then(() => setHeartNum(heartNum - 1))
+        .then(() => dispatch(setDayLike(false)))
         .catch((err) => console.error(err));
     } else {
       plannerApi
         .likes(friendUserId, { date, anotherUserId: userId })
-        .then(() => setHeartNum(heartNum + 1))
+        .then(() => dispatch(setDayLike(true)))
         .catch((err) => console.error(err));
     }
-    setIsHeartClick(!isHeartClick);
   }
 
   function weekClick() {
@@ -45,11 +43,11 @@ const FriendHeader = () => {
   }
 
   return (
-    <div className={`${styles["planner-header__friend"]} ${isHeartClick && styles["button__visit"]}`}>
+    <div className={`${styles["planner-header__friend"]} ${like ? styles["button__visit"] : ""}`}>
       <div>
-        <div className={`${isHeartClick && styles["button__visit"]}`}>
+        <div className={`${like ? styles["button__visit"] : ""}`}>
           <Button types="red" onClick={() => heartClick()}>
-            ♥ {heartNum}
+            ♥ {likeCount}
           </Button>
         </div>
         <Button types="gray" onClick={() => weekClick()}>
