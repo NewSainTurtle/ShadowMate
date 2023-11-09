@@ -15,11 +15,11 @@ const NotFoundPage = () => {
 
   return (
     <div className={styles["container"]}>
-      <p className={styles["title"]}>
+      <span className={styles["title"]}>
         SHADOW
         <br />
         MATE
-      </p>
+      </span>
       <div className={styles["contents"]}>
         <div className={styles["logo"]}>
           <img src={theme === "dark" ? logoDark : logoLight} alt="logo" />

@@ -5,6 +5,7 @@ $color-gray-4: var(--color-gray-4);
 
 .container {
   display: grid;
+  row-gap: 3em;
   place-content: center;
   height: 100%;
 }
@@ -25,7 +26,6 @@ $color-gray-4: var(--color-gray-4);
   flex-direction: column;
   align-items: center;
   gap: 1.5em;
-  margin-bottom: 3em;
   > span:nth-child(2) {
     font: {
       family: Sansita;
