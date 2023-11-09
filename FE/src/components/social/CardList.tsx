@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import { ProfileConfig } from "@components/common/FriendProfile";
@@ -22,7 +22,7 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
   const obsRef = useRef(null);
 
   // 무한 스크롤
-  useEffect(() => {
+  useLayoutEffect(() => {
     preventRef.current = false;
     endRef.current = false;
     setPageNumber(1);
@@ -43,7 +43,7 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (pageNumber != 1) getPost(pageNumber);
   }, [pageNumber]);
 
@@ -80,7 +80,6 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
 
   // 내 공유 플래너 삭제
   const handleDelete = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, idx: number, socialId: number) => {
-    e.stopPropagation();
     socialApi
       .delete(userId, socialId)
       .then(() => {
@@ -98,7 +97,7 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
       ) : (
         <>
           {list.map((social, idx) => (
-            <CardItem key={social.socialId + idx} idx={idx} item={social} handleDelete={handleDelete} />
+            <CardItem key={idx.toString() + social.socialId} idx={idx} item={social} handleDelete={handleDelete} />
           ))}
         </>
       )}

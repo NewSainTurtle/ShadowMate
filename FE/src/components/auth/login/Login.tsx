@@ -78,17 +78,17 @@ const Login = () => {
     const token = getCookie("token");
     const id = getCookie("userId");
     if (token && id) {
+      dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
+      dispatch(setIsGoogle(true));
+      deleteCookie("token");
+      deleteCookie("userId");
       userApi
         .getProfiles(parseInt(id))
         .then((res) => {
-          dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
           dispatch(setUserInfo(res.data.data));
-          dispatch(setIsGoogle(true));
           navigator("/month");
         })
         .catch((err) => console.log(err));
-      deleteCookie("token");
-      deleteCookie("userId");
     }
   }, [document.cookie]);
 

@@ -81,11 +81,11 @@ const commonPage = () => {
       <div>
         <div onClick={() => setAlertSuccess(true)}>
           <Text>Alert-Success 열기</Text>
-          <Alert types="success" open={alertSuccess} onClose={handleSuccessClose} />
+          <Alert types="success" open={alertSuccess} onClose={handleSuccessClose} message="성공" />
         </div>
         <div onClick={() => setAlertError(true)}>
           <Text>Alert-Error 열기</Text>
-          <Alert types="error" open={alertError} onClose={handleErrorClose} />
+          <Alert types="error" open={alertError} onClose={handleErrorClose} message="실패" />
         </div>
       </div>
     </>

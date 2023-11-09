@@ -19,6 +19,8 @@ import Modal from "@components/common/Modal";
 import TokenExpiration from "@components/common/Modal/TokenExpiration";
 import { selectModal, setModalClose } from "@store/modalSlice";
 import { persistor } from "@hooks/configStore";
+import { selectAlertInfo, setAlertClose } from "@store/alertSlice";
+import Alert from "@components/common/Alert";
 
 const theme = createTheme({
   typography: {
@@ -33,6 +35,7 @@ const App = () => {
   const [pathName, setPathName] = useState(false);
   const isLogin = useAppSelector(selectLoginState);
   const { isOpen } = useAppSelector(selectModal);
+  const { type, message, open } = useAppSelector(selectAlertInfo);
 
   const handleTokenExpiration = () => {
     dispatch(setModalClose());
@@ -99,6 +102,7 @@ const App = () => {
           <Route path="/common" element={<CommonPage />} />
         </Routes>
       </div>
+      <Alert types={type} open={open} onClose={() => dispatch(setAlertClose())} message={message} />
     </ThemeProvider>
   );
 };
