@@ -70,19 +70,19 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         .searches(userId, { nickname: searchKeyWord })
         .then((res) => {
           const response = res.data.data;
+          if (response.userId == null) {
+            setSearchFriend([]);
+            setAlertMessage("일치하는 닉네임을 찾을 수 없습니다.");
+            return;
+          }
+
           const isFollow = (() => {
             if (userId == response.userId) return "";
             return typeToFollow(response.isFollow);
           })();
           setSearchFriend([{ ...response, isFollow }]);
         })
-        .catch((err) => {
-          const response = err.response.data;
-          if (response.code == "NOT_FOUND_NICKNAME") {
-            setSearchFriend([]);
-            setAlertMessage("일치하는 닉네임을 찾을 수 없습니다.");
-          } else console.error(err);
-        });
+        .catch((err) => console.error(err));
   }, [debounceKeyword, followState]);
 
   const friendCheck = (friend: MyFriendListType) => {

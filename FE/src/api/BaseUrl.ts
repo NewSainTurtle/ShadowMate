@@ -14,7 +14,7 @@ interface apiInterface {
     join: () => string; // 회원가입
     login: () => string; // 로그인
     googleLogin: () => string; // 구글 로그인
-    nickname: () => string; // 닉네임 중복검사
+    nickname: () => string; // 닉네임 중복검사, 삭제
     emailAuthentication: () => string; // 이메일 인증 (+중복검사)
     emailAuthenticationCheck: () => string; // 이메일 인증 - 응답
   };
@@ -45,7 +45,7 @@ interface apiInterface {
     todayGoals: (userId: number) => string; // 오늘의 다짐 편집
     tomorrowGoals: (userId: number) => string; // 내일의 다짐 편집
     retrospectionImages: (userId: number) => string; // 오늘의 회고 사진 업로드
-    social: (userId: number) => string; // 소설 공유 , 재공유
+    social: (userId: number) => string; // 소셜 공유, 재공유
   };
   setting: {
     accessScopes: (userId: number) => string; // 플래너 공개 여부

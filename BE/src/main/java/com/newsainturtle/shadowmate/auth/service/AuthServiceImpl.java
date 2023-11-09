@@ -110,6 +110,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void deleteCheckNickname(DuplicatedNicknameRequest duplicatedNicknameRequest) {
+        redisServiceImpl.deleteNicknameData(duplicatedNicknameRequest.getNickname());
+    }
+
+    @Override
     @Transactional
     public void join(final JoinRequest joinRequest) {
         String email = joinRequest.getEmail();
