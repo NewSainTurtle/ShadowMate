@@ -52,7 +52,6 @@ const MonthPage = () => {
     userApi
       .getProfiles(userId)
       .then((res) => {
-        console.log(userId, res.data.data);
         dispatch(setUserInfo(res.data.data));
       })
       .catch((err) => console.log(err));
