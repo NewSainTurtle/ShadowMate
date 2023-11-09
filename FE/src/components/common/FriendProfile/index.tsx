@@ -3,7 +3,7 @@ import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { Avatar } from "@mui/material";
-import { followApi } from "@api/Api";
+import { followApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { followType } from "@util/friend.interface";
@@ -24,15 +24,23 @@ interface Props {
 
 interface ProfileButtonProps extends Omit<Props, "profile"> {
   profileId: number;
+  nickname: string;
 }
 
-const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
+const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const [state, setState] = useState(0);
+  const [type, setType] = useState(types);
 
   useEffect(() => {
     if (state != 0) dispatch(setFollowState(state));
+    if (types == "기본") {
+      userApi.searches(userId, { nickname }).then((res) => {
+        if (res.data.data.isFollow == "EMPTY") setType("아이콘");
+        else setType("기본");
+      });
+    }
   }, [state]);
 
   const handleClick = (() => {
@@ -121,7 +129,7 @@ const ProfileButton = ({ profileId, types }: ProfileButtonProps) => {
         <PersonAddIcon />
       </div>
     ),
-  }[types];
+  }[type];
 };
 
 const FriendProfile = ({ types, profile }: Props) => {
@@ -145,7 +153,9 @@ const FriendProfile = ({ types, profile }: Props) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["fprofile_button"]}>{<ProfileButton profileId={userId} types={types} />}</div>
+      <div className={styles["fprofile_button"]}>
+        {<ProfileButton types={types} profileId={userId} nickname={nickname} />}
+      </div>
     </div>
   );
 };

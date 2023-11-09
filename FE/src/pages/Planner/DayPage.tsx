@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Header from "@components/planner/day/Header";
 import styles from "@styles/planner/day.module.scss";
 import TimeTable from "@components/planner/day/todo/TimeTable";
@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import html2canvas from "html2canvas";
 import Alert from "@components/common/Alert";
@@ -41,19 +41,20 @@ const DayPage = () => {
 
   const handleSuccessClose = () => setAlertSuccess(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const day = dayjs(date).format("YYYY-MM-DD");
     plannerApi
       .daily(friendUserId, { date: day })
       .then((res) => {
         const response = res.data.data;
+        console.log(response);
         dispatch(
           setDayInfo({
             plannerAccessScope: response.plannerAccessScope,
             dday: response.dday,
             like: response.like,
-            shareSocial: response.shareSocial,
             likeCount: response.likeCount,
+            shareSocial: response.shareSocial,
             dailyTodos: response.dailyTodos || [],
           }),
         );
@@ -127,21 +128,19 @@ const DayPage = () => {
 
   const handleDownload = async () => {
     if (!screenDivRef.current) return;
-
-    const div = screenDivRef.current;
-    const canvas = await html2canvas(div, { logging: false });
-    canvas.toBlob(async (blob) => {
-      if (blob != null) {
-        const file = blob;
-        const storageRef = ref(firebaseStorage, `/social/${userId + "_" + date}`);
-        await uploadBytes(storageRef, file).then((snapshot) =>
-          getDownloadURL(snapshot.ref).then(
-            async (downloadURL) =>
-              await plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
-          ),
-        );
-        setAlertSuccess(true);
-      }
+    await html2canvas(screenDivRef.current, {
+      logging: false,
+      allowTaint: true,
+      useCORS: true,
+    }).then(async (canvas) => {
+      const imageURL = canvas.toDataURL("image/png");
+      const storageRef = ref(firebaseStorage, `/social/${userId + "_" + date}`);
+      uploadString(storageRef, imageURL, "data_url").then((snapshot) =>
+        getDownloadURL(snapshot.ref).then((downloadURL) =>
+          plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
+        ),
+      );
+      setAlertSuccess(true);
     });
   };
 

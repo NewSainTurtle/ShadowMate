@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import { useNavigate } from "react-router-dom";
 import { setFriendDate, setFriendInfo } from "@store/friendSlice";
+import { setDate } from "@store/planner/daySlice";
 
 interface Props {
   item: SocialListType;
@@ -19,29 +20,29 @@ const SocialProfile = ({ idx, item, handleDelete }: Props) => {
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
   const userName = useAppSelector(selectUserInfo).nickname;
-  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
-  const mine = user.nickname == userName;
-  const { profileImage, statusMessage, nickname } = user;
+  const { socialId, socialImage, dailyPlannerDay, ...friend } = item;
+  const mine = userName == friend.nickname;
+  const { profileImage, statusMessage, nickname } = friend;
 
   const handleClickProfile = () => {
-    dispatch(setFriendInfo(user));
+    dispatch(setFriendInfo(friend));
     navigator("/month");
   };
 
   return (
-    <div className={styles["social-profile__container"]} onClick={handleClickProfile}>
-      <div className={styles["social-profile__img"]}>
+    <div className={styles["social-profile__container"]}>
+      <div className={styles["social-profile__img"]} onClick={handleClickProfile}>
         <Avatar src={profileImage} />
       </div>
-      <div className={styles["social-profile__content"]}>
+      <div className={styles["social-profile__content"]} onClick={handleClickProfile}>
         <Text types="semi-medium" bold>
           {nickname}
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["social-profile__button"]}>
+      <div className={styles["social-profile__button"]} onClick={(e) => handleDelete(e, idx, socialId)}>
         {mine && (
-          <div onClick={(e) => handleDelete(e, idx, socialId)}>
+          <div>
             <DeleteOutline />
           </div>
         )}
@@ -56,7 +57,7 @@ const CardItem = ({ idx, item, handleDelete }: Props) => {
   const { socialId, socialImage, dailyPlannerDay, ...user } = item;
 
   const handleClickImage = () => {
-    dispatch(setFriendDate(dailyPlannerDay));
+    dispatch(setDate(dailyPlannerDay));
     dispatch(setFriendInfo(user));
     navigator("/day");
   };
