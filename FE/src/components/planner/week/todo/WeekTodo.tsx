@@ -7,11 +7,16 @@ import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppSelector } from "@hooks/hook";
 import { selectWeeklyTodos } from "@store/planner/weekSlice";
 
-const WeekTodo = () => {
+interface Props {
+  isMine: boolean;
+}
+
+const WeekTodo = ({ isMine }: Props) => {
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
+  const friend = isMine ? "" : "--friend";
 
   return (
-    <div className={styles["todo"]}>
+    <div className={styles[`todo${friend}`]}>
       <div className={styles["item__title"]}>
         <Text>주차별 할 일</Text>
       </div>
@@ -22,7 +27,7 @@ const WeekTodo = () => {
         {weeklyTodos.map((item: WeekTodoItemConfig, idx: number) => {
           return <WeekTodoItem key={item.weeklyTodoId} id={item.weeklyTodoId} idx={idx} item={item} />;
         })}
-        <WeekTodoInput />
+        {isMine && <WeekTodoInput />}
       </div>
     </div>
   );

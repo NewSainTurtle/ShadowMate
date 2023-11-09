@@ -145,6 +145,11 @@ $border: 1px;
     text-overflow: ellipsis;
     cursor: pointer;
   }
+
+  &--friend {
+    @extend .todo;
+    pointer-events: none;
+  }
 }
 
 .item {
@@ -245,6 +250,11 @@ $border: 1px;
         &.item__todo-item > svg {
           visibility: visible;
         }
+      }
+
+      &--friend {
+        @extend .item__todo-item;
+        pointer-events: none;
       }
     }
   }

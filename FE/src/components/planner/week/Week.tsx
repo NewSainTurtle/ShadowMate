@@ -86,8 +86,8 @@ const Week = () => {
         )}
       </div>
       <div className={styles["week__list"]}>
-        <WeekTodo />
-        {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} key={key} />)}
+        <WeekTodo isMine={isMine} />
+        {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} isMine={isMine} key={key} />)}
       </div>
     </div>
   );

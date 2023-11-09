@@ -14,12 +14,13 @@ import { DeleteOutlined } from "@mui/icons-material";
 interface Props {
   idx: number;
   item: TodoConfig;
+  isMine: boolean;
   date: string;
   dailyTodos: TodoConfig[];
   setDailyTodos: Dispatch<SetStateAction<TodoConfig[]>>;
 }
 
-const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
+const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props) => {
   const userId = useAppSelector(selectUserId);
   const [Modalopen, setModalOpen] = useState(false);
   const handleClose = () => setModalOpen(false);
@@ -28,6 +29,7 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
     oldTodo: "",
   });
   const { updateTodo, deleteTodo } = todoModule(dailyTodos, setDailyTodos);
+  const friend = isMine ? "" : "--friend";
 
   const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -118,7 +120,7 @@ const WeekItem = ({ idx, item, date, dailyTodos, setDailyTodos }: Props) => {
 
   return (
     <>
-      <div className={styles["item__todo-item"]}>
+      <div className={styles[`item__todo-item${friend}`]}>
         <div onClick={() => setModalOpen(!Modalopen)}>
           <span>{item.category?.categoryEmoticon || ""}</span>
         </div>
