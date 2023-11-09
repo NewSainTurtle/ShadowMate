@@ -281,5 +281,10 @@ $border: 1px;
         color: $color-gray-4;
       }
     }
+
+    &--friend {
+      @extend .item__memo;
+      pointer-events: none;
+    }
   }
 }

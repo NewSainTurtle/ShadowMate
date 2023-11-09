@@ -26,6 +26,7 @@ const WeekList = ({ idx, isMine }: Props) => {
   const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos || []);
   const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection || "");
   const copyDayList = useMemo(() => JSON.parse(JSON.stringify(dayList)), [dayList]);
+  const friend = isMine ? "" : "--friend";
   const itemMaxLength = isMine ? 4 : 5;
   const rowMaxLength = isMine ? dailyTodos.length + 1 : dailyTodos.length;
 
@@ -49,7 +50,7 @@ const WeekList = ({ idx, isMine }: Props) => {
   }, [dayList]);
 
   return (
-    <div className={styles[`item`]}>
+    <div className={styles["item"]}>
       <div className={styles["item__title"]}>
         <Text>{dateFormat(date)}</Text>
         <Dday nearDate={nearDate} comparedDate={dateFormat(date)} />
@@ -68,7 +69,7 @@ const WeekList = ({ idx, isMine }: Props) => {
         ))}
         {isMine && <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />}
       </div>
-      <div className={`${styles["item__memo"]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
+      <div className={`${styles[`item__memo${friend}`]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
         <textarea
           value={retrospection}
           placeholder="💡 오늘의 회고를 입력하세요."
