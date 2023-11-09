@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --watchAll",
     "analyze": "webpack --analyze --config config/webpack.prod.js",
-    "build": "webpack --config config/webpack.prod.js",
+    "build": "GENERATE_SOURCEMAP=false webpack --config config/webpack.prod.js",
     "start": "webpack-dev-server --progress --config config/webpack.dev.js",
     "format": "prettier --cache --write .",
     "cypress": "cypress open"
