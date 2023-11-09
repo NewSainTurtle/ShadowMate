@@ -1,6 +1,7 @@
 import baseAxios from "axios";
 import { store } from "@hooks/configStore";
 import { setModalOpen } from "@store/modalSlice";
+import { setAlertOpen } from "@store/alertSlice";
 
 export const baseURL = process.env.REACT_APP_API_URL;
 
@@ -24,6 +25,9 @@ Axios.interceptors.request.use(
 
 Axios.interceptors.response.use(
   (res) => {
+    if (res.status === 202) {
+      store.dispatch(setAlertOpen({ type: "success", message: res.data.message }));
+    }
     return res;
   },
   (err) => {
