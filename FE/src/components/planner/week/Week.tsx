@@ -81,7 +81,7 @@ const Week = () => {
         </div>
         {!isMine && (
           <div>
-            <FriendProfile types="아이콘" profile={friendInfo} />
+            <FriendProfile types="기본" profile={friendInfo} />
           </div>
         )}
       </div>
