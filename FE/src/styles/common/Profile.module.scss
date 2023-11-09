@@ -1,3 +1,4 @@
+$color-background: var(--color-background);
 $color-gray_1: var(--color-gray-1);
 $color-gray_3: var(--color-gray-3);
 $color-blue: var(--color-btn-blue);
@@ -75,7 +76,7 @@ $color-white: var(--color-white);
     margin-right: 0.8em;
     border: none;
     border-radius: 0.625rem;
-    background-color: $color-white;
+    background-color: $color-background;
     cursor: pointer;
   }
   > div {
@@ -84,7 +85,7 @@ $color-white: var(--color-white);
     position: relative;
     border: none;
     border-radius: 50%;
-    background-color: $color-white;
+    background-color: $color-background;
     cursor: pointer;
     > svg {
       position: absolute;
