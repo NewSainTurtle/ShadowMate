@@ -7,25 +7,35 @@ import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { setDate, selectDate, selectDayInfo } from "@store/planner/daySlice";
+import { setDate, selectDayDate, selectDayInfo, setDayLike } from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
+import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 dayjs.locale("ko");
 
 const FriendHeader = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
+  const date = useAppSelector(selectDayDate);
+  const friendUserId = useAppSelector(selectFriendInfo).userId;
   const { likeCount, like } = useAppSelector(selectDayInfo);
-  const [heartNum, setHeartNum] = useState(likeCount);
-  const [isHeartClick, setIsHeartClick] = useState(like);
   const friendInfo = useAppSelector(selectFriendInfo);
 
   function heartClick() {
-    setIsHeartClick(!isHeartClick);
-    if (isHeartClick) setHeartNum(heartNum - 1);
-    else setHeartNum(heartNum + 1);
+    if (like) {
+      plannerApi
+        .cancelLikes(friendUserId, { date })
+        .then(() => dispatch(setDayLike(false)))
+        .catch((err) => console.error(err));
+    } else {
+      plannerApi
+        .likes(friendUserId, { date, anotherUserId: userId })
+        .then(() => dispatch(setDayLike(true)))
+        .catch((err) => console.error(err));
+    }
   }
 
   function weekClick() {
@@ -33,11 +43,11 @@ const FriendHeader = () => {
   }
 
   return (
-    <div className={`${styles["planner-header__friend"]} ${isHeartClick && styles["button__visit"]}`}>
+    <div className={`${styles["planner-header__friend"]} ${like ? styles["button__visit"] : ""}`}>
       <div>
-        <div className={`${isHeartClick && styles["button__visit"]}`}>
+        <div className={`${like ? styles["button__visit"] : ""}`}>
           <Button types="red" onClick={() => heartClick()}>
-            ♥ {heartNum}
+            ♥ {likeCount}
           </Button>
         </div>
         <Button types="gray" onClick={() => weekClick()}>
@@ -85,7 +95,7 @@ interface Props {
 
 const Header = ({ isFriend, socialClick }: Props) => {
   const dispatch = useAppDispatch();
-  const date = useAppSelector(selectDate);
+  const date = useAppSelector(selectDayDate);
   const { dday: nearDate } = useAppSelector(selectDayInfo);
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
 

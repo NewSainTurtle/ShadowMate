@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDate, selectTodoItem, selectTodoList, setTimeTable, BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import {
+  selectDayDate,
+  selectTodoItem,
+  selectTodoList,
+  setTimeTable,
+  BASIC_CATEGORY_ITEM,
+} from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -29,7 +35,7 @@ interface tableTimeType {
 const TimeTable = ({ clicked, setClicked }: Props) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const date = useAppSelector(selectDate);
+  const date = useAppSelector(selectDayDate);
   const selectItem: TodoConfig = useAppSelector(selectTodoItem);
   const [todoId, categoryColorCode] = [
     selectItem.todoId,

@@ -8,7 +8,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { plannerApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { selectDate } from "@store/planner/daySlice";
+import { selectDayDate } from "@store/planner/daySlice";
 
 interface fileImgProps {
   retrospectionImage: string | null;
@@ -30,7 +30,7 @@ interface Props {
 
 const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) => {
   const userId = useAppSelector(selectUserId);
-  const date = useAppSelector(selectDate);
+  const date = useAppSelector(selectDayDate);
 
   const saveImage = async (imageUrl: string | null) => {
     await plannerApi
