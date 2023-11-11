@@ -54,7 +54,7 @@ const App = () => {
   }, []);
 
   useLayoutEffect(() => {
-    setPathName(["/", "/login", "/signup"].includes(location.pathname));
+    setPathName(["/day", "/week", "/month", "/social", "/mypage"].includes(location.pathname));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      {!pathName && <Header />}
+      {pathName && <Header />}
       {isLogin && (
         <Modal
           types="oneBtn"
@@ -81,7 +81,7 @@ const App = () => {
           <TokenExpiration />
         </Modal>
       )}
-      <div id="App" style={pathName ? {} : { marginLeft: "10em" }}>
+      <div id="App" style={!pathName ? {} : { marginLeft: "10em" }}>
         <Routes>
           <Route element={<PrivateRoute isLogin={isLogin} option={false} />}>
             <Route path="/" element={<LandingPage />} />
