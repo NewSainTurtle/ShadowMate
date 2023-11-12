@@ -22,6 +22,7 @@ const Week = () => {
   const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt(week);
   const [isMine, setIsMine] = useState<boolean>(userId === friendId);
+  const [retroClick, setRetroClick] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleButton = (to: string) => {
@@ -96,7 +97,9 @@ const Week = () => {
       ) : (
         <div className={styles["week__list"]}>
           <WeekTodo isMine={isMine} />
-          {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} isMine={isMine} key={key} />)}
+          {dayList?.map((today: DayListConfig, key: number) => (
+            <WeekList key={key} idx={key} isMine={isMine} retroClick={retroClick} setRetroClick={setRetroClick} />
+          ))}
         </div>
       )}
     </div>

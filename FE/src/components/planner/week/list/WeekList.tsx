@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, Dispatch, SetStateAction } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
@@ -15,9 +15,11 @@ import dayjs from "dayjs";
 interface Props {
   idx: number;
   isMine: boolean;
+  retroClick: number;
+  setRetroClick: Dispatch<SetStateAction<number>>;
 }
 
-const WeekList = ({ idx, isMine }: Props) => {
+const WeekList = ({ idx, isMine, retroClick, setRetroClick }: Props) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const nearDate = useAppSelector(selectWeekDday);
@@ -26,9 +28,9 @@ const WeekList = ({ idx, isMine }: Props) => {
   const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos || []);
   const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection || "");
   const copyDayList = useMemo(() => JSON.parse(JSON.stringify(dayList)), [dayList]);
-  const friend = isMine ? "" : "--friend";
   const itemMaxLength = isMine ? 4 : 5;
   const rowMaxLength = isMine ? dailyTodos.length + 1 : dailyTodos.length;
+  const retroMaxLength = 100;
 
   const handleSaveRetrospection = () => {
     if (dayList[idx].retrospection === null && retrospection === "") return;
@@ -70,13 +72,21 @@ const WeekList = ({ idx, isMine }: Props) => {
         ))}
         {isMine && <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />}
       </div>
-      <div className={`${styles[`item__memo${friend}`]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
+      <div className={`${styles["item__memo"]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
         <textarea
+          disabled={!isMine}
           value={retrospection}
+          maxLength={retroMaxLength}
           placeholder="💡 오늘의 회고를 입력하세요."
+          onClick={() => setRetroClick(idx)}
           onChange={(e) => setRetrospection(e.target.value)}
           onBlur={handleSaveRetrospection}
         />
+        {isMine && idx === retroClick && (
+          <Text types="small">
+            ({retrospection.length}/{retroMaxLength}자)
+          </Text>
+        )}
       </div>
     </div>
   );

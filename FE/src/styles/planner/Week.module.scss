@@ -265,6 +265,7 @@ $border: 1px;
   }
 
   &__memo {
+    position: relative;
     > textarea {
       background: transparent;
       height: 100%;
@@ -282,9 +283,11 @@ $border: 1px;
       }
     }
 
-    &--friend {
-      @extend .item__memo;
-      pointer-events: none;
+    > span {
+      position: absolute;
+      bottom: 0.2em;
+      right: 0.2em;
+      color: $color-gray-4;
     }
   }
 }
