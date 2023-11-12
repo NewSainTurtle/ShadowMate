@@ -12,6 +12,7 @@ import alertReducer from "@store/alertSlice";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
+import { encryptTransform } from "redux-persist-transform-encrypt";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -27,6 +28,12 @@ const rootReducer = combineReducers({
 
 const persistConfig = {
   key: "root",
+  transforms: [
+    encryptTransform({
+      secretKey: process.env.REACT_APP_ENCRYPT_PRIVATE_KEY!,
+      onError: (err) => console.log(err),
+    }),
+  ],
   whitelist: ["auth", "category", "dday"],
   storage,
 };
