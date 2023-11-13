@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import Text from "@components/common/Text";
 import { SocialListType } from "@components/social/CardList";
@@ -55,6 +55,7 @@ const CardItem = ({ idx, item, handleDelete }: Props) => {
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
   const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleClickImage = () => {
     dispatch(setDate(dailyPlannerDay));
@@ -65,8 +66,9 @@ const CardItem = ({ idx, item, handleDelete }: Props) => {
   return (
     <div className={styles["card-item"]}>
       <div className={styles["card-item__image-box"]} onClick={handleClickImage}>
-        <img src={item.socialImage} />
+        <img src={item.socialImage} onLoad={() => setIsLoading(false)} />
       </div>
+      {isLoading && <div className={styles["skeleton-image"]} />}
       <div className={styles["card-item__profile"]}>
         <SocialProfile idx={idx} item={item} handleDelete={handleDelete} />
       </div>

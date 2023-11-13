@@ -1,7 +1,10 @@
 @use "@styles/common/Profile.module.scss";
 $color-background: var(--color-background);
 $color-text: var(--color-text);
+$color-gray_1: var(--color-gray-1);
+$color-gray_2: var(--color-gray-2);
 $color-gray_4: var(--color-gray-4);
+$color-gray_5: var(--color-gray-5);
 
 .page-container {
   height: 100vh;
@@ -93,22 +96,38 @@ $color-gray_4: var(--color-gray-4);
 }
 
 .card-item {
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2));
+  cursor: pointer;
+  position: relative;
 
-  &__image-box {
+  @keyframes loading {
+    50% {
+      background-color: $color-gray-2;
+    }
+  }
+
+  &__image-box,
+  .skeleton-image {
     width: 100%;
     height: 32vh;
     margin-top: 0.5em;
-    border-bottom: 2px solid var(--gray-color-gray-5, #656667);
+    background-color: $color-gray_1;
+    border-bottom: 1.5px solid $color-gray_4;
 
     > img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+  }
+
+  .skeleton-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: loading 2s infinite ease-in-out;
   }
 
   &__profile {
