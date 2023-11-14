@@ -145,6 +145,11 @@ $border: 1px;
     text-overflow: ellipsis;
     cursor: pointer;
   }
+
+  &--friend {
+    @extend .todo;
+    pointer-events: none;
+  }
 }
 
 .item {
@@ -246,6 +251,11 @@ $border: 1px;
           visibility: visible;
         }
       }
+
+      &--friend {
+        @extend .item__todo-item;
+        pointer-events: none;
+      }
     }
   }
 
@@ -255,6 +265,7 @@ $border: 1px;
   }
 
   &__memo {
+    position: relative;
     > textarea {
       background: transparent;
       height: 100%;
@@ -270,6 +281,13 @@ $border: 1px;
       &::placeholder {
         color: $color-gray-4;
       }
+    }
+
+    > span {
+      position: absolute;
+      bottom: 0.2em;
+      right: 0.2em;
+      color: $color-gray-4;
     }
   }
 }

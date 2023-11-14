@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, Dispatch, SetStateAction } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
@@ -14,9 +14,12 @@ import dayjs from "dayjs";
 
 interface Props {
   idx: number;
+  isMine: boolean;
+  retroClick: number;
+  setRetroClick: Dispatch<SetStateAction<number>>;
 }
 
-const WeekList = ({ idx }: Props) => {
+const WeekList = ({ idx, isMine, retroClick, setRetroClick }: Props) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const nearDate = useAppSelector(selectWeekDday);
@@ -25,6 +28,9 @@ const WeekList = ({ idx }: Props) => {
   const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos || []);
   const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection || "");
   const copyDayList = useMemo(() => JSON.parse(JSON.stringify(dayList)), [dayList]);
+  const itemMaxLength = isMine ? 4 : 5;
+  const rowMaxLength = isMine ? dailyTodos.length + 1 : dailyTodos.length;
+  const retroMaxLength = 100;
 
   const handleSaveRetrospection = () => {
     if (dayList[idx].retrospection === null && retrospection === "") return;
@@ -43,6 +49,7 @@ const WeekList = ({ idx }: Props) => {
 
   useEffect(() => {
     setDailyTodos(dayList[idx].dailyTodos || []);
+    setRetrospection(dayList[idx].retrospection || "");
   }, [dayList]);
 
   return (
@@ -51,19 +58,35 @@ const WeekList = ({ idx }: Props) => {
         <Text>{dateFormat(date)}</Text>
         <Dday nearDate={nearDate} comparedDate={dateFormat(date)} />
       </div>
-      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${dailyTodos.length + 1}, 20%` }}>
+      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, 20%` }}>
         {dailyTodos.map((item: TodoConfig, key: number) => (
-          <WeekItem key={key} idx={key} item={item} date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />
+          <WeekItem
+            key={key}
+            idx={key}
+            item={item}
+            isMine={isMine}
+            date={date}
+            dailyTodos={dailyTodos}
+            setDailyTodos={setDailyTodos}
+          />
         ))}
-        <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />
+        {isMine && <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />}
       </div>
-      <div className={`${styles["item__memo"]} ${dailyTodos?.length < 4 && styles["top_border"]}`}>
+      <div className={`${styles["item__memo"]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
         <textarea
+          disabled={!isMine}
           value={retrospection}
+          maxLength={retroMaxLength}
           placeholder="💡 오늘의 회고를 입력하세요."
+          onClick={() => setRetroClick(idx)}
           onChange={(e) => setRetrospection(e.target.value)}
           onBlur={handleSaveRetrospection}
         />
+        {isMine && idx === retroClick && (
+          <Text types="small">
+            ({retrospection.length}/{retroMaxLength}자)
+          </Text>
+        )}
       </div>
     </div>
   );

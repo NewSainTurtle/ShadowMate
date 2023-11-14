@@ -3,15 +3,14 @@ import styles from "@styles/planner/Week.module.scss";
 import WeekList from "@components/planner/week/list/WeekList";
 import WeekTodo from "@components/planner/week/todo/WeekTodo";
 import Text from "@components/common/Text";
+import Loading from "@components/common/Loading";
 import FriendProfile from "@components/common/FriendProfile";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
-import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
-import Loading from "@components/common/Loading";
 import { selectFriendId, selectFriendInfo } from "@store/friendSlice";
-
 
 const Week = () => {
   const dispatch = useAppDispatch();
@@ -22,9 +21,9 @@ const Week = () => {
   const dayList = useAppSelector(selectDayList);
   const [week, setWeek] = useState(new Date());
   const thisWeekCnt = getThisWeekCnt(week);
-  const [isMine, setIsMine] = useState<boolean>(true);
+  const [isMine, setIsMine] = useState<boolean>(userId === friendId);
+  const [retroClick, setRetroClick] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(false);
-
 
   const handleButton = (to: string) => {
     const date = week.getDate();
@@ -97,8 +96,10 @@ const Week = () => {
         <Loading />
       ) : (
         <div className={styles["week__list"]}>
-          <WeekTodo />
-          {dayList?.map((today: DayListConfig, key: number) => <WeekList idx={key} key={key} />)}
+          <WeekTodo isMine={isMine} />
+          {dayList?.map((today: DayListConfig, key: number) => (
+            <WeekList key={key} idx={key} isMine={isMine} retroClick={retroClick} setRetroClick={setRetroClick} />
+          ))}
         </div>
       )}
     </div>
