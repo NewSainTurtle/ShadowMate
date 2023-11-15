@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import Text from "@components/common/Text";
 import { SocialListType } from "@components/social/CardList";
@@ -7,13 +7,13 @@ import { Avatar } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import { useNavigate } from "react-router-dom";
-import { setFriendDate, setFriendInfo } from "@store/friendSlice";
+import { setFriendInfo } from "@store/friendSlice";
 import { setDate } from "@store/planner/daySlice";
 
 interface Props {
   item: SocialListType;
   idx: number;
-  handleDelete: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, idx: number, socialId: number) => void;
+  handleDelete: (idx: number, socialId: number) => void;
 }
 
 const SocialProfile = ({ idx, item, handleDelete }: Props) => {
@@ -40,7 +40,7 @@ const SocialProfile = ({ idx, item, handleDelete }: Props) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["social-profile__button"]} onClick={(e) => handleDelete(e, idx, socialId)}>
+      <div className={styles["social-profile__button"]} onClick={() => handleDelete(idx, socialId)}>
         {mine && (
           <div>
             <DeleteOutline />
@@ -55,6 +55,7 @@ const CardItem = ({ idx, item, handleDelete }: Props) => {
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
   const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleClickImage = () => {
     dispatch(setDate(dailyPlannerDay));
@@ -65,8 +66,9 @@ const CardItem = ({ idx, item, handleDelete }: Props) => {
   return (
     <div className={styles["card-item"]}>
       <div className={styles["card-item__image-box"]} onClick={handleClickImage}>
-        <img src={item.socialImage} />
+        <img src={item.socialImage} onLoad={() => setIsLoading(false)} />
       </div>
+      {isLoading && <div className={styles["skeleton-image"]} />}
       <div className={styles["card-item__profile"]}>
         <SocialProfile idx={idx} item={item} handleDelete={handleDelete} />
       </div>

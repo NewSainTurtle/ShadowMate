@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import { ProfileConfig } from "@components/common/FriendProfile";
@@ -12,7 +12,13 @@ export interface SocialListType extends ProfileConfig {
   dailyPlannerDay: string;
 }
 
-const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname: string }) => {
+interface Props {
+  sort: "latest" | "popularity";
+  nickname: string;
+  scrollRef: RefObject<HTMLDivElement>;
+}
+
+const CardList = ({ sort, nickname, scrollRef }: Props) => {
   const userId = useAppSelector(selectUserId);
   const [list, setList] = useState<SocialListType[]>([]);
   const [load, setLoad] = useState(false);
@@ -27,13 +33,17 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
     endRef.current = false;
     setPageNumber(1);
     getPost(1);
-  }, [sort, nickname]);
+  }, [sort, nickname.length]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(obsHandler);
     if (obsRef.current) observer.observe(obsRef.current);
     return () => observer.disconnect();
   }, []);
+
+  useLayoutEffect(() => {
+    if (pageNumber != 1) getPost(pageNumber);
+  }, [pageNumber]);
 
   const obsHandler = async (entries: any[]) => {
     const target = entries[0];
@@ -43,43 +53,33 @@ const CardList = ({ sort, nickname }: { sort: "latest" | "popularity"; nickname:
     }
   };
 
-  useLayoutEffect(() => {
-    if (pageNumber != 1) getPost(pageNumber);
-  }, [pageNumber]);
+  const getPost = useCallback(
+    async (pageNumber: number) => {
+      setLoad(true);
+      try {
+        let response: { totalPage: number; socialList: [] };
+        if (nickname.length >= 2)
+          response = (await socialApi.searches(userId, { nickname, sort, pageNumber })).data.data;
+        else response = (await socialApi.getSocial(userId, { sort, pageNumber })).data.data;
 
-  const getPost = async (pageNumber: number) => {
-    setLoad(true);
-
-    if (nickname.length >= 2) {
-      socialApi
-        .searches(userId, { nickname, sort, pageNumber })
-        .then((res) => {
-          const response = res.data.data;
-
-          if (pageNumber == response.totalPage) endRef.current = true;
-          if (pageNumber == 1) setList(response.socialList);
-          else setList((prev) => [...prev, ...response.socialList]);
-          preventRef.current = true;
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoad(false));
-    } else {
-      socialApi
-        .getSocial(userId, { sort, pageNumber })
-        .then((res) => {
-          const response = res.data.data;
-          if (pageNumber == response.totalPage) endRef.current = true;
-          if (pageNumber == 1) setList(response.socialList);
-          else setList((prev) => [...prev, ...response.socialList]);
-          preventRef.current = true;
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoad(false));
-    }
-  };
+        if (pageNumber == response.totalPage) endRef.current = true;
+        if (pageNumber == 1) {
+          scrollRef.current?.scrollTo({ left: 0, top: 0 });
+          if (response.totalPage >= 2) setPageNumber(2);
+          setList(response.socialList);
+        } else setList((prev) => [...prev, ...response.socialList]);
+        preventRef.current = true;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoad(false);
+      }
+    },
+    [pageNumber, sort, nickname.length],
+  );
 
   // 내 공유 플래너 삭제
-  const handleDelete = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, idx: number, socialId: number) => {
+  const handleDelete = (idx: number, socialId: number) => {
     socialApi
       .delete(userId, socialId)
       .then(() => {
