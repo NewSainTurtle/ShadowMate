@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
@@ -7,7 +7,7 @@ import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { setDate, selectDayDate, selectDayInfo, setDayLike } from "@store/planner/daySlice";
+import { setDayDate, selectDayDate, selectDayInfo, setDayLike } from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
@@ -101,7 +101,7 @@ const Header = ({ isFriend, socialClick }: Props) => {
 
   const moveDate = (n: -1 | 0 | 1) => {
     const newDate = n == 0 ? dayjs().format("YYYY-MM-DD") : dayjs(date).add(n, "day").format("YYYY-MM-DD");
-    dispatch(setDate(newDate));
+    dispatch(setDayDate(newDate));
   };
 
   return (

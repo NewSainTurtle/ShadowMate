@@ -54,7 +54,7 @@ const daySlice = createSlice({
   name: "plannerDay",
   initialState,
   reducers: {
-    setDate: (state, action: PayloadAction<dayConfig["date"]>) => {
+    setDayDate: (state, action: PayloadAction<dayConfig["date"]>) => {
       state.date = action.payload;
     },
     setDayInfo: (state, action: PayloadAction<dayConfig["info"]>) => {
@@ -88,7 +88,7 @@ const daySlice = createSlice({
 
 export const BASIC_TODO_ITEM = initialState.todoItem!;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
-export const { setDate, setDayInfo, setDayLike, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
+export const { setDayDate, setDayInfo, setDayLike, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
 export const selectDayDate = (state: rootState) => state.day.date;
 export const selectDayInfo = (state: rootState) => state.day.info;
 export const selectTodoItem = (state: rootState) => state.day.todoItem;

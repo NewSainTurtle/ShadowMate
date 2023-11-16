@@ -6,7 +6,7 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { useNavigate } from "react-router-dom";
 import { MonthDayConfig, selectMonthDayList } from "@store/planner/monthSlice";
-import { setDate } from "@store/planner/daySlice";
+import { setDayDate } from "@store/planner/daySlice";
 import Loading from "@components/common/Loading";
 
 interface Props {
@@ -35,7 +35,7 @@ const MonthCalendar = ({ selectedDay }: Props) => {
   };
 
   const itemClickHandler = (date: string) => {
-    dispatch(setDate(date));
+    dispatch(setDayDate(date));
     navigate("/day");
   };
 
