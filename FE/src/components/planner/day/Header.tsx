@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
@@ -60,16 +60,14 @@ const FriendHeader = () => {
 };
 
 const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
-  const plannerAccessScope = useAppSelector(selectDayInfo).plannerAccessScope;
-  const shareSocial = useAppSelector(selectDayInfo).shareSocial;
+  const { plannerAccessScope, likeCount, shareSocial, dailyTodos } = useAppSelector(selectDayInfo);
   const [isSocialClick, setIsSocialClick] = useState(shareSocial);
-  const { likeCount } = useAppSelector(selectDayInfo);
 
   function handleClick() {
     if (!isSocialClick) {
       socialClick();
+      setIsSocialClick(!isSocialClick);
     }
-    setIsSocialClick(!isSocialClick);
   }
 
   return (
@@ -79,7 +77,7 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
       </Button>
       {plannerAccessScope == "전체공개" && (
         <div className={`${isSocialClick ? styles["button__visit"] : ""}`}>
-          <Button types="blue" onClick={() => handleClick()}>
+          <Button types="blue" onClick={() => handleClick()} disabled={!dailyTodos.length}>
             소셜공유
           </Button>
         </div>
