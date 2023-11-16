@@ -108,6 +108,7 @@ class MonthlyPlannerServiceTest {
 
                 //then
                 assertThat(addVisitorBookResponse).isNotNull();
+                assertThat(addVisitorBookResponse.getVisitorBookId()).isEqualTo(visitorBook.getId());
                 assertThat(addVisitorBookResponse.getVisitorNickname()).isEqualTo(visitor.getNickname());
                 assertThat(addVisitorBookResponse.getVisitorProfileImage()).isEqualTo(visitor.getProfileImage());
                 assertThat(addVisitorBookResponse.getVisitorBookContent()).isEqualTo(addVisitorBookRequest.getVisitorBookContent());

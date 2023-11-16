@@ -46,6 +46,7 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
                 .build());
 
         return AddVisitorBookResponse.builder()
+                .visitorBookId(visitorBook.getId())
                 .visitorNickname(visitor.getNickname())
                 .visitorProfileImage(visitor.getProfileImage())
                 .visitorBookContent(visitorBook.getVisitorBookContent())
