@@ -22,6 +22,7 @@ public enum PlannerErrorResult implements BaseErrorResult {
     INVALID_USER(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자입니다."),
     INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜형식입니다."),
     FAILED_SHARE_SOCIAL(HttpStatus.BAD_REQUEST, "소셜공유는 전채공개 상태에서만 가능합니다."),
+    FAILED_SELF_VISITOR_BOOK_WRITING(HttpStatus.BAD_REQUEST, "자신의 방명록에 글을 작성할 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;
