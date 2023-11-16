@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class VisitorBookRepositoryTest {
+class VisitorBookRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -28,26 +28,23 @@ public class VisitorBookRepositoryTest {
     private User visitor;
 
     private final String visitorBookContent = "왔다가유 @--";
-    private final String password = "yntest1234";
-    private final SocialType socialType = SocialType.BASIC;
-    private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
 
     @BeforeEach
     void init() {
         owner = userRepository.save(User.builder()
                 .email("yntest@shadowmate.com")
-                .password(password)
-                .socialLogin(socialType)
+                .password("yntest1234")
+                .socialLogin(SocialType.BASIC)
                 .nickname("거북이")
-                .plannerAccessScope(plannerAccessScope)
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
                 .withdrawal(false)
                 .build());
         visitor = userRepository.save(User.builder()
                 .email("jntest@shadowmate.com")
-                .password(password)
-                .socialLogin(socialType)
+                .password("yntest1234")
+                .socialLogin(SocialType.BASIC)
                 .nickname("토끼")
-                .plannerAccessScope(plannerAccessScope)
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
                 .withdrawal(false)
                 .build());
     }
