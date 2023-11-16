@@ -25,7 +25,8 @@ interface Props {
 
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
   const userId = useAppSelector(selectUserId);
-  const friendId = useAppSelector(selectFriendId);
+  let friendId = useAppSelector(selectFriendId);
+  friendId = friendId != 0 ? friendId : userId;
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
