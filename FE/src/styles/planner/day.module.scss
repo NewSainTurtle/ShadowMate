@@ -101,7 +101,7 @@ $color-btn-blue: var(--color-btn-blue);
   @extend %item-container;
   height: 5em;
   display: grid;
-  grid-template-columns: max-content auto;
+  grid-template-columns: 2fr 1fr;
   align-items: end;
   border-bottom: solid 1px $color-gray_4;
 
@@ -128,7 +128,7 @@ $color-btn-blue: var(--color-btn-blue);
   }
 
   button {
-    width: 6rem;
+    width: 5rem;
   }
 
   .button__visit > button {
@@ -152,11 +152,15 @@ $color-btn-blue: var(--color-btn-blue);
   }
 
   &__friend {
+    width: 100%;
     height: 100%;
-    display: grid;
+    overflow: hidden;
+    display: flex;
     justify-items: end;
-    grid-template-columns: 1fr 1fr;
+    justify-content: flex-end;
     gap: 0.5em;
+    padding-left: 0.5em;
+    box-sizing: border-box;
 
     > div:nth-child(1) {
       height: 100%;
@@ -170,7 +174,7 @@ $color-btn-blue: var(--color-btn-blue);
     }
 
     > div:nth-child(2) {
-      width: 100%;
+      width: 22.5vw;
     }
   }
 }

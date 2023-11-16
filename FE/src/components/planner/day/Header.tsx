@@ -51,7 +51,7 @@ const FriendHeader = () => {
           </Button>
         </div>
         <Button types="gray" onClick={() => weekClick()}>
-          주간보기
+          주별보기
         </Button>
       </div>
       <FriendProfile types={"기본"} profile={friendInfo} />
