@@ -528,7 +528,7 @@ class AuthControllerTest {
             );
 
             //then
-            resultActions.andExpect(status().isOk());
+            resultActions.andExpect(status().isAccepted());
         }
 
     }
