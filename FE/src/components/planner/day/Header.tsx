@@ -100,7 +100,7 @@ const Header = ({ isFriend, socialClick }: Props) => {
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
 
   const moveDate = (n: -1 | 0 | 1) => {
-    const newDate = n == 0 ? dayjs().format("YYYY-MM-DD") : dayjs(date).add(n, "day").format("YYYY-MM-DD");
+    const newDate = dayjs(date).add(n, "day").format("YYYY-MM-DD");
     dispatch(setDayDate(newDate));
   };
 
