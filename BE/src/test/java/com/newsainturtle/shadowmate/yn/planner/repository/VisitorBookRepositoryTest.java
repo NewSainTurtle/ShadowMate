@@ -1,0 +1,74 @@
+package com.newsainturtle.shadowmate.yn.planner.repository;
+
+import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
+import com.newsainturtle.shadowmate.user.repository.UserRepository;
+import com.newsainturtle.shadowmate.planner.entity.VisitorBook;
+import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class VisitorBookRepositoryTest {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private VisitorBookRepository visitorBookRepository;
+
+    private User owner;
+    private User visitor;
+
+    private final String visitorBookContent = "왔다가유 @--";
+    private final String password = "yntest1234";
+    private final SocialType socialType = SocialType.BASIC;
+    private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
+
+    @BeforeEach
+    void init() {
+        owner = userRepository.save(User.builder()
+                .email("yntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
+                .nickname("거북이")
+                .plannerAccessScope(plannerAccessScope)
+                .withdrawal(false)
+                .build());
+        visitor = userRepository.save(User.builder()
+                .email("jntest@shadowmate.com")
+                .password(password)
+                .socialLogin(socialType)
+                .nickname("토끼")
+                .plannerAccessScope(plannerAccessScope)
+                .withdrawal(false)
+                .build());
+    }
+
+    @Test
+    void 방명록추가() {
+        //given
+        final VisitorBook saveVisitorBook = visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+
+        //when
+        final VisitorBook findVisitorBook = visitorBookRepository.findById(saveVisitorBook.getId()).orElse(null);
+
+        //then
+        assertThat(findVisitorBook).isNotNull();
+        assertThat(findVisitorBook.getOwner()).isEqualTo(owner);
+        assertThat(findVisitorBook.getVisitor()).isEqualTo(visitor);
+        assertThat(findVisitorBook.getVisitorBookContent()).isEqualTo(visitorBookContent);
+    }
+
+}
