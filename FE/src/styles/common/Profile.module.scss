@@ -3,6 +3,7 @@ $color-gray_1: var(--color-gray-1);
 $color-gray_3: var(--color-gray-3);
 $color-blue: var(--color-btn-blue);
 $color-white: var(--color-white);
+$color-text: var(--color-text);
 
 .profile_container,
 .fprofile_container {
@@ -77,6 +78,7 @@ $color-white: var(--color-white);
     border: none;
     border-radius: 0.625rem;
     background-color: $color-background;
+    color: $color-text;
     cursor: pointer;
   }
   > div {
