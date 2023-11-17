@@ -106,7 +106,7 @@ const TodoList = ({ clicked }: Props) => {
             />
           ))}
           {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
-            <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} />
+            <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} disable />
           ))}
         </>
       )}
