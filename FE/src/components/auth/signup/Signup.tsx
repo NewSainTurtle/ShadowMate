@@ -60,18 +60,18 @@ const Signup = () => {
 
   const signupApiModule = (() => {
     const onClickEmail = () => {
-      if (!error.email.length)
+      if (email.length == 0) setError({ ...error, email: "필수 정보입니다." });
+      else if (!error.email.length) {
         authApi
           .emailAuthentication({ email })
-          .then(() => {
-            setEmailAuthentication(true);
-            setEmailRedundancy(false);
-            setErrorMessage("");
-          })
+          .then(() => setEmailAuthentication(true))
           .catch((err) => {
+            const { code } = err.response.data;
             setEmailAuthentication(false);
-            setErrorMessage(err.response.data.message);
+            if (code == "DUPLICATED_EMAIL") setError({ ...error, email: "중복된 이메일입니다." });
+            else console.error(err);
           });
+      }
     };
     const onClickEmailCheck = () => {
       authApi
@@ -86,16 +86,17 @@ const Signup = () => {
         });
     };
     const onClickNickName = () => {
-      if (!error.nickname.length) {
+      if (nickname.length == 0) setError({ ...error, nickname: "필수 정보입니다." });
+      else if (!error.nickname.length) {
         authApi
           .nickname({ nickname })
           .then(() => {
             setNicknameAuthentication(true);
-            setErrorMessage("");
+            setError({ ...error, nickname: "" });
           })
           .catch(() => {
             setNicknameAuthentication(false);
-            setErrorMessage("중복된 닉네임 입니다.");
+            setError({ ...error, nickname: "중복된 닉네임입니다." });
           });
       }
     };
