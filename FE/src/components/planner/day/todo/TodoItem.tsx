@@ -7,9 +7,6 @@ import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
 import { CategoryItemConfig } from "@util/planner.interface";
-import { useAppSelector } from "@hooks/hook";
-import { selectUserId } from "@store/authSlice";
-import { selectFriendId } from "@store/friendSlice";
 
 interface Props {
   idx?: number;
@@ -24,9 +21,6 @@ interface Props {
 }
 
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
-  const userId = useAppSelector(selectUserId);
-  let friendId = useAppSelector(selectFriendId);
-  friendId = friendId != 0 ? friendId : userId;
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
@@ -136,7 +130,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
           <div className={styles["todo-item__content__possible"]}>
             <input
               value={text}
-              placeholder={userId == friendId ? "할 일을 입력하세요" : ""}
+              placeholder={"할 일을 입력하세요"}
               minLength={2}
               maxLength={maxLength}
               onChange={editText}

@@ -7,6 +7,7 @@ import { TodoConfig } from "@util/planner.interface";
 import TodoItemChoice from "./TodoItemChoice";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
+import { selectFriendId } from "@store/friendSlice";
 
 interface Props {
   clicked: boolean;
@@ -15,6 +16,8 @@ interface Props {
 const TodoList = ({ clicked }: Props) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
+  let friendId = useAppSelector(selectFriendId);
+  friendId = friendId != 0 ? friendId : userId;
   const date = useAppSelector(selectDayDate);
   const todoArr = useAppSelector(selectTodoList);
   const listSize = 11;
@@ -90,7 +93,7 @@ const TodoList = ({ clicked }: Props) => {
           {todoArr.map((item: TodoConfig, idx: number) => (
             <TodoItem key={item.todoId} idx={idx} todoItem={item} todoModule={todoModule} />
           ))}
-          <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
+          <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} disable={userId != friendId} />
           {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (
             <TodoItem key={idx} disable todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
           ))}
