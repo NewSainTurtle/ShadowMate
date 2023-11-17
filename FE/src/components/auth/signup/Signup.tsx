@@ -18,11 +18,11 @@ const Signup = () => {
     nickname: "",
   });
   const [error, setError] = useState({
-    email: false,
-    code: false,
-    password: false,
-    passwordCheck: false,
-    nickname: false,
+    email: "",
+    code: "",
+    password: "",
+    passwordCheck: "",
+    nickname: "",
   });
   const [isEmailAuthentication, setEmailAuthentication] = useState(false);
   const [isEmailRedundancy, setEmailRedundancy] = useState(false);
@@ -43,17 +43,24 @@ const Signup = () => {
   };
 
   const checkError = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { name } = e.target;
-    if (name == "email" && !userRegex.email.test(email)) setError({ ...error, [name]: true });
-    else if (name == "password" && !userRegex.password.test(password)) setError({ ...error, [name]: true });
-    else if (name == "passwordCheck" && password != passwordCheck) setError({ ...error, [name]: true });
-    else if (name == "nickname" && !userRegex.nickname.test(nickname)) setError({ ...error, [name]: true });
-    else setError({ ...error, [name]: false });
+    const { name, value } = e.target;
+
+    if (name == "passwordCheck") {
+      if (value.length == 0) setError({ ...error, [name]: "비밀번호를 다시 한번 입력해주세요." });
+      else if (passwordCheck != password) setError({ ...error, [name]: "비밀번호가 일치하지 않습니다." });
+    } else if (value.length == 0) setError({ ...error, [name]: "필수 정보입니다." });
+    else if (name == "email" && !userRegex.email.test(email))
+      setError({ ...error, [name]: "이메일 형식이 올바르지 않습니다." });
+    else if (name == "password" && !userRegex.password.test(password))
+      setError({ ...error, [name]: "비밀번호는 6 ~ 20자로 설정해 주세요." });
+    else if (name == "nickname" && !userRegex.nickname.test(nickname))
+      setError({ ...error, [name]: "닉네임은 특수문자 제외 6 ~ 10자로 설정해 주세요." });
+    else setError({ ...error, [name]: "" });
   };
 
   const signupApiModule = (() => {
     const onClickEmail = () => {
-      if (!error.email)
+      if (!error.email.length)
         authApi
           .emailAuthentication({ email })
           .then(() => {
@@ -66,19 +73,20 @@ const Signup = () => {
             setErrorMessage(err.response.data.message);
           });
     };
-    const onClickEmailCheck = () =>
+    const onClickEmailCheck = () => {
       authApi
         .emailAuthenticationCheck({ email, code })
         .then(() => {
           setEmailRedundancy(true);
-          setErrorMessage("");
+          setError({ ...error, code: " " });
         })
         .catch(() => {
           setEmailRedundancy(false);
-          setErrorMessage("이메일 인증 코드가 일치하지 않습니다.");
+          setError({ ...error, code: "이메일 인증 코드가 일치하지 않습니다." });
         });
+    };
     const onClickNickName = () => {
-      if (!error.nickname) {
+      if (!error.nickname.length) {
         authApi
           .nickname({ nickname })
           .then(() => {
@@ -124,10 +132,8 @@ const Signup = () => {
               onChange={handleInput}
               disabled={isEmailRedundancy}
               onBlur={checkError}
-              error={error.email}
-              helperText={
-                error.email ? (email.length == 0 ? "필수 정보입니다." : "이메일 형식이 올바르지 않습니다.") : " "
-              }
+              error={!!error.email.length}
+              helperText={error.email || " "}
             />
             <Button types="gray" onClick={onClickEmail} disabled={isEmailRedundancy}>
               {!isEmailAuthentication ? "인증" : "재전송"}
@@ -141,7 +147,8 @@ const Signup = () => {
                 value={code}
                 onChange={handleInput}
                 disabled={isEmailRedundancy}
-                helperText={" "}
+                error={!!error.code.length}
+                helperText={error.code || " "}
               />
               <Button types="gray" onClick={onClickEmailCheck} disabled={isEmailRedundancy}>
                 {!isEmailRedundancy ? "인증확인" : "인증완료"}
@@ -155,14 +162,8 @@ const Signup = () => {
             value={password}
             onChange={handleInput}
             onBlur={checkError}
-            error={error.password}
-            helperText={
-              error.password
-                ? password.length == 0
-                  ? "필수 정보입니다."
-                  : "비밀번호는 6 ~ 20자로 설정해 주세요."
-                : " "
-            }
+            error={!!error.password.length}
+            helperText={error.password || " "}
           />
           <Input
             placeholder="비밀번호 확인"
@@ -171,14 +172,8 @@ const Signup = () => {
             value={passwordCheck}
             onChange={handleInput}
             onBlur={checkError}
-            error={error.passwordCheck}
-            helperText={
-              error.passwordCheck
-                ? passwordCheck.length == 0
-                  ? "비밀번호를 다시 한번 입력해주세요."
-                  : "비밀번호가 일치하지 않습니다."
-                : " "
-            }
+            error={!!error.passwordCheck.length}
+            helperText={error.passwordCheck || " "}
           />
           <div className={styles["input_box__button"]}>
             <Input
@@ -187,14 +182,8 @@ const Signup = () => {
               value={nickname}
               onChange={handleInput}
               onBlur={checkError}
-              error={error.nickname}
-              helperText={
-                error.nickname
-                  ? nickname.length == 0
-                    ? "필수 정보입니다."
-                    : "닉네임은 특수문자 제외 6 ~ 10자로 설정해 주세요."
-                  : " "
-              }
+              error={!!error.nickname.length}
+              helperText={error.nickname || " "}
             />
             <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
               {!isNicknameAuthentication ? "중복검사" : "검사완료"}
