@@ -53,6 +53,7 @@ $color-gray-5: var(--color-gray-5);
   align-items: center;
 
   .signup_warning {
+    margin-top: 1em;
     height: 0.875em;
     text-align: center;
     color: $color-warning;

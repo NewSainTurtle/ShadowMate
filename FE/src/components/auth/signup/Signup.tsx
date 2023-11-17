@@ -46,22 +46,22 @@ const Signup = () => {
     const { name, value } = e.target;
 
     if (name == "passwordCheck") {
-      if (value.length == 0) setError({ ...error, [name]: "비밀번호를 다시 한번 입력해주세요." });
+      if (!value) setError({ ...error, [name]: "비밀번호를 다시 한번 입력해주세요." });
       else if (passwordCheck != password) setError({ ...error, [name]: "비밀번호가 일치하지 않습니다." });
-    } else if (value.length == 0) setError({ ...error, [name]: "필수 정보입니다." });
+    } else if (!value) setError({ ...error, [name]: "필수 정보입니다." });
     else if (name == "email" && !userRegex.email.test(email))
       setError({ ...error, [name]: "이메일 형식이 올바르지 않습니다." });
     else if (name == "password" && !userRegex.password.test(password))
-      setError({ ...error, [name]: "비밀번호는 6 ~ 20자로 설정해 주세요." });
+      setError({ ...error, [name]: "비밀번호는 6~20자로 설정해 주세요." });
     else if (name == "nickname" && !userRegex.nickname.test(nickname))
-      setError({ ...error, [name]: "닉네임은 특수문자 제외 6 ~ 10자로 설정해 주세요." });
+      setError({ ...error, [name]: "닉네임은 특수문자 제외한 2~10자로 설정해 주세요." });
     else setError({ ...error, [name]: "" });
   };
 
   const signupApiModule = (() => {
     const onClickEmail = () => {
-      if (email.length == 0) setError({ ...error, email: "필수 정보입니다." });
-      else if (!error.email.length) {
+      if (!email) setError({ ...error, email: "필수 정보입니다." });
+      else if (!error.email) {
         authApi
           .emailAuthentication({ email })
           .then(() => setEmailAuthentication(true))
@@ -78,7 +78,7 @@ const Signup = () => {
         .emailAuthenticationCheck({ email, code })
         .then(() => {
           setEmailRedundancy(true);
-          setError({ ...error, code: " " });
+          setError({ ...error, code: "" });
         })
         .catch(() => {
           setEmailRedundancy(false);
@@ -86,8 +86,8 @@ const Signup = () => {
         });
     };
     const onClickNickName = () => {
-      if (nickname.length == 0) setError({ ...error, nickname: "필수 정보입니다." });
-      else if (!error.nickname.length) {
+      if (!nickname) setError({ ...error, nickname: "필수 정보입니다." });
+      else if (!error.nickname) {
         authApi
           .nickname({ nickname })
           .then(() => {
@@ -102,9 +102,18 @@ const Signup = () => {
     };
 
     const onClickJoin = () => {
-      if (!isEmailRedundancy) setErrorMessage("이메일을 인증 해주세요.");
+      if (!email || !code || !password || !passwordCheck || !nickname) {
+        setError({
+          email: !email ? "필수 정보입니다." : "",
+          code: !code ? "이메일 인증 코드를 입력해주세요" : "",
+          password: !password ? "필수 정보입니다." : "",
+          passwordCheck: !passwordCheck ? "비밀번호를 다시 한번 입력해주세요." : "",
+          nickname: !nickname ? "필수 정보입니다." : "",
+        });
+      } else if (!isEmailAuthentication) setErrorMessage("메일을 인증을 해주세요.");
+      else if (!isEmailRedundancy) setErrorMessage("인증코드를 확인 해주세요.");
       else if (!isNicknameAuthentication) setErrorMessage("닉네임을 인증 해주세요.");
-      else if (!!email && !!password && !!nickname) {
+      else {
         authApi.join({ email, password, nickname });
         navigator("/login");
       }
@@ -133,11 +142,11 @@ const Signup = () => {
               onChange={handleInput}
               disabled={isEmailRedundancy}
               onBlur={checkError}
-              error={!!error.email.length}
+              error={!!error.email}
               helperText={error.email || " "}
             />
             <Button types="gray" onClick={onClickEmail} disabled={isEmailRedundancy}>
-              {!isEmailAuthentication ? "인증" : "재전송"}
+              {!isEmailAuthentication ? "메일인증" : "재전송"}
             </Button>
           </div>
           {isEmailAuthentication && (
@@ -148,7 +157,7 @@ const Signup = () => {
                 value={code}
                 onChange={handleInput}
                 disabled={isEmailRedundancy}
-                error={!!error.code.length}
+                error={!!error.code}
                 helperText={error.code || " "}
               />
               <Button types="gray" onClick={onClickEmailCheck} disabled={isEmailRedundancy}>
@@ -163,7 +172,7 @@ const Signup = () => {
             value={password}
             onChange={handleInput}
             onBlur={checkError}
-            error={!!error.password.length}
+            error={!!error.password}
             helperText={error.password || " "}
           />
           <Input
@@ -173,7 +182,7 @@ const Signup = () => {
             value={passwordCheck}
             onChange={handleInput}
             onBlur={checkError}
-            error={!!error.passwordCheck.length}
+            error={!!error.passwordCheck}
             helperText={error.passwordCheck || " "}
           />
           <div className={styles["input_box__button"]}>
@@ -183,11 +192,11 @@ const Signup = () => {
               value={nickname}
               onChange={handleInput}
               onBlur={checkError}
-              error={!!error.nickname.length}
+              error={!!error.nickname}
               helperText={error.nickname || " "}
             />
             <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
-              {!isNicknameAuthentication ? "중복검사" : "검사완료"}
+              {!isNicknameAuthentication ? "중복확인" : "검사완료"}
             </Button>
           </div>
         </div>
