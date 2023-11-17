@@ -96,3 +96,21 @@ $color-white: var(--color-white);
     }
   }
 }
+
+.f-icon {
+  display: block;
+  width: 3em;
+  height: 4em;
+  margin: 0 0.2em;
+  text-align: center;
+  cursor: pointer;
+  > div {
+    margin: 0.2em auto;
+  }
+
+  &__nickname {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
-import Text from "@components/common/Text";
-import Profile from "@components/common/Profile";
-import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
+import FriendProfileIcon from "@components/common/FriendProfileIcon";
+import AddIcon from "@mui/icons-material/Add";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useAppSelector } from "@hooks/hook";
-import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { selectUserId } from "@store/authSlice";
 import { followingType } from "@util/friend.interface";
 import { followApi } from "@api/Api";
 
 const MonthFriends = () => {
   const userId = useAppSelector(selectUserId);
-  const profileInfo = useAppSelector(selectUserInfo);
   const [followingData, setFollowingData] = useState<followingType[]>([]);
 
   const getFollowing = () => {
@@ -29,28 +29,31 @@ const MonthFriends = () => {
 
   return (
     <div className={styles["friend"]}>
-      <div className={styles["friend__mine"]}>
-        <Profile types="기본" profile={profileInfo} />
+      <div className={styles["friend__btn--left"]}>
+        <ChevronLeftIcon />
       </div>
-      <div className={styles["friend__list"]}>
-        {followingData && followingData.length > 0 ? (
+      <div className={styles["friend__container"]}>
+        {followingData && followingData.length > 0 && (
           <>
             {followingData.map((item: followingType, key: number) => {
-              const { followingId, nickname, profileImage, statusMessage } = item;
-              const followInfo: ProfileConfig = {
+              const { followingId, nickname, profileImage } = item;
+              const followInfo = {
                 userId: followingId,
                 nickname,
-                statusMessage,
                 profileImage,
               };
-              return <FriendProfile types="기본" profile={followInfo} key={key} />;
+              return <FriendProfileIcon profile={followInfo} key={key} />;
             })}
           </>
-        ) : (
-          <div className={styles["friend__none"]}>
-            <Text>팔로잉 목록이 없습니다.</Text>
-          </div>
         )}
+        <div className={styles["friend__btn--add"]}>
+          <div>
+            <AddIcon />
+          </div>
+        </div>
+      </div>
+      <div className={styles["friend__btn--right"]}>
+        <ChevronRightIcon />
       </div>
     </div>
   );
