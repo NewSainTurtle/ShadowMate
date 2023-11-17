@@ -115,6 +115,7 @@ const Signup = () => {
               value={email}
               onChange={handleInput}
               disabled={isEmailRedundancy}
+              helperText={" "}
             />
             <Button types="gray" onClick={onClickEmail} disabled={isEmailRedundancy}>
               {!isEmailAuthentication ? "인증" : "재전송"}
@@ -128,22 +129,37 @@ const Signup = () => {
                 value={code}
                 onChange={handleInput}
                 disabled={isEmailRedundancy}
+                helperText={" "}
               />
               <Button types="gray" onClick={onClickEmailCheck} disabled={isEmailRedundancy}>
                 {!isEmailRedundancy ? "인증확인" : "인증완료"}
               </Button>
             </div>
           )}
-          <Input placeholder="비밀번호" types="password" name="password" value={password} onChange={handleInput} />
+          <Input
+            placeholder="비밀번호(6~20자)"
+            types="password"
+            name="password"
+            value={password}
+            onChange={handleInput}
+            helperText={" "}
+          />
           <Input
             placeholder="비밀번호 확인"
             types="password"
             name="passwordCheck"
             value={passwordCheck}
             onChange={handleInput}
+            helperText={" "}
           />
           <div className={styles["input_box__button"]}>
-            <Input placeholder="닉네임" name="nickname" value={nickname} onChange={handleInput} />
+            <Input
+              placeholder="닉네임(2~10자, 특수문자 불가)"
+              name="nickname"
+              value={nickname}
+              onChange={handleInput}
+              helperText={" "}
+            />
             <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
               {!isNicknameAuthentication ? "중복검사" : "검사완료"}
             </Button>
@@ -157,13 +173,12 @@ const Signup = () => {
           <div onClick={onClickJoin}>
             <AuthButton>Sign up</AuthButton>
           </div>
-        </div>
-
-        <div className={styles["signup_context"]}>
-          <Text types="small">이미 회원이신가요?</Text>
-          <NavLink to={"/login"}>
-            <Text types="small">Login</Text>
-          </NavLink>
+          <div className={styles["signup_context"]}>
+            <Text types="small">이미 회원이신가요?</Text>
+            <NavLink to={"/login"}>
+              <Text types="small">Login</Text>
+            </NavLink>
+          </div>
         </div>
       </div>
     </div>

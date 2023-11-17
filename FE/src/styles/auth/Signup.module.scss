@@ -24,11 +24,12 @@ $color-gray-5: var(--color-gray-5);
     size: 2.4em;
     weight: 800;
   }
+  margin-bottom: 1.5em;
 }
 
 .signup_box_1 {
   width: 100%;
-  height: 18em;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -47,9 +48,9 @@ $color-gray-5: var(--color-gray-5);
 
 .signup_box_2 {
   display: flex;
-  margin-top: -2em;
   gap: 1.5em;
   flex-direction: column;
+  align-items: center;
 
   .signup_warning {
     height: 0.875em;
