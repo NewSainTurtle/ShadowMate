@@ -1,22 +1,17 @@
-import React, { ReactNode, useState } from "react";
+import React, { useState } from "react";
 import styles from "@styles/common/Input.module.scss";
-import { IconButton, InputAdornment, TextField } from "@mui/material";
+import { IconButton, InputAdornment, TextField, TextFieldProps } from "@mui/material";
 import { Visibility, VisibilityOff, Search } from "@mui/icons-material";
 import colors from "@util/colors";
 
-type Props = {
+interface Props {
   name: string;
   placeholder: string;
   types: "default" | "password" | "search";
   value?: string | number;
-  disabled?: boolean;
-  helperText?: string | ReactNode;
-  error?: boolean;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  onKeyPress?: React.KeyboardEventHandler<HTMLInputElement>;
-};
+}
 
-const Input = ({ types, ...rest }: Props) => {
+const Input = ({ types, ...rest }: Props & TextFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
