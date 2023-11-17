@@ -7,7 +7,7 @@ import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { setDayDate, selectDayDate, selectDayInfo, setDayLike } from "@store/planner/daySlice";
+import { setDayDate, selectDayDate, selectDayInfo, setDayLike, setDayInfo } from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
@@ -60,14 +60,15 @@ const FriendHeader = () => {
 };
 
 const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
-  const { plannerAccessScope, likeCount, shareSocial, dailyTodos } = useAppSelector(selectDayInfo);
-  const [isSocialClick, setIsSocialClick] = useState(shareSocial);
+  const dispatch = useAppDispatch();
+  const dayPlannerInfo = useAppSelector(selectDayInfo);
+  const { plannerAccessScope, likeCount, shareSocial, dailyTodos } = dayPlannerInfo;
 
   function handleClick() {
-    if (!isSocialClick) {
+    if (!shareSocial) {
+      dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: true }));
       socialClick();
-      setIsSocialClick(!isSocialClick);
-    }
+    } else dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: false }));
   }
 
   return (
@@ -76,7 +77,7 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
         ♥ {likeCount}
       </Button>
       {plannerAccessScope == "전체공개" && (
-        <div className={`${isSocialClick ? styles["button__visit"] : ""}`}>
+        <div className={`${shareSocial ? styles["button__visit"] : ""}`}>
           <Button types="blue" onClick={() => handleClick()} disabled={!dailyTodos.length}>
             소셜공유
           </Button>
