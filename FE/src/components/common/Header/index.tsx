@@ -4,16 +4,19 @@ import Toggle from "./Toggle";
 import Menu from "./Menu";
 import { Avatar } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
+import { clearFriendInfo } from "@store/friendSlice";
 
 const Header = () => {
+  const dispatch = useAppDispatch();
+  const handleClear = () => dispatch(clearFriendInfo());
   const profileImage = useAppSelector(selectUserInfo).profileImage;
 
   return (
     <div className={styles.header_container}>
       <NavLink to="/month">
-        <div className={styles.header_logo}>
+        <div className={styles.header_logo} onClick={handleClear}>
           <span>Shadow</span>
           <br />
           <span>Mate</span>

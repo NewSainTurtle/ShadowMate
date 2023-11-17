@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import { useNavigate } from "react-router-dom";
 import { setFriendInfo } from "@store/friendSlice";
-import { setDate } from "@store/planner/daySlice";
+import { setDayDate } from "@store/planner/daySlice";
 
 interface Props {
   item: SocialListType;
@@ -58,7 +58,7 @@ const CardItem = ({ idx, item, handleDelete }: Props) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const handleClickImage = () => {
-    dispatch(setDate(dailyPlannerDay));
+    dispatch(setDayDate(dailyPlannerDay));
     dispatch(setFriendInfo(user));
     navigator("/day");
   };

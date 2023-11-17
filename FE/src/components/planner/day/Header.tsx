@@ -7,7 +7,7 @@ import Button from "@components/common/Button";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { setDate, selectDayDate, selectDayInfo, setDayLike } from "@store/planner/daySlice";
+import { setDayDate, selectDayDate, selectDayInfo, setDayLike, setDayInfo } from "@store/planner/daySlice";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
@@ -51,7 +51,7 @@ const FriendHeader = () => {
           </Button>
         </div>
         <Button types="gray" onClick={() => weekClick()}>
-          주간보기
+          주별보기
         </Button>
       </div>
       <FriendProfile types={"기본"} profile={friendInfo} />
@@ -60,16 +60,15 @@ const FriendHeader = () => {
 };
 
 const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
-  const plannerAccessScope = useAppSelector(selectDayInfo).plannerAccessScope;
-  const shareSocial = useAppSelector(selectDayInfo).shareSocial;
-  const [isSocialClick, setIsSocialClick] = useState(shareSocial);
-  const { likeCount } = useAppSelector(selectDayInfo);
+  const dispatch = useAppDispatch();
+  const dayPlannerInfo = useAppSelector(selectDayInfo);
+  const { plannerAccessScope, likeCount, shareSocial, dailyTodos } = dayPlannerInfo;
 
   function handleClick() {
-    if (!isSocialClick) {
+    if (!shareSocial) {
+      dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: true }));
       socialClick();
-    }
-    setIsSocialClick(!isSocialClick);
+    } else dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: false }));
   }
 
   return (
@@ -78,8 +77,8 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
         ♥ {likeCount}
       </Button>
       {plannerAccessScope == "전체공개" && (
-        <div className={`${isSocialClick ? styles["button__visit"] : ""}`}>
-          <Button types="blue" onClick={() => handleClick()}>
+        <div className={`${shareSocial ? styles["button__visit"] : ""}`}>
+          <Button types="blue" onClick={() => handleClick()} disabled={!dailyTodos.length}>
             소셜공유
           </Button>
         </div>
@@ -100,8 +99,8 @@ const Header = ({ isFriend, socialClick }: Props) => {
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
 
   const moveDate = (n: -1 | 0 | 1) => {
-    const newDate = n == 0 ? dayjs().format("YYYY-MM-DD") : dayjs(date).add(n, "day").format("YYYY-MM-DD");
-    dispatch(setDate(newDate));
+    const newDate = n == 0 ? dayjs() : dayjs(date).add(n, "day");
+    dispatch(setDayDate(newDate.format("YYYY-MM-DD")));
   };
 
   return (

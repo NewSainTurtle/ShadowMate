@@ -14,7 +14,6 @@ import { selectUserId } from "@store/authSlice";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import html2canvas from "html2canvas";
-import Alert from "@components/common/Alert";
 import { selectFriendId } from "@store/friendSlice";
 
 const DayPage = () => {
@@ -35,11 +34,8 @@ const DayPage = () => {
     studyTimeHour: 0,
     studyTimeMinute: 0,
   });
-  const [alertSuccess, setAlertSuccess] = useState<boolean>(false);
   const todoDivRef = useRef<HTMLDivElement>(null);
   const screenDivRef = useRef<HTMLDivElement>(null);
-
-  const handleSuccessClose = () => setAlertSuccess(false);
 
   useLayoutEffect(() => {
     const day = dayjs(date).format("YYYY-MM-DD");
@@ -139,7 +135,6 @@ const DayPage = () => {
           plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
         ),
       );
-      setAlertSuccess(true);
     });
   };
 

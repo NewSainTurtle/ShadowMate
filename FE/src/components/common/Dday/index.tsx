@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Text from "@components/common/Text";
 import colors from "@util/colors";
 import dayjs from "dayjs";
+import { useAppSelector } from "@hooks/hook";
+import { selectUserId } from "@store/authSlice";
+import { selectFriendId } from "@store/friendSlice";
 
 interface Props {
   nearDate: string | number | Date | dayjs.Dayjs;
@@ -9,7 +12,10 @@ interface Props {
 }
 
 const Dday = ({ nearDate, comparedDate }: Props) => {
-  const isVisible = nearDate !== null;
+  const userId = useAppSelector(selectUserId);
+  let friendId = useAppSelector(selectFriendId);
+  friendId = friendId != 0 ? friendId : userId;
+  const isVisible = nearDate !== null && userId == friendId;
 
   const dday = (() => {
     if (isVisible) {

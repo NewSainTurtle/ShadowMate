@@ -9,9 +9,10 @@ interface Props {
   idx?: number;
   todoItem: TodoConfig;
   possible: boolean;
+  disable?: boolean;
 }
 
-const TodoItemChoice = ({ todoItem, possible }: Props) => {
+const TodoItemChoice = ({ todoItem, possible, disable }: Props) => {
   const dispatch = useAppDispatch();
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
@@ -41,7 +42,10 @@ const TodoItemChoice = ({ todoItem, possible }: Props) => {
   }
 
   return (
-    <div className={`${styles["todo-item"]} ${styles[possibility]}`} onClick={handleClickTodo}>
+    <div
+      className={`${styles[`todo-item${disable ? "--disable" : ""}`]} ${styles[possibility]}`}
+      onClick={handleClickTodo}
+    >
       <div className={styles["todo-item__category"]}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           <Text>{categoryTitle}</Text>
