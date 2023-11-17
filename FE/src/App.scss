@@ -25,6 +25,7 @@
 * {
   font-family: "Pretendard-Regular";
   &::-webkit-scrollbar {
+    height: 0.3em;
     width: 0.3em;
     background-color: var(--color-gray-3);
   }
