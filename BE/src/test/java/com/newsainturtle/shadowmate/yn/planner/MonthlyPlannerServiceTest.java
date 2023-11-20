@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.yn.planner;
 
 import com.newsainturtle.shadowmate.planner.dto.request.AddVisitorBookRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.RemoveVisitorBookRequest;
 import com.newsainturtle.shadowmate.planner.dto.response.AddVisitorBookResponse;
 import com.newsainturtle.shadowmate.planner.entity.VisitorBook;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -116,6 +117,82 @@ class MonthlyPlannerServiceTest {
                 //verify
                 verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
                 verify(visitorBookRepository, times(1)).save(any(VisitorBook.class));
+            }
+        }
+
+        @Nested
+        class 방명록삭제 {
+            final VisitorBook visitorBook = VisitorBook.builder()
+                    .id(1L)
+                    .visitorBookContent("왔다가유 @--")
+                    .owner(owner)
+                    .visitor(visitor)
+                    .build();
+            final RemoveVisitorBookRequest removeVisitorBookRequest = RemoveVisitorBookRequest.builder()
+                    .visitorBookId(1L)
+                    .build();
+
+            @Test
+            void 실패_유효하지않은방명록() {
+                //given
+                doReturn(null).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.removeVisitorBook(visitor, owner.getId(), removeVisitorBookRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_VISITOR_BOOK);
+            }
+
+            @Test
+            void 실패_삭제권한이없는사용자() {
+                //given
+                final User user1 = User.builder()
+                        .id(3L)
+                        .email("mktest@shadowmate.com")
+                        .password("yntest1234")
+                        .socialLogin(SocialType.BASIC)
+                        .nickname("호랑이")
+                        .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                        .withdrawal(false)
+                        .build();
+                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.removeVisitorBook(user1, owner.getId(), removeVisitorBookRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.NO_PERMISSION_TO_REMOVE_VISITOR_BOOK);
+            }
+
+            @Test
+            void 성공_방명록작성자() {
+                //given
+                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+
+                //when
+                monthlyPlannerServiceImpl.removeVisitorBook(visitor, owner.getId(), removeVisitorBookRequest);
+
+                //then
+
+                //verify
+                verify(visitorBookRepository, times(1)).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                verify(visitorBookRepository, times(1)).deleteById(any(Long.class));
+            }
+
+            @Test
+            void 성공_플래너주인() {
+                //given
+                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+
+                //when
+                monthlyPlannerServiceImpl.removeVisitorBook(owner, owner.getId(), removeVisitorBookRequest);
+
+                //then
+
+                //verify
+                verify(visitorBookRepository, times(1)).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                verify(visitorBookRepository, times(1)).deleteById(any(Long.class));
             }
         }
     }
