@@ -120,8 +120,11 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
         return weeklyTodos;
     }
 
-    private List<CalendarDayResponse> getDayList(final User user, final User plannerWriter, final LocalDate date) {
+    private CalendarDayTotalResponse getDayList(final User user, final User plannerWriter, final LocalDate date) {
         final List<CalendarDayResponse> dayList = new ArrayList<>();
+        int todoTotal = 0;
+        int todoIncomplete = 0;
+
         if (havePermissionToSearch(user, plannerWriter)) {
             final int lastDay = YearMonth.from(date).lengthOfMonth();
 
@@ -133,6 +136,8 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                     final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner);
                     if (totalCount > 0) {
                         todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
+                        todoTotal += totalCount;
+                        todoIncomplete += todoCount;
                         final double percent = ((totalCount - todoCount) / (double) totalCount) * 100;
                         if (percent == 100) {
                             dayStatus = 3;
@@ -154,7 +159,11 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
             }
 
         }
-        return dayList;
+        return CalendarDayTotalResponse.builder()
+                .calendarDayResponseList(dayList)
+                .todoTotal(todoTotal)
+                .todoIncomplete(todoIncomplete)
+                .build();
     }
 
     private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
@@ -259,11 +268,14 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT);
         }
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
-        final List<CalendarDayResponse> dayList = getDayList(user, plannerWriter, stringToLocalDate(dateStr));
+        final CalendarDayTotalResponse calendarDayTotalResponse = getDayList(user, plannerWriter, stringToLocalDate(dateStr));
 
         return SearchCalendarResponse.builder()
                 .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                .dayList(dayList)
+                .dayList(calendarDayTotalResponse.getCalendarDayResponseList())
+                .todoTotal(calendarDayTotalResponse.getTodoTotal())
+                .todoComplete(calendarDayTotalResponse.getTodoTotal()-calendarDayTotalResponse.getTodoIncomplete())
+                .todoIncomplete(calendarDayTotalResponse.getTodoIncomplete())
                 .build();
     }
 
