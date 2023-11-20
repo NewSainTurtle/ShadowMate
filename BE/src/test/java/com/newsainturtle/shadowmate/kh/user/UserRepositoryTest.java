@@ -116,6 +116,19 @@ public class UserRepositoryTest {
             assertThat(result.getPassword()).isEqualTo(newPassword);
         }
 
+        @Test
+        void 소개글수정() {
+            // given
+            final String newIntroduction = "새로운소개글";
+
+            // when
+            userRepository.updateIntroduction(newIntroduction, userId);
+            final User result = userRepository.findById(userId).orElse(null);
+
+            // then
+            assertThat(result.getIntroduction()).isEqualTo(newIntroduction);
+        }
+
     }
 
     @Nested
