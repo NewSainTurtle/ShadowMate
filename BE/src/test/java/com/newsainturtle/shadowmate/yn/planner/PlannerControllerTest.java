@@ -10,6 +10,7 @@ import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
+import com.newsainturtle.shadowmate.planner.service.MonthlyPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner.service.SearchPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,9 @@ class PlannerControllerTest {
 
     @Mock
     private SearchPlannerServiceImpl searchPlannerServiceImpl;
+
+    @Mock
+    private MonthlyPlannerServiceImpl monthlyPlannerServiceImpl;
 
     @Mock
     private AuthService authServiceImpl;
@@ -2398,5 +2402,102 @@ class PlannerControllerTest {
             );
         }
 
+    }
+
+    @Nested
+    class 방명록 {
+        final String url = "/api/planners/{userId}/monthly/visitor-books";
+
+        @Nested
+        class 방명록추가 {
+            private final String visitorBookContent = "왔다가유 @--";
+            final AddVisitorBookRequest addVisitorBookRequest = AddVisitorBookRequest.builder()
+                    .visitorBookContent(visitorBookContent)
+                    .build();
+
+            @Test
+            void 실패_방명록내용Null() throws Exception {
+                //given
+                final AddVisitorBookRequest addVisitorBookRequest = AddVisitorBookRequest.builder()
+                        .visitorBookContent(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_방명록내용_길이초과() throws Exception {
+                //given
+                final AddVisitorBookRequest addVisitorBookRequest = AddVisitorBookRequest.builder()
+                        .visitorBookContent("0123456789012345678901234567891")
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은사용자() throws Exception {
+                //given
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(monthlyPlannerServiceImpl).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_자신플래너에방명록추가() throws Exception {
+                //given
+                doThrow(new PlannerException(PlannerErrorResult.FAILED_SELF_VISITOR_BOOK_WRITING)).when(monthlyPlannerServiceImpl).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 성공() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
     }
 }

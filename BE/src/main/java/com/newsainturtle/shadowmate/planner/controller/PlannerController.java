@@ -8,6 +8,7 @@ import com.newsainturtle.shadowmate.planner.dto.request.UpdateRetrospectionReque
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateTodayGoalRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
+import com.newsainturtle.shadowmate.planner.service.MonthlyPlannerService;
 import com.newsainturtle.shadowmate.planner.service.SearchPlannerService;
 import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class PlannerController {
     private final DailyPlannerService dailyPlannerServiceImpl;
     private final WeeklyPlannerService weeklyPlannerServiceImpl;
     private final SearchPlannerService searchPlannerServiceImpl;
+    private final MonthlyPlannerService monthlyPlannerServiceImpl;
     private final AuthService authServiceImpl;
 
     @PostMapping("/{userId}/daily/todos")
@@ -194,6 +196,13 @@ public class PlannerController {
                                                        @RequestParam(name = "date") final String date) {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_CALENDAR,
                 searchPlannerServiceImpl.searchCalendar(principalDetails.getUser(), userId, date)));
+    }
+
+    @PostMapping("/{userId}/monthly/visitor-books")
+    public ResponseEntity<BaseResponse> addVisitorBook(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final AddVisitorBookRequest addVisitorBookRequest) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_VISITOR_BOOK, monthlyPlannerServiceImpl.addVisitorBook(principalDetails.getUser(), userId, addVisitorBookRequest)));
     }
 
 }

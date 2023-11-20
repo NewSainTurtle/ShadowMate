@@ -24,4 +24,5 @@ public class PlannerConstant {
     public static final String SUCCESS_SEARCH_DAILY_PLANNER = "일일플래너 조회가 완료되었습니다.";
     public static final String SUCCESS_SEARCH_WEEKLY_PLANNER = "주간플래너 조회가 완료되었습니다.";
     public static final String SUCCESS_SEARCH_CALENDAR = "캘린더 조회가 완료되었습니다.";
+    public static final String SUCCESS_ADD_VISITOR_BOOK = "방명록 작성이 완료되었습니다.";
 }
