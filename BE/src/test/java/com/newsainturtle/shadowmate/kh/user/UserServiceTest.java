@@ -4,9 +4,7 @@ import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
-import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
-import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
-import com.newsainturtle.shadowmate.user.dto.UserResponse;
+import com.newsainturtle.shadowmate.user.dto.*;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -220,6 +218,22 @@ public class UserServiceTest {
 
             // then
             verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
+        }
+
+        @Test
+        void 성공_소개글수정() {
+            // given
+            final String newIntroduction = "새로운소개글";
+            final UpdateIntroductionRequest updateIntroductionRequest = UpdateIntroductionRequest.builder()
+                    .introduction(newIntroduction)
+                    .build();
+
+            // when
+            userService.updateIntroduction(updateIntroductionRequest, userId1);
+
+            // then
+            verify(userRepository, times(1)).updateIntroduction(any(), any(Long.class));
+
         }
 
     }
