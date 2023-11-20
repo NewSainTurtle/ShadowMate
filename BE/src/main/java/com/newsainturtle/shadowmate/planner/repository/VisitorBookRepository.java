@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VisitorBookRepository extends JpaRepository<VisitorBook, Long> {
-
+    VisitorBook findByIdAndOwnerId(final long visitorBookId, final long ownerId);
 }
