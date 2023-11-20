@@ -43,4 +43,7 @@ public class User extends CommonEntity {
     @Column(name = "planner_access_scope")
     @Enumerated(EnumType.STRING)
     private PlannerAccessScope plannerAccessScope;
+
+    @Column(length = 100)
+    private String introduction;
 }
