@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -16,6 +17,8 @@ public interface UserService {
     void updateUser(final Long userId, final UpdateUserRequest updateUserRequest);
 
     void updatePassword(final Long userId, final String oldPassword, final String newPassword);
+
+    void updateIntroduction(final UpdateIntroductionRequest updateIntroductionRequest, final Long userId);
 
     void deleteUser(final Long userId);
 }

@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.user.service;
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -93,6 +94,12 @@ public class UserServiceImpl implements UserService {
         else {
             throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateIntroduction(final UpdateIntroductionRequest updateIntroductionRequest, final Long userId) {
+        userRepository.updateIntroduction(updateIntroductionRequest.getIntroduction(), userId);
     }
 
     @Override
