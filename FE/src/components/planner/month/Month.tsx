@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import MonthCalendar from "@components/planner/month/MonthCalendar";
-import MonthFriends from "@components/planner/month/MonthFriends";
+import MonthDetail from "@components/planner/month/MonthDetail";
 import Text from "@components/common/Text";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -47,32 +47,32 @@ const Month = () => {
 
   return (
     <div className={styles["month"]}>
-      <div className={styles["month__title"]}>
-        <div>
+      <div className={styles["month__calendar"]}>
+        <div className={styles["month__title"]}>
           <div>
-            <Text types="semi-large" title>
-              {year}년
-            </Text>
-            <Text types="semi-large" title>
-              {month.toString().length > 1 ? month : "0" + month.toString()}월
-            </Text>
-          </div>
-          <div className={styles["month__button"]} onClick={handlePrevMonth}>
-            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-              <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
-            </svg>
-          </div>
-          <div className={styles["month__button"]} onClick={handleNextMonth}>
-            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-              <path d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z" />
-            </svg>
+            <div>
+              <Text types="semi-large" title>
+                {year}년
+              </Text>
+              <Text types="semi-large" title>
+                {month.toString().length > 1 ? month : "0" + month.toString()}월
+              </Text>
+            </div>
+            <div className={styles["month__button"]} onClick={handlePrevMonth}>
+              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
+                <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
+              </svg>
+            </div>
+            <div className={styles["month__button"]} onClick={handleNextMonth}>
+              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
+                <path d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z" />
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
-      <div className={styles["month__calendar"]}>
         <MonthCalendar selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
-        <MonthFriends />
       </div>
+      <MonthDetail />
     </div>
   );
 };

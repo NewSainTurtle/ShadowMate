@@ -36,11 +36,12 @@ const MonthFriends = () => {
         {followingData && followingData.length > 0 && (
           <>
             {followingData.map((item: followingType, key: number) => {
-              const { followingId, nickname, profileImage } = item;
+              const { followingId, nickname, profileImage, statusMessage } = item;
               const followInfo = {
                 userId: followingId,
                 nickname,
                 profileImage,
+                statusMessage,
               };
               return <FriendProfileIcon profile={followInfo} key={key} />;
             })}
