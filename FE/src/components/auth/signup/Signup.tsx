@@ -45,14 +45,14 @@ const Signup = () => {
   const checkError = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    if (name == "passwordCheck") {
-      if (!value) setError({ ...error, [name]: "비밀번호를 다시 한번 입력해주세요." });
-      else if (passwordCheck != password) setError({ ...error, [name]: "비밀번호가 일치하지 않습니다." });
-    } else if (!value) setError({ ...error, [name]: "필수 정보입니다." });
+    if (name == "passwordCheck" && !value) setError({ ...error, [name]: "비밀번호를 다시 한번 입력해주세요." });
+    else if (!value) setError({ ...error, [name]: "필수 정보입니다." });
     else if (name == "email" && !userRegex.email.test(email))
       setError({ ...error, [name]: "이메일 형식이 올바르지 않습니다." });
     else if (name == "password" && !userRegex.password.test(password))
       setError({ ...error, [name]: "비밀번호는 6~20자로 설정해 주세요." });
+    else if (name == "passwordCheck" && passwordCheck != password)
+      setError({ ...error, [name]: "비밀번호가 일치하지 않습니다." });
     else if (name == "nickname" && !userRegex.nickname.test(nickname))
       setError({ ...error, [name]: "닉네임은 특수문자 제외한 2~10자로 설정해 주세요." });
     else setError({ ...error, [name]: "" });
