@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.service.UserService;
@@ -65,5 +66,14 @@ public class UserController {
         authService.certifyUser(userId, principalDetails.getUser());
         userService.deleteUser(userId);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_USER));
+    }
+
+    @PutMapping("/{userId}/introduction")
+    public ResponseEntity<BaseResponse> updateIntroduction(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                           @PathVariable("userId") final Long userId,
+                                                           @RequestBody @Valid final UpdateIntroductionRequest updateIntroductionRequest) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        userService.updateIntroduction(updateIntroductionRequest, userId);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_INTRODUCTION));
     }
 }

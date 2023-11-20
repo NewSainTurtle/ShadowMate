@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.user.controller.UserController;
+import com.newsainturtle.shadowmate.user.dto.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.UserResponse;
@@ -220,6 +221,65 @@ public class UserControllerTest {
             //then
             resultActions.andExpect(status().isAccepted())
                     .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_PASSWORD));
+        }
+
+        @Test
+        void 실패_소개글_유저틀림() throws Exception {
+            // given
+            final String url = "/api/users/{userId}/introduction";
+            final String newIntroduction = "새로운소개글";
+            final UpdateIntroductionRequest updateIntroductionRequest = UpdateIntroductionRequest.builder()
+                    .introduction(newIntroduction)
+                    .build();
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url,userId)
+                            .content(gson.toJson(updateIntroductionRequest))
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            // then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 실패_소개글100자초과() throws Exception {
+            // given
+            final String url = "/api/users/{userId}/introduction";
+            final String newIntroduction = "소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다";
+            final UpdateIntroductionRequest updateIntroductionRequest = UpdateIntroductionRequest.builder()
+                    .introduction(newIntroduction)
+                    .build();
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url,userId)
+                            .content(gson.toJson(updateIntroductionRequest))
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            // then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공_소개글수정() throws Exception {
+            // given
+            final String url = "/api/users/{userId}/introduction";
+            final String newIntroduction = "새로운소개글";
+            final UpdateIntroductionRequest updateIntroductionRequest = UpdateIntroductionRequest.builder()
+                    .introduction(newIntroduction)
+                    .build();
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url,userId)
+                            .content(gson.toJson(updateIntroductionRequest))
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            // then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(SUCCESS_UPDATE_INTRODUCTION));
         }
 
     }
