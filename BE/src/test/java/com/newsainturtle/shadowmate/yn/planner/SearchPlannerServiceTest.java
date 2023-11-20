@@ -537,6 +537,9 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
             assertThat(searchCalendarResponse.getDayList()).hasSize(lastDay);
+            assertThat(searchCalendarResponse.getTodoTotal()).isZero();
+            assertThat(searchCalendarResponse.getTodoComplete()).isZero();
+            assertThat(searchCalendarResponse.getTodoIncomplete()).isZero();
         }
 
         @Test
@@ -557,6 +560,9 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isZero();
             assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isZero();
+            assertThat(searchCalendarResponse.getTodoTotal()).isZero();
+            assertThat(searchCalendarResponse.getTodoComplete()).isZero();
+            assertThat(searchCalendarResponse.getTodoIncomplete()).isZero();
         }
 
         @Test
@@ -578,6 +584,9 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(1);
             assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(6);
+            assertThat(searchCalendarResponse.getTodoTotal()).isEqualTo(310);
+            assertThat(searchCalendarResponse.getTodoComplete()).isEqualTo(310-186);
+            assertThat(searchCalendarResponse.getTodoIncomplete()).isEqualTo(186);
         }
 
         @Test
@@ -599,6 +608,9 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(2);
             assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isEqualTo(2);
+            assertThat(searchCalendarResponse.getTodoTotal()).isEqualTo(310);
+            assertThat(searchCalendarResponse.getTodoComplete()).isEqualTo(310-62);
+            assertThat(searchCalendarResponse.getTodoIncomplete()).isEqualTo(62);
         }
 
         @Test
@@ -620,6 +632,9 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getDayList().get(lastDay - 1).getDate()).isEqualTo("2023-10-31");
             assertThat(searchCalendarResponse.getDayList().get(0).getDayStatus()).isEqualTo(3);
             assertThat(searchCalendarResponse.getDayList().get(0).getTodoCount()).isZero();
+            assertThat(searchCalendarResponse.getTodoTotal()).isEqualTo(62);
+            assertThat(searchCalendarResponse.getTodoComplete()).isEqualTo(62);
+            assertThat(searchCalendarResponse.getTodoIncomplete()).isZero();
         }
 
 
