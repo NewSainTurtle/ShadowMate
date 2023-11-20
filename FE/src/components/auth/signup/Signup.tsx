@@ -66,9 +66,10 @@ const Signup = () => {
           .emailAuthentication({ email })
           .then(() => setEmailAuthentication(true))
           .catch((err) => {
-            const { code } = err.response.data;
+            const { code, message } = err.response.data;
             setEmailAuthentication(false);
-            if (code == "DUPLICATED_EMAIL") setError({ ...error, email: "중복된 이메일입니다." });
+            if (code == "DUPLICATED_EMAIL" || code == "ALREADY_AUTHENTICATED_EMAIL")
+              setError({ ...error, email: message });
             else console.error(err);
           });
       }
