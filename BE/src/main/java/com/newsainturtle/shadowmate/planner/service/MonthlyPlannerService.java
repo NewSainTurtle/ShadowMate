@@ -6,4 +6,5 @@ import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface MonthlyPlannerService {
     AddVisitorBookResponse addVisitorBook(final User visitor, final long ownerId, final AddVisitorBookRequest addVisitorBookRequest);
+    void removeVisitorBook(final User visitor, final long ownerId, final RemoveVisitorBookRequest removeVisitorBookRequest);
 }

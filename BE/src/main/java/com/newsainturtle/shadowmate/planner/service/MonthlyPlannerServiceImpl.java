@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.planner.dto.request.AddVisitorBookRequest;
+import com.newsainturtle.shadowmate.planner.dto.request.RemoveVisitorBookRequest;
 import com.newsainturtle.shadowmate.planner.dto.response.AddVisitorBookResponse;
 import com.newsainturtle.shadowmate.planner.entity.VisitorBook;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -52,5 +53,22 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
                 .visitorBookContent(visitorBook.getVisitorBookContent())
                 .writeDateTime(localDateTimeToString(visitorBook.getCreateTime()))
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void removeVisitorBook(final User visitor, final long ownerId, final RemoveVisitorBookRequest removeVisitorBookRequest) {
+        final VisitorBook visitorBook = visitorBookRepository.findByIdAndOwnerId(removeVisitorBookRequest.getVisitorBookId(), ownerId);
+        if (visitorBook == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_VISITOR_BOOK);
+        }
+
+        if (!visitorBook.getVisitor().getId().equals(visitor.getId())
+                && !visitorBook.getOwner().getId().equals(visitor.getId())) {
+            throw new PlannerException(PlannerErrorResult.NO_PERMISSION_TO_REMOVE_VISITOR_BOOK);
+        }
+
+        visitorBookRepository.deleteById(removeVisitorBookRequest.getVisitorBookId());
+
     }
 }

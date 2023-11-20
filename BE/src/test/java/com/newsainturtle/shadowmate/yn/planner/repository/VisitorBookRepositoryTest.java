@@ -68,4 +68,54 @@ class VisitorBookRepositoryTest {
         assertThat(findVisitorBook.getVisitorBookContent()).isEqualTo(visitorBookContent);
     }
 
+    @Test
+    void 방명록ID조회_없음() {
+        //given
+
+        //when
+        final VisitorBook visitorBook = visitorBookRepository.findByIdAndOwnerId(0L, owner.getId());
+
+        //then
+        assertThat(visitorBook).isNull();
+    }
+
+    @Test
+    void 방명록ID조회_있음() {
+        //given
+        final VisitorBook saveVisitorBook = visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+
+        //when
+        final VisitorBook findVisitorBook = visitorBookRepository.findByIdAndOwnerId(saveVisitorBook.getId(), owner.getId());
+
+        //then
+        assertThat(findVisitorBook).isNotNull();
+        assertThat(findVisitorBook.getOwner()).isEqualTo(owner);
+        assertThat(findVisitorBook.getVisitor()).isEqualTo(visitor);
+        assertThat(findVisitorBook.getVisitorBookContent()).isEqualTo(visitorBookContent);
+    }
+
+    @Test
+    void 방명록삭제() {
+        //given
+        final VisitorBook saveVisitorBook = visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+
+        //when
+        visitorBookRepository.deleteById(saveVisitorBook.getId());
+        final VisitorBook findVisitorBook = visitorBookRepository.findByIdAndOwnerId(saveVisitorBook.getId(), owner.getId());
+
+
+        //then
+        assertThat(findVisitorBook).isNull();
+    }
+
+
+
 }
