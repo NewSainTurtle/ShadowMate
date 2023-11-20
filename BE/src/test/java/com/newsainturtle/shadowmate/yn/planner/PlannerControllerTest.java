@@ -2499,5 +2499,78 @@ class PlannerControllerTest {
             }
 
         }
+
+        @Nested
+        class 방명록삭제 {
+            final RemoveVisitorBookRequest removeVisitorBookRequest = RemoveVisitorBookRequest.builder()
+                    .visitorBookId(1L)
+                    .build();
+
+            @Test
+            void 실패_방명록IDNull() throws Exception {
+                //given
+                final RemoveVisitorBookRequest removeVisitorBookRequest = RemoveVisitorBookRequest.builder()
+                        .visitorBookId(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은방명록() throws Exception {
+                //given
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_VISITOR_BOOK)).when(monthlyPlannerServiceImpl).removeVisitorBook(any(), any(Long.class), any(RemoveVisitorBookRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_삭제권한이없는사용자() throws Exception {
+                //given
+                doThrow(new PlannerException(PlannerErrorResult.NO_PERMISSION_TO_REMOVE_VISITOR_BOOK)).when(monthlyPlannerServiceImpl).removeVisitorBook(any(), any(Long.class), any(RemoveVisitorBookRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            void 성공() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeVisitorBookRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
     }
 }
