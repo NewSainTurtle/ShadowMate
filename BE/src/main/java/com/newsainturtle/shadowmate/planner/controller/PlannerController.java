@@ -205,4 +205,12 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_VISITOR_BOOK, monthlyPlannerServiceImpl.addVisitorBook(principalDetails.getUser(), userId, addVisitorBookRequest)));
     }
 
+    @DeleteMapping("/{userId}/monthly/visitor-books")
+    public ResponseEntity<BaseResponse> removeVisitorBook(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final RemoveVisitorBookRequest removeVisitorBookRequest) {
+        monthlyPlannerServiceImpl.removeVisitorBook(principalDetails.getUser(), userId, removeVisitorBookRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_VISITOR_BOOK));
+    }
+
 }
