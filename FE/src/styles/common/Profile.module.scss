@@ -21,19 +21,23 @@ $color-white: var(--color-white);
   background-color: $color-gray_1;
 }
 
-.profile_img {
+.profile_img,
+.fprofile_img {
   display: flex;
   align-items: center;
   margin-left: 0.8em;
   padding: 0.4em;
   box-sizing: border-box;
   border-radius: 50%;
-  cursor: pointer;
 
   > div {
     width: 48px;
     height: 48px;
   }
+}
+
+.fprofile_img {
+  cursor: pointer;
 }
 
 .profile_content,
@@ -42,10 +46,10 @@ $color-white: var(--color-white);
   flex-direction: column;
   justify-content: center;
   margin-left: 0.4em;
-  cursor: pointer;
 }
 
 .fprofile_content {
+  cursor: pointer;
   > span:nth-child(1) {
     margin-bottom: 0.2em;
   }
