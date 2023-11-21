@@ -11,6 +11,7 @@ $color-blue: var(--color-btn-blue);
 .month {
   display: grid;
   grid-template-columns: 6fr 4fr;
+  align-content: center;
   gap: 1em;
   height: 100%;
   padding: 2em;
@@ -144,7 +145,6 @@ $color-blue: var(--color-btn-blue);
   grid-template-rows: min-content min-content 10em 155px minmax(8em, auto);
   height: calc(100vh - 4em);
   gap: 1em;
-  margin-top: 1em;
 
   &__stats {
     display: flex;
@@ -159,7 +159,7 @@ $color-blue: var(--color-btn-blue);
   &__container {
     display: flex;
     width: 100%;
-    padding: 1em;
+    padding: 0.2em 1em 0.2em 1em;
     box-sizing: border-box;
     overflow-x: auto;
   }
