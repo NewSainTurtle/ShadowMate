@@ -22,7 +22,7 @@ const GuestBook = () => {
   const userId = useAppSelector(selectUserId);
   let friendId = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
-  const none = friendId != userId ? "--none" : "";
+  const none = friendId != userId ? "" : "--none";
 
   return (
     <div className={styles["guest"]}>
@@ -47,7 +47,7 @@ const GuestBook = () => {
           </div>
         )}
       </div>
-      {friendId === userId && (
+      {friendId != userId && (
         <div className={styles["guest__input"]}>
           <div>
             <Avatar src={userInfo.profileImage} sx={{ width: 20, height: 20 }} />
