@@ -53,7 +53,7 @@ const GuestBook = () => {
             <Avatar src={userInfo.profileImage} sx={{ width: 20, height: 20 }} />
             <Text types="small">{userInfo.nickname}</Text>
           </div>
-          <input />
+          <input placeholder="방명록을 남겨주세요." />
           <div>
             <ArrowCircleUpIcon />
           </div>
