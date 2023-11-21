@@ -226,21 +226,29 @@ $color-blue: var(--color-btn-blue);
   &__title {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
     padding: 1em;
     box-sizing: border-box;
     > div {
       display: flex;
-      justify-content: center;
       align-items: center;
-      width: 2.25em;
-      height: 2.25em;
-      border-radius: 50%;
+      gap: 0.5em;
+      > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 2.25em;
+        height: 2.25em;
+        border-radius: 50%;
+      }
     }
     > span {
       margin-left: 1em;
     }
     > svg {
+      margin-right: 0.4em;
+      justify-self: end;
       font-size: medium;
       cursor: pointer;
     }
