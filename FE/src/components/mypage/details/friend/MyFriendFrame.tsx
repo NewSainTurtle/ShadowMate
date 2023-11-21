@@ -122,7 +122,9 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
               statusMessage,
               profileImage,
             };
-            return <FriendProfile key={title + id} types={isFollow as followType["types"]} profile={followInfo} />;
+            return (
+              <FriendProfile key={title + id + isFollow} types={isFollow as followType["types"]} profile={followInfo} />
+            );
           })
         ) : (
           <Text types="small">{search ? alertMessage : `${title}이(가) 없습니다.`}</Text>
