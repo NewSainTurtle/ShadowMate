@@ -108,7 +108,7 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
         <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
           친구 신청
         </button>
-        <button>삭제</button>
+        <button onClick={deleteFollower}>삭제</button>
       </>
     ),
     요청: (
