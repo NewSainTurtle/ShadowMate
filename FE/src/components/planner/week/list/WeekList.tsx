@@ -27,7 +27,6 @@ const WeekList = ({ idx, isMine, retroClick, setRetroClick }: Props) => {
   const date = dayList[idx].date;
   const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos || []);
   const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection || "");
-  const copyDayList = useMemo(() => JSON.parse(JSON.stringify(dayList)), [dayList]);
   const itemMaxLength = isMine ? 4 : 5;
   const rowMaxLength = isMine ? dailyTodos.length + 1 : dailyTodos.length;
   const retroMaxLength = 100;
@@ -41,6 +40,7 @@ const WeekList = ({ idx, isMine, retroClick, setRetroClick }: Props) => {
         retrospection: retrospection,
       })
       .then(() => {
+        let copyDayList = [...dayList];
         copyDayList[idx].retrospection = retrospection;
         dispatch(setDayList(copyDayList));
       })
