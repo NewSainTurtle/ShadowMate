@@ -26,4 +26,5 @@ public class PlannerConstant {
     public static final String SUCCESS_SEARCH_CALENDAR = "캘린더 조회가 완료되었습니다.";
     public static final String SUCCESS_ADD_VISITOR_BOOK = "방명록 작성이 완료되었습니다.";
     public static final String SUCCESS_REMOVE_VISITOR_BOOK = "방명록 삭제가 완료되었습니다.";
+    public static final String SUCCESS_SEARCH_VISITOR_BOOK = "방명록 조회가 완료되었습니다.";
 }
