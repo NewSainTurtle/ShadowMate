@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -114,6 +116,125 @@ class VisitorBookRepositoryTest {
 
         //then
         assertThat(findVisitorBook).isNull();
+    }
+
+    @Test
+    void 방명록리스트조회_처음_0개() {
+        //given
+
+        //when
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner);
+
+        //then
+        assertThat(visitorBooks).isNotNull().isEmpty();
+    }
+
+    @Test
+    void 방명록리스트조회_처음_5개미만() {
+        //given
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+
+        //when
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner);
+
+        //then
+        assertThat(visitorBooks).isNotNull().hasSize(3);
+    }
+
+    @Test
+    void 방명록리스트조회_처음_5개이상() {
+        //given
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+
+        //when
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner);
+
+        //then
+        assertThat(visitorBooks).isNotNull().hasSize(5);
+    }
+
+    @Test
+    void 방명록리스트조회_연속() {
+        //given
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        final VisitorBook saveVisitorBook = visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+
+        //when
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerAndIdLessThanOrderByIdDesc(owner, saveVisitorBook.getId());
+
+        //then
+        assertThat(visitorBooks).isNotNull().hasSize(4);
     }
 
 
