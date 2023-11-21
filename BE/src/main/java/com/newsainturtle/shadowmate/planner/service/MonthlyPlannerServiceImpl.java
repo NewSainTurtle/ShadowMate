@@ -2,7 +2,8 @@ package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.planner.dto.request.AddVisitorBookRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.RemoveVisitorBookRequest;
-import com.newsainturtle.shadowmate.planner.dto.response.AddVisitorBookResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchVisitorBookResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.VisitorBookResponse;
 import com.newsainturtle.shadowmate.planner.entity.VisitorBook;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,7 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
 
     @Override
     @Transactional
-    public AddVisitorBookResponse addVisitorBook(final User visitor, final long ownerId, final AddVisitorBookRequest addVisitorBookRequest) {
+    public VisitorBookResponse addVisitorBook(final User visitor, final long ownerId, final AddVisitorBookRequest addVisitorBookRequest) {
         final User owner = userRepository.findByIdAndWithdrawalIsFalse(ownerId);
         if (owner == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_USER);
@@ -46,7 +49,7 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
                 .visitorBookContent(addVisitorBookRequest.getVisitorBookContent())
                 .build());
 
-        return AddVisitorBookResponse.builder()
+        return VisitorBookResponse.builder()
                 .visitorBookId(visitorBook.getId())
                 .visitorNickname(visitor.getNickname())
                 .visitorProfileImage(visitor.getProfileImage())
@@ -70,5 +73,28 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
 
         visitorBookRepository.deleteById(removeVisitorBookRequest.getVisitorBookId());
 
+    }
+
+    @Override
+    public SearchVisitorBookResponse searchVisitorBook(final User visitor, final long ownerId, final long lastVisitorBookId) {
+        final User owner = userRepository.findByIdAndWithdrawalIsFalse(ownerId);
+        if (owner == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_USER);
+        }
+
+        final List<VisitorBook> visitorBooks = lastVisitorBookId == 0 ? visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner) :
+                visitorBookRepository.findTop5ByOwnerAndIdLessThanOrderByIdDesc(owner, lastVisitorBookId);
+        final List<VisitorBookResponse> visitorBookResponses = new ArrayList<>();
+        for (VisitorBook visitorBook : visitorBooks) {
+            visitorBookResponses.add(VisitorBookResponse.builder()
+                    .visitorBookId(visitorBook.getId())
+                    .visitorNickname(visitor.getNickname())
+                    .visitorProfileImage(visitor.getProfileImage())
+                    .visitorBookContent(visitorBook.getVisitorBookContent())
+                    .writeDateTime(localDateTimeToString(visitorBook.getCreateTime()))
+                    .build());
+        }
+
+        return SearchVisitorBookResponse.builder().visitorBookResponses(visitorBookResponses).build();
     }
 }
