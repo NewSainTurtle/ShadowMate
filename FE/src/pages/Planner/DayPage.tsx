@@ -5,7 +5,7 @@ import TimeTable from "@components/planner/day/todo/TimeTable";
 import TodoList from "@components/planner/day/todo/TodoList";
 import Ment from "@components/planner/day/Ment";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDayDate, selectTodoList, setDayInfo } from "@store/planner/daySlice";
+import { selectDayDate, selectTodoList, setDayInfo, setTodoItem } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
@@ -81,6 +81,13 @@ const DayPage = () => {
     const handleOutsideClose = (e: MouseEvent) => {
       if (todoDivRef && todoDivRef.current && e.button == 2) {
         setIsClickTimeTable(false);
+        dispatch(
+          setTodoItem({
+            todoId: 0,
+            todoContent: "",
+            todoStatus: "공백",
+          }),
+        );
       }
     };
     document.addEventListener("mouseup", handleOutsideClose);
@@ -90,7 +97,16 @@ const DayPage = () => {
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
-      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) setIsClickTimeTable(false);
+      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) {
+        setIsClickTimeTable(false);
+        dispatch(
+          setTodoItem({
+            todoId: 0,
+            todoContent: "",
+            todoStatus: "공백",
+          }),
+        );
+      }
     };
     document.addEventListener("click", handleOutsideClose);
     return () => document.removeEventListener("click", handleOutsideClose);
