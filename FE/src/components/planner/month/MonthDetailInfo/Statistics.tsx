@@ -9,7 +9,7 @@ interface Props {
 const statistics = {
   월별통계: ["전체", "완료", "미완료"],
   팔로우: ["팔로워", "팔로잉"],
-  좋아요: ["좋아요"],
+  좋아요: ["월별"],
 };
 
 const Statistics = ({ types }: Props) => {
