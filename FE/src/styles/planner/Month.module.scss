@@ -1,12 +1,18 @@
 $color-text: var(--color-text);
+$color-background: var(--color-background);
 $color-gray-1: var(--color-gray-1);
 $color-gray-3: var(--color-gray-3);
+$color-gray-4: var(--color-gray-4);
 $color-gray-5: var(--color-gray-5);
 $color-black: var(--color-black);
 $color-white: var(--color-white);
 $color-blue: var(--color-btn-blue);
 
 .month {
+  display: grid;
+  grid-template-columns: 6fr 4fr;
+  align-content: center;
+  gap: 1em;
   height: 100%;
   padding: 2em;
   box-sizing: border-box;
@@ -46,13 +52,6 @@ $color-blue: var(--color-btn-blue);
       background-color: $color-gray-1;
     }
   }
-
-  &__calendar {
-    display: grid;
-    grid-template-columns: 6fr 4fr;
-    gap: 1em;
-    height: calc(100% - 8em - 2em);
-  }
 }
 
 .calendar {
@@ -60,6 +59,7 @@ $color-blue: var(--color-btn-blue);
   display: grid;
   grid-template-columns: auto repeat(7, 1fr);
   grid-template-rows: auto repeat(6, 1fr);
+  height: calc(100% - 8em - 2em);
   padding: 1em;
   box-sizing: border-box;
 
@@ -140,27 +140,72 @@ $color-blue: var(--color-btn-blue);
   }
 }
 
-.friend {
-  position: relative;
-  height: 100%;
-  > div {
-    margin: 1em 0;
-  }
+.detail {
+  display: grid;
+  grid-template-rows: min-content min-content 10em 155px minmax(8em, auto);
+  height: calc(100vh - 4em);
+  gap: 1em;
 
-  &__list {
-    position: absolute;
-    width: 100%;
-    // title: 8em, margin: 2em 뺀 나머지, 2.7em: 한번에 친구 5개만 출력되도록.
-    height: calc(100% - 8em - 2em - 2.7em);
-    overflow-y: auto;
-    > div {
-      margin-bottom: 1em;
-    }
-  }
-
-  &__none {
+  &__stats {
     display: flex;
-    justify-content: center;
+    gap: 1em;
+  }
+}
+
+.friend {
+  display: flex;
+  align-items: center;
+
+  &__container {
+    display: flex;
+    width: 100%;
+    padding: 0.2em 1em 0.2em 1em;
+    box-sizing: border-box;
+    overflow-x: auto;
+  }
+
+  &__btn {
+    &--left,
+    &--right {
+      display: flex;
+      align-items: center;
+      width: 1em;
+      height: 4em;
+      background-color: $color-gray-1;
+      cursor: pointer;
+      > svg {
+        font-size: small;
+        color: $color-gray-3;
+      }
+    }
+
+    &--left {
+      border-radius: 8px 0 0 8px;
+    }
+
+    &--right {
+      border-radius: 0 8px 8px 0;
+    }
+
+    &--add {
+      width: 3em;
+      height: 4em;
+      margin: 0 0.2em;
+      > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        margin: 0.2em auto;
+        border-radius: 50%;
+        background-color: $color-gray-3;
+        cursor: pointer;
+        > svg {
+          font-size: medium;
+        }
+      }
+    }
   }
 }
 
@@ -169,6 +214,176 @@ $color-blue: var(--color-btn-blue);
     > div:nth-child(1) {
       height: 2.5em;
       width: 2.5em;
+    }
+  }
+}
+
+.icon-box {
+  position: relative;
+  width: 100%;
+  border: 0.5px solid $color-gray-3;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 2.25em;
+        height: 2.25em;
+        border-radius: 50%;
+        > svg {
+          fill: white;
+        }
+      }
+    }
+    > span {
+      margin-left: 1em;
+    }
+    > svg {
+      margin-right: 0.4em;
+      justify-self: end;
+      font-size: medium;
+      cursor: pointer;
+    }
+  }
+}
+
+.introduction {
+  padding: 0 1em;
+  box-sizing: border-box;
+
+  &__edit {
+    width: 100%;
+    height: calc(100% - 2.25em - 2em);
+    > textarea {
+      width: 100%;
+      height: 100%;
+      outline: none;
+      border: none;
+      resize: none;
+      font-size: 1rem;
+      color: $color-text;
+      background-color: $color-background;
+    }
+  }
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  margin: 0 1em;
+  &__contents {
+    display: flex;
+    justify-content: space-between;
+    > span:nth-child(1) {
+      color: $color-gray-4;
+    }
+  }
+}
+
+.guest {
+  width: 100%;
+  &__input {
+    display: grid;
+    grid-template-columns: 130px 6.8fr 0.7fr;
+    align-items: center;
+    align-content: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5em;
+    padding-left: 1em;
+    box-sizing: border-box;
+    border-top: 0.5px solid $color-gray-3;
+    > div:nth-child(1) {
+      display: flex;
+      gap: 0.5em;
+    }
+    > input {
+      padding-left: 0;
+      outline: none;
+      border: none;
+      color: $color-text;
+      background-color: $color-background;
+    }
+    > div:nth-child(3) {
+      padding: 0;
+      height: 100%;
+      text-align: center;
+      align-items: center;
+      justify-items: center;
+      border-left: 0.5px solid $color-gray-3;
+      cursor: pointer;
+      > svg {
+        fill: $color-gray-4;
+      }
+    }
+  }
+
+  &__contents {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    height: calc(100% - 2.25em - 2em - 2.5em - 0.3em);
+    width: 100%;
+    padding: 0 0.2em 1em 1em;
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    &--none {
+      @extend .guest__contents;
+      height: calc(100% - 2.25em - 2em);
+    }
+  }
+
+  &__comment {
+    display: grid;
+    grid-template-columns: 130px 4.6fr 110px 20px;
+    align-items: center;
+    padding-right: 0.2em;
+
+    &:hover {
+      &.guest__comment > svg {
+        visibility: visible;
+      }
+    }
+
+    > div:nth-child(1) {
+      display: flex;
+      gap: 0.5em;
+    }
+    > span:nth-child(3) {
+      width: 100%;
+      text-align: right;
+      color: $color-gray-4;
+    }
+    > svg {
+      visibility: hidden;
+      font-size: small;
+      justify-self: center;
+      color: $color-gray-4;
+      cursor: pointer;
+    }
+  }
+
+  &__none {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > span {
+      color: $color-gray-3;
     }
   }
 }

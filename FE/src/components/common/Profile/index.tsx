@@ -1,13 +1,14 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import styles from "@styles/common/Profile.module.scss";
-import { ProfileConfig } from "../FriendProfile";
-import Text from "../Text";
-import Button from "../Button";
+import { ProfileConfig } from "@components/common/FriendProfile";
+import Text from "@components/common/Text";
+import Button from "@components/common/Button";
 import { Avatar } from "@mui/material";
 import { persistor } from "@hooks/configStore";
-import { useAppDispatch } from "@hooks/hook";
-import { setLogout } from "@store/authSlice";
-import { clearFriendInfo } from "@store/friendSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectUserId, setLogout } from "@store/authSlice";
+import { selectFriendId } from "@store/friendSlice";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 interface Props {
   types: "기본" | "로그아웃";
@@ -15,6 +16,9 @@ interface Props {
 }
 
 const Profile = ({ types, profile }: Props) => {
+  const userId = useAppSelector(selectUserId);
+  let friendId = useAppSelector(selectFriendId);
+  friendId = friendId != 0 ? friendId : userId;
   const dispatch = useAppDispatch();
   const { profileImage, nickname, statusMessage } = profile;
 
@@ -24,18 +28,14 @@ const Profile = ({ types, profile }: Props) => {
       persistor.purge();
     }, 200);
   };
-    
-  const handleClick = () => {
-    dispatch(clearFriendInfo());
-  };
 
   return (
     <>
       <div className={styles.profile_container}>
-        <div className={styles.profile_img} onClick={handleClick}>
+        <div className={styles.profile_img}>
           <Avatar src={profileImage} sx={{ width: 80, height: 80 }} />
         </div>
-        <div className={styles.profile_content} onClick={handleClick}>
+        <div className={styles.profile_content}>
           <Text types="semi-medium" bold>
             {nickname}
           </Text>
@@ -44,7 +44,14 @@ const Profile = ({ types, profile }: Props) => {
         <>
           {
             {
-              기본: <></>,
+              기본:
+                friendId === userId ? (
+                  <div className={styles.profile_button}>
+                    <SettingsIcon />
+                  </div>
+                ) : (
+                  <></>
+                ),
               로그아웃: (
                 <div className={styles.profile_button}>
                   <Button children="로그아웃" types="gray" onClick={() => handleLogout()} />

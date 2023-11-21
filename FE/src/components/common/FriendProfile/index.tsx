@@ -144,7 +144,7 @@ const FriendProfile = ({ types, profile }: Props) => {
 
   return (
     <div className={styles["fprofile_container"]}>
-      <div className={styles["profile_img"]} onClick={handleMoveToFriendProfile}>
+      <div className={styles["fprofile_img"]} onClick={handleMoveToFriendProfile}>
         <Avatar src={profileImage} />
       </div>
       <div className={styles["fprofile_content"]} onClick={handleMoveToFriendProfile}>
