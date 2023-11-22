@@ -361,6 +361,7 @@ class PlannerSettingServiceTest {
             verify(followRequestRepository, times(1)).deleteAllByReceiverId(any(Long.class));
             verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(), any(List.class));
+            verify(userRepository, times(1)).updatePlannerAccessScope(any(PlannerAccessScope.class), any(Long.class));
         }
 
 
@@ -379,6 +380,7 @@ class PlannerSettingServiceTest {
             //then
             verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(), any(List.class));
+            verify(userRepository, times(1)).updatePlannerAccessScope(any(PlannerAccessScope.class), any(Long.class));
         }
     }
 
