@@ -1,10 +1,7 @@
 package com.newsainturtle.shadowmate.follow.service;
 
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
-import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
-import com.newsainturtle.shadowmate.follow.dto.FollowRequestResponse;
-import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
-import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
+import com.newsainturtle.shadowmate.follow.dto.*;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
@@ -141,6 +138,14 @@ public class FollowServiceImpl implements FollowService {
             return FollowStatus.REQUESTED;
         }
         return FollowStatus.FOLLOW;
+    }
+
+    @Override
+    public CountFollowResponse countFollow(User user) {
+        return CountFollowResponse.builder()
+                .followerCount(followRepository.countByFollowerId(user))
+                .followingCount(followRepository.countByFollowingId(user))
+                .build();
     }
 
     private AddFollowResponse addFollowPublic(final User follower, final User following) {
