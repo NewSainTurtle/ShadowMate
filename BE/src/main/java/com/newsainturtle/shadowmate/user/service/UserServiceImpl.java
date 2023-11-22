@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
                 .statusMessage(user.getStatusMessage())
-                .plannerAccessScope(user.getPlannerAccessScope())
+                .plannerAccessScope(user.getPlannerAccessScope().getScope())
                 .build();
     }
 
