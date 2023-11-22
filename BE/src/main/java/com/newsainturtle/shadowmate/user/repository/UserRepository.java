@@ -17,6 +17,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
   
     User findByEmailAndSocialLogin(final String email, final SocialType socialType);
 
+    @Query("SELECT u FROM User u WHERE u.email = :email and u.socialLogin = :socialLogin and u.withdrawal = FALSE")
+    User findByEmailAndSocialLoginAndWithdrawal(@Param("email") final String email, @Param("socialLogin") final SocialType socialType);
+
     User findByIdAndWithdrawalIsFalse(final Long userId);
 
     User findByNicknameAndPlannerAccessScope(final String nickname, final PlannerAccessScope plannerAccessScope);
