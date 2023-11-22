@@ -149,6 +149,11 @@ $color-blue: var(--color-btn-blue);
     display: flex;
     gap: 1em;
   }
+
+  &--close {
+    @extend .detail;
+    grid-template-rows: min-content min-content 10em auto;
+  }
 }
 
 .friend {

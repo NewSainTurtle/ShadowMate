@@ -97,7 +97,7 @@ const Month = () => {
           <MonthCalendar selectedDay={selectedDay} setSelectedDay={setSelectedDay} isOpen={isOpen} />
         )}
       </div>
-      <MonthDetail />
+      <MonthDetail isOpen={isOpen} />
     </div>
   );
 };
