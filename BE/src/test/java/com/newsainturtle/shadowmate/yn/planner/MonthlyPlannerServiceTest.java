@@ -233,7 +233,7 @@ class MonthlyPlannerServiceTest {
                         .createTime(LocalDateTime.now())
                         .build());
                 doReturn(owner).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
-                doReturn(visitorBooks).when(visitorBookRepository).findTop5ByOwnerOrderByIdDesc(any());
+                doReturn(visitorBooks).when(visitorBookRepository).findTop10ByOwnerOrderByIdDesc(any());
 
                 //when
                 final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, owner.getId(), 0L);
@@ -244,7 +244,7 @@ class MonthlyPlannerServiceTest {
 
                 //verify
                 verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
-                verify(visitorBookRepository, times(1)).findTop5ByOwnerOrderByIdDesc(any());
+                verify(visitorBookRepository, times(1)).findTop10ByOwnerOrderByIdDesc(any());
             }
 
             @Test
@@ -266,7 +266,7 @@ class MonthlyPlannerServiceTest {
                         .createTime(LocalDateTime.now())
                         .build());
                 doReturn(owner).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
-                doReturn(visitorBooks).when(visitorBookRepository).findTop5ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
+                doReturn(visitorBooks).when(visitorBookRepository).findTop10ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
 
                 //when
                 final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, owner.getId(), 100L);
@@ -277,7 +277,7 @@ class MonthlyPlannerServiceTest {
 
                 //verify
                 verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
-                verify(visitorBookRepository, times(1)).findTop5ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
+                verify(visitorBookRepository, times(1)).findTop10ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
             }
         }
     }
