@@ -122,6 +122,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
 
     private CalendarDayTotalResponse getDayList(final User user, final User plannerWriter, final LocalDate date) {
         final List<CalendarDayResponse> dayList = new ArrayList<>();
+        final List<Long> dailyPlannerIdList = new ArrayList<>();
         int todoTotal = 0;
         int todoIncomplete = 0;
 
@@ -133,6 +134,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                 int todoCount = 0;
                 int dayStatus = 0;
                 if (dailyPlanner != null) {
+                    dailyPlannerIdList.add(dailyPlanner.getId());
                     final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner);
                     if (totalCount > 0) {
                         todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
@@ -163,6 +165,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                 .calendarDayResponseList(dayList)
                 .todoTotal(todoTotal)
                 .todoIncomplete(todoIncomplete)
+                .plannerLikeCount(dailyPlannerLikeRepository.countByDailyPlannerIdIn(dailyPlannerIdList))
                 .build();
     }
 
@@ -276,6 +279,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                 .todoTotal(calendarDayTotalResponse.getTodoTotal())
                 .todoComplete(calendarDayTotalResponse.getTodoTotal()-calendarDayTotalResponse.getTodoIncomplete())
                 .todoIncomplete(calendarDayTotalResponse.getTodoIncomplete())
+                .plannerLikeCount(calendarDayTotalResponse.getPlannerLikeCount())
                 .build();
     }
 

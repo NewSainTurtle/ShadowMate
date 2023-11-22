@@ -468,6 +468,7 @@ class SearchPlannerServiceTest {
                     .build();
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
             //when
             final SearchCalendarResponse searchCalendarResponse = searchPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
@@ -476,6 +477,7 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE.getScope());
             assertThat(searchCalendarResponse.getDayList()).isEmpty();
+            assertThat(searchCalendarResponse.getPlannerLikeCount()).isZero();
         }
 
         @Test
@@ -492,6 +494,7 @@ class SearchPlannerServiceTest {
                     .build();
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
+            doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
             //when
             final SearchCalendarResponse searchCalendarResponse = searchPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
@@ -500,6 +503,7 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse).isNotNull();
             assertThat(searchCalendarResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
             assertThat(searchCalendarResponse.getDayList()).isEmpty();
+            assertThat(searchCalendarResponse.getPlannerLikeCount()).isZero();
         }
 
         @Test
@@ -529,6 +533,7 @@ class SearchPlannerServiceTest {
             doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(0).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
             //when
             final SearchCalendarResponse searchCalendarResponse = searchPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
@@ -540,6 +545,7 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getTodoTotal()).isZero();
             assertThat(searchCalendarResponse.getTodoComplete()).isZero();
             assertThat(searchCalendarResponse.getTodoIncomplete()).isZero();
+            assertThat(searchCalendarResponse.getPlannerLikeCount()).isZero();
         }
 
         @Test
@@ -548,6 +554,7 @@ class SearchPlannerServiceTest {
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(0).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
             //when
             final SearchCalendarResponse searchCalendarResponse = searchPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
@@ -563,6 +570,7 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getTodoTotal()).isZero();
             assertThat(searchCalendarResponse.getTodoComplete()).isZero();
             assertThat(searchCalendarResponse.getTodoIncomplete()).isZero();
+            assertThat(searchCalendarResponse.getPlannerLikeCount()).isZero();
         }
 
         @Test
@@ -572,6 +580,7 @@ class SearchPlannerServiceTest {
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(6).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
+            doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
             //when
             final SearchCalendarResponse searchCalendarResponse = searchPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
@@ -587,6 +596,7 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getTodoTotal()).isEqualTo(310);
             assertThat(searchCalendarResponse.getTodoComplete()).isEqualTo(310-186);
             assertThat(searchCalendarResponse.getTodoIncomplete()).isEqualTo(186);
+            assertThat(searchCalendarResponse.getPlannerLikeCount()).isZero();
         }
 
         @Test
@@ -596,6 +606,7 @@ class SearchPlannerServiceTest {
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(2).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
+            doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
             //when
             final SearchCalendarResponse searchCalendarResponse = searchPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
@@ -611,6 +622,7 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getTodoTotal()).isEqualTo(310);
             assertThat(searchCalendarResponse.getTodoComplete()).isEqualTo(310-62);
             assertThat(searchCalendarResponse.getTodoIncomplete()).isEqualTo(62);
+            assertThat(searchCalendarResponse.getPlannerLikeCount()).isZero();
         }
 
         @Test
@@ -620,6 +632,7 @@ class SearchPlannerServiceTest {
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
             doReturn(2).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(0).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
+            doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
             //when
             final SearchCalendarResponse searchCalendarResponse = searchPlannerServiceImpl.searchCalendar(user, plannerWriterId, dateStr);
@@ -635,6 +648,7 @@ class SearchPlannerServiceTest {
             assertThat(searchCalendarResponse.getTodoTotal()).isEqualTo(62);
             assertThat(searchCalendarResponse.getTodoComplete()).isEqualTo(62);
             assertThat(searchCalendarResponse.getTodoIncomplete()).isZero();
+            assertThat(searchCalendarResponse.getPlannerLikeCount()).isZero();
         }
 
 
