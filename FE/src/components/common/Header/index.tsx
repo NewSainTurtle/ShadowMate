@@ -2,7 +2,7 @@ import React from "react";
 import styles from "@styles/common/Header.module.scss";
 import Toggle from "./Toggle";
 import Menu from "./Menu";
-import { Avatar } from "@mui/material";
+import Avatar from "@components/common/Avatar";
 import { NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";

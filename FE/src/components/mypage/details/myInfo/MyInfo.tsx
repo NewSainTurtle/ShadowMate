@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Input from "@components/common/Input";
 import Text from "@components/common/Text";
-import { Avatar } from "@mui/material";
+import Avatar from "@components/common/Avatar";
 import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
 import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
