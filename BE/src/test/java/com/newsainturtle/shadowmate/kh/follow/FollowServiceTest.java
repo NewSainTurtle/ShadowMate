@@ -1,10 +1,7 @@
 package com.newsainturtle.shadowmate.kh.follow;
 
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
-import com.newsainturtle.shadowmate.follow.dto.AddFollowResponse;
-import com.newsainturtle.shadowmate.follow.dto.FollowRequestResponse;
-import com.newsainturtle.shadowmate.follow.dto.FollowerResponse;
-import com.newsainturtle.shadowmate.follow.dto.FollowingResponse;
+import com.newsainturtle.shadowmate.follow.dto.*;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
@@ -67,6 +64,20 @@ public class FollowServiceTest {
             .withdrawal(false)
             .build();
     final Long userId2 = user2.getId();
+
+    @Test
+    void 팔로우개수조회() {
+        // given
+        doReturn(1L).when(followRepository).countByFollowerId(any());
+        doReturn(10L).when(followRepository).countByFollowingId(any());
+
+        // when
+        final CountFollowResponse result = followService.countFollow(user1);
+
+        // then
+        assertThat(result.getFollowerCount()).isEqualTo(1L);
+        assertThat(result.getFollowingCount()).isEqualTo(10L);
+    }
 
     @Test
     void 팔로우_상태조회_EMPTY() {
