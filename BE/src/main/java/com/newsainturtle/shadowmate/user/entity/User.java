@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "users")
-@AttributeOverride(name = "id", column = @Column(name= "user_id"))
+@AttributeOverride(name = "id", column = @Column(name = "user_id"))
 public class User extends CommonEntity {
 
     @Column(unique = true, nullable = false)
@@ -46,4 +46,8 @@ public class User extends CommonEntity {
 
     @Column(length = 100)
     private String introduction;
+
+    public void updatePlannerAccessScope(final PlannerAccessScope plannerAccessScope) {
+        this.plannerAccessScope = plannerAccessScope;
+    }
 }

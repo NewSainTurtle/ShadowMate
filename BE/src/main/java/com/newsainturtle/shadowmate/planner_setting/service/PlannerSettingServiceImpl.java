@@ -20,7 +20,6 @@ import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
-import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +37,6 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     private final CategoryRepository categoryRepository;
     private final CategoryColorRepository categoryColorRepository;
     private final DdayRepository ddayRepository;
-    private final UserRepository userRepository;
     private final TodoRepository todoRepository;
     private final FollowRequestRepository followRequestRepository;
     private final FollowRepository followRepository;
@@ -82,17 +80,9 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     public void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest) {
         final Category findCategory = getCategory(user, updateCategoryRequest.getCategoryId());
         final CategoryColor categoryColor = getCategoryColor(updateCategoryRequest.getCategoryColorId());
-        final Category category = Category.builder()
-                .id(findCategory.getId())
-                .categoryTitle(updateCategoryRequest.getCategoryTitle())
-                .categoryEmoticon(updateCategoryRequest.getCategoryEmoticon())
-                .categoryRemove(findCategory.getCategoryRemove())
-                .categoryColor(categoryColor)
-                .user(findCategory.getUser())
-                .createTime(findCategory.getCreateTime())
-                .build();
-
-        categoryRepository.save(category);
+        findCategory.updateCategoryTitleAndEmoticonAndColor(updateCategoryRequest.getCategoryTitle(),
+                updateCategoryRequest.getCategoryEmoticon(),
+                categoryColor);
     }
 
     @Override
@@ -104,18 +94,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
         if (count == 0) {
             categoryRepository.deleteByUserAndId(user, removeCategoryRequest.getCategoryId());
         } else {
-            final Category category = Category.builder()
-                    .id(findCategory.getId())
-                    .categoryTitle(findCategory.getCategoryTitle())
-                    .categoryEmoticon(findCategory.getCategoryEmoticon())
-                    .categoryRemove(true)
-                    .categoryColor(findCategory.getCategoryColor())
-                    .user(findCategory.getUser())
-                    .createTime(findCategory.getCreateTime())
-                    .deleteTime(LocalDateTime.now())
-                    .build();
-
-            categoryRepository.save(category);
+            findCategory.deleteCategory();
         }
     }
 
@@ -165,19 +144,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
             final LocalDateTime time = LocalDateTime.now();
             socialRepository.updateDeleteTimeAll(time, dailyPlanners);
         }
-
-        final User changeUser = User.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .socialLogin(user.getSocialLogin())
-                .nickname(user.getNickname())
-                .plannerAccessScope(accessScope)
-                .withdrawal(user.getWithdrawal())
-                .createTime(user.getCreateTime())
-                .build();
-
-        userRepository.save(changeUser);
+        user.updatePlannerAccessScope(accessScope);
     }
 
     @Override
@@ -220,14 +187,6 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
         if (findDday == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY);
         }
-        final Dday dday = Dday.builder()
-                .id(findDday.getId())
-                .createTime(findDday.getCreateTime())
-                .ddayDate(Date.valueOf(updateDdayRequest.getDdayDate()))
-                .ddayTitle(updateDdayRequest.getDdayTitle())
-                .user(findDday.getUser())
-                .build();
-
-        ddayRepository.save(dday);
+        findDday.updateDdayDateAndTitle(Date.valueOf(updateDdayRequest.getDdayDate()), updateDdayRequest.getDdayTitle());
     }
 }

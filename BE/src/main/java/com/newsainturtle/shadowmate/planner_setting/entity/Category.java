@@ -34,4 +34,17 @@ public class Category extends CommonEntity {
     @JoinColumn(name = "category_color_id")
     private CategoryColor categoryColor;
 
+    public void updateCategoryTitleAndEmoticonAndColor(final String categoryTitle,
+                                                       final String categoryEmoticon,
+                                                       final CategoryColor categoryColor) {
+        this.categoryTitle = categoryTitle;
+        this.categoryEmoticon = categoryEmoticon;
+        this.categoryColor = categoryColor;
+    }
+
+    public void deleteCategory() {
+        super.updateDeleteTime();
+        this.categoryRemove = true;
+    }
+
 }
