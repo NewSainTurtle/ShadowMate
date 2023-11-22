@@ -36,6 +36,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateIntroduction(@Param("introduction") final String introduction, @Param("userId") final long userId);
 
     @Modifying(clearAutomatically = true)
-    @Query("update User u set u.withdrawal = TRUE, u.deleteTime = :deleteTime WHERE u.id = :userId")
+    @Query("update User u set u.withdrawal = TRUE, u.deleteTime = :deleteTime, u.password = 'shadowmate' WHERE u.id = :userId")
     void deleteUser(@Param("deleteTime") final LocalDateTime deleteTime, @Param("userId") final long userId);
 }
