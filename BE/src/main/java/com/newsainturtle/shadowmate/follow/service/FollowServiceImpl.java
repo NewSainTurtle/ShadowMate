@@ -141,7 +141,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public CountFollowResponse countFollow(User user) {
+    public CountFollowResponse countFollow(final User user) {
         return CountFollowResponse.builder()
                 .followerCount(followRepository.countByFollowerId(user))
                 .followingCount(followRepository.countByFollowingId(user))
