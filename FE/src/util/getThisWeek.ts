@@ -36,16 +36,20 @@ export const getThisWeek = (date: string | Date | dayjs.Dayjs) => {
   return weekInfo;
 };
 
-export const getThisWeekCnt = (date: string | Date | dayjs.Dayjs) => {
-  const inputDate = dayjs(date).toDate();
-  const currentDate = inputDate.getDate();
-  const firstDay = new Date(inputDate.setDate(1)).getDay();
-  const weekCnt = Math.ceil((currentDate + firstDay) / 7);
+export const getThisWeekCnt = (date: Date) => {
+  let lastWeek = false;
+  let currentDate = date.getDate();
+  let firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  if (currentDate + 6 > lastDate.getDate()) lastWeek = true;
+  const firstDay = firstDate.getDay() === 0 ? 6 : firstDate.getDay() - 1;
+  const weekCnt = lastWeek ? 1 : Math.ceil((currentDate + firstDay) / 7);
+  const weekMonth = lastWeek ? (date.getMonth() + 1 == 12 ? 0 : date.getMonth() + 1) : date.getMonth();
 
   const week: WeekConfig = {
     weekCnt,
-    weekYear: inputDate.getFullYear(),
-    weekMonth: inputDate.getMonth(),
+    weekYear: date.getFullYear(),
+    weekMonth,
   };
 
   return week;
