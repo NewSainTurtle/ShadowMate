@@ -140,6 +140,8 @@ const DayPage = () => {
   const handleDownload = async () => {
     if (!screenDivRef.current) return;
     await html2canvas(screenDivRef.current, {
+      windowWidth: 1080,
+      windowHeight: 610,
       logging: false,
       allowTaint: true,
       useCORS: true,
