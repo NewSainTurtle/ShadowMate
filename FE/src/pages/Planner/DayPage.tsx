@@ -145,7 +145,7 @@ const DayPage = () => {
       useCORS: true,
     }).then(async (canvas) => {
       const imageURL = canvas.toDataURL("image/png");
-      const storageRef = ref(firebaseStorage, `/social/${userId + "_" + date}`);
+      const storageRef = ref(firebaseStorage, `social/${userId + "_" + date}`);
       uploadString(storageRef, imageURL, "data_url").then((snapshot) =>
         getDownloadURL(snapshot.ref).then((downloadURL) =>
           plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
@@ -198,7 +198,7 @@ const DayPage = () => {
           rows={5}
           maxLength={100}
           isFile
-          retrospectionImage={retrospectionImage}
+          retrospectionImage={retrospectionImage || ""}
           setRetrospectionImage={setRetrospectionImage}
           onBlur={saveRetrospections}
         />
