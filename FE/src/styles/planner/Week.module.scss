@@ -2,6 +2,7 @@
 $color-text: var(--color-text);
 $color-white: var(--color-white);
 $color-black: var(--color-black);
+$color-gray-1: var(--color-gray-1);
 $color-gray-4: var(--color-gray-4);
 $color-gray-5: var(--color-gray-5);
 $border: 1px;
@@ -169,6 +170,13 @@ $border: 1px;
     display: flex;
     justify-content: center;
     align-items: center;
+    > div:nth-child(1):hover {
+      padding: 0.2em 0.5em;
+      box-sizing: border-box;
+      border-radius: 0.625rem;
+      background-color: $color-gray-1;
+      cursor: pointer;
+    }
     > span {
       // DDay
       &:nth-child(2) {

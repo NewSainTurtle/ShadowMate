@@ -7,7 +7,9 @@ import WeekItemInput from "@components/planner/week/list/WeekItemInput";
 import { dateFormat } from "@util/getThisWeek";
 import { TodoConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { useNavigate } from "react-router-dom";
 import { DayListConfig, selectDayList, selectWeekDday, setDayList } from "@store/planner/weekSlice";
+import { setDayDate } from "@store/planner/daySlice";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import dayjs from "dayjs";
@@ -15,12 +17,14 @@ import dayjs from "dayjs";
 interface Props {
   idx: number;
   isMine: boolean;
+  today: DayListConfig;
   retroClick: number;
   setRetroClick: Dispatch<SetStateAction<number>>;
 }
 
-const WeekList = ({ idx, isMine, retroClick, setRetroClick }: Props) => {
+const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
   const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const userId = useAppSelector(selectUserId);
   const nearDate = useAppSelector(selectWeekDday);
   const dayList: DayListConfig[] = useAppSelector(selectDayList);
@@ -47,6 +51,11 @@ const WeekList = ({ idx, isMine, retroClick, setRetroClick }: Props) => {
       .catch((err) => console.log(err));
   };
 
+  const handleMoveToDay = () => {
+    dispatch(setDayDate(today.date));
+    navigator("/day");
+  };
+
   useEffect(() => {
     setDailyTodos(dayList[idx].dailyTodos || []);
     setRetrospection(dayList[idx].retrospection || "");
@@ -55,7 +64,9 @@ const WeekList = ({ idx, isMine, retroClick, setRetroClick }: Props) => {
   return (
     <div className={styles["item"]}>
       <div className={styles["item__title"]}>
-        <Text>{dateFormat(date)}</Text>
+        <div onClick={handleMoveToDay}>
+          <Text>{dateFormat(date)}</Text>
+        </div>
         <Dday nearDate={nearDate} comparedDate={dateFormat(date)} />
       </div>
       <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, 20%` }}>
