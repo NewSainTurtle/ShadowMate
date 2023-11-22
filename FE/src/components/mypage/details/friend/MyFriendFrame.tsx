@@ -44,7 +44,10 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   };
 
   const typeToFollow = (type: string) => {
-    if (type == "EMPTY") return "친구 신청";
+    if (type == "EMPTY") {
+      if (search) return "친구 신청";
+      else return "팔로워 신청";
+    }
     if (type == "REQUESTED") return "취소";
     if (search && "FOLLOW") return "팔로잉 삭제";
     return "팔로워 삭제";
@@ -89,7 +92,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     if (friend.followerId)
       return {
         id: friend.followerId,
-        isFollow: typeToFollow(friend.isFollow || "FOLLOW"), // isFollow 누락, API 수정후 변경 예정
+        isFollow: typeToFollow(friend.isFollow || "FOLLOW"),
       };
     else if (friend.followingId) return { id: friend.followingId, isFollow: "팔로잉 삭제" };
     else if (friend.requesterId) return { id: friend.requesterId, isFollow: "요청" };
@@ -119,7 +122,9 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
               statusMessage,
               profileImage,
             };
-            return <FriendProfile key={title + id} types={isFollow as followType["types"]} profile={followInfo} />;
+            return (
+              <FriendProfile key={title + id + isFollow} types={isFollow as followType["types"]} profile={followInfo} />
+            );
           })
         ) : (
           <Text types="small">{search ? alertMessage : `${title}이(가) 없습니다.`}</Text>

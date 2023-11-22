@@ -29,4 +29,8 @@ public class CommonEntity {
     private LocalDateTime updateTime;
 
     private LocalDateTime deleteTime;
+
+    public void updateDeleteTime(){
+        this.deleteTime = LocalDateTime.now();
+    }
 }

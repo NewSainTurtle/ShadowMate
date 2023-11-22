@@ -3,7 +3,7 @@ import styles from "@styles/common/Profile.module.scss";
 import { ProfileConfig } from "@components/common/FriendProfile";
 import Text from "@components/common/Text";
 import Button from "@components/common/Button";
-import { Avatar } from "@mui/material";
+import Avatar from "@components/common/Avatar";
 import { persistor } from "@hooks/configStore";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, setLogout } from "@store/authSlice";
@@ -33,7 +33,7 @@ const Profile = ({ types, profile }: Props) => {
     <>
       <div className={styles.profile_container}>
         <div className={styles.profile_img}>
-          <Avatar src={profileImage} sx={{ width: 80, height: 80 }} />
+          <Avatar src={profileImage} />
         </div>
         <div className={styles.profile_content}>
           <Text types="semi-medium" bold>

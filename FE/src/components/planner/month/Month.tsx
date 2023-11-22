@@ -3,11 +3,12 @@ import styles from "@styles/planner/Month.module.scss";
 import MonthCalendar from "@components/planner/month/MonthCalendar";
 import MonthDetail from "@components/planner/month/MonthDetail";
 import Text from "@components/common/Text";
+import Loading from "@components/common/Loading";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { MonthConfig, MonthDayConfig, setMonthInfo } from "@store/planner/monthSlice";
-import { plannerApi } from "@api/Api";
+import { plannerApi, userApi } from "@api/Api";
 import { selectFriendId } from "@store/friendSlice";
 
 const Month = () => {
@@ -19,6 +20,8 @@ const Month = () => {
   const userId = useAppSelector(selectUserId);
   let friendId = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
 
   const handlePrevMonth = () => {
     const newDate = dayjs(selectedDay).subtract(1, "month").endOf("month").format("MM/DD/YY");
@@ -30,6 +33,18 @@ const Month = () => {
     setSelectedDay(newDate);
   };
 
+  const getIsOpen = async () => {
+    const response = await userApi.getProfiles(friendId);
+    const status = response.data.data.plannerAccessScope;
+    if (status === "PRIVATE") {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+      setLoading(true);
+      getMonthInfo();
+    }
+  };
+
   const getMonthInfo = () => {
     plannerApi
       .calendars(friendId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
@@ -37,13 +52,19 @@ const Month = () => {
         const dayList: MonthDayConfig[] = res.data.data.dayList;
         const plannerAccessScope: MonthConfig["plannerAccessScope"] = res.data.data.plannerAccessScope || "전체공개";
         dispatch(setMonthInfo({ plannerAccessScope, dayList }));
+        setLoading(false);
       })
       .catch((err) => console.log(err));
   };
 
   useEffect(() => {
+    setSelectedDay(dayjs(new Date()).format("YYYY-MM-DD"));
+    getIsOpen();
+  }, [friendId]);
+
+  useEffect(() => {
     getMonthInfo();
-  }, [selectedDay, friendId]);
+  }, [selectedDay]);
 
   return (
     <div className={styles["month"]}>
@@ -70,9 +91,13 @@ const Month = () => {
             </div>
           </div>
         </div>
-        <MonthCalendar selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
+        {loading ? (
+          <Loading />
+        ) : (
+          <MonthCalendar selectedDay={selectedDay} setSelectedDay={setSelectedDay} isOpen={isOpen} />
+        )}
       </div>
-      <MonthDetail />
+      <MonthDetail isOpen={isOpen} />
     </div>
   );
 };

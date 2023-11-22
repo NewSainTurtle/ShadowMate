@@ -194,7 +194,7 @@ public class UserControllerTest {
 
             //when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.post(url,userId)
+                    MockMvcRequestBuilders.put(url,userId)
                             .content(gson.toJson(updatePasswordRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -214,7 +214,7 @@ public class UserControllerTest {
 
             //when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.post(url,userId)
+                    MockMvcRequestBuilders.put(url,userId)
                             .content(gson.toJson(updatePasswordRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 

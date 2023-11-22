@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
-import { Avatar } from "@mui/material";
+import Avatar from "@components/common/Avatar";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";

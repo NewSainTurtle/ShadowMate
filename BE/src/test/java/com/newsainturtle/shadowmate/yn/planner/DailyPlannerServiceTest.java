@@ -285,7 +285,6 @@ class DailyPlannerServiceTest {
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
                 verify(todoRepository, times(1)).findByIdAndDailyPlanner(any(Long.class), any());
-                verify(todoRepository, times(1)).save(any(Todo.class));
             }
 
         }
@@ -362,7 +361,6 @@ class DailyPlannerServiceTest {
                     .todayGoal(updateTodayGoalRequest.getTodayGoal())
                     .build();
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
-            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
 
             //when
             dailyPlannerServiceImpl.updateTodayGoal(user, updateTodayGoalRequest);
@@ -371,7 +369,6 @@ class DailyPlannerServiceTest {
 
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
         }
 
         @Test
@@ -392,7 +389,6 @@ class DailyPlannerServiceTest {
                     .tomorrowGoal(updateTomorrowGoalRequest.getTomorrowGoal())
                     .build();
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
-            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
 
             //when
             dailyPlannerServiceImpl.updateTomorrowGoal(user, updateTomorrowGoalRequest);
@@ -401,7 +397,6 @@ class DailyPlannerServiceTest {
 
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
         }
 
         @Test
@@ -422,7 +417,6 @@ class DailyPlannerServiceTest {
                     .retrospection(updateRetrospectionRequest.getRetrospection())
                     .build();
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
-            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
 
             //when
             dailyPlannerServiceImpl.updateRetrospection(user, updateRetrospectionRequest);
@@ -431,7 +425,6 @@ class DailyPlannerServiceTest {
 
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
         }
 
         @Test
@@ -452,7 +445,6 @@ class DailyPlannerServiceTest {
                     .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
                     .build();
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
-            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
 
             //when
             dailyPlannerServiceImpl.updateRetrospectionImage(user, updateRetrospectionImageRequest);
@@ -461,7 +453,6 @@ class DailyPlannerServiceTest {
 
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
         }
 
         @Test
@@ -482,7 +473,6 @@ class DailyPlannerServiceTest {
                     .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
                     .build();
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
-            doReturn(changeDailyPlanner).when(dailyPlannerRepository).save(any(DailyPlanner.class));
 
             //when
             dailyPlannerServiceImpl.updateRetrospectionImage(user, updateRetrospectionImageRequest);
@@ -491,7 +481,6 @@ class DailyPlannerServiceTest {
 
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-            verify(dailyPlannerRepository, times(1)).save(any(DailyPlanner.class));
         }
 
     }
@@ -945,7 +934,6 @@ class DailyPlannerServiceTest {
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
             verify(socialRepository, times(1)).findByDailyPlanner(any(DailyPlanner.class));
-            verify(socialRepository, times(1)).save(any(Social.class));
         }
     }
 }

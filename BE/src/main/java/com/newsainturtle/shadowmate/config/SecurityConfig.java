@@ -55,6 +55,8 @@ public class SecurityConfig {
                 .authorizationEndpoint()
                 .baseUri("/api/oauth/")
                 .and()
+                .redirectionEndpoint().baseUri("/api/auth/google")
+                .and()
                 .userInfoEndpoint().userService(principalOauth2UserService)
                 .and()
                 .successHandler(oAuth2LoginSuccessHandler)

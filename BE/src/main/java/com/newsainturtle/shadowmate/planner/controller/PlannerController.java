@@ -207,10 +207,17 @@ public class PlannerController {
 
     @DeleteMapping("/{userId}/monthly/visitor-books")
     public ResponseEntity<BaseResponse> removeVisitorBook(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                       @PathVariable("userId") final Long userId,
-                                                       @RequestBody @Valid final RemoveVisitorBookRequest removeVisitorBookRequest) {
+                                                          @PathVariable("userId") final Long userId,
+                                                          @RequestBody @Valid final RemoveVisitorBookRequest removeVisitorBookRequest) {
         monthlyPlannerServiceImpl.removeVisitorBook(principalDetails.getUser(), userId, removeVisitorBookRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_VISITOR_BOOK));
+    }
+
+    @GetMapping("/{userId}/monthly/visitor-books")
+    public ResponseEntity<BaseResponse> searchVisitorBook(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                          @PathVariable("userId") final Long userId,
+                                                          @RequestParam(name = "last") final long lastVisitorBookId) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_VISITOR_BOOK, monthlyPlannerServiceImpl.searchVisitorBook(principalDetails.getUser(), userId, lastVisitorBookId)));
     }
 
 }

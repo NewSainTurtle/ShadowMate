@@ -16,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -127,7 +129,7 @@ class DailyPlannerLikeRepositoryTest {
     }
 
     @Nested
-    class 좋아요카운트 {
+    class 좋아요카운트_일별 {
 
         @Test
         void 좋아요0() {
@@ -180,6 +182,68 @@ class DailyPlannerLikeRepositoryTest {
 
             //then
             assertThat(count).isEqualTo(2);
+        }
+    }
+
+    @Nested
+    class 좋아요카운트_월별 {
+
+        @Test
+        void 좋아요0개일때() {
+            //given
+
+            //when
+            final long count = dailyPlannerLikeRepository.countByDailyPlannerIdIn(new ArrayList<>());
+
+            //then
+            assertThat(count).isZero();
+        }
+
+        @Test
+        void 좋아요1개이상일때() {
+            //given
+            final List<Long> dailyPlannerIdList = new ArrayList<>();
+            final DailyPlanner dailyPlanner1 = dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf("2023-10-31"))
+                    .user(user1)
+                    .build());
+            final DailyPlanner dailyPlanner2 = dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf("2023-11-01"))
+                    .user(user1)
+                    .build());
+            final DailyPlanner dailyPlanner3 = dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf("2023-11-02"))
+                    .user(user1)
+                    .build());
+            final DailyPlanner dailyPlanner4 = dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(Date.valueOf("2023-11-03"))
+                    .user(user1)
+                    .build());
+            dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                    .dailyPlanner(dailyPlanner1)
+                    .user(user2)
+                    .build());
+            dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                    .dailyPlanner(dailyPlanner2)
+                    .user(user2)
+                    .build());
+            dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                    .dailyPlanner(dailyPlanner3)
+                    .user(user2)
+                    .build());
+            dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
+                    .dailyPlanner(dailyPlanner4)
+                    .user(user2)
+                    .build());
+            dailyPlannerIdList.add(dailyPlanner2.getId());
+            dailyPlannerIdList.add(dailyPlanner3.getId());
+            dailyPlannerIdList.add(dailyPlanner4.getId());
+
+            //when
+            final long count = dailyPlannerLikeRepository.countByDailyPlannerIdIn(dailyPlannerIdList);
+
+            //then
+            assertThat(count).isEqualTo(3);
         }
     }
 }

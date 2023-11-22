@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(final String email);
 
@@ -16,6 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByIdAndNickname(final Long userId, final String nickname);
   
     User findByEmailAndSocialLogin(final String email, final SocialType socialType);
+
+    @Query("SELECT u FROM User u WHERE u.email = :email and u.socialLogin = :socialLogin and u.withdrawal = FALSE")
+    User findByEmailAndSocialLoginAndWithdrawal(@Param("email") final String email, @Param("socialLogin") final SocialType socialType);
 
     User findByIdAndWithdrawalIsFalse(final Long userId);
 
@@ -32,4 +37,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true)
     @Query("update User u set u.introduction = :introduction where u.id = :userId")
     void updateIntroduction(@Param("introduction") final String introduction, @Param("userId") final long userId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update User u set u.withdrawal = TRUE, u.deleteTime = :deleteTime, u.password = 'shadowmate' WHERE u.id = :userId")
+    void deleteUser(@Param("deleteTime") final LocalDateTime deleteTime, @Param("userId") final long userId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update User u set u.plannerAccessScope = :plannerAccessScope where u.id = :userId")
+    void updatePlannerAccessScope(@Param("plannerAccessScope") final PlannerAccessScope plannerAccessScope, @Param("userId") final long userId);
 }

@@ -2,7 +2,8 @@ package com.newsainturtle.shadowmate.yn.planner;
 
 import com.newsainturtle.shadowmate.planner.dto.request.AddVisitorBookRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.RemoveVisitorBookRequest;
-import com.newsainturtle.shadowmate.planner.dto.response.AddVisitorBookResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchVisitorBookResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.VisitorBookResponse;
 import com.newsainturtle.shadowmate.planner.entity.VisitorBook;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
@@ -20,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -105,7 +108,7 @@ class MonthlyPlannerServiceTest {
                 doReturn(visitorBook).when(visitorBookRepository).save(any(VisitorBook.class));
 
                 //when
-                final AddVisitorBookResponse addVisitorBookResponse = monthlyPlannerServiceImpl.addVisitorBook(visitor, owner.getId(), addVisitorBookRequest);
+                final VisitorBookResponse addVisitorBookResponse = monthlyPlannerServiceImpl.addVisitorBook(visitor, owner.getId(), addVisitorBookRequest);
 
                 //then
                 assertThat(addVisitorBookResponse).isNotNull();
@@ -135,7 +138,7 @@ class MonthlyPlannerServiceTest {
             @Test
             void 실패_유효하지않은방명록() {
                 //given
-                doReturn(null).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                doReturn(null).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class), any(Long.class));
 
                 //when
                 final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.removeVisitorBook(visitor, owner.getId(), removeVisitorBookRequest));
@@ -156,7 +159,7 @@ class MonthlyPlannerServiceTest {
                         .plannerAccessScope(PlannerAccessScope.PUBLIC)
                         .withdrawal(false)
                         .build();
-                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class), any(Long.class));
 
                 //when
                 final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.removeVisitorBook(user1, owner.getId(), removeVisitorBookRequest));
@@ -168,7 +171,7 @@ class MonthlyPlannerServiceTest {
             @Test
             void 성공_방명록작성자() {
                 //given
-                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class), any(Long.class));
 
                 //when
                 monthlyPlannerServiceImpl.removeVisitorBook(visitor, owner.getId(), removeVisitorBookRequest);
@@ -176,14 +179,14 @@ class MonthlyPlannerServiceTest {
                 //then
 
                 //verify
-                verify(visitorBookRepository, times(1)).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                verify(visitorBookRepository, times(1)).findByIdAndOwnerId(any(Long.class), any(Long.class));
                 verify(visitorBookRepository, times(1)).deleteById(any(Long.class));
             }
 
             @Test
             void 성공_플래너주인() {
                 //given
-                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                doReturn(visitorBook).when(visitorBookRepository).findByIdAndOwnerId(any(Long.class), any(Long.class));
 
                 //when
                 monthlyPlannerServiceImpl.removeVisitorBook(owner, owner.getId(), removeVisitorBookRequest);
@@ -191,8 +194,90 @@ class MonthlyPlannerServiceTest {
                 //then
 
                 //verify
-                verify(visitorBookRepository, times(1)).findByIdAndOwnerId(any(Long.class),any(Long.class));
+                verify(visitorBookRepository, times(1)).findByIdAndOwnerId(any(Long.class), any(Long.class));
                 verify(visitorBookRepository, times(1)).deleteById(any(Long.class));
+            }
+        }
+
+        @Nested
+        class 방명록조회 {
+
+            @Test
+            void 실패_유효하지않은사용자() {
+                //given
+                doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.searchVisitorBook(visitor, owner.getId(), 0L));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
+            }
+
+            @Test
+            void 성공_처음() {
+                //given
+                final List<VisitorBook> visitorBooks = new ArrayList<>();
+                visitorBooks.add(VisitorBook.builder()
+                        .id(1L)
+                        .owner(owner)
+                        .visitor(visitor)
+                        .visitorBookContent("안녕하세요~!")
+                        .createTime(LocalDateTime.now())
+                        .build());
+                visitorBooks.add(VisitorBook.builder()
+                        .id(2L)
+                        .owner(owner)
+                        .visitor(visitor)
+                        .visitorBookContent("안녕하세요~!")
+                        .createTime(LocalDateTime.now())
+                        .build());
+                doReturn(owner).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+                doReturn(visitorBooks).when(visitorBookRepository).findTop5ByOwnerOrderByIdDesc(any());
+
+                //when
+                final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, owner.getId(), 0L);
+
+                //then
+                assertThat(searchVisitorBookResponse).isNotNull();
+                assertThat(searchVisitorBookResponse.getVisitorBookResponses()).hasSize(2);
+
+                //verify
+                verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
+                verify(visitorBookRepository, times(1)).findTop5ByOwnerOrderByIdDesc(any());
+            }
+
+            @Test
+            void 성공_연속() {
+                //given
+                final List<VisitorBook> visitorBooks = new ArrayList<>();
+                visitorBooks.add(VisitorBook.builder()
+                        .id(1L)
+                        .owner(owner)
+                        .visitor(visitor)
+                        .visitorBookContent("안녕하세요~!")
+                        .createTime(LocalDateTime.now())
+                        .build());
+                visitorBooks.add(VisitorBook.builder()
+                        .id(2L)
+                        .owner(owner)
+                        .visitor(visitor)
+                        .visitorBookContent("안녕하세요~!")
+                        .createTime(LocalDateTime.now())
+                        .build());
+                doReturn(owner).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+                doReturn(visitorBooks).when(visitorBookRepository).findTop5ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
+
+                //when
+                final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, owner.getId(), 100L);
+
+                //then
+                assertThat(searchVisitorBookResponse).isNotNull();
+                assertThat(searchVisitorBookResponse.getVisitorBookResponses()).hasSize(2);
+
+                //verify
+                verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
+                verify(visitorBookRepository, times(1)).findTop5ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
             }
         }
     }

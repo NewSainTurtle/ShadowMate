@@ -2572,5 +2572,52 @@ class PlannerControllerTest {
             }
 
         }
+
+        @Nested
+        class 방명록조회 {
+
+            @Test
+            void 실패_유효하지않은사용자() throws Exception {
+                //given
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(monthlyPlannerServiceImpl).searchVisitorBook(any(), any(Long.class), any(Long.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.get(url, userId)
+                                .param("last", "0")
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 성공_처음() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.get(url, userId)
+                                .param("last", "0")
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+            @Test
+            void 성공_연속() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.get(url, userId)
+                                .param("last", "100")
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@ public class UserController {
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_USER));
     }
 
-    @PostMapping("/{userId}/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<BaseResponse> updatePassword(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                    @PathVariable("userId") final Long userId,
                                                    @RequestBody @Valid final UpdatePasswordRequest updatePasswordRequest) {
