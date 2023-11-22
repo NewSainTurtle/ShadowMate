@@ -25,4 +25,12 @@ public class WeeklyTodo extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "weekly_id")
     private Weekly weekly;
+
+    public void updateWeeklyTodoContent(final String weeklyTodoContent) {
+        this.weeklyTodoContent = weeklyTodoContent;
+    }
+
+    public void updateWeeklyTodoStatus(final boolean weeklyTodoStatus) {
+        this.weeklyTodoStatus = weeklyTodoStatus;
+    }
 }
