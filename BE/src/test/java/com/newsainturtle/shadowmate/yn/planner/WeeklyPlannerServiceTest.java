@@ -221,7 +221,6 @@ class WeeklyPlannerServiceTest {
 
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
-            doReturn(weeklyTodo).when(weeklyTodoRepository).save(any(WeeklyTodo.class));
 
             //when
             weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, updateWeeklyTodoContentRequest);
@@ -231,7 +230,6 @@ class WeeklyPlannerServiceTest {
             //verify
             verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             verify(weeklyTodoRepository, times(1)).findByIdAndWeekly(any(Long.class), any(Weekly.class));
-            verify(weeklyTodoRepository, times(1)).save(any(WeeklyTodo.class));
         }
 
     }
@@ -324,7 +322,6 @@ class WeeklyPlannerServiceTest {
 
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
-            doReturn(weeklyTodo).when(weeklyTodoRepository).save(any(WeeklyTodo.class));
 
             //when
             weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, updateWeeklyTodoStatusRequest);
@@ -334,7 +331,6 @@ class WeeklyPlannerServiceTest {
             //verify
             verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
             verify(weeklyTodoRepository, times(1)).findByIdAndWeekly(any(Long.class), any(Weekly.class));
-            verify(weeklyTodoRepository, times(1)).save(any(WeeklyTodo.class));
         }
 
     }

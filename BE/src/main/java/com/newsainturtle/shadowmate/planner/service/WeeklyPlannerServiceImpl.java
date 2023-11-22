@@ -90,28 +90,16 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
 
     @Override
     public void updateWeeklyTodoContent(final User user, final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest) {
-        final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoContentRequest.getStartDate(), updateWeeklyTodoContentRequest.getEndDate(), updateWeeklyTodoContentRequest.getWeeklyTodoId());
-        final WeeklyTodo changeWeeklyTodo = WeeklyTodo.builder()
-                .id(weeklyTodo.getId())
-                .createTime(weeklyTodo.getCreateTime())
-                .weekly(weeklyTodo.getWeekly())
-                .weeklyTodoContent(updateWeeklyTodoContentRequest.getWeeklyTodoContent())
-                .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
-                .build();
-        weeklyTodoRepository.save(changeWeeklyTodo);
+        final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoContentRequest.getStartDate(),
+                updateWeeklyTodoContentRequest.getEndDate(), updateWeeklyTodoContentRequest.getWeeklyTodoId());
+        weeklyTodo.updateWeeklyTodoContent(updateWeeklyTodoContentRequest.getWeeklyTodoContent());
     }
 
     @Override
     public void updateWeeklyTodoStatus(final User user, final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest) {
-        final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoStatusRequest.getStartDate(), updateWeeklyTodoStatusRequest.getEndDate(), updateWeeklyTodoStatusRequest.getWeeklyTodoId());
-        final WeeklyTodo changeWeeklyTodo = WeeklyTodo.builder()
-                .id(weeklyTodo.getId())
-                .createTime(weeklyTodo.getCreateTime())
-                .weekly(weeklyTodo.getWeekly())
-                .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
-                .weeklyTodoStatus(updateWeeklyTodoStatusRequest.getWeeklyTodoStatus())
-                .build();
-        weeklyTodoRepository.save(changeWeeklyTodo);
+        final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoStatusRequest.getStartDate(),
+                updateWeeklyTodoStatusRequest.getEndDate(), updateWeeklyTodoStatusRequest.getWeeklyTodoId());
+        weeklyTodo.updateWeeklyTodoStatus(updateWeeklyTodoStatusRequest.getWeeklyTodoStatus());
     }
 
     @Override
