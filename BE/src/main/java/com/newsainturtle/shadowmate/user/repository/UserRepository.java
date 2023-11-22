@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(final String email);
 
@@ -32,4 +34,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true)
     @Query("update User u set u.introduction = :introduction where u.id = :userId")
     void updateIntroduction(@Param("introduction") final String introduction, @Param("userId") final long userId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update User u set u.withdrawal = TRUE, u.deleteTime = :deleteTime WHERE u.id = :userId")
+    void deleteUser(@Param("deleteTime") final LocalDateTime deleteTime, @Param("userId") final long userId);
 }
