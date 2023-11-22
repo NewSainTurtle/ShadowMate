@@ -17,10 +17,10 @@ public class ProfileResponse {
 
     private String statusMessage;
 
-    private PlannerAccessScope plannerAccessScope;
+    private String plannerAccessScope;
 
     @Builder
-    public ProfileResponse(String email, String nickname, String profileImage, String statusMessage, PlannerAccessScope plannerAccessScope) {
+    public ProfileResponse(String email, String nickname, String profileImage, String statusMessage, String plannerAccessScope) {
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
