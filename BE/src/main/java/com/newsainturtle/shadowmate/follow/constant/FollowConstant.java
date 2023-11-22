@@ -15,4 +15,5 @@ public class FollowConstant {
     public static final String SUCCESS_DELETE_FOLLOW_REQUEST = "친구신청 취소가 완료되었습니다.";
     public static final String SUCCESS_FOLLOW_RECEIVE_TRUE = "팔로우신청이 수락되었습니다.";
     public static final String SUCCESS_FOLLOW_RECEIVE_FALSE = "팔로우신청이 거절되었습니다.";
+    public static final String SUCCESS_FOLLOW_COUNT = "팔로우 개수 조회가 완료되었습니다.";
 }
