@@ -36,4 +36,20 @@ public class DailyPlanner extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void updateTodayGoal(final String todayGoal) {
+        this.todayGoal = todayGoal;
+    }
+
+    public void updateTomorrowGoal(final String tomorrowGoal) {
+        this.tomorrowGoal = tomorrowGoal;
+    }
+
+    public void updateRetrospection(final String retrospection) {
+        this.retrospection = retrospection;
+    }
+
+    public void updateRetrospectionImage(final String retrospectionImage) {
+        this.retrospectionImage = retrospectionImage;
+    }
 }

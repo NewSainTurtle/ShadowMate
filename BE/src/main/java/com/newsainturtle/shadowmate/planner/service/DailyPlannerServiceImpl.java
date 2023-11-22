@@ -136,15 +136,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, updateDailyTodoRequest.getDate());
         final Category category = getCategory(user, updateDailyTodoRequest.getCategoryId());
         final Todo todo = getTodo(updateDailyTodoRequest.getTodoId(), dailyPlanner);
-        final Todo changeTodo = Todo.builder()
-                .id(todo.getId())
-                .createTime(todo.getCreateTime())
-                .todoContent(updateDailyTodoRequest.getTodoContent())
-                .category(category)
-                .todoStatus(status)
-                .dailyPlanner(todo.getDailyPlanner())
-                .build();
-        todoRepository.save(changeTodo);
+        todo.updateTodoContentAndCategoryAndStatus(updateDailyTodoRequest.getTodoContent(), category, status);
     }
 
     @Override
@@ -157,65 +149,25 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     @Override
     public void updateTodayGoal(final User user, final UpdateTodayGoalRequest updateTodayGoalRequest) {
         final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateTodayGoalRequest.getDate());
-        final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
-                .id(dailyPlanner.getId())
-                .createTime(dailyPlanner.getCreateTime())
-                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                .user(dailyPlanner.getUser())
-                .retrospection(dailyPlanner.getRetrospection())
-                .retrospectionImage(dailyPlanner.getRetrospectionImage())
-                .tomorrowGoal(dailyPlanner.getTomorrowGoal())
-                .todayGoal(updateTodayGoalRequest.getTodayGoal())
-                .build();
-        dailyPlannerRepository.save(changeDailyPlanner);
+        dailyPlanner.updateTodayGoal(updateTodayGoalRequest.getTodayGoal());
     }
 
     @Override
     public void updateTomorrowGoal(final User user, final UpdateTomorrowGoalRequest updateTomorrowGoalRequest) {
         final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateTomorrowGoalRequest.getDate());
-        final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
-                .id(dailyPlanner.getId())
-                .createTime(dailyPlanner.getCreateTime())
-                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                .user(dailyPlanner.getUser())
-                .retrospection(dailyPlanner.getRetrospection())
-                .retrospectionImage(dailyPlanner.getRetrospectionImage())
-                .todayGoal(dailyPlanner.getTodayGoal())
-                .tomorrowGoal(updateTomorrowGoalRequest.getTomorrowGoal())
-                .build();
-        dailyPlannerRepository.save(changeDailyPlanner);
+        dailyPlanner.updateTomorrowGoal(updateTomorrowGoalRequest.getTomorrowGoal());
     }
 
     @Override
     public void updateRetrospection(final User user, final UpdateRetrospectionRequest updateRetrospectionRequest) {
         final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateRetrospectionRequest.getDate());
-        final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
-                .id(dailyPlanner.getId())
-                .createTime(dailyPlanner.getCreateTime())
-                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                .user(dailyPlanner.getUser())
-                .retrospectionImage(dailyPlanner.getRetrospectionImage())
-                .todayGoal(dailyPlanner.getTodayGoal())
-                .tomorrowGoal(dailyPlanner.getTomorrowGoal())
-                .retrospection(updateRetrospectionRequest.getRetrospection())
-                .build();
-        dailyPlannerRepository.save(changeDailyPlanner);
+        dailyPlanner.updateRetrospection(updateRetrospectionRequest.getRetrospection());
     }
 
     @Override
     public void updateRetrospectionImage(final User user, final UpdateRetrospectionImageRequest updateRetrospectionImageRequest) {
         final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, updateRetrospectionImageRequest.getDate());
-        final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
-                .id(dailyPlanner.getId())
-                .createTime(dailyPlanner.getCreateTime())
-                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                .user(dailyPlanner.getUser())
-                .todayGoal(dailyPlanner.getTodayGoal())
-                .tomorrowGoal(dailyPlanner.getTomorrowGoal())
-                .retrospection(dailyPlanner.getRetrospection())
-                .retrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage())
-                .build();
-        dailyPlannerRepository.save(changeDailyPlanner);
+        dailyPlanner.updateRetrospectionImage(updateRetrospectionImageRequest.getRetrospectionImage());
     }
 
     @Override
@@ -276,21 +228,15 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
         }
         final DailyPlanner dailyPlanner = getDailyPlanner(user, shareSocialRequest.getDate());
         final Social findSocial = socialRepository.findByDailyPlanner(dailyPlanner);
-        Social social;
         if (findSocial == null) {
-            social = Social.builder()
+            final Social social = Social.builder()
                     .dailyPlanner(dailyPlanner)
                     .socialImage(shareSocialRequest.getSocialImage())
                     .build();
-
+            socialRepository.save(social);
         } else {
-            social = Social.builder()
-                    .id(findSocial.getId())
-                    .createTime(findSocial.getCreateTime())
-                    .dailyPlanner(dailyPlanner)
-                    .socialImage(shareSocialRequest.getSocialImage())
-                    .build();
+            findSocial.updateSocial(shareSocialRequest.getSocialImage());
         }
-        socialRepository.save(social);
+
     }
 }
