@@ -105,29 +105,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(final Long userId) {
-        User user = searchUserId(userId);
-        User deleteUser = User.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .socialLogin(user.getSocialLogin())
-                .profileImage(user.getProfileImage())
-                .nickname(user.getNickname())
-                .statusMessage(user.getStatusMessage())
-                .withdrawal(true)
-                .plannerAccessScope(user.getPlannerAccessScope())
-                .createTime(user.getCreateTime())
-                .updateTime(user.getUpdateTime())
-                .deleteTime(LocalDateTime.now())
-                .build();
-        userRepository.save(deleteUser);
-    }
-
-    private User searchUserId(long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
-        return user.get();
+        userRepository.deleteUser(LocalDateTime.now(), userId);
     }
 }
