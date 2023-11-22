@@ -1,17 +1,18 @@
 import React, { Children, Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
-import dayjs from "dayjs";
 import Loading from "@components/common/Loading";
+import dayjs from "dayjs";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { useNavigate } from "react-router-dom";
 import { MonthDayConfig, selectMonthDayList } from "@store/planner/monthSlice";
 import { setDayDate } from "@store/planner/daySlice";
+import { setThisWeek } from "@store/planner/weekSlice";
+import { getThisWeek } from "@util/getThisWeek";
 
 interface Props {
   selectedDay: string;
-  setSelectedDay: Dispatch<SetStateAction<string>>;
   isOpen: boolean;
 }
 
@@ -32,6 +33,19 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
 
   const initArr = (firstDay: number, daysInMonth: number) => {
     return Array.from({ length: firstDay + daysInMonth }, (v, i) => (i < firstDay ? null : monthDayList[i - firstDay]));
+  };
+
+  const handleWeekCnt = (item: MonthDayConfig | null) => {
+    let week = new Date();
+    if (!item) {
+      const day = dayjs(selectedDay).toDate();
+      week = new Date(day.getFullYear(), day.getMonth(), 1);
+      if (week.getDay() != 1) {
+        week = dayjs(getThisWeek(week)[0]).toDate();
+      }
+    } else week = new Date(item.date);
+    dispatch(setThisWeek(week));
+    navigate("/week");
   };
 
   const getDayList = () => {
@@ -73,7 +87,9 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
                     <>
                       {idx % 7 === 0 && (
                         <div className={styles["calendar__container"]}>
-                          <Text types="small">{(idx % 6) + 1}주차</Text>
+                          <div className={styles["calendar__week-cnt"]} onClick={() => handleWeekCnt(item)}>
+                            <Text types="small">{(idx % 6) + 1}주차</Text>
+                          </div>
                         </div>
                       )}
                       <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>

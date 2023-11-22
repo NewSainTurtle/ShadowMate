@@ -1,6 +1,8 @@
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { getThisWeek } from "@util/getThisWeek";
 import { TodoConfig, WeekTodoItemConfig } from "@util/planner.interface";
+import dayjs from "dayjs";
 
 export interface DayListConfig {
   date: string;
@@ -13,7 +15,7 @@ export interface WeekConfig {
   dday: string;
   weeklyTodos: WeekTodoItemConfig[];
   dayList: DayListConfig[];
-  thisWeek: Date | string;
+  thisWeek: Date;
 }
 
 const initialState: WeekConfig = {
@@ -21,7 +23,7 @@ const initialState: WeekConfig = {
   dday: "",
   weeklyTodos: [],
   dayList: [],
-  thisWeek: new Date(),
+  thisWeek: dayjs(getThisWeek(new Date())[0]).toDate(),
 };
 
 const weekSlice = createSlice({

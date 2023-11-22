@@ -91,11 +91,7 @@ const Month = () => {
             </div>
           </div>
         </div>
-        {loading ? (
-          <Loading />
-        ) : (
-          <MonthCalendar selectedDay={selectedDay} setSelectedDay={setSelectedDay} isOpen={isOpen} />
-        )}
+        {loading ? <Loading /> : <MonthCalendar selectedDay={selectedDay} isOpen={isOpen} />}
       </div>
       <MonthDetail isOpen={isOpen} />
     </div>

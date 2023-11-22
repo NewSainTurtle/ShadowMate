@@ -68,6 +68,9 @@ $color-blue: var(--color-btn-blue);
     justify-content: center;
     align-items: center;
     color: $color-gray-5;
+  }
+
+  &__week-cnt {
     > span {
       margin-bottom: 1em;
       padding: 0.5em;
