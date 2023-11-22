@@ -3,7 +3,6 @@ import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import Loading from "@components/common/Loading";
 import dayjs from "dayjs";
-import Loading from "@components/common/Loading";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +58,7 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
       setLoading(false);
     }, 200);
   };
-  
+
   const itemClickHandler = (date: string) => {
     dispatch(setDayDate(date));
     navigate("/day");
