@@ -46,8 +46,4 @@ public class User extends CommonEntity {
 
     @Column(length = 100)
     private String introduction;
-
-    public void updatePlannerAccessScope(final PlannerAccessScope plannerAccessScope) {
-        this.plannerAccessScope = plannerAccessScope;
-    }
 }

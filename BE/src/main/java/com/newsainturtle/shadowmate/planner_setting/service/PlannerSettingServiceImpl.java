@@ -20,6 +20,7 @@ import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     private final FollowRepository followRepository;
     private final SocialRepository socialRepository;
     private final DailyPlannerRepository dailyPlannerRepository;
+    private final UserRepository userRepository;
 
     private CategoryColor getCategoryColor(final Long categoryColorId) {
         final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
@@ -144,7 +146,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
             final LocalDateTime time = LocalDateTime.now();
             socialRepository.updateDeleteTimeAll(time, dailyPlanners);
         }
-        user.updatePlannerAccessScope(accessScope);
+        userRepository.updatePlannerAccessScope(accessScope, user.getId());
     }
 
     @Override
