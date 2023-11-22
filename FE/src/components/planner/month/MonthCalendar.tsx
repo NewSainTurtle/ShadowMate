@@ -1,13 +1,15 @@
 import React, { Children, Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
+import Loading from "@components/common/Loading";
 import dayjs from "dayjs";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { useNavigate } from "react-router-dom";
 import { MonthDayConfig, selectMonthDayList } from "@store/planner/monthSlice";
 import { setDayDate } from "@store/planner/daySlice";
-import Loading from "@components/common/Loading";
+import { setThisWeek } from "@store/planner/weekSlice";
+import { getThisWeek } from "@util/getThisWeek";
 
 interface Props {
   selectedDay: string;
@@ -39,6 +41,19 @@ const MonthCalendar = ({ selectedDay }: Props) => {
     navigate("/day");
   };
 
+  const handleWeekCnt = (item: MonthDayConfig | null) => {
+    let week = new Date();
+    if (!item) {
+      const day = dayjs(selectedDay).toDate();
+      week = new Date(day.getFullYear(), day.getMonth(), 1);
+      if (week.getDay() != 1) {
+        week = dayjs(getThisWeek(week)[0]).toDate();
+      }
+    } else week = new Date(item.date);
+    dispatch(setThisWeek(week));
+    navigate("/week");
+  };
+
   useEffect(() => {
     setLoading(true);
     let firstDay = dayjs(selectedDay).startOf("month").day();
@@ -67,7 +82,9 @@ const MonthCalendar = ({ selectedDay }: Props) => {
                 <>
                   {idx % 7 === 0 && (
                     <div className={styles["calendar__container"]}>
-                      <Text types="small">{(idx % 6) + 1}주차</Text>
+                      <div className={styles["calendar__week-cnt"]} onClick={() => handleWeekCnt(item)}>
+                        <Text types="small">{(idx % 6) + 1}주차</Text>
+                      </div>
                     </div>
                   )}
                   <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>

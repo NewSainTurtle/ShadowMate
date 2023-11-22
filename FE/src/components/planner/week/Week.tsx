@@ -7,10 +7,11 @@ import Loading from "@components/common/Loading";
 import FriendProfile from "@components/common/FriendProfile";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { DayListConfig, selectDayList, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
+import { DayListConfig, selectDayList, selectThisWeek, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
 import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
 import { selectFriendId, selectFriendInfo } from "@store/friendSlice";
+import dayjs from "dayjs";
 
 const Week = () => {
   const dispatch = useAppDispatch();
@@ -19,7 +20,7 @@ const Week = () => {
   friendId = friendId != 0 ? friendId : userId;
   const friendInfo = useAppSelector(selectFriendInfo);
   const dayList = useAppSelector(selectDayList);
-  const [week, setWeek] = useState(new Date());
+  const week = useAppSelector(selectThisWeek);
   const thisWeekCnt = getThisWeekCnt(week);
   const [isMine, setIsMine] = useState<boolean>(userId === friendId);
   const [retroClick, setRetroClick] = useState<number>(-1);
@@ -28,11 +29,10 @@ const Week = () => {
   const handleButton = (to: string) => {
     const date = week.getDate();
     if (to === "forward") {
-      setWeek(new Date(week.setDate(date - 7)));
+      dispatch(setThisWeek(new Date(week.setDate(date - 7))));
     } else if (to === "backward") {
-      setWeek(new Date(week.setDate(date + 7)));
+      dispatch(setThisWeek(new Date(week.setDate(date + 7))));
     }
-    dispatch(setThisWeek(week));
   };
 
   const getDayList = () => {
@@ -76,7 +76,10 @@ const Week = () => {
                 <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
               </svg>
             </div>
-            <div className={styles["week__today"]} onClick={() => setWeek(new Date())}>
+            <div
+              className={styles["week__today"]}
+              onClick={() => dispatch(setThisWeek(dayjs(getThisWeek(new Date())[0]).toDate()))}
+            >
               <Text>TODAY</Text>
             </div>
             <div className={styles["week__button"]} onClick={() => handleButton("backward")}>
