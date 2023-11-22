@@ -1,0 +1,21 @@
+$color-background: var(--color-background);
+$color-gray-2: var(--color-gray-2);
+$color-gray-3: var(--color-gray-3);
+
+.avatar {
+  background-color: $color-gray-3;
+  &-default {
+    margin-top: 2px;
+    width: 70%;
+    height: 70%;
+  }
+
+  .icon {
+    &-background {
+      fill: $color-background;
+    }
+    &-color {
+      fill: $color-gray-3;
+    }
+  }
+}
