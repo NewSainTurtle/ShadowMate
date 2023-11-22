@@ -32,4 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true)
     @Query("update User u set u.introduction = :introduction where u.id = :userId")
     void updateIntroduction(@Param("introduction") final String introduction, @Param("userId") final long userId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("update User u set u.plannerAccessScope = :plannerAccessScope where u.id = :userId")
+    void updatePlannerAccessScope(@Param("plannerAccessScope") final PlannerAccessScope plannerAccessScope, @Param("userId") final long userId);
 }
