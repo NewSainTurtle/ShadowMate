@@ -91,4 +91,11 @@ public class FollowController {
         return ResponseEntity.ok(BaseResponse.from(followService.receiveFollow(principalDetails.getUser(), receiveFollowRequest.getRequesterId(), receiveFollowRequest.isFollowReceive())));
     }
 
+    @GetMapping("/{userId}/counts")
+    public ResponseEntity<BaseResponse> countFollow(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                      @PathVariable("userId") final Long userId) {
+        authService.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_FOLLOW_COUNT, followService.countFollow(principalDetails.getUser())));
+    }
+
 }
