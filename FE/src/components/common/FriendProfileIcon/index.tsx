@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
-import { Avatar } from "@mui/material";
+import Avatar from "@components/common/Avatar";
 import { useAppDispatch } from "@hooks/hook";
 import { setFriendInfo } from "@store/friendSlice";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +28,7 @@ const FriendProfileIcon = ({ profile }: Props) => {
 
   return (
     <div className={styles["f-icon"]} onClick={handleMoveToFriendProfile}>
-      <Avatar src={profile.profileImage} sx={{ width: 40, height: 40 }} />
+      <Avatar src={profile.profileImage} />
       <div className={styles["f-icon__nickname"]}>
         <Text types="small">{profile.nickname}</Text>
       </div>

@@ -3,7 +3,7 @@ import styles from "@styles/social/Social.module.scss";
 import Text from "@components/common/Text";
 import { SocialListType } from "@components/social/CardList";
 import { DeleteOutline } from "@mui/icons-material";
-import { Avatar } from "@mui/material";
+import Avatar from "@components/common/Avatar";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import { useNavigate } from "react-router-dom";

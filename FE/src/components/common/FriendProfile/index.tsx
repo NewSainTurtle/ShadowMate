@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { Avatar } from "@mui/material";
+import Avatar from "@components/common/Avatar";
 import { followApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
