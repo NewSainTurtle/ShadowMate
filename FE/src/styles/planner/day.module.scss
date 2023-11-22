@@ -281,7 +281,7 @@ $color-btn-blue: var(--color-btn-blue);
 .todo-item {
   width: 100%;
   display: grid;
-  grid-template-columns: 7rem auto 2rem;
+  grid-template-columns: minmax(7em, 1.5fr) 8fr minmax(2em, 0.5fr);
   grid-template-rows: 1fr;
   border-bottom: 1px solid $color-text;
   position: relative;
