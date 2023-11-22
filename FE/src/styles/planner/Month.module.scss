@@ -131,8 +131,7 @@ $color-blue: var(--color-btn-blue);
     height: 100%;
     width: 100%;
     left: 0;
-    top: 0;
-    background-color: rgba(213, 215, 216, 0.8);
+    top: -4em;
     > svg {
       margin-bottom: 1em;
       fill: $color-text;
@@ -149,6 +148,11 @@ $color-blue: var(--color-btn-blue);
   &__stats {
     display: flex;
     gap: 1em;
+  }
+
+  &--close {
+    @extend .detail;
+    grid-template-rows: min-content min-content 10em auto;
   }
 }
 
