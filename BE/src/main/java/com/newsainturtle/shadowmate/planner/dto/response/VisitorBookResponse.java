@@ -4,7 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class AddVisitorBookResponse {
+@Builder
+public class VisitorBookResponse {
 
     private long visitorBookId;
     private String visitorNickname;
@@ -13,11 +14,12 @@ public class AddVisitorBookResponse {
     private String writeDateTime;
 
     @Builder
-    public AddVisitorBookResponse(long visitorBookId, String visitorNickname, String visitorProfileImage, String visitorBookContent, String writeDateTime) {
+    public VisitorBookResponse(long visitorBookId, String visitorNickname, String visitorProfileImage, String visitorBookContent, String writeDateTime) {
         this.visitorBookId = visitorBookId;
         this.visitorNickname = visitorNickname;
         this.visitorProfileImage = visitorProfileImage;
         this.visitorBookContent = visitorBookContent;
         this.writeDateTime = writeDateTime;
     }
+
 }
