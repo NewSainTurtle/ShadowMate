@@ -82,14 +82,14 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
             throw new PlannerException(PlannerErrorResult.INVALID_USER);
         }
 
-        final List<VisitorBook> visitorBooks = lastVisitorBookId == 0 ? visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner) :
-                visitorBookRepository.findTop5ByOwnerAndIdLessThanOrderByIdDesc(owner, lastVisitorBookId);
+        final List<VisitorBook> visitorBooks = lastVisitorBookId == 0 ? visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner) :
+                visitorBookRepository.findTop10ByOwnerAndIdLessThanOrderByIdDesc(owner, lastVisitorBookId);
         final List<VisitorBookResponse> visitorBookResponses = new ArrayList<>();
         for (VisitorBook visitorBook : visitorBooks) {
             visitorBookResponses.add(VisitorBookResponse.builder()
                     .visitorBookId(visitorBook.getId())
-                    .visitorNickname(visitor.getNickname())
-                    .visitorProfileImage(visitor.getProfileImage())
+                    .visitorNickname(visitorBook.getVisitor().getNickname())
+                    .visitorProfileImage(visitorBook.getVisitor().getProfileImage())
                     .visitorBookContent(visitorBook.getVisitorBookContent())
                     .writeDateTime(localDateTimeToString(visitorBook.getCreateTime()))
                     .build());
