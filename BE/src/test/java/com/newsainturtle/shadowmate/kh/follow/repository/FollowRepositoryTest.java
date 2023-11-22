@@ -7,7 +7,6 @@ import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -102,6 +100,23 @@ public class FollowRepositoryTest {
             assertThat(result).isNull();
 
         }
+
+        @Test
+        void 팔로잉개수조회() {
+            // given
+            followRepository.save(Follow.builder()
+                    .followerId(user1)
+                    .followingId(user2)
+                    .build());
+
+            // when
+            final List<Follow> resultFollow = followRepository.findAllByFollowingId(user2);
+            final Long result = followRepository.countByFollowingId(user2);
+
+            // then
+            assertThat(resultFollow).hasSize(1);
+            assertThat(result).isEqualTo(1L);
+        }
     }
 
     @Nested
@@ -183,6 +198,23 @@ public class FollowRepositoryTest {
 
             // then
             assertThat(result).isNull();
+        }
+
+        @Test
+        void 팔로워개수조회() {
+            // given
+            followRepository.save(Follow.builder()
+                    .followerId(user1)
+                    .followingId(user2)
+                    .build());
+
+            // when
+            final List<Follow> resultFollow = followRepository.findAllByFollowerId(user1);
+            final Long result = followRepository.countByFollowerId(user1);
+
+            // then
+            assertThat(resultFollow).hasSize(1);
+            assertThat(result).isEqualTo(1L);
         }
     }
 }
