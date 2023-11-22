@@ -5,6 +5,7 @@ import WeekTodo from "@components/planner/week/todo/WeekTodo";
 import Text from "@components/common/Text";
 import Loading from "@components/common/Loading";
 import FriendProfile from "@components/common/FriendProfile";
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, selectThisWeek, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
@@ -72,20 +73,16 @@ const Week = () => {
           </Text>
           <div>
             <div className={styles["week__button"]} onClick={() => handleButton("forward")}>
-              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-                <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
-              </svg>
+              <NavigateBefore />
             </div>
             <div
               className={styles["week__today"]}
               onClick={() => dispatch(setThisWeek(dayjs(getThisWeek(new Date())[0]).toDate()))}
             >
-              <Text>TODAY</Text>
+              <Text bold>today</Text>
             </div>
             <div className={styles["week__button"]} onClick={() => handleButton("backward")}>
-              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-                <path d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z" />
-              </svg>
+              <NavigateNext />
             </div>
           </div>
         </div>
