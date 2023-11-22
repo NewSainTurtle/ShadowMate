@@ -27,4 +27,10 @@ public class Dday extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void updateDdayDateAndTitle(final Date ddayDate,
+                                       final String ddayTitle) {
+        this.ddayDate = ddayDate;
+        this.ddayTitle = ddayTitle;
+    }
 }
