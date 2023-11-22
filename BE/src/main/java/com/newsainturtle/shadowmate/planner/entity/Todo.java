@@ -39,8 +39,17 @@ public class Todo extends CommonEntity {
 
     public void setTimeTable(TimeTable timeTable) {
         this.timeTable = timeTable;
-        if(timeTable != null){
+        if (timeTable != null) {
             timeTable.setTodo(this);
         }
+    }
+
+    public void updateTodoContentAndCategoryAndStatus(final String todoContent,
+                                                      final Category category,
+                                                      final TodoStatus todoStatus) {
+        this.todoContent = todoContent;
+        this.category = category;
+        this.todoStatus = todoStatus;
+
     }
 }
