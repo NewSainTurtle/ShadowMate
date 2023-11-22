@@ -30,54 +30,52 @@ interface ProfileButtonProps extends Omit<Props, "profile"> {
 const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const [state, setState] = useState(0);
   const [type, setType] = useState(types);
 
   useEffect(() => {
-    if (state != 0) dispatch(setFollowState(state));
     if (types == "기본") {
       userApi.searches(userId, { nickname }).then((res) => {
         if (res.data.data.isFollow == "EMPTY") setType("아이콘");
         else setType("기본");
       });
     }
-  }, [state]);
+  }, []);
 
   const handleClick = (() => {
     const followRequested = async () => {
       await followApi
         .addRequested(userId, { followingId: profileId })
-        .then(() => setState(1))
+        .then(() => dispatch(setFollowState(1)))
         .catch((err) => console.error(err));
     };
     const cancelRequested = async () => {
       await followApi
         .cancelRequested(userId, { receiverId: profileId })
-        .then(() => setState(2))
+        .then(() => dispatch(setFollowState(2)))
         .catch((err) => console.error(err));
     };
     const receiveAcceptiance = async () => {
       await followApi
         .receive(userId, { requesterId: profileId, followReceive: true })
-        .then(() => setState(3))
+        .then(() => dispatch(setFollowState(3)))
         .catch((err) => console.error(err));
     };
     const receiveRefusal = async () => {
       await followApi
         .receive(userId, { requesterId: profileId, followReceive: false })
-        .then(() => setState(4))
+        .then(() => dispatch(setFollowState(4)))
         .catch((err) => console.error(err));
     };
     const deleteFollower = async () => {
       await followApi
         .deleteFollowers(userId, { followerId: profileId })
-        .then(() => setState(5))
+        .then(() => dispatch(setFollowState(5)))
         .catch((err) => console.error(err));
     };
     const deleteFollowing = async () => {
       await followApi
         .deleteFollowing(userId, { followingId: profileId })
-        .then(() => setState(6))
+        .then(() => dispatch(setFollowState(6)))
         .catch((err) => console.error(err));
     };
 
@@ -108,7 +106,7 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
         <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
           친구 신청
         </button>
-        <button>삭제</button>
+        <button onClick={deleteFollower}>삭제</button>
       </>
     ),
     요청: (
