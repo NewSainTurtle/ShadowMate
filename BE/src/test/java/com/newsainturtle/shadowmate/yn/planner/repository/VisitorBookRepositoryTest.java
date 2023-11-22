@@ -123,7 +123,7 @@ class VisitorBookRepositoryTest {
         //given
 
         //when
-        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner);
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner);
 
         //then
         assertThat(visitorBooks).isNotNull().isEmpty();
@@ -149,7 +149,7 @@ class VisitorBookRepositoryTest {
                 .build());
 
         //when
-        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner);
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner);
 
         //then
         assertThat(visitorBooks).isNotNull().hasSize(3);
@@ -185,7 +185,7 @@ class VisitorBookRepositoryTest {
                 .build());
 
         //when
-        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerOrderByIdDesc(owner);
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner);
 
         //then
         assertThat(visitorBooks).isNotNull().hasSize(5);
@@ -231,7 +231,7 @@ class VisitorBookRepositoryTest {
                 .build());
 
         //when
-        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop5ByOwnerAndIdLessThanOrderByIdDesc(owner, saveVisitorBook.getId());
+        final List<VisitorBook> visitorBooks = visitorBookRepository.findTop10ByOwnerAndIdLessThanOrderByIdDesc(owner, saveVisitorBook.getId());
 
         //then
         assertThat(visitorBooks).isNotNull().hasSize(4);

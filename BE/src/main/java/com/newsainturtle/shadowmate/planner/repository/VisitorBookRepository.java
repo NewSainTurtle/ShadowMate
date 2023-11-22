@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface VisitorBookRepository extends JpaRepository<VisitorBook, Long> {
     VisitorBook findByIdAndOwnerId(final long visitorBookId, final long ownerId);
-    List<VisitorBook> findTop5ByOwnerAndIdLessThanOrderByIdDesc(final User owner, final long lastVisitorBookId);
-    List<VisitorBook> findTop5ByOwnerOrderByIdDesc(final User owner);
+    List<VisitorBook> findTop10ByOwnerAndIdLessThanOrderByIdDesc(final User owner, final long lastVisitorBookId);
+    List<VisitorBook> findTop10ByOwnerOrderByIdDesc(final User owner);
 }
