@@ -95,6 +95,11 @@ $border: 1px;
       margin-right: 1em;
       cursor: pointer;
     }
+
+    &--friend {
+      @extend .todo__item;
+      pointer-events: none;
+    }
   }
 
   &__checkbox {
@@ -147,11 +152,6 @@ $border: 1px;
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor: pointer;
-  }
-
-  &--friend {
-    @extend .todo;
-    pointer-events: none;
   }
 }
 

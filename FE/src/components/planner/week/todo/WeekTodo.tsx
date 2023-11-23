@@ -13,19 +13,16 @@ interface Props {
 
 const WeekTodo = ({ isMine }: Props) => {
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
-  const friend = isMine ? "" : "--friend";
+  const rowMaxLength = isMine ? weeklyTodos.length + 1 : weeklyTodos.length;
 
   return (
-    <div className={styles[`todo${friend}`]}>
+    <div className={styles["todo"]}>
       <div className={styles["item__title"]}>
         <Text>주차별 할 일</Text>
       </div>
-      <div
-        className={styles["item__todo-list"]}
-        style={{ gridTemplateRows: `repeat(${weeklyTodos.length + 1}, calc(100% / 7)` }}
-      >
+      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, calc(100% / 7)` }}>
         {weeklyTodos.map((item: WeekTodoItemConfig, idx: number) => {
-          return <WeekTodoItem key={item.weeklyTodoId} id={item.weeklyTodoId} idx={idx} item={item} />;
+          return <WeekTodoItem key={item.weeklyTodoId} id={item.weeklyTodoId} idx={idx} item={item} isMine={isMine} />;
         })}
         {isMine && <WeekTodoInput />}
       </div>
