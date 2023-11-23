@@ -2,10 +2,7 @@ package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
-import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
-import com.newsainturtle.shadowmate.user.dto.UpdateIntroductionRequest;
-import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
-import com.newsainturtle.shadowmate.user.dto.UserResponse;
+import com.newsainturtle.shadowmate.user.dto.*;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
 import com.newsainturtle.shadowmate.user.exception.UserException;
@@ -63,6 +60,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public SearchIntroductionResponse searchIntroduction(final Long userId) {
+        findUser(userId);
+        return SearchIntroductionResponse.builder()
+                .introduction(userRepository.findIntroduction(userId))
+                .build();
+    }
+
+    @Override
     @Transactional
     public void updateUser(final Long userId, final UpdateUserRequest updateUserRequest) {
         final User user = userRepository.findByIdAndNickname(userId, updateUserRequest.getNewNickname());
@@ -106,5 +111,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(final Long userId) {
         userRepository.deleteUser(LocalDateTime.now(), userId);
+    }
+
+    private void findUser(final Long userId) {
+        if(!userRepository.findById(userId).isPresent()) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
     }
 }

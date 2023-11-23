@@ -117,6 +117,19 @@ public class UserRepositoryTest {
         }
 
         @Test
+        void 소개글조회() {
+            // given
+            final String newIntroduction = "새로운소개글";
+            userRepository.updateIntroduction(newIntroduction, userId);
+
+            // when
+            final String result = userRepository.findIntroduction(userId);
+
+            // then
+            assertThat(result).isEqualTo(newIntroduction);
+        }
+
+        @Test
         void 소개글수정() {
             // given
             final String newIntroduction = "새로운소개글";
