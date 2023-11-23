@@ -26,5 +26,5 @@ public interface FollowService {
 
     FollowStatus isFollow(final User user, final User searchUser);
 
-    CountFollowResponse countFollow(final User user);
+    CountFollowResponse countFollow(final Long userId);
 }
