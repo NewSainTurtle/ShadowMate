@@ -13,6 +13,8 @@ import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
+import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
+import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -66,13 +68,28 @@ public class FollowServiceTest {
     final Long userId2 = user2.getId();
 
     @Test
-    void 팔로우개수조회() {
+    void 실패_팔로우개수조회_해당유저없음() {
         // given
+        final Long userId = 1L;
+        doReturn(Optional.empty()).when(userRepository).findById(userId);
+
+        // when
+        final UserException result = assertThrows(UserException.class, () -> followService.countFollow(userId));
+
+        // then
+        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+    }
+
+    @Test
+    void 성공_팔로우개수조회() {
+        // given
+        final Long userId = 1L;
+        doReturn(Optional.of(user1)).when(userRepository).findById(userId);
         doReturn(1L).when(followRepository).countByFollowerId(any());
         doReturn(10L).when(followRepository).countByFollowingId(any());
 
         // when
-        final CountFollowResponse result = followService.countFollow(user1);
+        final CountFollowResponse result = followService.countFollow(userId);
 
         // then
         assertThat(result.getFollowerCount()).isEqualTo(1L);
