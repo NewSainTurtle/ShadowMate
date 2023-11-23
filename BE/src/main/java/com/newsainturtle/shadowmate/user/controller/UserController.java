@@ -74,10 +74,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/introduction")
-    public ResponseEntity<BaseResponse> updateIntroduction(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                           @PathVariable("userId") final Long userId,
+    public ResponseEntity<BaseResponse> updateIntroduction(@PathVariable("userId") final Long userId,
                                                            @RequestBody @Valid final UpdateIntroductionRequest updateIntroductionRequest) {
-        authService.certifyUser(userId, principalDetails.getUser());
         userService.updateIntroduction(updateIntroductionRequest, userId);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_INTRODUCTION));
     }
