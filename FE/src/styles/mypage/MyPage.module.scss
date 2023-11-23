@@ -35,6 +35,8 @@ $color-warning: var(--color-warning);
   grid-template-columns: 3.5fr 7.5fr;
   gap: 1em;
   height: 100%;
+  padding: 0 1em;
+  box-sizing: border-box;
 
   &__container {
     position: relative;
