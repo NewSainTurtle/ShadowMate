@@ -42,6 +42,11 @@ public class UserController {
                 SUCCESS_SEARCH_NICKNAME, userService.searchNickname(principalDetails.getUser(), nickname)));
     }
 
+    @GetMapping("/{userId}/introduction")
+    public ResponseEntity<BaseResponse> searchIntroduction(@PathVariable("userId") final Long userId) {
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_INTRODUCTION, userService.searchIntroduction(userId)));
+    }
+
     @PutMapping("/{userId}/mypages")
     public ResponseEntity<BaseResponse> updateUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                            @PathVariable("userId") final Long userId,
