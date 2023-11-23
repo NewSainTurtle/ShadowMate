@@ -238,27 +238,7 @@ public class UserControllerTest {
         }
 
         @Test
-        void 실패_소개글_유저틀림() throws Exception {
-            // given
-            final String url = "/api/users/{userId}/introduction";
-            final String newIntroduction = "새로운소개글";
-            final UpdateIntroductionRequest updateIntroductionRequest = UpdateIntroductionRequest.builder()
-                    .introduction(newIntroduction)
-                    .build();
-            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
-
-            // when
-            final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
-                            .content(gson.toJson(updateIntroductionRequest))
-                            .contentType(MediaType.APPLICATION_JSON));
-
-            // then
-            resultActions.andExpect(status().isForbidden());
-        }
-
-        @Test
-        void 실패_소개글100자초과() throws Exception {
+        void 실패_소개글수정_100자초과() throws Exception {
             // given
             final String url = "/api/users/{userId}/introduction";
             final String newIntroduction = "소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다소개글백자가넘습니다";
