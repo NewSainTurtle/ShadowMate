@@ -3,6 +3,7 @@
 <div align="center">
 <img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/9356f239-6e20-4835-b178-3e213eb750a1" width="20%"/>
 </div>
+<br>
 
 - 스터디 플래너를 작성하고, 사람들과 공유하며 학습 의지를 높이는 웹 개발 프로젝트
 - URL 🔗 : https://shadowmate.kro.kr/
@@ -141,3 +142,71 @@ ex) develop
 </div>
 
 <br>
+
+📺 화면 소개
+
+1. 랜딩
+
+<br>
+
+2. 회원가입/로그인
+
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fa8dfae6-1be7-4410-9687-0062b9ce86bf" width="70%"/>
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/9c578677-472d-4a70-a944-b902c9ce4fbe" width="70%"/>
+
+<br>
+
+3. 월별(메인)
+
+
+<br>
+
+4. 주별 플래너
+
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/cb1ea0ad-89ea-4cc8-b9ef-020192ab75cc" width="70%"/>
+
+<br>
+
+5. 일별 플래너
+   
+- 나의 플래너 
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/6b28751b-70d5-47ec-9321-b412e899ddc0" width="70%"/>
+
+
+- 다른 사용자 플래너
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fc5f1063-f69a-44c1-b3c3-2827b803709d" width="70%"/>
+
+<br>
+      
+6. 소셜
+   
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/1c4dc287-1bac-444b-99c2-132608762ee2" width="70%"/>
+
+<br>
+
+7. 마이페이지
+   
+- 회원정보 수정
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2bfef5a4-66f2-4261-a85a-ad9fed30fb9d" width="70%"/>
+
+- 플래너 공개범위 설정
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/e213b798-f420-4a3a-89f1-f16c6deff4ab" width="70%"/>
+
+- 카테고리 설정
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/8ef4f224-1485-42ba-993b-42ededdda724" width="70%"/>
+  
+- 디데이 설정
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/4f94dbd7-1bf3-4c79-a3a8-1e28c8f8bfd9" width="70%"/>
+
+- 친구 검색
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/e0af2003-a6f4-4540-a294-4a1f58b320ff" width="70%"/>
+  
+- 팔로우/팔로워 목록
+<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2978e2f2-756f-4eab-8d03-4ef570103a41" width="70%"/>
+
+<br>
+
+8. 다크모드 지원
+
+
+
