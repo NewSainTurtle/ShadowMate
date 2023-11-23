@@ -226,7 +226,6 @@ public class UserServiceTest {
 
             // when
             final UserException result = assertThrows(UserException.class, () -> userService.searchIntroduction(userId1));
-            //final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(userId1, user1.getPassword(), newPassword));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
