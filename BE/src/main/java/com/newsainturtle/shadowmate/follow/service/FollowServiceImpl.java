@@ -11,6 +11,8 @@ import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
+import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
+import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -141,7 +143,12 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public CountFollowResponse countFollow(final User user) {
+    public CountFollowResponse countFollow(final Long userId) {
+        Optional<User> result = userRepository.findById(userId);
+        if(!result.isPresent()) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        final User user = result.get();
         return CountFollowResponse.builder()
                 .followerCount(followRepository.countByFollowerId(user))
                 .followingCount(followRepository.countByFollowingId(user))
