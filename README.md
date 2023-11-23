@@ -10,13 +10,13 @@
 
 <br>
 
-## 🗓️ 프로젝트 기간
+## 🗓️ 프로젝트 기간
 
 **2023.07.10 ~ 2023.11.23 (총 20주)**
 
 <br>
 
-## 💁‍♂️ 팀원소개
+## 💁‍♂️ 팀원소개
 
 <table>
 <tr>
@@ -29,7 +29,7 @@
 
 <br>
 
-## 📄 프로젝트 설계
+## 📄 프로젝트 설계
 
 - [기능 명세서](https://docs.google.com/spreadsheets/d/1iCx9oub-ukbSvVHsLhCt_lLD5cjQjy0gRG1uDOlRtr0/edit#gid=0)
 - [API 명세서](https://docs.google.com/spreadsheets/d/1iCx9oub-ukbSvVHsLhCt_lLD5cjQjy0gRG1uDOlRtr0/edit#gid=535765190)
@@ -38,41 +38,41 @@
 
 <br>
 
-## 🛠️ 기술스택
+## 🛠️ 기술스택
 
 ### Back-End
 
-| JAVA | Sprin Boot | Gradle | JWT | JPA | Junit5 | JaCoCo | SonarQube |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 8 | 2.7.14 | 7.5.1 | 4.3.0 | 2.7.14 | 5.8.2 | 0.8.5 | 3.4.0 |
+| JAVA | Sprin Boot | Gradle |  JWT  |  JPA   | Junit5 | JaCoCo | SonarQube |
+| :--: | :--------: | :----: | :---: | :----: | :----: | :----: | :-------: |
+|  8   |   2.7.14   | 7.5.1  | 4.3.0 | 2.7.14 | 5.8.2  | 0.8.5  |   3.4.0   |
 
 ### Front-End
 
-| React | TypeScript | React-reudx | Redux-toolkit | React-router-dom | Axios | Firebase | Webpack | Babel | SASS (SCSS) |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 18.2.20 | 5.1.6 | 4.2.1 | 1.9.6 | 6.14.2 | 1.5.0 | 10.5.2 | 5.88.2 | 7.22.10 | - |
+|  React  | TypeScript | React-reudx | Redux-toolkit | React-router-dom | Axios | Firebase | Webpack |  Babel  | SASS (SCSS) |
+| :-----: | :--------: | :---------: | :-----------: | :--------------: | :---: | :------: | :-----: | :-----: | :---------: |
+| 18.2.20 |   5.1.6    |    4.2.1    |     1.9.6     |      6.14.2      | 1.5.0 |  10.5.2  | 5.88.2  | 7.22.10 |      -      |
 
 ### Database
 
-| MySQL | Redis |
-| :---: | :---: |
+| MySQL  | Redis  |
+| :----: | :----: |
 | 8.0.31 | 2.7.14 |
 
 ### CI/CD
 
-| Ubuntu | Nginx | Docker | Jenkins | SSL |
-| :---: | :---: | :---: | :---: | :---: |
-| 20.04 LTS | 1.18.0 | 24.0.6 | 2.431 | - |
+|  Ubuntu   | Nginx  | Docker | Jenkins | SSL  |
+| :-------: | :----: | :----: | :-----: | :--: |
+| 20.04 LTS | 1.18.0 | 24.0.6 |  2.431  |  -   |
 
 ### TOOL
 
 | GitHub | PostMan | Figma | Notion |
-| --- | --- | --- | --- |
+| ------ | ------- | ----- | ------ |
 
 ### IDE
 
 | Visual Studio Code | IntelliJ |
-| --- | --- |
+| ------------------ | -------- |
 
 <br>
 
@@ -90,9 +90,9 @@
 .
 ├── main: 배포 코드가 있는 브랜치
 │    └── develop: 실제 개발 브랜치
-│         ├── feature: 기능 구현 브랜치
+│         ├── feature: 기능 구현 브랜치
 │         ├── test: 테스트 코드 작성 브랜치
-│         ├── fix: 버그 수정 브랜치
+│         ├── fix: 버그 수정 브랜치
 │         ├── refactor: 코드 스타일 수정 및 리팩토링을 위한 브랜치
 │         └── docs: readme 등 문서를 작업하는 브랜치
 └── hoxfix: main에서 버그를 수정할 브랜치
@@ -114,7 +114,7 @@ ex) develop
 #### **3. Commit Convention**
 
 ```
-💡 [Part] Tag: Subject
+💡 [Part] Tag: Subject
 ```
 
 ```
@@ -143,70 +143,67 @@ ex) develop
 
 <br>
 
-📺 화면 소개
+## 📺 화면 소개
 
-1. 랜딩
-
-<br>
-
-2. 회원가입/로그인
-
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fa8dfae6-1be7-4410-9687-0062b9ce86bf" width="70%"/>
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/9c578677-472d-4a70-a944-b902c9ce4fbe" width="70%"/>
+#### 1. 랜딩
 
 <br>
 
-3. 월별(메인)
+#### 2. 회원가입/로그인
 
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fa8dfae6-1be7-4410-9687-0062b9ce86bf" width="70%"/></div>
 
-<br>
-
-4. 주별 플래너
-
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/cb1ea0ad-89ea-4cc8-b9ef-020192ab75cc" width="70%"/>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/9c578677-472d-4a70-a944-b902c9ce4fbe" width="70%"/></div>
 
 <br>
 
-5. 일별 플래너
-   
+#### 3. 월별(메인)
+
+<br>
+
+#### 4. 주별 플래너
+
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/cb1ea0ad-89ea-4cc8-b9ef-020192ab75cc" width="70%"/></div>
+
+<br>
+
+#### 5. 일별 플래너
+
 - 나의 플래너 
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/6b28751b-70d5-47ec-9321-b412e899ddc0" width="70%"/>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/6b28751b-70d5-47ec-9321-b412e899ddc0" width="70%"/></div>
 
 
 - 다른 사용자 플래너
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fc5f1063-f69a-44c1-b3c3-2827b803709d" width="70%"/>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fc5f1063-f69a-44c1-b3c3-2827b803709d" width="70%"/></div>
 
 <br>
       
-6. 소셜
-   
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/1c4dc287-1bac-444b-99c2-132608762ee2" width="70%"/>
+#### 6. 소셜
+
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/1c4dc287-1bac-444b-99c2-132608762ee2" width="70%"/></div>
 
 <br>
 
-7. 마이페이지
-   
+#### **7. 마이페이지**
+
 - 회원정보 수정
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2bfef5a4-66f2-4261-a85a-ad9fed30fb9d" width="70%"/>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2bfef5a4-66f2-4261-a85a-ad9fed30fb9d" width="70%"/></div>
 
 - 플래너 공개범위 설정
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/e213b798-f420-4a3a-89f1-f16c6deff4ab" width="70%"/>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/e213b798-f420-4a3a-89f1-f16c6deff4ab" width="70%"/></div>
 
 - 카테고리 설정
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/8ef4f224-1485-42ba-993b-42ededdda724" width="70%"/>
-  
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/8ef4f224-1485-42ba-993b-42ededdda724" width="70%"/></div>
+
 - 디데이 설정
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/4f94dbd7-1bf3-4c79-a3a8-1e28c8f8bfd9" width="70%"/>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/4f94dbd7-1bf3-4c79-a3a8-1e28c8f8bfd9" width="70%"/></div>
 
 - 친구 검색
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/e0af2003-a6f4-4540-a294-4a1f58b320ff" width="70%"/>
-  
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/e0af2003-a6f4-4540-a294-4a1f58b320ff" width="70%"/></div>
+
 - 팔로우/팔로워 목록
-<img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2978e2f2-756f-4eab-8d03-4ef570103a41" width="70%"/>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2978e2f2-756f-4eab-8d03-4ef570103a41" width="70%"/></div>
 
 <br>
 
-8. 다크모드 지원
-
-
-
+#### 8. 다크모드 지원
