@@ -2,6 +2,7 @@ import React from "react";
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DdayItemConfig } from "@util/planner.interface";
+import { PURGE } from "redux-persist";
 
 interface DdayConfig {
   ddayList: DdayItemConfig[];
@@ -32,6 +33,10 @@ const ddaySlice = createSlice({
     setDdayInput: (state, { payload }: PayloadAction<DdayItemConfig>) => {
       state.ddayInput = payload;
     },
+  },
+  extraReducers: (builder) => {
+    // redux-persist 초기화
+    builder.addCase(PURGE, () => initialState);
   },
 });
 

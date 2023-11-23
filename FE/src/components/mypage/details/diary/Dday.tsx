@@ -27,7 +27,7 @@ const MyPageDday = () => {
     const { value, name } = e.target;
     if (name === "ddayTitle") {
       setLength(value.length);
-      if (value.length < 2 || value.length >= 20) {
+      if (value.length < 2 || value.length > 20) {
         setError(true);
       } else setError(false);
     }

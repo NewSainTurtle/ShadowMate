@@ -36,6 +36,5 @@ const monthSlice = createSlice({
 
 export const { setMonthInfo, setPlannerAccessScope } = monthSlice.actions;
 export const selectMonthDayList = (state: rootState) => state.month.dayList;
-export const selectPlannerAccessScope = (state: rootState) => state.month.plannerAccessScope;
 
 export default monthSlice.reducer;
