@@ -7,9 +7,9 @@ import SaveIcon from "@mui/icons-material/Save";
 import Modal from "@components/common/Modal";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectUserId } from "@store/authSlice";
-import { MonthConfig, selectPlannerAccessScope, setPlannerAccessScope } from "@store/planner/monthSlice";
-import { settingApi } from "@api/Api";
+import { selectPlannerAccessScope, selectUserId, setUserInfo } from "@store/authSlice";
+import { MonthConfig, setPlannerAccessScope } from "@store/planner/monthSlice";
+import { settingApi, userApi } from "@api/Api";
 
 const MyPageDiary = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +26,10 @@ const MyPageDiary = () => {
       .then(() => {
         dispatch(setPlannerAccessScope(scope));
         handleClose();
+        userApi
+          .getProfiles(userId)
+          .then((res) => dispatch(setUserInfo(res.data.data)))
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
   };
