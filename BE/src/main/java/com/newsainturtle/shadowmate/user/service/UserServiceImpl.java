@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateIntroduction(final UpdateIntroductionRequest updateIntroductionRequest, final Long userId) {
+        findUser(userId);
         userRepository.updateIntroduction(updateIntroductionRequest.getIntroduction(), userId);
     }
 
