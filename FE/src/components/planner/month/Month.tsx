@@ -7,8 +7,8 @@ import Loading from "@components/common/Loading";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { MonthConfig, MonthDayConfig, setMonthInfo } from "@store/planner/monthSlice";
-import { plannerApi, userApi } from "@api/Api";
+import { MonthConfig, MonthDayConfig, setFollowCount, setMonthInfo, setStatistics } from "@store/planner/monthSlice";
+import { followApi, plannerApi, userApi } from "@api/Api";
 import { selectFriendId } from "@store/friendSlice";
 
 const Month = () => {
@@ -42,6 +42,7 @@ const Month = () => {
       setIsOpen(true);
       setLoading(true);
       getMonthInfo();
+      // getFollowCountInfo();
     }
   };
 
@@ -49,10 +50,28 @@ const Month = () => {
     plannerApi
       .calendars(friendId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
       .then((res) => {
-        const dayList: MonthDayConfig[] = res.data.data.dayList;
-        const plannerAccessScope: MonthConfig["plannerAccessScope"] = res.data.data.plannerAccessScope || "전체공개";
+        const response = res.data.data;
+        const dayList: MonthDayConfig[] = response.dayList;
+        const plannerAccessScope: MonthConfig["plannerAccessScope"] = response.plannerAccessScope || "전체공개";
+        const statistics: MonthConfig["statistics"] = {
+          plannerLikeCount: response.plannerLikeCount,
+          todoComplete: response.todoComplete,
+          todoIncomplete: response.todoIncomplete,
+          todoTotal: response.todoTotal,
+        };
         dispatch(setMonthInfo({ plannerAccessScope, dayList }));
+        dispatch(setStatistics(statistics));
         setLoading(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getFollowCountInfo = () => {
+    followApi
+      .getFollowCount(friendId)
+      .then((res) => {
+        const response = res.data.data;
+        dispatch(setFollowCount(response));
       })
       .catch((err) => console.log(err));
   };
