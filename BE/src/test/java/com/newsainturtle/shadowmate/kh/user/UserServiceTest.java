@@ -246,12 +246,29 @@ public class UserServiceTest {
         }
 
         @Test
+        void 실패_소개글수정_찾을수없는유저() {
+            // given
+            final String newIntroduction = "새로운소개글";
+            final UpdateIntroductionRequest updateIntroductionRequest = UpdateIntroductionRequest.builder()
+                    .introduction(newIntroduction)
+                    .build();
+            doReturn(Optional.empty()).when(userRepository).findById(userId1);
+
+            // when
+            final UserException result = assertThrows(UserException.class, () -> userService.updateIntroduction(updateIntroductionRequest, userId1));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+        }
+
+        @Test
         void 성공_소개글수정() {
             // given
             final String newIntroduction = "새로운소개글";
             final UpdateIntroductionRequest updateIntroductionRequest = UpdateIntroductionRequest.builder()
                     .introduction(newIntroduction)
                     .build();
+            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
 
             // when
             userService.updateIntroduction(updateIntroductionRequest, userId1);
