@@ -37,7 +37,7 @@ const MyPageCategory = () => {
     }
     if (name === "categoryTitle") {
       setLength(value.length);
-      if (value.length < 2 || value.length >= 10) {
+      if (value.length < 2 || value.length > 10) {
         setError(true);
       } else setError(false);
     }
