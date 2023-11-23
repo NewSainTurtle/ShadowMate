@@ -30,7 +30,9 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const maxLength = 50;
 
   const [ModalOpen, setModalOpen] = useState<boolean>(false);
-  const handleOpen = () => setModalOpen(true);
+  const handleOpen = () => {
+    if (!addTodo && !disable) setModalOpen(true);
+  };
   const handleClose = () => setModalOpen(false);
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +111,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
     };
   };
 
-  const clicked = addTodo || !disable;
+  const clicked = !addTodo && !disable;
 
   return (
     <div className={styles[`todo-item${disable ? "--disable" : ""}`]}>
@@ -146,7 +148,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         )}
       </div>
 
-      <div className={styles[`todo-item__checked${!disable ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
+      <div className={styles[`todo-item__checked${clicked ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
         <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
       </div>
 

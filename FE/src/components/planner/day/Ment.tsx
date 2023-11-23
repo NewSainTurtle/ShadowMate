@@ -22,7 +22,7 @@ interface Props {
   value: string;
   isFile?: boolean;
   rows?: number;
-  retrospectionImage?: string | null;
+  retrospectionImage?: string;
   setRetrospectionImage?: Dispatch<SetStateAction<string | null>>;
   onBlur: React.FocusEventHandler;
   onChange: React.ChangeEventHandler;
