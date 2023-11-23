@@ -31,6 +31,7 @@ interface apiInterface {
     requested: (userId: number) => string; // 팔로우 신청, 취소
     receive: (userId: number) => string; // 팔로우 신청 수락, 거절
     receiveList: (userId: number) => string; // 받은 팔로우 신청 목록(친구신청 목록)
+    count: (userId: number) => string;
   };
   planners: {
     calendars: (userId: number) => string; // 캘린더 조회
@@ -82,6 +83,7 @@ const api: apiInterface = {
     requested: (userId: number) => HOST + FOLLOW + userId + "/requested",
     receive: (userId: number) => HOST + FOLLOW + userId + "/receive",
     receiveList: (userId: number) => HOST + FOLLOW + userId + "/receive-lists",
+    count: (userId: number) => HOST + FOLLOW + userId + "/counts",
   },
   planners: {
     calendars: (userId: number) => HOST + PLANNERS + userId + "/calendars",

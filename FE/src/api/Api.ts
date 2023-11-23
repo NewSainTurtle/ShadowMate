@@ -36,6 +36,7 @@ export const followApi = {
   receive: (userId: number, data: { requesterId: number; followReceive: boolean }) =>
     Axios.post(api.follow.receive(userId), data),
   receiveList: (userId: number) => Axios.get(api.follow.receiveList(userId)),
+  getFollowCount: (userId: number) => Axios.get(api.follow.count(userId)),
 };
 
 export const plannerApi = {
