@@ -27,7 +27,6 @@ const SocialHeader = (props: Props) => {
 
   const onClickOrder = (name: "latest" | "popularity") => {
     setOrder(name);
-    setSearchKeyWord("");
   };
 
   return (
