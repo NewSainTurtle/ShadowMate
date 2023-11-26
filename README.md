@@ -159,6 +159,8 @@ ex) develop
 
 #### 3. 월별(메인)
 
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/85155789/fc329dfc-d5d9-48b6-b07e-4c468b0f6527" width="70%"/></div>
+
 <br>
 
 #### 4. 주별 플래너
