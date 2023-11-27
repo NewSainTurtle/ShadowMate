@@ -13,6 +13,7 @@ import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
+import { resizeImage } from "@util/resizeImage";
 import html2canvas from "html2canvas";
 import { selectFriendId } from "@store/friendSlice";
 
@@ -148,7 +149,7 @@ const DayPage = () => {
     });
     canvas.toBlob(async (blob) => {
       if (blob != null) {
-        const file = blob;
+        const file = await resizeImage(blob);
         const storageRef = ref(firebaseStorage, `social/${userId + "_" + date}`);
         uploadBytes(storageRef, file).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadURL) =>
