@@ -42,7 +42,7 @@ const Month = () => {
       setIsOpen(true);
       setLoading(true);
       getMonthInfo();
-      // getFollowCountInfo();
+      getFollowCountInfo();
     }
   };
 
