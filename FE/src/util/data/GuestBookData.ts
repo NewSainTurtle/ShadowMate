@@ -1,4 +1,4 @@
-import { GuestBookConfig } from "@components/planner/month/MonthDetailInfo/GuestBook";
+import { GuestBookConfig } from "@util/planner.interface";
 
 export const TMP_COMMENT: GuestBookConfig[] = [
   {

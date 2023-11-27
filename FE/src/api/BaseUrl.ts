@@ -36,6 +36,7 @@ interface apiInterface {
   };
   planners: {
     calendars: (userId: number) => string; // 캘린더 조회
+    guestBook: (userId: number) => string; // 방명록 조회, 등록, 삭제
     weekly: (userId: number) => string; // 주간 플래너 조회
     weeklyTodos: (userId: number) => string; // 주별 할일 등록, 수정, 삭제
     weeklyTodosStatus: (userId: number) => string; // 주차별 할일 상태 수정
@@ -77,6 +78,7 @@ const api: apiInterface = {
     password: (userId: number) => HOST + USERS + userId + "/password",
     userOut: (userId: number) => HOST + USERS + userId,
     searches: (userId: number) => HOST + USERS + userId + "/searches",
+    introduction: (userId: number) => HOST + USERS + userId + "/introduction",
   },
   follow: {
     following: (userId: number) => HOST + FOLLOW + userId + "/following",
@@ -88,6 +90,7 @@ const api: apiInterface = {
   },
   planners: {
     calendars: (userId: number) => HOST + PLANNERS + userId + "/calendars",
+    guestBook: (userId: number) => HOST + PLANNERS + userId + "/monthly" + "/visitor-books",
     weekly: (userId: number) => HOST + PLANNERS + userId + "/weekly",
     weeklyTodos: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos",
     weeklyTodosStatus: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos-status",

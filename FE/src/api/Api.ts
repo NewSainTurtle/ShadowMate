@@ -44,7 +44,12 @@ export const followApi = {
 export const plannerApi = {
   calendars: (userId: number, params: { date: string }) =>
     Axios.get(api.planners.calendars(userId), { params: params }),
-
+  getGuestBook: (userId: number, params: { last: number }) =>
+    Axios.get(api.planners.guestBook(userId), { params: params }),
+  addGuestBook: (userId: number, data: { visitorBookContent: string }) =>
+    Axios.post(api.planners.guestBook(userId), data),
+  deleteGuestBook: (userId: number, data: { visitorBookId: number }) =>
+    Axios.delete(api.planners.guestBook(userId), { data: data }),
   weekly: (userId: number, params: { "start-date": string; "end-date": string }) =>
     Axios.get(api.planners.weekly(userId), { params: params }),
   addWeeklyTodos: (userId: number, data: { startDate: string; endDate: string; weeklyTodoContent: string }) =>
