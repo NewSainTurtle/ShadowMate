@@ -27,7 +27,7 @@ const Introduction = ({ isEdit, introduction, setIntroduction }: Props) => {
   const getIntroduction = async () => {
     const response = await userApi.getIntroduction(friendId);
     if (response.status === 200) {
-      setIntroduction(response.data.data.introduction);
+      setIntroduction(response.data.data.introduction || "");
     }
   };
 
