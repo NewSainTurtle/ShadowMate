@@ -21,6 +21,8 @@ export const userApi = {
     Axios.post(api.users.password(userId), data),
   userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
   searches: (userId: number, params: { nickname: string }) => Axios.get(api.users.searches(userId), { params }),
+  getIntroduction: (userId: number) => Axios.get(api.users.introduction(userId)),
+  editIntroduction: (userId: number, data: { introduction: string }) => Axios.put(api.users.introduction(userId), data),
 };
 
 export const followApi = {

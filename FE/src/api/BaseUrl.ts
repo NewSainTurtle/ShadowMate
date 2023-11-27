@@ -24,6 +24,7 @@ interface apiInterface {
     password: (userId: number) => string; // 비밀번호 수정
     userOut: (userId: number) => string; // 회원 탈퇴
     searches: (userId: number) => string; // 회원 검색
+    introduction: (userId: number) => string; // 소개글 수정
   };
   follow: {
     following: (userId: number) => string; // 팔로잉 조회, 삭제

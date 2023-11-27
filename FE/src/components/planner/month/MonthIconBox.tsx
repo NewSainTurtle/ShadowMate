@@ -14,6 +14,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
+import { userApi } from "@api/Api";
 
 interface Props {
   types: "소개글" | "월별통계" | "팔로우" | "좋아요" | "방명록";
@@ -47,6 +48,12 @@ const MonthIconBox = ({ types }: Props) => {
   let friendId = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [introduction, setIntroduction] = useState<string>("");
+
+  const editIntroduction = async () => {
+    await userApi.editIntroduction(friendId, { introduction });
+  };
+
   return (
     <div className={styles["icon-box"]}>
       <div className={styles["icon-box__title"]}>
@@ -56,10 +63,19 @@ const MonthIconBox = ({ types }: Props) => {
         </div>
         {types === "소개글" &&
           friendId === userId &&
-          (isEdit ? <SaveIcon onClick={() => setIsEdit(false)} /> : <EditIcon onClick={() => setIsEdit(true)} />)}
+          (isEdit ? (
+            <SaveIcon
+              onClick={() => {
+                editIntroduction();
+                setIsEdit(false);
+              }}
+            />
+          ) : (
+            <EditIcon onClick={() => setIsEdit(true)} />
+          ))}
       </div>
       {types === "소개글" ? (
-        <Introduction isEdit={isEdit} setIsEdit={setIsEdit} />
+        <Introduction isEdit={isEdit} introduction={introduction} setIntroduction={setIntroduction} />
       ) : (
         <>{types === "방명록" ? <GuestBook /> : <Statistics types={types} />}</>
       )}
