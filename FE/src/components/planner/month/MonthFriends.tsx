@@ -36,9 +36,9 @@ const MonthFriends = () => {
 
   return (
     <div className={styles["friend"]}>
-      <div className={styles["friend__btn--left"]}>
+      {/* <div className={styles["friend__btn--left"]}>
         <ChevronLeftIcon />
-      </div>
+      </div> */}
       <div className={styles["friend__container"]}>
         <FriendProfileIcon profile={userProfile} />
         {followingData && followingData.length > 0 && (
@@ -61,9 +61,9 @@ const MonthFriends = () => {
           </div>
         </div>
       </div>
-      <div className={styles["friend__btn--right"]}>
+      {/* <div className={styles["friend__btn--right"]}>
         <ChevronRightIcon />
-      </div>
+      </div> */}
     </div>
   );
 };

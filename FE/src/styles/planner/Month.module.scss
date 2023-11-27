@@ -162,13 +162,19 @@ $color-blue: var(--color-btn-blue);
 .friend {
   display: flex;
   align-items: center;
+  width: 100%;
+  overflow-x: auto;
 
   &__container {
-    display: flex;
-    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    // grid-template-columns: repeat(10, 1fr);
     padding: 0.2em 1em 0.2em 1em;
     box-sizing: border-box;
-    overflow-x: auto;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera*/
+    }
   }
 
   &__btn {
