@@ -29,9 +29,12 @@ const GuestBook = () => {
   const [min, setMin] = useState(0);
   const [prevScrollHeight, setPrevScrollHeight] = useState<number | null | undefined>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const maxLength = 30;
 
   const handleGuestBookChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setGuestBookInput(e.target.value);
+    let input = e.target.value;
+    if (input.length > maxLength) input.slice(0, maxLength);
+    setGuestBookInput(input);
   };
 
   const getGuestBook = useCallback(
