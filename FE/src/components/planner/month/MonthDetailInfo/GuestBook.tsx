@@ -126,19 +126,25 @@ const GuestBook = () => {
         {guestBookList && guestBookList.length > 0 ? (
           <>
             {loading && <Loading />}
-            {!isEnd && <div ref={obsRef} style={{ height: "1px" }} />}
+            {!isEnd && <div ref={obsRef} />}
             {guestBookList.map((item: GuestBookConfig, idx: number) => {
               return (
                 <div className={styles["guest__comment"]} key={item.visitorBookId}>
+                  <Avatar src={item.visitorProfileImage} sx={{ width: 30, height: 30 }} />
                   <div>
-                    <Avatar src={item.visitorProfileImage} sx={{ width: 20, height: 20 }} />
-                    <Text types="small">{item.visitorNickname}</Text>
+                    <div className={styles["guest__nickname"]}>
+                      <Text bold types="small">
+                        {item.visitorNickname}
+                      </Text>
+                      <div>
+                        <Text types="small">{item.writeDateTime}</Text>
+                        {(friendId === userId || userInfo.nickname === item.visitorNickname) && (
+                          <DeleteOutline onClick={() => deleteGuestBook(item, idx)} />
+                        )}
+                      </div>
+                    </div>
+                    <Text types="small">{item.visitorBookContent}</Text>
                   </div>
-                  <Text types="small">{item.visitorBookContent}</Text>
-                  <Text types="small">{item.writeDateTime}</Text>
-                  {(friendId === userId || userInfo.nickname === item.visitorNickname) && (
-                    <DeleteOutline onClick={() => deleteGuestBook(item, idx)} />
-                  )}
                 </div>
               );
             })}
@@ -152,12 +158,13 @@ const GuestBook = () => {
       </div>
       {friendId != userId && (
         <div className={styles["guest__input"]}>
-          <div>
-            <Avatar src={userInfo.profileImage} sx={{ width: 20, height: 20 }} />
-            <Text types="small">{userInfo.nickname}</Text>
-          </div>
-          <input value={guestBookInput} placeholder="방명록을 남겨주세요." onChange={handleGuestBookChange} />
-          <div onClick={addGuestBook}>
+          <input
+            maxLength={maxLength}
+            value={guestBookInput}
+            placeholder="방명록을 남겨주세요."
+            onChange={handleGuestBookChange}
+          />
+          <div className={styles["guest__send"]} onClick={addGuestBook}>
             <ArrowCircleUpIcon />
           </div>
         </div>

@@ -144,7 +144,8 @@ $color-blue: var(--color-btn-blue);
 
 .detail {
   display: grid;
-  grid-template-rows: min-content min-content 10em 155px minmax(8em, auto);
+  grid-template-rows: min-content min-content 10em 155px auto;
+  width: 100%;
   height: calc(100vh - 4em);
   gap: 1em;
 
@@ -218,15 +219,6 @@ $color-blue: var(--color-btn-blue);
           font-size: medium;
         }
       }
-    }
-  }
-}
-
-@media (max-width: 1200px) {
-  .calendar__item {
-    > div:nth-child(1) {
-      height: 2.5em;
-      width: 2.5em;
     }
   }
 }
@@ -327,10 +319,9 @@ $color-blue: var(--color-btn-blue);
 .guest {
   width: 100%;
   &__input {
-    display: grid;
-    grid-template-columns: 130px 6.8fr 0.7fr;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    align-content: center;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -338,28 +329,24 @@ $color-blue: var(--color-btn-blue);
     padding-left: 1em;
     box-sizing: border-box;
     border-top: 0.5px solid $color-gray-3;
-    > div:nth-child(1) {
-      display: flex;
-      gap: 0.5em;
-    }
     > input {
+      height: 100%;
       padding-left: 0;
       outline: none;
       border: none;
       color: $color-text;
       background-color: $color-background;
     }
-    > div:nth-child(3) {
-      padding: 0;
-      height: 100%;
-      text-align: center;
-      align-items: center;
-      justify-items: center;
-      border-left: 0.5px solid $color-gray-3;
-      cursor: pointer;
-      > svg {
-        fill: $color-gray-4;
-      }
+  }
+
+  &__send {
+    height: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+    border-left: 0.5px solid $color-gray-3;
+    cursor: pointer;
+    > svg {
+      fill: $color-gray-4;
     }
   }
 
@@ -368,7 +355,7 @@ $color-blue: var(--color-btn-blue);
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-    height: calc(100% - 2.25em - 2em - 2.5em - 0.3em);
+    height: calc(100% - 2.25em - 2em - 2.5em);
     width: 100%;
     padding: 0 0.2em 0.2em 1em;
     box-sizing: border-box;
@@ -381,32 +368,43 @@ $color-blue: var(--color-btn-blue);
   }
 
   &__comment {
-    display: grid;
-    grid-template-columns: 130px 4.6fr 110px 20px;
-    align-items: center;
+    display: flex;
     padding-right: 0.2em;
+    gap: 0.5em;
 
     &:hover {
-      &.guest__comment > svg {
+      .guest__nickname > div:nth-child(2) > svg {
         visibility: visible;
       }
     }
 
-    > div:nth-child(1) {
+    > div:nth-child(2) {
       display: flex;
-      gap: 0.5em;
-    }
-    > span:nth-child(3) {
+      flex-direction: column;
       width: 100%;
-      text-align: right;
-      color: $color-gray-4;
+      gap: 0.2em;
     }
-    > svg {
-      visibility: hidden;
-      font-size: small;
-      justify-self: center;
-      color: $color-gray-4;
-      cursor: pointer;
+  }
+
+  &__nickname {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    > div:nth-child(2) {
+      display: flex;
+      justify-items: center;
+      align-items: center;
+      gap: 0.2em;
+      > span {
+        color: $color-gray-4;
+      }
+      > svg {
+        visibility: hidden;
+        font-size: small;
+        color: $color-gray-4;
+        cursor: pointer;
+      }
     }
   }
 
@@ -416,6 +414,22 @@ $color-blue: var(--color-btn-blue);
     align-items: center;
     > span {
       color: $color-gray-3;
+    }
+  }
+}
+
+@media (max-width: 1180px) {
+  .calendar__item {
+    > div:nth-child(1) {
+      height: 2.5em;
+      width: 2.5em;
+    }
+  }
+  .icon-box__title {
+    > div {
+      > div {
+        display: none;
+      }
     }
   }
 }
