@@ -35,7 +35,6 @@ const MonthFriends = () => {
   };
 
   const onDragMove = (e: MouseEvent<HTMLDivElement>) => {
-    console.log("onDragMove");
     if (isDrag && scrollRef.current) {
       scrollRef.current.scrollLeft = startX - e.pageX;
     }
