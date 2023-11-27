@@ -2,7 +2,7 @@ import React from "react";
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { CategoryColorConfig, CategoryItemConfig } from "@util/planner.interface";
-import CategoryList from "@components/mypage/list/CategoryList";
+import { PURGE } from "redux-persist";
 
 interface CategoryConfig {
   categoryList: CategoryItemConfig[];
@@ -44,6 +44,10 @@ const categorySlice = createSlice({
     setCategoryColorClick: (state, { payload }: PayloadAction<number>) => {
       state.categoryColorClick = payload;
     },
+  },
+  extraReducers: (builder) => {
+    // redux-persist 초기화
+    builder.addCase(PURGE, () => initialState);
   },
 });
 

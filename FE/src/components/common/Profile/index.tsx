@@ -7,7 +7,7 @@ import Avatar from "@components/common/Avatar";
 import { persistor } from "@hooks/configStore";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, setLogout } from "@store/authSlice";
-import { selectFriendId } from "@store/friendSlice";
+import { clearFriendInfo, selectFriendId } from "@store/friendSlice";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 interface Props {
@@ -24,6 +24,7 @@ const Profile = ({ types, profile }: Props) => {
 
   const handleLogout = () => {
     dispatch(setLogout());
+    dispatch(clearFriendInfo());
     setTimeout(() => {
       persistor.purge();
     }, 200);

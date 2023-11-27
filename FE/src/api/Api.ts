@@ -18,7 +18,7 @@ export const userApi = {
   myPages: (userId: number, data: { newNickname: string; newProfileImage: string; newStatusMessage: string }) =>
     Axios.put(api.users.myPages(userId), data),
   password: (userId: number, data: { oldPassword: string; newPassword: string }) =>
-    Axios.post(api.users.password(userId), data),
+    Axios.put(api.users.password(userId), data),
   userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
   searches: (userId: number, params: { nickname: string }) => Axios.get(api.users.searches(userId), { params }),
   getIntroduction: (userId: number) => Axios.get(api.users.introduction(userId)),

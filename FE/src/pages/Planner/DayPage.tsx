@@ -5,7 +5,7 @@ import TimeTable from "@components/planner/day/todo/TimeTable";
 import TodoList from "@components/planner/day/todo/TodoList";
 import Ment from "@components/planner/day/Ment";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDayDate, selectTodoList, setDayInfo } from "@store/planner/daySlice";
+import { selectDayDate, selectTodoList, setDayInfo, setTodoItem } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
@@ -81,6 +81,13 @@ const DayPage = () => {
     const handleOutsideClose = (e: MouseEvent) => {
       if (todoDivRef && todoDivRef.current && e.button == 2) {
         setIsClickTimeTable(false);
+        dispatch(
+          setTodoItem({
+            todoId: 0,
+            todoContent: "",
+            todoStatus: "공백",
+          }),
+        );
       }
     };
     document.addEventListener("mouseup", handleOutsideClose);
@@ -90,7 +97,16 @@ const DayPage = () => {
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
-      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) setIsClickTimeTable(false);
+      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) {
+        setIsClickTimeTable(false);
+        dispatch(
+          setTodoItem({
+            todoId: 0,
+            todoContent: "",
+            todoStatus: "공백",
+          }),
+        );
+      }
     };
     document.addEventListener("click", handleOutsideClose);
     return () => document.removeEventListener("click", handleOutsideClose);
@@ -124,12 +140,14 @@ const DayPage = () => {
   const handleDownload = async () => {
     if (!screenDivRef.current) return;
     await html2canvas(screenDivRef.current, {
+      windowWidth: 1200,
+      windowHeight: 682,
       logging: false,
       allowTaint: true,
       useCORS: true,
     }).then(async (canvas) => {
       const imageURL = canvas.toDataURL("image/png");
-      const storageRef = ref(firebaseStorage, `/social/${userId + "_" + date}`);
+      const storageRef = ref(firebaseStorage, `social/${userId + "_" + date}`);
       uploadString(storageRef, imageURL, "data_url").then((snapshot) =>
         getDownloadURL(snapshot.ref).then((downloadURL) =>
           plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
@@ -182,7 +200,7 @@ const DayPage = () => {
           rows={5}
           maxLength={100}
           isFile
-          retrospectionImage={retrospectionImage}
+          retrospectionImage={retrospectionImage || ""}
           setRetrospectionImage={setRetrospectionImage}
           onBlur={saveRetrospections}
         />

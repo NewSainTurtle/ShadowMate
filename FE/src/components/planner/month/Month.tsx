@@ -36,7 +36,7 @@ const Month = () => {
   const getIsOpen = async () => {
     const response = await userApi.getProfiles(friendId);
     const status = response.data.data.plannerAccessScope;
-    if (status === "비공개") {
+    if (friendId != userId && status === "비공개") {
       setIsOpen(false);
     } else {
       setIsOpen(true);

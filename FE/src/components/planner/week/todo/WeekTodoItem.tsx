@@ -13,9 +13,10 @@ interface Props {
   id: number;
   idx: number;
   item: WeekTodoItemConfig;
+  isMine: boolean;
 }
 
-const WeekTodoItem = ({ id, idx, item }: Props) => {
+const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
   const dispatch = useAppDispatch();
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
   const userId: number = useAppSelector(selectUserId);
@@ -26,6 +27,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
     oldTodo: "",
   });
   const [checked, setChecked] = useState<boolean>(item.weeklyTodoStatus);
+  const friend = isMine ? "" : "--friend";
 
   const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -99,7 +101,7 @@ const WeekTodoItem = ({ id, idx, item }: Props) => {
   };
 
   return (
-    <div className={styles["todo__item"]} key={item.weeklyTodoId}>
+    <div className={styles[`todo__item${friend}`]} key={item.weeklyTodoId}>
       <div className={styles["todo__checkbox"]}>
         <input
           type="checkbox"

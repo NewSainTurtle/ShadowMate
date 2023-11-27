@@ -1,19 +1,18 @@
 import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
+import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
 import { WeekTodoItemConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
-import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { selectUserId } from "@store/authSlice";
 import { getThisWeek } from "@util/getThisWeek";
 
 const WeekTodoInput = () => {
   const dispatch = useAppDispatch();
   const weeklyTodos: WeekTodoItemConfig[] = useAppSelector(selectWeeklyTodos);
   const userId: number = useAppSelector(selectUserId);
-  const thisWeek = useAppSelector(selectWeeklyTodos).week;
+  const thisWeek = useAppSelector(selectThisWeek);
   const todoEndRef = useRef<HTMLDivElement | null>(null);
-  const nextId = useRef<number>(weeklyTodos.length);
   const [todo, setTodo] = useState<string>("");
   const dates = getThisWeek(thisWeek);
 

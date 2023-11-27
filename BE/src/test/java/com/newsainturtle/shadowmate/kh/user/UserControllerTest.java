@@ -224,6 +224,20 @@ public class UserControllerTest {
         }
 
         @Test
+        void 성공_소개글조회() throws Exception {
+            // given
+            final String url = "/api/users/{userId}/introduction";
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId));
+
+            // then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(SUCCESS_SEARCH_INTRODUCTION));
+        }
+
+        @Test
         void 실패_소개글_유저틀림() throws Exception {
             // given
             final String url = "/api/users/{userId}/introduction";

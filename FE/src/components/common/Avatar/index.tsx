@@ -8,8 +8,8 @@ const CustomAvatar = ({ src, ...rest }: AvatarProps) => {
     <Avatar className={styles["avatar"]} src={src} {...rest}>
       <svg className={styles["avatar-default"]} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M78 80.4256V29.5C78 27.2909 76.2091 25.5 74 25.5C71.7909 25.5 70 27.2909 70 29.5V86.2107C69.4175 86.2061 68.8211 86.0971 68.2331 85.8684C66.8222 85.3197 65.238 85.4445 63.9304 86.2073L62.9654 86.7702C61.0876 87.8656 58.8185 88.0647 56.7786 87.3132L54.1044 86.3279C51.7841 85.4731 49.2294 85.5082 46.9335 86.4266L44.5374 87.385C41.9623 88.4151 39.075 88.3294 36.5655 87.1485L35.075 86.4471C33.081 85.5087 30.8329 85.2553 28.68 85.7262L28.137 85.845C21.9005 87.2093 16 82.4599 16 76.076V72V26.5V20C16 14.4772 20.4772 10 26 10H33.6117H65H72.6117C78.1346 10 82.6118 14.4772 82.6118 20V72C82.6118 75.5388 80.7736 78.6482 78 80.4256Z"
           className={styles["icon-background"]}
         />
@@ -18,22 +18,22 @@ const CustomAvatar = ({ src, ...rest }: AvatarProps) => {
           className={styles["icon-background"]}
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M94 35.0178L88 41.0178L93.9822 47H76V35H94V35.0178Z"
           className={styles["icon-background"]}
         />
         <ellipse className={styles["icon-color"]} cx="52.5" cy="39.5" rx="5.5" ry="9.5" />
         <mask id="path-5-inside-1_870_347" className={styles["icon-background"]}>
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M56.5531 33.0782C53.9668 33.5171 52 35.8046 52 40C52 44.0485 53.8314 45.9485 56.2838 46.3946C55.2979 48.0094 53.9659 49 52.5 49C49.4624 49 47 44.7467 47 39.5C47 34.2533 49.4624 30 52.5 30C54.1041 30 55.5478 31.1861 56.5531 33.0782Z"
           />
         </mask>
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M56.5531 33.0782C53.9668 33.5171 52 35.8046 52 40C52 44.0485 53.8314 45.9485 56.2838 46.3946C55.2979 48.0094 53.9659 49 52.5 49C49.4624 49 47 44.7467 47 39.5C47 34.2533 49.4624 30 52.5 30C54.1041 30 55.5478 31.1861 56.5531 33.0782Z"
           className={styles["icon-background"]}
         />
@@ -45,14 +45,14 @@ const CustomAvatar = ({ src, ...rest }: AvatarProps) => {
         <ellipse className={styles["icon-color"]} cx="35.5" cy="39.5" rx="5.5" ry="9.5" />
         <mask id="path-8-inside-2_870_347" className={styles["icon-background"]}>
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M39.5531 33.0782C36.9668 33.5171 35 35.8046 35 40C35 44.0485 36.8314 45.9485 39.2838 46.3946C38.2979 48.0094 36.9659 49 35.5 49C32.4624 49 30 44.7467 30 39.5C30 34.2533 32.4624 30 35.5 30C37.1041 30 38.5478 31.1861 39.5531 33.0782Z"
           />
         </mask>
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M39.5531 33.0782C36.9668 33.5171 35 35.8046 35 40C35 44.0485 36.8314 45.9485 39.2838 46.3946C38.2979 48.0094 36.9659 49 35.5 49C32.4624 49 30 44.7467 30 39.5C30 34.2533 32.4624 30 35.5 30C37.1041 30 38.5478 31.1861 39.5531 33.0782Z"
           className={styles["icon-background"]}
         />

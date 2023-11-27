@@ -7,9 +7,9 @@ import SaveIcon from "@mui/icons-material/Save";
 import Modal from "@components/common/Modal";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectUserId } from "@store/authSlice";
-import { MonthConfig, selectPlannerAccessScope, setPlannerAccessScope } from "@store/planner/monthSlice";
-import { settingApi } from "@api/Api";
+import { selectPlannerAccessScope, selectUserId, setUserInfo } from "@store/authSlice";
+import { MonthConfig, setPlannerAccessScope } from "@store/planner/monthSlice";
+import { settingApi, userApi } from "@api/Api";
 
 const MyPageDiary = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +26,10 @@ const MyPageDiary = () => {
       .then(() => {
         dispatch(setPlannerAccessScope(scope));
         handleClose();
+        userApi
+          .getProfiles(userId)
+          .then((res) => dispatch(setUserInfo(res.data.data)))
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
   };
@@ -82,7 +86,7 @@ const MyPageDiary = () => {
           <Text types="small">
             <>전체 공개 및 친구 공개 상태에서 비공개 전환 시,</>
             <br />
-            <>소셜에 공유된 게시글이 삭제됩니다.</>
+            <>소셜에 공유된 게시글이 숨김 처리됩니다.</>
           </Text>
           <Text types="small">계속 진행하시겠습니까?</Text>
         </div>

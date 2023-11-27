@@ -3,6 +3,8 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CategoryColorList from "@components/mypage/item/CategoryColorList";
+import AppleIcon from "@mui/icons-material/Apple";
+import MicrosoftIcon from "@mui/icons-material/Microsoft";
 import { CategoryColorConfig, CategoryItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import {
@@ -35,7 +37,7 @@ const MyPageCategory = () => {
     }
     if (name === "categoryTitle") {
       setLength(value.length);
-      if (value.length < 2 || value.length >= 10) {
+      if (value.length < 2 || value.length > 10) {
         setError(true);
       } else setError(false);
     }
@@ -74,14 +76,31 @@ const MyPageCategory = () => {
           value={categoryEmoticon || ""}
           placeholder="카테고리 이모지"
           onChange={onChangeInput}
-          helperText={
-            // <>
-            //   윈도우 사용 시 윈도우키 + . 를 눌러보세요.
-            //   <br /> 맥 사용 시 Fn + E 를 눌러보세요.
-            // </>
-            <>이모지 외 사용이 불가능합니다.</>
-          }
+          helperText={"이모지 외 사용이 불가능합니다."}
         />
+      </div>
+      <div className={styles["frame__line"]}>
+        <div /> {/* 타이틀 빈공간 대체 */}
+        <div className={styles["emoji__info"]}>
+          <span>
+            <MicrosoftIcon />
+            <span>
+              <Text types="small" bold>
+                Window&nbsp;&nbsp;&nbsp;
+              </Text>
+              <Text types="small">Window + .</Text>
+            </span>
+          </span>
+          <span>
+            <AppleIcon />
+            <span>
+              <Text types="small" bold>
+                MacOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </Text>
+              <Text types="small">Control + Command + SpaceBar</Text>
+            </span>
+          </span>
+        </div>
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 색상</Text>

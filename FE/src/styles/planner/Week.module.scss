@@ -1,6 +1,8 @@
+@use "@styles/common/Text.module.scss";
 $color-text: var(--color-text);
 $color-white: var(--color-white);
 $color-black: var(--color-black);
+$color-gray-1: var(--color-gray-1);
 $color-gray-4: var(--color-gray-4);
 $color-gray-5: var(--color-gray-5);
 $border: 1px;
@@ -22,38 +24,39 @@ $border: 1px;
   // 타이틀 전체 영역
   &__title {
     @extend %under_boder, %flex_row;
-    height: 4.5em;
+    height: 5em;
     justify-content: space-between;
-    align-items: center;
+    padding: 0.5em 0.5rem;
+    box-sizing: border-box;
 
     // 타이틀 + 좌우 버튼
     > div:nth-child(1) {
       @extend %flex_row;
-      align-items: center;
-      margin-left: 1em;
+      align-items: end;
 
       > span:nth-child(1) {
-        min-width: 8em;
+        width: 15rem;
+        box-sizing: border-box;
       }
 
       // 좌우 버튼
       > div:nth-child(2) {
         @extend %flex_row;
+        @extend .text-semi-large;
         align-items: center;
-        margin-left: 1em;
+        gap: 0.3em;
       }
     }
 
     // 친구 프로필 영역
     > div:nth-child(2) {
+      align-self: center;
       width: 22.5vw;
-      margin: 0.5em;
     }
   }
 
   &__button,
   &__today {
-    margin-right: 1em;
     fill: $color-text;
     cursor: pointer;
   }
@@ -62,7 +65,7 @@ $border: 1px;
   &__list {
     @extend %flex_row;
     flex-wrap: wrap;
-    height: calc(100% - 4.5em - $border); // ( 전체높이 - 타이틀 높이 - border 높이 )
+    height: calc(100% - 5em - $border); // ( 전체높이 - 타이틀 높이 - border 높이 )
   }
 }
 
@@ -91,6 +94,11 @@ $border: 1px;
       font-size: medium;
       margin-right: 1em;
       cursor: pointer;
+    }
+
+    &--friend {
+      @extend .todo__item;
+      pointer-events: none;
     }
   }
 
@@ -145,11 +153,6 @@ $border: 1px;
     text-overflow: ellipsis;
     cursor: pointer;
   }
-
-  &--friend {
-    @extend .todo;
-    pointer-events: none;
-  }
 }
 
 .item {
@@ -166,6 +169,13 @@ $border: 1px;
     display: flex;
     justify-content: center;
     align-items: center;
+    > div:nth-child(1):hover {
+      padding: 0.2em 0.5em;
+      box-sizing: border-box;
+      border-radius: 0.625rem;
+      background-color: $color-gray-1;
+      cursor: pointer;
+    }
     > span {
       // DDay
       &:nth-child(2) {

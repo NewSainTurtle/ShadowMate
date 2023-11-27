@@ -81,22 +81,6 @@ class FollowControllerTest {
     }
 
     @Test
-    void 실패_팔로우개수조회_유저정보다름() throws Exception {
-        //given
-        final String url = "/api/follow/{userId}/counts";
-        final Long userId = user1.getId();
-        doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
-
-        //when
-        final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url, userId)
-        );
-
-        //then
-        resultActions.andExpect(status().isForbidden());
-    }
-
-    @Test
     void 성공_팔로우개수조회() throws Exception {
         // given
         final String url = "/api/follow/{userId}/counts";

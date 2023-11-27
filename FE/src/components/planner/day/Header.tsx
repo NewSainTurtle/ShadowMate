@@ -13,6 +13,8 @@ import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
+import { setThisWeek } from "@store/planner/weekSlice";
+import { getThisWeek } from "@util/getThisWeek";
 dayjs.locale("ko");
 
 const FriendHeader = () => {
@@ -39,6 +41,7 @@ const FriendHeader = () => {
   }
 
   function weekClick() {
+    dispatch(setThisWeek(dayjs(getThisWeek(date)[0]).toDate()));
     navigate("/week");
   }
 

@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -218,6 +217,32 @@ public class UserServiceTest {
 
             // then
             verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
+        }
+
+        @Test
+        void 실패_소개글조회_찾을수없는유저() {
+            // given
+            doReturn(Optional.empty()).when(userRepository).findById(userId1);
+
+            // when
+            final UserException result = assertThrows(UserException.class, () -> userService.searchIntroduction(userId1));
+
+            // then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+        }
+
+        @Test
+        void 성공_소개글조회() {
+            // given
+            final String newIntroduction = "새로운소개글";
+            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
+            doReturn(newIntroduction).when(userRepository).findIntroduction(userId1);
+
+            // when
+            final SearchIntroductionResponse result = userService.searchIntroduction(userId1);
+
+            // then
+            assertThat(result.getIntroduction()).isEqualTo(newIntroduction);
         }
 
         @Test
