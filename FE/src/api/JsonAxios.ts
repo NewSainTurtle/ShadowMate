@@ -31,7 +31,7 @@ Axios.interceptors.response.use(
     return res;
   },
   (err) => {
-    if (err.response.status === 403) {
+    if (err.response.data.code === "FAIL_VALIDATE_TOKEN") {
       store.dispatch(setModalOpen());
     }
     return Promise.reject(err);
