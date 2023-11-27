@@ -65,7 +65,7 @@ const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) =>
 
   return (
     <div className={styles["ment-preview__box"]}>
-      <input type="file" id="imageFile" accept="image/*" onChange={renderImage} />
+      <input type="file" id="imageFile" accept="image/jpeg, image/png" onChange={renderImage} />
       {retrospectionImage ? (
         <div className={styles["ment-preview__img"]}>
           <img src={retrospectionImage} alt="img-preview" />

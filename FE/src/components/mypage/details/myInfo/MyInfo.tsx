@@ -174,7 +174,7 @@ const MyPageInfo = () => {
         title: "프로필 사진",
         node: (
           <div className={styles["info__profile-img"]}>
-            <input type="file" id="imageFile" accept="image/*" onChange={renderImage} />
+            <input type="file" id="imageFile" accept="image/jpeg, image/png" onChange={renderImage} />
             <label htmlFor="imageFile">
               <Avatar src={profileImage} />
             </label>
