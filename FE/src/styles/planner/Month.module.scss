@@ -110,10 +110,7 @@ $color-blue: var(--color-btn-blue);
         color: $color-black;
       }
     }
-    > span:nth-child(2) {
-      margin-top: 0.2em;
-      color: $color-text;
-    }
+
     &--null {
       @extend .calendar__item;
       > div:nth-child(1) {
@@ -121,6 +118,26 @@ $color-blue: var(--color-btn-blue);
       }
       > span {
         visibility: hidden;
+      }
+    }
+  }
+
+  &__date {
+    margin-top: 0.5em;
+    > span {
+      color: $color-text;
+    }
+    &--today {
+      @extend .calendar__date;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 1.3rem;
+      height: 1.3rem;
+      border-radius: 50%;
+      background-color: $color-text;
+      > span {
+        color: $color-background;
       }
     }
   }
