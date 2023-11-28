@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
+import w_styles from "@styles/planner/Week.module.scss";
 import MonthCalendar from "@components/planner/month/MonthCalendar";
 import MonthDetail from "@components/planner/month/MonthDetail";
 import Text from "@components/common/Text";
 import Loading from "@components/common/Loading";
 import dayjs from "dayjs";
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { MonthConfig, MonthDayConfig, setFollowCount, setMonthInfo, setStatistics } from "@store/planner/monthSlice";
@@ -26,6 +28,10 @@ const Month = () => {
   const handlePrevMonth = () => {
     const newDate = dayjs(selectedDay).subtract(1, "month").endOf("month").format("MM/DD/YY");
     setSelectedDay(newDate);
+  };
+
+  const handleToday = () => {
+    setSelectedDay(dayjs(today).format("YYYY-MM-DD"));
   };
 
   const handleNextMonth = () => {
@@ -98,15 +104,16 @@ const Month = () => {
                 {month.toString().length > 1 ? month : "0" + month.toString()}월
               </Text>
             </div>
-            <div className={styles["month__button"]} onClick={handlePrevMonth}>
-              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-                <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
-              </svg>
-            </div>
-            <div className={styles["month__button"]} onClick={handleNextMonth}>
-              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-                <path d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z" />
-              </svg>
+            <div>
+              <div className={w_styles["week__button"]} onClick={handlePrevMonth}>
+                <NavigateBefore />
+              </div>
+              <div className={w_styles["week__today"]} onClick={handleToday}>
+                <Text bold>today</Text>
+              </div>
+              <div className={w_styles["week__button"]} onClick={handleNextMonth}>
+                <NavigateNext />
+              </div>
             </div>
           </div>
         </div>
