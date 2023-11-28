@@ -117,13 +117,13 @@ const Login = () => {
           />
         </div>
         <div className={styles.login_toolbox}>
-          <div className={styles.login_checkbox}>
+          {/* <div className={styles.login_checkbox}>
             <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={() => setAutoLogin(!autoLogin)} />
             <label htmlFor="auto">
               <Text types="small">자동로그인</Text>
             </label>
           </div>
-          <Text types="small">비밀번호 찾기</Text>
+          <Text types="small">비밀번호 찾기</Text> */}
         </div>
         <div className={styles.login_warning} style={{ visibility: showAlert ? "visible" : "hidden" }}>
           <Text types="small">아이디 또는 비밀번호를 잘못 입력했습니다.</Text>
