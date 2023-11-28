@@ -1,6 +1,8 @@
 package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
+import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
+import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.dto.*;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -21,6 +23,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    private final FollowRepository followRepository;
+
+    private final FollowRequestRepository followRequestRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -109,8 +115,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(final Long userId) {
-        userRepository.deleteUser(LocalDateTime.now(), userId);
+    public void deleteUser(final User user) {
+        followRepository.deleteAllByFollowingIdOrFollowerId(user, user);
+        followRequestRepository.deleteAllByRequesterIdOrReceiverId(user, user);
+        userRepository.deleteUser(LocalDateTime.now(), user.getId());
     }
 
     private void findUser(final Long userId) {
