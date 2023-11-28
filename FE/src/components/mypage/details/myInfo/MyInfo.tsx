@@ -8,6 +8,7 @@ import Button from "@components/common/Button";
 import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
+import { resizeImage } from "@util/resizeImage";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { authApi, userApi } from "@api/Api";
 import { userRegex } from "@util/regex";
@@ -107,7 +108,7 @@ const MyPageInfo = () => {
     } else {
       let newProfileImage = profileImage;
       if (saveImageFile != null) {
-        const file = saveImageFile;
+        const file = await resizeImage(saveImageFile);
         const storageRef = ref(firebaseStorage, `profile/${userId}`);
         await uploadBytes(storageRef, file).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadURL) => (newProfileImage = downloadURL)),
@@ -174,7 +175,7 @@ const MyPageInfo = () => {
         title: "프로필 사진",
         node: (
           <div className={styles["info__profile-img"]}>
-            <input type="file" id="imageFile" accept="image/*" onChange={renderImage} />
+            <input type="file" id="imageFile" accept="image/jpeg, image/png" onChange={renderImage} />
             <label htmlFor="imageFile">
               <Avatar src={profileImage} />
             </label>

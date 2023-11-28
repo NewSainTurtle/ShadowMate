@@ -5,6 +5,7 @@ import { IconButton } from "@mui/material";
 import Text from "@components/common/Text";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { resizeImage } from "@util/resizeImage";
 import { plannerApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
@@ -43,12 +44,11 @@ const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) =>
 
     const reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
-    reader.onloadend = () => {
+    reader.onloadend = async () => {
       setRetrospectionImage(reader.result as string);
       if (e.target.files != null) {
-        const file = e.target.files[0];
+        const file = await resizeImage(e.target.files[0]);
         const storageRef = ref(firebaseStorage, `retrospections/${userId + "_" + date}`);
-
         uploadBytes(storageRef, file).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadURL) => {
             saveImage(downloadURL);
@@ -65,7 +65,7 @@ const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) =>
 
   return (
     <div className={styles["ment-preview__box"]}>
-      <input type="file" id="imageFile" accept="image/*" onChange={renderImage} />
+      <input type="file" id="imageFile" accept="image/jpeg, image/png" onChange={renderImage} />
       {retrospectionImage ? (
         <div className={styles["ment-preview__img"]}>
           <img src={retrospectionImage} alt="img-preview" />
