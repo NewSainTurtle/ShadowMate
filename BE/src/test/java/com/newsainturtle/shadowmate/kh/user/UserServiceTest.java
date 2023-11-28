@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.kh.user;
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
+import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.user.dto.*;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -46,8 +46,11 @@ public class UserServiceTest {
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Spy
+    @Mock
     private FollowRepository followRepository;
+
+    @Mock
+    private FollowRequestRepository followRequestRepository;
 
     final User user1 = User.builder()
             .id(1L)
@@ -326,9 +329,11 @@ public class UserServiceTest {
             //given
 
             //when
-            userService.deleteUser(userId1);
+            userService.deleteUser(user1);
 
             //then
+            verify(followRepository, times(1)).deleteAllByFollowingIdOrFollowerId(any(User.class), any(User.class));
+            verify(followRequestRepository, times(1)).deleteAllByRequesterIdOrReceiverId(any(User.class), any(User.class));
             verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class));
         }
 

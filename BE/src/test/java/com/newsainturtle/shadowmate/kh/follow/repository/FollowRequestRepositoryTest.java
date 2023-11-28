@@ -149,4 +149,26 @@ class FollowRequestRepositoryTest {
         assertThat(result.getFollowingId().getNickname()).isEqualTo(user2.getNickname());
 
     }
+
+    @Test
+    void 유저와관련된팔로우신청삭제() {
+        // given
+        followRequestRepository.save(FollowRequest.builder()
+                .requesterId(user1)
+                .receiverId(user2)
+                .build());
+        followRequestRepository.save(FollowRequest.builder()
+                .requesterId(user2)
+                .receiverId(user1)
+                .build());
+
+        // when
+        followRequestRepository.deleteAllByRequesterIdOrReceiverId(user1, user1);
+        final List<FollowRequest> result1 = followRequestRepository.findAllByReceiverId(user1);
+        final FollowRequest result2 = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
+
+        // then
+        assertThat(result1).hasSize(0);
+        assertThat(result2).isNull();
+    }
 }
