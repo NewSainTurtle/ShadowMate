@@ -5,6 +5,8 @@ import Text from "@components/common/Text";
 import Avatar from "@components/common/Avatar";
 import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
@@ -32,6 +34,10 @@ const MyPageInfo = () => {
     nickname: nickname.length,
     statusMessage: statusMessage.length,
   });
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -179,7 +185,7 @@ const MyPageInfo = () => {
             <label htmlFor="imageFile">
               <Avatar src={profileImage} />
             </label>
-            {profileImage && <div className={styles["button--delete"]} onClick={deleteImgFile} />}
+            {profileImage && <div className={styles["button--delete"]} onClick={handleDeleteModalOpen} />}
           </div>
         ),
       },
@@ -187,24 +193,36 @@ const MyPageInfo = () => {
   })();
 
   return (
-    <div className={styles["info__cantainer"]}>
-      <div className={styles["info__contents"]}>
-        {MY_INFO.map((item, idx) => (
-          <div className={styles["info__line"]} key={idx}>
-            <div>
-              <Text>{item.title}</Text>
+    <>
+      <div className={styles["info__cantainer"]}>
+        <div className={styles["info__contents"]}>
+          {MY_INFO.map((item, idx) => (
+            <div className={styles["info__line"]} key={idx}>
+              <div>
+                <Text>{item.title}</Text>
+              </div>
+              <div>{item.node}</div>
             </div>
-            <div>{item.node}</div>
+          ))}
+        </div>
+        <div className={styles["info__button"]}>
+          <div className={styles["info__button--save"]} onClick={saveMyInfo}>
+            <SaveIcon />
+            <Text>저장</Text>
           </div>
-        ))}
-      </div>
-      <div className={styles["info__button"]}>
-        <div className={styles["info__button--save"]} onClick={saveMyInfo}>
-          <SaveIcon />
-          <Text>저장</Text>
         </div>
       </div>
-    </div>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={deleteImgFile}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="프로필" />
+      </Modal>
+    </>
   );
 };
 
