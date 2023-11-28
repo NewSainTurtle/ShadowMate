@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
+import w_styles from "@styles/planner/Week.module.scss";
 import MonthCalendar from "@components/planner/month/MonthCalendar";
 import MonthDetail from "@components/planner/month/MonthDetail";
 import Text from "@components/common/Text";
 import Loading from "@components/common/Loading";
 import dayjs from "dayjs";
+import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { MonthConfig, MonthDayConfig, setMonthInfo } from "@store/planner/monthSlice";
-import { plannerApi, userApi } from "@api/Api";
+import { MonthConfig, MonthDayConfig, setFollowCount, setMonthInfo, setStatistics } from "@store/planner/monthSlice";
+import { followApi, plannerApi, userApi } from "@api/Api";
 import { selectFriendId } from "@store/friendSlice";
 
 const Month = () => {
@@ -28,6 +30,10 @@ const Month = () => {
     setSelectedDay(newDate);
   };
 
+  const handleToday = () => {
+    setSelectedDay(dayjs(today).format("YYYY-MM-DD"));
+  };
+
   const handleNextMonth = () => {
     const newDate = dayjs(selectedDay).add(1, "month").startOf("month").format("MM/DD/YY");
     setSelectedDay(newDate);
@@ -42,6 +48,7 @@ const Month = () => {
       setIsOpen(true);
       setLoading(true);
       getMonthInfo();
+      getFollowCountInfo();
     }
   };
 
@@ -49,10 +56,28 @@ const Month = () => {
     plannerApi
       .calendars(friendId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
       .then((res) => {
-        const dayList: MonthDayConfig[] = res.data.data.dayList;
-        const plannerAccessScope: MonthConfig["plannerAccessScope"] = res.data.data.plannerAccessScope || "전체공개";
+        const response = res.data.data;
+        const dayList: MonthDayConfig[] = response.dayList;
+        const plannerAccessScope: MonthConfig["plannerAccessScope"] = response.plannerAccessScope || "전체공개";
+        const statistics: MonthConfig["statistics"] = {
+          plannerLikeCount: response.plannerLikeCount,
+          todoComplete: response.todoComplete,
+          todoIncomplete: response.todoIncomplete,
+          todoTotal: response.todoTotal,
+        };
         dispatch(setMonthInfo({ plannerAccessScope, dayList }));
+        dispatch(setStatistics(statistics));
         setLoading(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getFollowCountInfo = () => {
+    followApi
+      .getFollowCount(friendId)
+      .then((res) => {
+        const response = res.data.data;
+        dispatch(setFollowCount(response));
       })
       .catch((err) => console.log(err));
   };
@@ -79,15 +104,16 @@ const Month = () => {
                 {month.toString().length > 1 ? month : "0" + month.toString()}월
               </Text>
             </div>
-            <div className={styles["month__button"]} onClick={handlePrevMonth}>
-              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-                <path d="M20 .755l-14.374 11.245 14.374 11.219-.619.781-15.381-12 15.391-12 .609.755z" />
-              </svg>
-            </div>
-            <div className={styles["month__button"]} onClick={handleNextMonth}>
-              <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fillRule="evenodd" clipRule="evenodd">
-                <path d="M4 .755l14.374 11.245-14.374 11.219.619.781 15.381-12-15.391-12-.609.755z" />
-              </svg>
+            <div>
+              <div className={w_styles["week__button"]} onClick={handlePrevMonth}>
+                <NavigateBefore />
+              </div>
+              <div className={w_styles["week__today"]} onClick={handleToday}>
+                <Text bold>today</Text>
+              </div>
+              <div className={w_styles["week__button"]} onClick={handleNextMonth}>
+                <NavigateNext />
+              </div>
             </div>
           </div>
         </div>

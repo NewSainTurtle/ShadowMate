@@ -54,7 +54,7 @@ const App = () => {
   }, []);
 
   useLayoutEffect(() => {
-    setPathName(["/day", "/week", "/month", "/social", "/mypage"].includes(location.pathname));
+    setPathName(["/day", "/week", "/month", "/social", "/mypage", "/search"].includes(location.pathname));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -96,6 +96,7 @@ const App = () => {
 
             <Route path="/social" element={<SocialPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/search" element={<MyPage name="친구 검색" />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
