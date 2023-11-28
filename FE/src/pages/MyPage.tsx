@@ -11,8 +11,12 @@ import CancelMembership from "@components/mypage/details/myInfo/CancelMembership
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo, userInfoConfig } from "@store/authSlice";
 
-const MyPage = () => {
-  const [tabName, setTabName] = useState<string>("내 정보 확인");
+interface Props {
+  name?: string;
+}
+
+const MyPage = ({ name }: Props) => {
+  const [tabName, setTabName] = useState<string>(name ? name : "내 정보 확인");
   const userId: number = useAppSelector(selectUserId);
   const userInfo: userInfoConfig = useAppSelector(selectUserInfo);
 
@@ -33,7 +37,7 @@ const MyPage = () => {
         />
       </div>
       <div className={styles["mypage__setting"]}>
-        <MyPageTab setTabName={setTabName} />
+        <MyPageTab tabName={tabName} setTabName={setTabName} />
         <div className={styles["mypage__contents"]}>
           {
             {

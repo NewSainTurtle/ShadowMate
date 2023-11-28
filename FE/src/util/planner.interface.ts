@@ -4,6 +4,14 @@ export interface MonthType {
   dayStatus: number;
 }
 
+export interface GuestBookConfig {
+  visitorBookId: number;
+  visitorNickname: string;
+  visitorProfileImage: string;
+  visitorBookContent: string;
+  writeDateTime: string;
+}
+
 export interface CategoryColorConfig {
   categoryColorId: number;
   categoryColorCode: string;

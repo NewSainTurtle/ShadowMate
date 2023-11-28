@@ -24,6 +24,7 @@ interface apiInterface {
     password: (userId: number) => string; // 비밀번호 수정
     userOut: (userId: number) => string; // 회원 탈퇴
     searches: (userId: number) => string; // 회원 검색
+    introduction: (userId: number) => string; // 소개글 수정
   };
   follow: {
     following: (userId: number) => string; // 팔로잉 조회, 삭제
@@ -31,9 +32,11 @@ interface apiInterface {
     requested: (userId: number) => string; // 팔로우 신청, 취소
     receive: (userId: number) => string; // 팔로우 신청 수락, 거절
     receiveList: (userId: number) => string; // 받은 팔로우 신청 목록(친구신청 목록)
+    count: (userId: number) => string;
   };
   planners: {
     calendars: (userId: number) => string; // 캘린더 조회
+    guestBook: (userId: number) => string; // 방명록 조회, 등록, 삭제
     weekly: (userId: number) => string; // 주간 플래너 조회
     weeklyTodos: (userId: number) => string; // 주별 할일 등록, 수정, 삭제
     weeklyTodosStatus: (userId: number) => string; // 주차별 할일 상태 수정
@@ -75,6 +78,7 @@ const api: apiInterface = {
     password: (userId: number) => HOST + USERS + userId + "/password",
     userOut: (userId: number) => HOST + USERS + userId,
     searches: (userId: number) => HOST + USERS + userId + "/searches",
+    introduction: (userId: number) => HOST + USERS + userId + "/introduction",
   },
   follow: {
     following: (userId: number) => HOST + FOLLOW + userId + "/following",
@@ -82,9 +86,11 @@ const api: apiInterface = {
     requested: (userId: number) => HOST + FOLLOW + userId + "/requested",
     receive: (userId: number) => HOST + FOLLOW + userId + "/receive",
     receiveList: (userId: number) => HOST + FOLLOW + userId + "/receive-lists",
+    count: (userId: number) => HOST + FOLLOW + userId + "/counts",
   },
   planners: {
     calendars: (userId: number) => HOST + PLANNERS + userId + "/calendars",
+    guestBook: (userId: number) => HOST + PLANNERS + userId + "/monthly" + "/visitor-books",
     weekly: (userId: number) => HOST + PLANNERS + userId + "/weekly",
     weeklyTodos: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos",
     weeklyTodosStatus: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos-status",

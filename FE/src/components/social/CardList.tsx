@@ -45,7 +45,7 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
     if (pageNumber != 1) getPost(pageNumber);
   }, [pageNumber]);
 
-  const obsHandler = async (entries: any[]) => {
+  const obsHandler = async (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (!endRef.current && target.isIntersecting && preventRef.current) {
       preventRef.current = false;

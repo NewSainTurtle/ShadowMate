@@ -140,8 +140,8 @@ const MyPageFrame = ({ title }: Props) => {
   };
 
   const handleDelete = (title: string) => {
-    if (categoryList.length == 0) return;
     if (title === "카테고리") {
+      if (categoryList.length == 0) return;
       settingApi
         .deleteCategories(userId, { categoryId: categoryList[categoryClick].categoryId })
         .then((res) => {
@@ -159,6 +159,7 @@ const MyPageFrame = ({ title }: Props) => {
         });
       // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
     } else {
+      if (ddayList.length == 0) return;
       settingApi
         .deleteDdays(userId, ddayList[ddayClick].ddayId)
         .then(() => {
