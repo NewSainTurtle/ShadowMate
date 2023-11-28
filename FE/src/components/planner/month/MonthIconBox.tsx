@@ -59,7 +59,7 @@ const MonthIconBox = ({ types }: Props) => {
       <div className={styles["icon-box__title"]}>
         <div>
           <div style={{ backgroundColor: `${IconType[types].color}` }}>{IconType[types].icon}</div>
-          <Text>{types}</Text>
+          <span>{types}</span>
         </div>
         {types === "소개글" &&
           friendId === userId &&
