@@ -89,6 +89,9 @@ public class SocialServiceImpl implements SocialService {
             socialList.sort(new Comparator<Social>() {
                 @Override
                 public int compare(Social o1, Social o2) {
+                    if(o2.getDailyPlanner().getDailyPlannerDay().equals(o1.getDailyPlanner().getDailyPlannerDay())) {
+                        return o2.getId().compareTo(o1.getId());
+                    }
                     return o2.getDailyPlanner().getDailyPlannerDay().compareTo(o1.getDailyPlanner().getDailyPlannerDay());
                 }
             });
