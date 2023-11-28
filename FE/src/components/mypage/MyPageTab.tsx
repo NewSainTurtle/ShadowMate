@@ -5,6 +5,7 @@ import { useAppSelector } from "@hooks/hook";
 import { selectIsGoogle } from "@store/authSlice";
 
 interface MyPageTabProps {
+  tabName: string;
   setTabName: Dispatch<SetStateAction<string>>;
 }
 
@@ -31,9 +32,9 @@ const TAB_LIST: TabListType[] = [
   { title: "친구", contents: { index: 2, list: ["팔로워 목록", "팔로잉 목록", "친구 검색"] } },
 ];
 
-const MyPageTab = ({ setTabName }: MyPageTabProps) => {
-  const [headerIndex, setHeaderIndex] = useState<number>(0); // 상위 카테고리
-  const [subIndex, setSubIndex] = useState<string>("내 정보 확인"); // 하위 카테고리
+const MyPageTab = ({ tabName, setTabName }: MyPageTabProps) => {
+  const [headerIndex, setHeaderIndex] = useState<number>(tabName === "친구 검색" ? 2 : 0); // 상위 카테고리
+  const [subIndex, setSubIndex] = useState<string>(tabName); // 하위 카테고리
   const isGoogle = useAppSelector(selectIsGoogle);
 
   const handleLink = (list: string, idx: number) => {

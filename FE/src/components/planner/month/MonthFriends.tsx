@@ -9,8 +9,10 @@ import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { followingType } from "@util/friend.interface";
 import { followApi } from "@api/Api";
 import { throttle } from "@util/EventControlModule";
+import { useNavigate } from "react-router-dom";
 
 const MonthFriends = () => {
+  const navigator = useNavigate();
   const userId = useAppSelector(selectUserId);
   const userInfo = useAppSelector(selectUserInfo);
   const userProfile: ProfileIconInfo = {
@@ -53,6 +55,10 @@ const MonthFriends = () => {
       .catch((err) => console.error(err));
   };
 
+  const handleBtnAdd = () => {
+    navigator("/search");
+  };
+
   useEffect(() => {
     getFollowing();
   }, []);
@@ -87,7 +93,7 @@ const MonthFriends = () => {
             })}
           </>
         )}
-        <div className={styles["friend__btn--add"]}>
+        <div className={styles["friend__btn--add"]} onClick={handleBtnAdd}>
           <div>
             <AddIcon />
           </div>
