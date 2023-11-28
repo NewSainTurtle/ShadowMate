@@ -39,19 +39,6 @@ const Month = () => {
     setSelectedDay(newDate);
   };
 
-  const getIsOpen = async () => {
-    const response = await userApi.getProfiles(friendId);
-    const status = response.data.data.plannerAccessScope;
-    if (friendId != userId && status === "비공개") {
-      setIsOpen(false);
-    } else {
-      setIsOpen(true);
-      setLoading(true);
-      getMonthInfo();
-      getFollowCountInfo();
-    }
-  };
-
   const getMonthInfo = () => {
     plannerApi
       .calendars(friendId, { date: dayjs(new Date(year, month - 1, 1)).format("YYYY-MM-DD") })
@@ -65,6 +52,8 @@ const Month = () => {
           todoIncomplete: response.todoIncomplete,
           todoTotal: response.todoTotal,
         };
+        if (dayList.length < 1) setIsOpen(false);
+        else setIsOpen(true);
         dispatch(setMonthInfo({ plannerAccessScope, dayList }));
         dispatch(setStatistics(statistics));
         setLoading(false);
@@ -84,10 +73,11 @@ const Month = () => {
 
   useEffect(() => {
     setSelectedDay(dayjs(new Date()).format("YYYY-MM-DD"));
-    getIsOpen();
+    getMonthInfo();
   }, [friendId]);
 
   useEffect(() => {
+    setLoading(true);
     getMonthInfo();
   }, [selectedDay]);
 
