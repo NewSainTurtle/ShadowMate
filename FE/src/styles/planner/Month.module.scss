@@ -375,7 +375,7 @@ $color-blue: var(--color-btn-blue);
     gap: 0.5em;
 
     &:hover {
-      .guest__nickname > div:nth-child(2) > svg {
+      .guest__delete--mine {
         visibility: visible;
       }
     }
@@ -401,12 +401,16 @@ $color-blue: var(--color-btn-blue);
       > span {
         color: $color-gray-4;
       }
-      > svg {
-        visibility: hidden;
-        font-size: small;
-        color: $color-gray-4;
-        cursor: pointer;
-      }
+    }
+  }
+
+  &__delete,
+  &__delete--mine {
+    visibility: hidden;
+    > svg {
+      font-size: small;
+      color: $color-gray-4;
+      cursor: pointer;
     }
   }
 

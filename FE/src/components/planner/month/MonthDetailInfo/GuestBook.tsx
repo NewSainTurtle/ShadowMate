@@ -128,6 +128,7 @@ const GuestBook = () => {
             {loading && <Loading />}
             {!isEnd && <div ref={obsRef} />}
             {guestBookList.map((item: GuestBookConfig, idx: number) => {
+              const mine = friendId === userId || userInfo.nickname === item.visitorNickname ? "--mine" : "";
               return (
                 <div className={styles["guest__comment"]} key={item.visitorBookId}>
                   <Avatar src={item.visitorProfileImage} sx={{ width: 30, height: 30 }} />
@@ -138,9 +139,9 @@ const GuestBook = () => {
                       </Text>
                       <div>
                         <Text types="small">{item.writeDateTime}</Text>
-                        {(friendId === userId || userInfo.nickname === item.visitorNickname) && (
+                        <div className={styles[`guest__delete${mine}`]}>
                           <DeleteOutline onClick={() => deleteGuestBook(item, idx)} />
-                        )}
+                        </div>
                       </div>
                     </div>
                     <Text types="small">{item.visitorBookContent}</Text>
