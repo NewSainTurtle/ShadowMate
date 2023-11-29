@@ -3,6 +3,8 @@ import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Avatar from "@components/common/Avatar";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import { followApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
@@ -31,6 +33,10 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const [type, setType] = useState(types);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   useEffect(() => {
     if (types == "기본") {
@@ -94,8 +100,36 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
 
   return {
     기본: <></>,
-    "팔로워 삭제": <button onClick={deleteFollower}>삭제</button>,
-    "팔로잉 삭제": <button onClick={deleteFollowing}>삭제</button>,
+    "팔로워 삭제": (
+      <>
+        <button onClick={handleDeleteModalOpen}>삭제</button>
+        <Modal
+          types="twoBtn"
+          open={deleteModalOpen}
+          onClose={handleDeleteModalClose}
+          onClick={deleteFollower}
+          onClickMessage="삭제"
+          warning
+        >
+          <DeleteModal types="팔로워" />
+        </Modal>
+      </>
+    ),
+    "팔로잉 삭제": (
+      <>
+        <button onClick={handleDeleteModalOpen}>삭제</button>
+        <Modal
+          types="twoBtn"
+          open={deleteModalOpen}
+          onClose={handleDeleteModalClose}
+          onClick={deleteFollowing}
+          onClickMessage="삭제"
+          warning
+        >
+          <DeleteModal types="팔로잉" />
+        </Modal>
+      </>
+    ),
     "친구 신청": (
       <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
         친구 신청
@@ -106,7 +140,17 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
         <button style={{ backgroundColor: "var(--color-btn-blue)" }} onClick={followRequested}>
           친구 신청
         </button>
-        <button onClick={deleteFollower}>삭제</button>
+        <button onClick={handleDeleteModalOpen}>삭제</button>
+        <Modal
+          types="twoBtn"
+          open={deleteModalOpen}
+          onClose={handleDeleteModalClose}
+          onClick={deleteFollower}
+          onClickMessage="삭제"
+          warning
+        >
+          <DeleteModal types="팔로워 신청" />
+        </Modal>
       </>
     ),
     요청: (
