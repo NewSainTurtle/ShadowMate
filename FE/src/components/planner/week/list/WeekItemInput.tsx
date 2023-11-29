@@ -1,4 +1,4 @@
-import React, { Dispatch, KeyboardEvent, MutableRefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, Dispatch, KeyboardEvent, SetStateAction, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import todoModule from "@util/TodoModule";
 import dayjs from "dayjs";
@@ -28,15 +28,29 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
         todoContent: newTodo,
         categoryId: 0,
       };
-      plannerApi
-        .addDailyTodos(userId, init)
-        .then((res) => {
-          const returnId = res.data.data.todoId;
-          insertTodo({ todoId: returnId, todoContent: newTodo, todoStatus: "공백" });
-          setNewTodo("");
-        })
-        .catch((err) => console.log(err));
+      handleSave(init);
     }
+  };
+
+  const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    if (newTodo === "") return;
+    const init = {
+      date: dayjs(date).format("YYYY-MM-DD"),
+      todoContent: newTodo,
+      categoryId: 0,
+    };
+    handleSave(init);
+  };
+
+  const handleSave = (init: { date: string; todoContent: string; categoryId: number }) => {
+    plannerApi
+      .addDailyTodos(userId, init)
+      .then((res) => {
+        const returnId = res.data.data.todoId;
+        insertTodo({ todoId: returnId, todoContent: newTodo, todoStatus: "공백" });
+        setNewTodo("");
+      })
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -53,6 +67,7 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
         onKeyDown={(e) => handleOnKeyPress(e)}
+        onBlur={handleOnBlur}
         placeholder="💡 할 일을 입력하세요."
       />
       <svg style={{ cursor: "auto", height: "0" }} />
