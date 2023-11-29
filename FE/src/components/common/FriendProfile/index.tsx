@@ -7,7 +7,7 @@ import { followApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { followType } from "@util/friend.interface";
-import { setFollowState, setFriendInfo } from "@store/friendSlice";
+import { selectFollowState, setFollowState, setFriendInfo } from "@store/friendSlice";
 import { useNavigate } from "react-router-dom";
 
 export interface ProfileConfig {
@@ -134,11 +134,16 @@ const FriendProfile = ({ types, profile }: Props) => {
   const dispatch = useAppDispatch();
   const navigator = useNavigate();
   const { userId, profileImage, nickname, statusMessage } = profile;
+  const followState = useAppSelector(selectFollowState);
 
   const handleMoveToFriendProfile = () => {
     dispatch(setFriendInfo(profile));
     navigator("/month");
   };
+
+  useEffect(() => {
+    console.log(types, profile);
+  }, [types, profile]);
 
   return (
     <div className={styles["fprofile_container"]}>
@@ -151,7 +156,7 @@ const FriendProfile = ({ types, profile }: Props) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["fprofile_button"]}>
+      <div className={styles["fprofile_button"]} key={followState}>
         {<ProfileButton types={types} profileId={userId} nickname={nickname} />}
       </div>
     </div>
