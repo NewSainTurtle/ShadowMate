@@ -45,37 +45,37 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
     const followRequested = async () => {
       await followApi
         .addRequested(userId, { followingId: profileId })
-        .then(() => dispatch(setFollowState(1)))
+        .then(() => dispatch(setFollowState(1 + profileId)))
         .catch((err) => console.error(err));
     };
     const cancelRequested = async () => {
       await followApi
         .cancelRequested(userId, { receiverId: profileId })
-        .then(() => dispatch(setFollowState(2)))
+        .then(() => dispatch(setFollowState(2 + profileId)))
         .catch((err) => console.error(err));
     };
     const receiveAcceptiance = async () => {
       await followApi
         .receive(userId, { requesterId: profileId, followReceive: true })
-        .then(() => dispatch(setFollowState(3)))
+        .then(() => dispatch(setFollowState(3 + profileId)))
         .catch((err) => console.error(err));
     };
     const receiveRefusal = async () => {
       await followApi
         .receive(userId, { requesterId: profileId, followReceive: false })
-        .then(() => dispatch(setFollowState(4)))
+        .then(() => dispatch(setFollowState(4 + profileId)))
         .catch((err) => console.error(err));
     };
     const deleteFollower = async () => {
       await followApi
         .deleteFollowers(userId, { followerId: profileId })
-        .then(() => dispatch(setFollowState(5)))
+        .then(() => dispatch(setFollowState(5 + profileId)))
         .catch((err) => console.error(err));
     };
     const deleteFollowing = async () => {
       await followApi
         .deleteFollowing(userId, { followingId: profileId })
-        .then(() => dispatch(setFollowState(6)))
+        .then(() => dispatch(setFollowState(6 + profileId)))
         .catch((err) => console.error(err));
     };
 
