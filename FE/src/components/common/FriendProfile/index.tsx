@@ -9,7 +9,7 @@ import { followApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { followType } from "@util/friend.interface";
-import { setFollowState, setFriendInfo } from "@store/friendSlice";
+import { selectFollowState, setFollowState, setFriendInfo } from "@store/friendSlice";
 import { useNavigate } from "react-router-dom";
 
 export interface ProfileConfig {
@@ -51,37 +51,37 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
     const followRequested = async () => {
       await followApi
         .addRequested(userId, { followingId: profileId })
-        .then(() => dispatch(setFollowState(1)))
+        .then(() => dispatch(setFollowState(1 + profileId)))
         .catch((err) => console.error(err));
     };
     const cancelRequested = async () => {
       await followApi
         .cancelRequested(userId, { receiverId: profileId })
-        .then(() => dispatch(setFollowState(2)))
+        .then(() => dispatch(setFollowState(2 + profileId)))
         .catch((err) => console.error(err));
     };
     const receiveAcceptiance = async () => {
       await followApi
         .receive(userId, { requesterId: profileId, followReceive: true })
-        .then(() => dispatch(setFollowState(3)))
+        .then(() => dispatch(setFollowState(3 + profileId)))
         .catch((err) => console.error(err));
     };
     const receiveRefusal = async () => {
       await followApi
         .receive(userId, { requesterId: profileId, followReceive: false })
-        .then(() => dispatch(setFollowState(4)))
+        .then(() => dispatch(setFollowState(4 + profileId)))
         .catch((err) => console.error(err));
     };
     const deleteFollower = async () => {
       await followApi
         .deleteFollowers(userId, { followerId: profileId })
-        .then(() => dispatch(setFollowState(5)))
+        .then(() => dispatch(setFollowState(5 + profileId)))
         .catch((err) => console.error(err));
     };
     const deleteFollowing = async () => {
       await followApi
         .deleteFollowing(userId, { followingId: profileId })
-        .then(() => dispatch(setFollowState(6)))
+        .then(() => dispatch(setFollowState(6 + profileId)))
         .catch((err) => console.error(err));
     };
 
@@ -178,6 +178,7 @@ const FriendProfile = ({ types, profile }: Props) => {
   const dispatch = useAppDispatch();
   const navigator = useNavigate();
   const { userId, profileImage, nickname, statusMessage } = profile;
+  const followState = useAppSelector(selectFollowState);
 
   const handleMoveToFriendProfile = () => {
     dispatch(setFriendInfo(profile));
@@ -195,7 +196,7 @@ const FriendProfile = ({ types, profile }: Props) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["fprofile_button"]}>
+      <div className={styles["fprofile_button"]} key={followState}>
         {<ProfileButton types={types} profileId={userId} nickname={nickname} />}
       </div>
     </div>
