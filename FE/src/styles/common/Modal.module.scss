@@ -50,6 +50,9 @@ $color-warning: var(--color-warning);
   &__save {
     background-color: $color-blue;
   }
+  &__delete {
+    background-color: $color-warning;
+  }
   &__cancel {
     background-color: $color-gray-1;
   }

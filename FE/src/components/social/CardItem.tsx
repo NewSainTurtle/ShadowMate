@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import Text from "@components/common/Text";
 import { SocialListType } from "@components/social/CardList";
@@ -13,10 +13,11 @@ import { setDayDate } from "@store/planner/daySlice";
 interface Props {
   item: SocialListType;
   idx: number;
-  handleDelete: (idx: number, socialId: number) => void;
+  setDeleteItem: Dispatch<SetStateAction<{ id: number; idx: number }>>;
+  handleDeleteModalOpen: () => void;
 }
 
-const SocialProfile = ({ idx, item, handleDelete }: Props) => {
+const SocialProfile = ({ idx, item, setDeleteItem, handleDeleteModalOpen }: Props) => {
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
   const userName = useAppSelector(selectUserInfo).nickname;
@@ -40,7 +41,13 @@ const SocialProfile = ({ idx, item, handleDelete }: Props) => {
         </Text>
         <Text types="default">{statusMessage}</Text>
       </div>
-      <div className={styles["social-profile__button"]} onClick={() => handleDelete(idx, socialId)}>
+      <div
+        className={styles["social-profile__button"]}
+        onClick={() => {
+          setDeleteItem({ id: socialId, idx });
+          handleDeleteModalOpen();
+        }}
+      >
         {mine && (
           <div>
             <DeleteOutline />
@@ -51,7 +58,7 @@ const SocialProfile = ({ idx, item, handleDelete }: Props) => {
   );
 };
 
-const CardItem = ({ idx, item, handleDelete }: Props) => {
+const CardItem = ({ idx, item, setDeleteItem, handleDeleteModalOpen }: Props) => {
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
   const { socialId, socialImage, dailyPlannerDay, ...user } = item;
@@ -70,7 +77,12 @@ const CardItem = ({ idx, item, handleDelete }: Props) => {
       </div>
       {isLoading && <div className={styles["skeleton-image"]} />}
       <div className={styles["card-item__profile"]}>
-        <SocialProfile idx={idx} item={item} handleDelete={handleDelete} />
+        <SocialProfile
+          idx={idx}
+          item={item}
+          setDeleteItem={setDeleteItem}
+          handleDeleteModalOpen={handleDeleteModalOpen}
+        />
       </div>
     </div>
   );
