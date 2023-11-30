@@ -33,7 +33,9 @@ const TAB_LIST: TabListType[] = [
 ];
 
 const MyPageTab = ({ tabName, setTabName }: MyPageTabProps) => {
-  const [headerIndex, setHeaderIndex] = useState<number>(tabName === "친구 검색" ? 2 : 0); // 상위 카테고리
+  const [headerIndex, setHeaderIndex] = useState<number>(
+    tabName === "친구 검색" ? 2 : tabName === "카테고리 설정" ? 1 : 0,
+  ); // 상위 카테고리
   const [subIndex, setSubIndex] = useState<string>(tabName); // 하위 카테고리
   const isGoogle = useAppSelector(selectIsGoogle);
 

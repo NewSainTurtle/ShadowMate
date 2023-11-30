@@ -68,7 +68,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   }, [search]);
 
   useLayoutEffect(() => {
-    if (!!searchKeyWord.length)
+    if (!!searchKeyWord)
       userApi
         .searches(userId, { nickname: searchKeyWord })
         .then((res) => {

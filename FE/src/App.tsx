@@ -94,7 +94,6 @@ const App = () => {
               <Route path="/day" element={<DayPage />} />
               <Route path="/week" element={<WeekPage />} />
               <Route path="/month" element={<MonthPage />} />
-
               <Route path="/social" element={<SocialPage />} />
               <Route path="/mypage" element={<MyPage />} />
               <Route path="/search" element={<MyPage name="친구 검색" />} />

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import {
@@ -64,6 +66,11 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     endTime: "",
   });
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [deleteIdx, setDeleteIdx] = useState<number>(0);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
+
   const mouseModule = (() => {
     const mouseDown = (e: React.MouseEvent<HTMLDivElement>, startTime: string) => {
       if (e.button != 2 && todoId != 0) {
@@ -123,7 +130,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const deleteTimeTable = async (todoId: number) => {
     await plannerApi
       .deleteTimetable(userId, { date, todoId: todoId })
-      .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "" })));
+      .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "" })))
+      .finally(() => handleDeleteModalClose());
   };
 
   useEffect(() => {
@@ -171,33 +179,52 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const todoListNoneStyle = !todoList.length ? styles["--none"] : "";
 
   return (
-    <div className={styles["timetable__container"]} onClick={() => setClicked(true)}>
-      <div className={`${styles["timetable__container-box"]} ${todoListNoneStyle} ${clickedStyle} `}>
-        <div className={styles["timetable__hours"]}>
-          {Array.from({ length: 24 }).map((_, idx) => (
-            <div key={idx}>{String((4 + idx) % 24).padStart(2, "0")}</div>
-          ))}
-        </div>
-        <div className={styles["timetable__minutes"]}>
-          {timeArr.map((item, idx) => (
-            <div
-              key={idx}
-              className={styles["timetable__minutes__item"]}
-              onMouseDown={(e) => mouseModule.mouseDown(e, item.time)}
-              onMouseEnter={() => mouseModule.debounceMouseEnter(item.time)}
-              onMouseUp={() => mouseModule.mouseUp(item.time)}
-              style={{ backgroundColor: item.categoryColorCode }}
-            >
-              {item.closeButton && (
-                <div onClick={() => deleteTimeTable(item.todoId)}>
-                  <DoDisturbOnIcon />
+    <>
+      <div className={styles["timetable__container"]} onClick={() => setClicked(true)}>
+        <div className={`${styles["timetable__container-box"]} ${todoListNoneStyle} ${clickedStyle} `}>
+          <div className={styles["timetable__hours"]}>
+            {Array.from({ length: 24 }).map((_, idx) => (
+              <div key={idx}>{String((4 + idx) % 24).padStart(2, "0")}</div>
+            ))}
+          </div>
+          <div className={styles["timetable__minutes"]}>
+            {timeArr.map((item, idx) => (
+              <>
+                <div
+                  key={idx}
+                  className={styles["timetable__minutes__item"]}
+                  onMouseDown={(e) => mouseModule.mouseDown(e, item.time)}
+                  onMouseEnter={() => mouseModule.debounceMouseEnter(item.time)}
+                  onMouseUp={() => mouseModule.mouseUp(item.time)}
+                  style={{ backgroundColor: item.categoryColorCode }}
+                >
+                  {item.closeButton && (
+                    <div
+                      onClick={() => {
+                        handleDeleteModalOpen();
+                        setDeleteIdx(item.todoId);
+                      }}
+                    >
+                      <DoDisturbOnIcon />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+              </>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={() => deleteTimeTable(deleteIdx)}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="타임테이블" />
+      </Modal>
+    </>
   );
 };
 
