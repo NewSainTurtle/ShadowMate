@@ -278,6 +278,9 @@ $color-blue: var(--color-btn-blue);
   box-sizing: border-box;
 
   &__tool {
+    > span {
+      color: $color-gray-5;
+    }
     > svg {
       margin-right: 0.4em;
       justify-self: end;
@@ -299,7 +302,7 @@ $color-blue: var(--color-btn-blue);
       resize: none;
       font-size: 1rem;
       line-height: 1.4;
-      color: $color-gray-4;
+      color: $color-gray-5;
       background-color: $color-background;
     }
   }
