@@ -12,7 +12,6 @@ $color-blue: var(--color-btn-blue);
 .month {
   display: grid;
   grid-template-columns: 6fr 4fr;
-  // align-content: center;
   gap: 1em;
   height: 100%;
   padding: 2em;
@@ -157,9 +156,8 @@ $color-blue: var(--color-btn-blue);
 
 .detail {
   display: grid;
-  grid-template-rows: min-content min-content 10em 155px auto;
+  grid-template-rows: min-content min-content 10em min-content auto;
   width: 100%;
-  // height: calc(100vh - 4em);
   height: 100%;
   gap: 1em;
 
@@ -263,6 +261,7 @@ $color-blue: var(--color-btn-blue);
         > svg {
           fill: white;
           width: 70%;
+          height: 70%;
         }
       }
     }
@@ -321,7 +320,7 @@ $color-blue: var(--color-btn-blue);
   display: flex;
   flex-direction: column;
   gap: 0.8em;
-  margin: 0 1em;
+  margin: 0 1em 1vw 1em;
   &__contents {
     display: flex;
     justify-content: space-between;
@@ -445,14 +444,37 @@ $color-blue: var(--color-btn-blue);
       width: 2.5em;
     }
   }
+  .icon-box {
+    &__title {
+      > div {
+        > div {
+          display: none;
+        }
+        > span {
+          font-size: 1rem;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 1513px) {
   .icon-box__title {
+    padding: 1em;
     > div {
       > div {
-        display: none;
+        width: 2em;
+        height: 2em;
       }
-      > span {
-        font-size: 1rem;
-        font-weight: 600;
+    }
+  }
+
+  .guest {
+    &__contents {
+      height: calc(100% - 4em - 2.5em);
+      &--none {
+        height: calc(100% - 4em);
       }
     }
   }
