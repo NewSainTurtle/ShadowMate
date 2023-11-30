@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
@@ -20,6 +20,11 @@ const WeekTodoInput = () => {
     if (todo === "") return;
     if (e.key != "Enter") return;
     if (e.nativeEvent.isComposing) return;
+    setWeeklyTodo();
+  };
+
+  const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    if (todo === "") return;
     setWeeklyTodo();
   };
 
@@ -65,6 +70,7 @@ const WeekTodoInput = () => {
           value={todo}
           onChange={(e) => setTodo(e.target.value)}
           onKeyDown={(e) => handleOnKeyPress(e)}
+          onBlur={handleOnBlur}
           placeholder="이번 주에 해야할 일을 입력하세요."
         />
       </div>
