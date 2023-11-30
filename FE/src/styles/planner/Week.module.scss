@@ -163,6 +163,9 @@ $border: 1px;
   height: calc(100% / 2 - $border);
   width: calc(100% / 4 - $border);
   border-right: $border solid $color-text;
+  &:nth-child(n + 5) {
+    height: calc(100% / 2);
+  }
 
   &__title {
     @extend %under_boder;
