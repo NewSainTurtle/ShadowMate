@@ -12,6 +12,7 @@ import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.repository.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -219,7 +220,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                     .build();
         } else {
             final boolean like = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner) != null;
-            final boolean shareSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner) != null;
+            final Social shareSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
             final long likeCount = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
             final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
             final List<DailyPlannerTodoResponse> dailyTodos = new ArrayList<>();
@@ -253,7 +254,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                     .retrospection(dailyPlanner.getRetrospection())
                     .retrospectionImage(dailyPlanner.getRetrospectionImage())
                     .tomorrowGoal(dailyPlanner.getTomorrowGoal())
-                    .shareSocial(shareSocial)
+                    .shareSocial(shareSocial==null? null:shareSocial.getId())
                     .like(like)
                     .likeCount(likeCount)
                     .studyTimeHour(totalMinutes / 60)
