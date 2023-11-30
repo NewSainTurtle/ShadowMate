@@ -51,6 +51,7 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
 
         return VisitorBookResponse.builder()
                 .visitorBookId(visitorBook.getId())
+                .visitorId(visitor.getId())
                 .visitorNickname(visitor.getNickname())
                 .visitorProfileImage(visitor.getProfileImage())
                 .visitorBookContent(visitorBook.getVisitorBookContent())
@@ -88,6 +89,7 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
         for (VisitorBook visitorBook : visitorBooks) {
             visitorBookResponses.add(VisitorBookResponse.builder()
                     .visitorBookId(visitorBook.getId())
+                    .visitorId(visitorBook.getVisitor().getId())
                     .visitorNickname(visitorBook.getVisitor().getNickname())
                     .visitorProfileImage(visitorBook.getVisitor().getProfileImage())
                     .visitorBookContent(visitorBook.getVisitorBookContent())
