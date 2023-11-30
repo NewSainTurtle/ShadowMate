@@ -141,10 +141,6 @@ const FriendProfile = ({ types, profile }: Props) => {
     navigator("/month");
   };
 
-  useEffect(() => {
-    console.log(types, profile);
-  }, [types, profile]);
-
   return (
     <div className={styles["fprofile_container"]}>
       <div className={styles["fprofile_img"]} onClick={handleMoveToFriendProfile}>
