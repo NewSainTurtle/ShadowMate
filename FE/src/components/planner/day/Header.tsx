@@ -11,7 +11,7 @@ import { setDayDate, selectDayDate, selectDayInfo, setDayLike, setDayInfo } from
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
-import { plannerApi } from "@api/Api";
+import { plannerApi, socialApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { setThisWeek } from "@store/planner/weekSlice";
 import { getThisWeek } from "@util/getThisWeek";
@@ -64,14 +64,21 @@ const FriendHeader = () => {
 
 const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
   const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
   const dayPlannerInfo = useAppSelector(selectDayInfo);
   const { plannerAccessScope, likeCount, shareSocial, dailyTodos } = dayPlannerInfo;
 
   function handleClick() {
-    if (!shareSocial) {
-      dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: true }));
+    if (shareSocial == 0) {
       socialClick();
-    } else dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: false }));
+    } else {
+      socialApi
+        .delete(userId, shareSocial)
+        .then(() => {
+          dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: 0 }));
+        })
+        .catch((err) => console.error("공유된 소셜 삭제", err));
+    }
   }
 
   return (
