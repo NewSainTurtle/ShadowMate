@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.yn.planner;
 
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -898,25 +899,7 @@ class DailyPlannerServiceTest {
         }
 
         @Test
-        void 성공_소셜공유() {
-            //given
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
-            doReturn(null).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
-
-            //when
-            dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest);
-
-            //then
-
-            //verify
-            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
-            verify(socialRepository, times(1)).findByDailyPlanner(any(DailyPlanner.class));
-            verify(socialRepository, times(1)).save(any(Social.class));
-
-        }
-
-        @Test
-        void 성공_소셜재공유() {
+        void 실패_이미공유한_소셜재공유() {
             //given
             final Social social = Social.builder()
                     .id(1L)
@@ -927,13 +910,40 @@ class DailyPlannerServiceTest {
             doReturn(social).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
 
             //when
-            dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest);
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest));
 
             //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.ALREADY_SHARED_SOCIAL);
 
             //verify
             verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
             verify(socialRepository, times(1)).findByDailyPlanner(any(DailyPlanner.class));
+        }
+
+        @Test
+        void 성공_소셜공유() {
+            //given
+            final Social social = Social.builder()
+                    .id(1L)
+                    .socialImage(socialImage)
+                    .dailyPlanner(dailyPlanner)
+                    .build();
+            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            doReturn(null).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
+            doReturn(social).when(socialRepository).save(any(Social.class));
+
+            //when
+            ShareSocialResponse shareSocialResponse = dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest);
+
+            //then
+            assertThat(shareSocialResponse).isNotNull();
+            assertThat(shareSocialResponse.getSocialId()).isEqualTo(1L);
+
+            //verify
+            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(Date.class));
+            verify(socialRepository, times(1)).findByDailyPlanner(any(DailyPlanner.class));
+            verify(socialRepository, times(1)).save(any(Social.class));
+
         }
     }
 }
