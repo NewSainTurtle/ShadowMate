@@ -1,6 +1,9 @@
 .App {
   &__header {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
     width: 100%;
     height: 100%;
     > div:nth-child(2) {
@@ -13,14 +16,28 @@
 @media screen and (min-width: 1512px) {
   .App {
     &__header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
       width: 1512px;
-      margin: auto;
+    }
+  }
+}
+
+@media screen and (min-height: 827px) {
+  .App {
+    &__header {
       > div:nth-child(1),
       > div:nth-child(2) {
         height: 827px;
+      }
+    }
+  }
+}
+
+@media screen and (min-height: 1024px) {
+  .App {
+    &__header {
+      > div:nth-child(1),
+      > div:nth-child(2) {
+        height: 80vh;
       }
     }
   }

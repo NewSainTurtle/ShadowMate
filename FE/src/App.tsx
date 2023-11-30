@@ -67,7 +67,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className={styles[pathName ? "App__header" : "App__none"]}>
+    <div className={pathName ? styles["App__header"] : ""}>
       <ThemeProvider theme={theme}>
         {pathName && <Header />}
         {isLogin && (
