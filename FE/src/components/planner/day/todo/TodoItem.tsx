@@ -17,6 +17,7 @@ interface Props {
     insertTodo: (props: TodoConfig) => void;
     updateTodo: (idx: number, props: TodoConfig) => void;
     deleteTodo: (idx: number, todoId: number) => void;
+    deleteTimeTable: (todoId: number, todoStatus: TodoConfig["todoStatus"]) => void;
   };
 }
 
@@ -24,7 +25,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
-  const { insertTodo, updateTodo, deleteTodo } = todoModule;
+  const { insertTodo, updateTodo, deleteTodo, deleteTimeTable } = todoModule;
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
   const maxLength = 50;
@@ -77,11 +78,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const handleSaveStatusTodo = () => {
     if (text === "") return;
     if (todoStatus == "완료") {
-      updateTodo(idx, {
-        ...todoItem,
-        todoStatus: "미완료",
-        timeTable: { ...todoItem.timeTable!, startTime: "", endTime: "" },
-      });
+      deleteTimeTable(todoItem.todoId, "미완료");
     } else {
       updateTodo(idx, {
         ...todoItem,
