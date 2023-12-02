@@ -423,7 +423,7 @@ $color-btn-blue: var(--color-btn-blue);
       grid-template-columns: 1fr 8fr;
       grid-template-rows: 1fr;
 
-      &:hover::after {
+      @mixin timeTableContent($content) {
         @extend .text-small;
         position: absolute;
         top: 50%;
@@ -434,15 +434,33 @@ $color-btn-blue: var(--color-btn-blue);
         text-align: center;
         white-space: pre;
         line-height: 1.5em;
-        content: "클릭하여\A타임 테이블 등록";
+        content: $content;
       }
 
+<<<<<<< HEAD
       &.--none:hover::after {
         content: "할 일이 완료되면\A공부 시간을 기록할 수 있습니다.";
+=======
+      &.--none::after,
+      &.--stateNone:hover::after {
+        @include timeTableContent("할 일을 완료하면\A시간을 기록할 수 있습니다.");
+>>>>>>> 49e97b8c ([FE] refactor: 타임테이블 시간 등록 안내 content 추가)
       }
 
-      &.--clicked::after {
-        content: "";
+      &.--defalut:hover::after {
+        @include timeTableContent("클릭하여\A시간을 기록할 수 있습니다");
+      }
+
+      &.--clicked:hover::after {
+        @include timeTableContent("기록할 할 일을 클릭해주세요\A기록 중지는 마우스 우클릭 입니다");
+      }
+
+      &.--dragBefore:hover::after {
+        @include timeTableContent("원하는 시간을 드래그해서 기록할 수 있습니다");
+      }
+
+      &.--drag::after {
+        @include timeTableContent("");
       }
     }
   }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import DoDisturbOnIcon from "@mui/icons-material/DoDisturbOn";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -41,7 +41,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     selectItem.todoId,
     selectItem.category?.categoryColorCode || BASIC_CATEGORY_ITEM.categoryColorCode,
   ];
-  const todoList = useAppSelector(selectTodoList);
+  const todoList: TodoConfig[] = useAppSelector(selectTodoList);
   const makeTimeArr: tableTimeType[] = (() => {
     const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
     // 오전 4시 ~ 익일 4시
@@ -63,6 +63,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     startTime: "",
     endTime: "",
   });
+  const statusCount = useMemo(() => todoList.filter((ele) => ele.todoStatus == "완료").length, [todoList]);
 
   const mouseModule = (() => {
     const mouseDown = (e: React.MouseEvent<HTMLDivElement>, startTime: string) => {
@@ -167,12 +168,25 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     }
   }, [selectTime]);
 
-  const clickedStyle = clicked ? styles["--clicked"] : "";
-  const todoListNoneStyle = !todoList.length ? styles["--none"] : "";
+  const timeTableClick = () => {
+    if (statusCount > 0) setClicked(true);
+  };
+
+  const timeTableStyle = timeClick
+    ? styles["--drag"]
+    : todoId != 0
+    ? styles["--dragBefore"]
+    : clicked
+    ? styles["--clicked"]
+    : !todoList.length
+    ? styles["--none"]
+    : statusCount == 0
+    ? styles["--stateNone"]
+    : styles["--defalut"];
 
   return (
-    <div className={styles["timetable__container"]} onClick={() => setClicked(true)}>
-      <div className={`${styles["timetable__container-box"]} ${todoListNoneStyle} ${clickedStyle} `}>
+    <div className={styles["timetable__container"]} onClick={timeTableClick}>
+      <div className={`${styles["timetable__container-box"]} ${timeTableStyle}`}>
         <div className={styles["timetable__hours"]}>
           {Array.from({ length: 24 }).map((_, idx) => (
             <div key={idx}>{String((4 + idx) % 24).padStart(2, "0")}</div>
