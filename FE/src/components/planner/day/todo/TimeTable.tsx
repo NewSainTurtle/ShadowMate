@@ -101,11 +101,12 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
 
   const saveTimeTable = async (endTime: string) => {
     let { startTime } = selectTime;
+    if (!startTime) return;
     if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
     startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
 
     await todoList.map((item: TodoConfig) => {
-      if (!!startTime && item.timeTable && !!item.timeTable.startTime) {
+      if (item.timeTable && !!item.timeTable.startTime) {
         if (
           !(
             dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
