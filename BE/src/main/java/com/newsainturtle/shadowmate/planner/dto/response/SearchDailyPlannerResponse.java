@@ -12,11 +12,12 @@ public class SearchDailyPlannerResponse {
     private String date;
     private String plannerAccessScope;
     private String dday;
+    private String ddayTitle;
     private String todayGoal;
     private String retrospection;
     private String retrospectionImage;
     private String tomorrowGoal;
-    private boolean shareSocial;
+    private Long shareSocial;
     private boolean like;
     private long likeCount;
     private int studyTimeHour;

@@ -3,13 +3,15 @@ import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import Avatar from "@components/common/Avatar";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
+import Loading from "@components/common/Loading";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import { DeleteOutline } from "@mui/icons-material";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
 import { plannerApi } from "@api/Api";
 import { GuestBookConfig } from "@util/planner.interface";
-import Loading from "@components/common/Loading";
 
 const GuestBook = () => {
   const userInfo = useAppSelector(selectUserInfo);
@@ -30,6 +32,11 @@ const GuestBook = () => {
   const [prevScrollHeight, setPrevScrollHeight] = useState<number | null | undefined>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const maxLength = 30;
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [deleteItem, setDeleteItem] = useState({ id: 0, idx: -1 });
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const handleGuestBookChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -112,65 +119,83 @@ const GuestBook = () => {
     }
   };
 
-  const deleteGuestBook = async (item: GuestBookConfig, idx: number) => {
-    const response = await plannerApi.deleteGuestBook(friendId, { visitorBookId: item.visitorBookId });
+  const deleteGuestBook = async (id: number, idx: number) => {
+    const response = await plannerApi.deleteGuestBook(friendId, { visitorBookId: id });
     if (response.status === 200) {
       let newList = guestBookList.filter((_, i) => idx != i);
       setGuestBookList(newList);
+      handleDeleteModalClose();
     }
   };
 
   return (
-    <div className={styles["guest"]}>
-      <div ref={scrollBarRef} className={styles[`guest__contents${none}`]}>
-        {guestBookList && guestBookList.length > 0 ? (
-          <>
-            {loading && <Loading />}
-            {!isEnd && <div ref={obsRef} />}
-            {guestBookList.map((item: GuestBookConfig, idx: number) => {
-              const mine = friendId === userId || userInfo.nickname === item.visitorNickname ? "--mine" : "";
-              return (
-                <div className={styles["guest__comment"]} key={item.visitorBookId}>
-                  <Avatar src={item.visitorProfileImage} sx={{ width: 30, height: 30 }} />
-                  <div>
-                    <div className={styles["guest__nickname"]}>
-                      <Text bold types="small">
-                        {item.visitorNickname}
-                      </Text>
-                      <div>
-                        <Text types="small">{item.writeDateTime}</Text>
-                        <div className={styles[`guest__delete${mine}`]}>
-                          <DeleteOutline onClick={() => deleteGuestBook(item, idx)} />
+    <>
+      <div className={styles["guest"]}>
+        <div ref={scrollBarRef} className={styles[`guest__contents${none}`]}>
+          {guestBookList && guestBookList.length > 0 ? (
+            <>
+              {loading && <Loading />}
+              {!isEnd && <div ref={obsRef} />}
+              {guestBookList.map((item: GuestBookConfig, idx: number) => {
+                const mine = friendId === userId || userInfo.nickname === item.visitorNickname ? "--mine" : "";
+                return (
+                  <div className={styles["guest__comment"]} key={item.visitorBookId}>
+                    <Avatar src={item.visitorProfileImage} sx={{ width: 30, height: 30 }} />
+                    <div>
+                      <div className={styles["guest__nickname"]}>
+                        <Text bold types="small">
+                          {item.visitorNickname}
+                        </Text>
+                        <div>
+                          <Text types="small">{item.writeDateTime}</Text>
+                          <div className={styles[`guest__delete${mine}`]}>
+                            <DeleteOutline
+                              onClick={() => {
+                                setDeleteItem({ id: item.visitorBookId, idx });
+                                handleDeleteModalOpen();
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
+                      <Text types="small">{item.visitorBookContent}</Text>
                     </div>
-                    <Text types="small">{item.visitorBookContent}</Text>
                   </div>
-                </div>
-              );
-            })}
-            <div ref={endRef} />
-          </>
-        ) : (
-          <div className={styles["guest__none"]}>
-            <Text>방명록이 없습니다.</Text>
+                );
+              })}
+              <div ref={endRef} />
+            </>
+          ) : (
+            <div className={styles["guest__none"]}>
+              <Text>방명록이 없습니다.</Text>
+            </div>
+          )}
+        </div>
+        {friendId != userId && (
+          <div className={styles["guest__input"]}>
+            <input
+              maxLength={maxLength}
+              value={guestBookInput}
+              placeholder="방명록을 남겨주세요."
+              onChange={handleGuestBookChange}
+            />
+            <div className={styles["guest__send"]} onClick={addGuestBook}>
+              <ArrowCircleUpIcon />
+            </div>
           </div>
         )}
       </div>
-      {friendId != userId && (
-        <div className={styles["guest__input"]}>
-          <input
-            maxLength={maxLength}
-            value={guestBookInput}
-            placeholder="방명록을 남겨주세요."
-            onChange={handleGuestBookChange}
-          />
-          <div className={styles["guest__send"]} onClick={addGuestBook}>
-            <ArrowCircleUpIcon />
-          </div>
-        </div>
-      )}
-    </div>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={() => deleteGuestBook(deleteItem.id, deleteItem.idx)}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="방명록" />
+      </Modal>
+    </>
   );
 };
 

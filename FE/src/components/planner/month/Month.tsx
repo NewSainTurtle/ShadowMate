@@ -72,8 +72,10 @@ const Month = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     setSelectedDay(dayjs(new Date()).format("YYYY-MM-DD"));
     getMonthInfo();
+    getFollowCountInfo();
   }, [friendId]);
 
   useEffect(() => {

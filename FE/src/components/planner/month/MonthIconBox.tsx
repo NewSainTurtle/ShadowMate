@@ -51,6 +51,7 @@ const MonthIconBox = ({ types }: Props) => {
   const [introduction, setIntroduction] = useState<string>("");
 
   const editIntroduction = async () => {
+    setIntroduction(introduction.replaceAll("<br>", "\n"));
     await userApi.editIntroduction(friendId, { introduction });
   };
 
@@ -64,12 +65,15 @@ const MonthIconBox = ({ types }: Props) => {
         {types === "소개글" &&
           friendId === userId &&
           (isEdit ? (
-            <SaveIcon
-              onClick={() => {
-                editIntroduction();
-                setIsEdit(false);
-              }}
-            />
+            <div className={styles["introduction__tool"]}>
+              <Text types="small">({introduction.length}/100자)</Text>
+              <SaveIcon
+                onClick={() => {
+                  editIntroduction();
+                  setIsEdit(false);
+                }}
+              />
+            </div>
           ) : (
             <EditIcon onClick={() => setIsEdit(true)} />
           ))}

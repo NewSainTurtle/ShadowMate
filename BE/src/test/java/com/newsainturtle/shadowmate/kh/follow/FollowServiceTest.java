@@ -92,8 +92,8 @@ public class FollowServiceTest {
         final CountFollowResponse result = followService.countFollow(userId);
 
         // then
-        assertThat(result.getFollowerCount()).isEqualTo(1L);
-        assertThat(result.getFollowingCount()).isEqualTo(10L);
+        assertThat(result.getFollowerCount()).isEqualTo(10L);
+        assertThat(result.getFollowingCount()).isEqualTo(1L);
     }
 
     @Test

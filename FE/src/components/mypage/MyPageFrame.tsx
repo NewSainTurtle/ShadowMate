@@ -1,17 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import MyPageList from "./MyPageList";
-import MyPageDetail from "./MyPageDetail";
-import MyPageCategory from "./details/diary/Category";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
+import MyPageList from "@components/mypage/MyPageList";
+import MyPageDetail from "@components/mypage/MyPageDetail";
+import MyPageCategory from "@components/mypage/details/diary/Category";
 import CategoryList from "@components/mypage/list/CategoryList";
 import MyPageDday from "./details/diary/Dday";
+import DdayList from "@components/mypage/list/DdayList";
 import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-
-import DdayList from "@components/mypage/list/DdayList";
-import dayjs from "dayjs";
 import {
   selectCategoryClick,
   selectCategoryColorClick,
@@ -30,6 +30,7 @@ import {
   setDdayInput,
   setDdayList,
 } from "@store/mypage/ddaySlice";
+import dayjs from "dayjs";
 
 interface Props {
   title: string;
@@ -59,6 +60,11 @@ const MyPageFrame = ({ title }: Props) => {
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
+
+  /* 삭제 모달 변수 및 함수 */
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const handleAdd = (title: string) => {
     if (title === "카테고리") {
@@ -152,12 +158,13 @@ const MyPageFrame = ({ title }: Props) => {
               }),
             ),
           );
+          // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
           dispatch(setCategoryClick(categoryClick === 0 ? categoryClick : categoryClick - 1));
         })
         .catch((err) => {
           console.log(err);
-        });
-      // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
+        })
+        .finally(() => handleDeleteModalClose());
     } else {
       if (ddayList.length == 0) return;
       settingApi
@@ -170,9 +177,11 @@ const MyPageFrame = ({ title }: Props) => {
               }),
             ),
           );
+          // 삭제한 값의 위 (0인 경우 아래) 배열 항목으로 재설정
           dispatch(setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1));
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally(() => handleDeleteModalClose());
     }
   };
 
@@ -192,7 +201,12 @@ const MyPageFrame = ({ title }: Props) => {
           }[title]
         }
       </MyPageList>
-      <MyPageDetail title={title} isDisable={isDisable} handleUpdate={handleUpdate} handleDelete={handleDelete}>
+      <MyPageDetail
+        title={title}
+        isDisable={isDisable}
+        handleUpdate={handleUpdate}
+        handleDelete={handleDeleteModalOpen}
+      >
         <>
           {
             {
@@ -202,6 +216,16 @@ const MyPageFrame = ({ title }: Props) => {
           }
         </>
       </MyPageDetail>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={() => handleDelete(title)}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types={title} />
+      </Modal>
     </div>
   );
 };

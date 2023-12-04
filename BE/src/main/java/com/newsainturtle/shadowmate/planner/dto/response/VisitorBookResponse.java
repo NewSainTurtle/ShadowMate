@@ -8,14 +8,17 @@ import lombok.Getter;
 public class VisitorBookResponse {
 
     private long visitorBookId;
+    private long visitorId;
     private String visitorNickname;
     private String visitorProfileImage;
     private String visitorBookContent;
     private String writeDateTime;
 
     @Builder
-    public VisitorBookResponse(long visitorBookId, String visitorNickname, String visitorProfileImage, String visitorBookContent, String writeDateTime) {
+    public VisitorBookResponse(final long visitorBookId, final long visitorId, final String visitorNickname,
+                               final String visitorProfileImage, final String visitorBookContent, final String writeDateTime) {
         this.visitorBookId = visitorBookId;
+        this.visitorId = visitorId;
         this.visitorNickname = visitorNickname;
         this.visitorProfileImage = visitorProfileImage;
         this.visitorBookContent = visitorBookContent;

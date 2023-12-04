@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -222,21 +223,20 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     }
 
     @Override
-    public void shareSocial(final User user, final ShareSocialRequest shareSocialRequest) {
+    public ShareSocialResponse shareSocial(final User user, final ShareSocialRequest shareSocialRequest) {
         if (!user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
             throw new PlannerException(PlannerErrorResult.FAILED_SHARE_SOCIAL);
         }
         final DailyPlanner dailyPlanner = getDailyPlanner(user, shareSocialRequest.getDate());
         final Social findSocial = socialRepository.findByDailyPlanner(dailyPlanner);
-        if (findSocial == null) {
-            final Social social = Social.builder()
-                    .dailyPlanner(dailyPlanner)
-                    .socialImage(shareSocialRequest.getSocialImage())
-                    .build();
-            socialRepository.save(social);
-        } else {
-            findSocial.updateSocial(shareSocialRequest.getSocialImage());
+        if (findSocial != null) {
+            throw new PlannerException(PlannerErrorResult.ALREADY_SHARED_SOCIAL);
         }
-
+        final Social social = Social.builder()
+                .dailyPlanner(dailyPlanner)
+                .socialImage(shareSocialRequest.getSocialImage())
+                .build();
+        final Social saveSocial = socialRepository.save(social);
+        return ShareSocialResponse.builder().socialId(saveSocial.getId()).build();
     }
 }
