@@ -133,6 +133,9 @@ $color-btn-blue: var(--color-btn-blue);
 
   .button__visit > button {
     box-shadow: inset 0px 3px 6px 0px rgba(black, 0.4);
+    &:disabled {
+      box-shadow: none;
+    }
   }
 
   &__default {
@@ -446,11 +449,11 @@ $color-btn-blue: var(--color-btn-blue);
         @include timeTableContent("클릭하여\A시간을 기록할 수 있습니다");
       }
 
-      &.--clicked:hover::after {
+      &.--clicked::after {
         @include timeTableContent("기록할 할 일을 클릭해주세요\A기록 중지는 마우스 우클릭 입니다");
       }
 
-      &.--dragBefore:hover::after {
+      &.--dragBefore::after {
         @include timeTableContent("원하는 시간을 드래그해서 기록할 수 있습니다");
       }
 
