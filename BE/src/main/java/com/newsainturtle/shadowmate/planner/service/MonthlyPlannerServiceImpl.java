@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class MonthlyPlannerServiceImpl implements MonthlyPlannerService {
                 .visitorNickname(visitor.getNickname())
                 .visitorProfileImage(visitor.getProfileImage())
                 .visitorBookContent(visitorBook.getVisitorBookContent())
-                .writeDateTime(localDateTimeToString(visitorBook.getCreateTime()))
+                .writeDateTime(localDateTimeToString(visitorBook.getCreateTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime()))
                 .build();
     }
 
