@@ -18,6 +18,7 @@ $border: 1px;
 
 .top_border {
   border-top: $border solid $color-text;
+  margin-top: -1px;
 }
 
 .week {
@@ -162,6 +163,9 @@ $border: 1px;
   height: calc(100% / 2 - $border);
   width: calc(100% / 4 - $border);
   border-right: $border solid $color-text;
+  &:nth-child(n + 5) {
+    height: calc(100% / 2);
+  }
 
   &__title {
     @extend %under_boder;
@@ -187,7 +191,6 @@ $border: 1px;
 
   &__todo {
     &-list {
-      // @extend %under_boder;
       display: grid;
       overflow-y: auto;
     }
