@@ -62,11 +62,11 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
         return LocalDate.parse(dateStr, formatter);
     }
 
-    private String getDday(final User user) {
+    private Dday getDday(final User user) {
         final Date today = Date.valueOf(LocalDate.now());
         Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
         if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
-        return dday == null ? null : dday.getDdayDate().toString();
+        return dday;
     }
 
     private boolean havePermissionToSearch(final User user, final User plannerWriter) {
@@ -211,12 +211,14 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
         checkValidDate(date);
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
         final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
+        final Dday dday = getDday(user);
         int totalMinutes = 0;
         if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {
             return SearchDailyPlannerResponse.builder()
                     .date(date)
                     .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                    .dday(getDday(user))
+                    .dday(dday == null ? null : dday.getDdayDate().toString())
+                    .ddayTitle(dday == null ? null : dday.getDdayTitle())
                     .build();
         } else {
             final boolean like = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner) != null;
@@ -249,12 +251,13 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
             return SearchDailyPlannerResponse.builder()
                     .date(date)
                     .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                    .dday(getDday(user))
+                    .dday(dday == null ? null : dday.getDdayDate().toString())
+                    .ddayTitle(dday == null ? null : dday.getDdayTitle())
                     .todayGoal(dailyPlanner.getTodayGoal())
                     .retrospection(dailyPlanner.getRetrospection())
                     .retrospectionImage(dailyPlanner.getRetrospectionImage())
                     .tomorrowGoal(dailyPlanner.getTomorrowGoal())
-                    .shareSocial(shareSocial==null? null:shareSocial.getId())
+                    .shareSocial(shareSocial == null ? null : shareSocial.getId())
                     .like(like)
                     .likeCount(likeCount)
                     .studyTimeHour(totalMinutes / 60)
@@ -278,7 +281,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
                 .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
                 .dayList(calendarDayTotalResponse.getCalendarDayResponseList())
                 .todoTotal(calendarDayTotalResponse.getTodoTotal())
-                .todoComplete(calendarDayTotalResponse.getTodoTotal()-calendarDayTotalResponse.getTodoIncomplete())
+                .todoComplete(calendarDayTotalResponse.getTodoTotal() - calendarDayTotalResponse.getTodoIncomplete())
                 .todoIncomplete(calendarDayTotalResponse.getTodoIncomplete())
                 .plannerLikeCount(calendarDayTotalResponse.getPlannerLikeCount())
                 .build();
@@ -293,10 +296,11 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
         final boolean permission = havePermissionToSearch(user, plannerWriter);
         final List<WeeklyPlannerTodoResponse> weeklyTodos = getWeeklyTodos(plannerWriter, startDate, endDate, permission);
         final List<WeeklyPlannerDailyResponse> dayList = getDayList(plannerWriter, stringToLocalDate(startDate), permission);
+        final Dday dday = getDday(user);
 
         return SearchWeeklyPlannerResponse.builder()
                 .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                .dday(getDday(user))
+                .dday(dday == null ? null : dday.getDdayDate().toString())
                 .weeklyTodos(weeklyTodos)
                 .dayList(dayList)
                 .build();

@@ -315,6 +315,7 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
             assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
             assertThat(searchDailyPlannerResponse.getDday()).isEqualTo(birthday.toString());
+            assertThat(searchDailyPlannerResponse.getDdayTitle()).isEqualTo("생일");
             assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
@@ -383,6 +384,7 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
             assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchDailyPlannerResponse.getDday()).isEqualTo(birthday.toString());
+            assertThat(searchDailyPlannerResponse.getDdayTitle()).isEqualTo("생일");
             assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
