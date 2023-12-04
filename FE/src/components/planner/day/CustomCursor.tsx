@@ -10,11 +10,13 @@ const CustomCursor = () => {
   const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
   const categoryColorCode = category.categoryColorCode;
 
-  const moveCursor = (e: { clientY: any; clientX: any }) => {
+  const moveCursor = (e: { clientY: number; clientX: number }) => {
     const mouseY = e.clientY;
     const mouseX = e.clientX;
     if (cursorRef.current) {
-      cursorRef.current.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      // cursorRef.current.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      cursorRef.current.style.left = `${mouseX + 25}px`;
+      cursorRef.current.style.top = `${mouseY - 10}px`;
     }
   };
   const throttleMouseMove = throttle(moveCursor, 30);

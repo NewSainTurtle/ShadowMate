@@ -56,7 +56,6 @@ $color-btn-blue: var(--color-btn-blue);
     overflow: hidden;
     display: grid;
     grid-template-columns: 2fr 1fr;
-    position: relative;
 
     > .item__todo-list,
     > .item__timetable {
@@ -75,8 +74,7 @@ $color-btn-blue: var(--color-btn-blue);
       position: absolute;
       width: 30px;
       height: 30px;
-      top: calc(-10em - 10px);
-      left: calc(-10em + 10px);
+      transform: translate(-50%, -50%);
       z-index: 2;
     }
   }
