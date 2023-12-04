@@ -12,6 +12,7 @@ public class SearchDailyPlannerResponse {
     private String date;
     private String plannerAccessScope;
     private String dday;
+    private String ddayTitle;
     private String todayGoal;
     private String retrospection;
     private String retrospectionImage;
