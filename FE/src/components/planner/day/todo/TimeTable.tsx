@@ -63,7 +63,11 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     startTime: "",
     endTime: "",
   });
-  const statusCount = useMemo(() => todoList.filter((ele) => ele.todoStatus == "완료").length, [todoList]);
+  const count = useMemo(() => {
+    const status = todoList.filter((ele) => ele.todoStatus == "완료").length;
+    const saveTime = todoList.filter((ele) => ele.timeTable && ele.timeTable.startTime != "").length;
+    return { status, saveTime };
+  }, [todoList]);
 
   const mouseModule = (() => {
     const mouseDown = (e: React.MouseEvent<HTMLDivElement>, startTime: string) => {
@@ -170,20 +174,21 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   }, [selectTime]);
 
   const timeTableClick = () => {
-    if (statusCount > 0) setClicked(true);
+    if (count.status > 0) setClicked(true);
   };
 
-  const timeTableStyle = timeClick
-    ? styles["--drag"]
-    : todoId != 0
-    ? styles["--dragBefore"]
-    : clicked
-    ? styles["--clicked"]
-    : !todoList.length
-    ? styles["--none"]
-    : statusCount == 0
-    ? styles["--stateNone"]
-    : styles["--defalut"];
+  const timeTableStyle =
+    todoId != 0 && count.saveTime == 0
+      ? styles["--dragBefore"]
+      : clicked && count.saveTime == 0
+      ? styles["--clicked"]
+      : timeClick || count.saveTime != 0
+      ? styles["--drag"]
+      : !todoList.length
+      ? styles["--none"]
+      : count.status == 0
+      ? styles["--stateNone"]
+      : styles["--defalut"];
 
   return (
     <div className={styles["timetable__container"]} onClick={timeTableClick}>
