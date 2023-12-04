@@ -319,7 +319,7 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
-            assertThat(searchDailyPlannerResponse.isShareSocial()).isFalse();
+            assertThat(searchDailyPlannerResponse.getShareSocial()).isNull();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
@@ -387,7 +387,7 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
-            assertThat(searchDailyPlannerResponse.isShareSocial()).isFalse();
+            assertThat(searchDailyPlannerResponse.getShareSocial()).isNull();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
