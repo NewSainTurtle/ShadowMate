@@ -121,7 +121,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       .catch((err) => console.error(err));
   };
 
-  const deleteTimeTable = async (todoId: number) => {
+  const deleteTimeTable = async (todoId: number, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     await plannerApi
       .deleteTimetable(userId, { date, todoId: todoId })
       .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "" })));
@@ -203,7 +204,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
               style={{ backgroundColor: item.categoryColorCode }}
             >
               {item.closeButton && (
-                <div onClick={() => deleteTimeTable(item.todoId)}>
+                <div onClick={(e) => deleteTimeTable(item.todoId, e)}>
                   <DoDisturbOnIcon />
                 </div>
               )}
