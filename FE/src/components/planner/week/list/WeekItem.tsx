@@ -2,6 +2,7 @@ import React, { ChangeEvent, Dispatch, KeyboardEvent, SetStateAction, useState }
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import CategorySelector from "@components/common/CategorySelector";
 import todoModule from "@util/TodoModule";
 import dayjs from "dayjs";
@@ -30,6 +31,10 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
   });
   const { updateTodo, deleteTodo } = todoModule(dailyTodos, setDailyTodos);
   const friend = isMine ? "" : "--friend";
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -71,6 +76,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
       .deleteDailyTodos(userId, data)
       .then(() => {
         deleteTodo(idx);
+        handleDeleteModalClose();
       })
       .catch((err) => console.log(err));
   };
@@ -143,13 +149,23 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
             <Text types="small">{item?.todoContent}</Text>
           </div>
         )}
-        <DeleteOutlined onClick={handleDelete} />
+        <DeleteOutlined onClick={handleDeleteModalOpen} />
         <div onClick={handleStatusSave}>
           <Text>{setStatus(item.todoStatus)}</Text>
         </div>
       </div>
       <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
         <CategorySelector type="week" handleClick={handleClickCategory} />
+      </Modal>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={handleDelete}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="일정" />
       </Modal>
     </>
   );

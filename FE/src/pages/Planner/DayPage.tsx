@@ -11,8 +11,9 @@ import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
+import { resizeImage } from "@util/resizeImage";
 import html2canvas from "html2canvas";
 import { selectFriendId } from "@store/friendSlice";
 
@@ -139,20 +140,23 @@ const DayPage = () => {
 
   const handleDownload = async () => {
     if (!screenDivRef.current) return;
-    await html2canvas(screenDivRef.current, {
+    const canvas = await html2canvas(screenDivRef.current, {
       windowWidth: 1200,
       windowHeight: 682,
       logging: false,
       allowTaint: true,
       useCORS: true,
-    }).then(async (canvas) => {
-      const imageURL = canvas.toDataURL("image/png");
-      const storageRef = ref(firebaseStorage, `social/${userId + "_" + date}`);
-      uploadString(storageRef, imageURL, "data_url").then((snapshot) =>
-        getDownloadURL(snapshot.ref).then((downloadURL) =>
-          plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
-        ),
-      );
+    });
+    canvas.toBlob(async (blob) => {
+      if (blob != null) {
+        const file = await resizeImage(blob);
+        const storageRef = ref(firebaseStorage, `social/${userId + "_" + date}`);
+        uploadBytes(storageRef, file).then((snapshot) =>
+          getDownloadURL(snapshot.ref).then((downloadURL) =>
+            plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
+          ),
+        );
+      }
     });
   };
 

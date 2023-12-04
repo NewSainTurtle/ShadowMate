@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, setLogout } from "@store/authSlice";
 import { clearFriendInfo, selectFriendId } from "@store/friendSlice";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   types: "기본" | "로그아웃";
@@ -20,6 +21,7 @@ const Profile = ({ types, profile }: Props) => {
   let friendId = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
   const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const { profileImage, nickname, statusMessage } = profile;
 
   const handleLogout = () => {
@@ -28,6 +30,10 @@ const Profile = ({ types, profile }: Props) => {
     setTimeout(() => {
       persistor.purge();
     }, 200);
+  };
+
+  const handleProfileBtn = () => {
+    navigator("/mypage");
   };
 
   return (
@@ -47,7 +53,7 @@ const Profile = ({ types, profile }: Props) => {
             {
               기본:
                 friendId === userId ? (
-                  <div className={styles.profile_button}>
+                  <div className={styles.profile_button} onClick={handleProfileBtn}>
                     <SettingsIcon />
                   </div>
                 ) : (

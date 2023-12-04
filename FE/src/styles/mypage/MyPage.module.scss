@@ -239,11 +239,29 @@ $color-warning: var(--color-warning);
       line-height: 3.5em;
       padding: 0 1em;
       box-sizing: border-box;
-      border-bottom: 0.5px solid $color-gray-2;
+      border-bottom: 0.5px solid $color-gray-5;
       background-color: $color-background;
     }
     > div:nth-child(2) {
       margin-top: 3.5em;
+    }
+    > div:last-child {
+      position: fixed;
+      bottom: -3.5em;
+      height: 3.5em;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.2fr 8.8fr;
+      align-items: center;
+      padding: 0 1em;
+      box-sizing: border-box;
+      border-top: 0.5px solid $color-gray-5;
+      background-color: $color-background;
+      cursor: pointer;
+      > svg {
+        font-size: medium;
+        padding: 0.5em;
+      }
     }
   }
 

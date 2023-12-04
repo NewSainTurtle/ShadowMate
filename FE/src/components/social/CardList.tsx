@@ -1,6 +1,8 @@
 import React, { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import { ProfileConfig } from "@components/common/FriendProfile";
 import { socialApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
@@ -27,6 +29,14 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
   const endRef = useRef(false);
   const obsRef = useRef(null);
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [deleteItem, setDeleteItem] = useState({
+    id: 0,
+    idx: 0,
+  });
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
+
   // 무한 스크롤
   useLayoutEffect(() => {
     preventRef.current = false;
@@ -45,7 +55,7 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
     if (pageNumber != 1) getPost(pageNumber);
   }, [pageNumber]);
 
-  const obsHandler = async (entries: any[]) => {
+  const obsHandler = async (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (!endRef.current && target.isIntersecting && preventRef.current) {
       preventRef.current = false;
@@ -87,23 +97,42 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
         copyList.splice(idx, 1);
         setList(copyList);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => handleDeleteModalClose());
   };
 
   return (
-    <div className={styles["card-list"]}>
-      {nickname.length >= 2 && list.length == 0 ? (
-        <div className={styles["card-list--none"]}>검색된 결과가 존재하지 않습니다.</div>
-      ) : (
-        <>
-          {list.map((social, idx) => (
-            <CardItem key={idx.toString() + social.socialId} idx={idx} item={social} handleDelete={handleDelete} />
-          ))}
-        </>
-      )}
-      {load && <div className={styles["card-list--load"]} />}
-      <div ref={obsRef} />
-    </div>
+    <>
+      <div className={styles["card-list"]}>
+        {nickname.length >= 2 && list.length == 0 ? (
+          <div className={styles["card-list--none"]}>검색된 결과가 존재하지 않습니다.</div>
+        ) : (
+          <>
+            {list.map((social, idx) => (
+              <CardItem
+                key={idx.toString() + social.socialId}
+                idx={idx}
+                item={social}
+                setDeleteItem={setDeleteItem}
+                handleDeleteModalOpen={handleDeleteModalOpen}
+              />
+            ))}
+          </>
+        )}
+        {load && <div className={styles["card-list--load"]} />}
+        <div ref={obsRef} />
+      </div>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={() => handleDelete(deleteItem.idx, deleteItem.id)}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="공유된 플래너" />
+      </Modal>
+    </>
   );
 };
 

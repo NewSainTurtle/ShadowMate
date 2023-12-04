@@ -315,11 +315,12 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
             assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.FOLLOW.getScope());
             assertThat(searchDailyPlannerResponse.getDday()).isEqualTo(birthday.toString());
+            assertThat(searchDailyPlannerResponse.getDdayTitle()).isEqualTo("생일");
             assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
-            assertThat(searchDailyPlannerResponse.isShareSocial()).isFalse();
+            assertThat(searchDailyPlannerResponse.getShareSocial()).isNull();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
@@ -383,11 +384,12 @@ class SearchPlannerServiceTest {
             assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(today);
             assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
             assertThat(searchDailyPlannerResponse.getDday()).isEqualTo(birthday.toString());
+            assertThat(searchDailyPlannerResponse.getDdayTitle()).isEqualTo("생일");
             assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
             assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
             assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
             assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
-            assertThat(searchDailyPlannerResponse.isShareSocial()).isFalse();
+            assertThat(searchDailyPlannerResponse.getShareSocial()).isNull();
             assertThat(searchDailyPlannerResponse.isLike()).isFalse();
             assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
             assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);

@@ -1,6 +1,8 @@
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
@@ -28,6 +30,9 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
   });
   const [checked, setChecked] = useState<boolean>(item.weeklyTodoStatus);
   const friend = isMine ? "" : "--friend";
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -101,32 +106,44 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
   };
 
   return (
-    <div className={styles[`todo__item${friend}`]} key={item.weeklyTodoId}>
-      <div className={styles["todo__checkbox"]}>
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => {
-            handleUpdateStatus(e);
-          }}
-        />
-        {item.weeklyTodoUpdate ? (
+    <>
+      <div className={styles[`todo__item${friend}`]} key={item.weeklyTodoId}>
+        <div className={styles["todo__checkbox"]}>
           <input
-            autoFocus
-            type="text"
-            defaultValue={item.weeklyTodoContent}
-            onChange={(e) => setTodo({ ...todo, newTodo: e.target.value })}
-            onKeyDown={(e) => handleEnter(e)}
-            onBlur={(e) => handleUpdateSave(e)}
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => {
+              handleUpdateStatus(e);
+            }}
           />
-        ) : (
-          <div className={styles["todo__name"]} onClick={handleUpdateState}>
-            <Text types="small">{item.weeklyTodoContent}</Text>
-          </div>
-        )}
+          {item.weeklyTodoUpdate ? (
+            <input
+              autoFocus
+              type="text"
+              defaultValue={item.weeklyTodoContent}
+              onChange={(e) => setTodo({ ...todo, newTodo: e.target.value })}
+              onKeyDown={(e) => handleEnter(e)}
+              onBlur={(e) => handleUpdateSave(e)}
+            />
+          ) : (
+            <div className={styles["todo__name"]} onClick={handleUpdateState}>
+              <Text types="small">{item.weeklyTodoContent}</Text>
+            </div>
+          )}
+        </div>
+        <DeleteOutlined onClick={handleDeleteModalOpen} />
       </div>
-      <DeleteOutlined onClick={handleDelete} />
-    </div>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={handleDelete}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="할 일" />
+      </Modal>
+    </>
   );
 };
 

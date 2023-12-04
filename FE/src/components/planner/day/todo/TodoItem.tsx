@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 import CategorySelector from "@components/common/CategorySelector";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
@@ -35,6 +36,10 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
     if (!addTodo && !disable) setModalOpen(true);
   };
   const handleClose = () => setModalOpen(false);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > maxLength) {
@@ -137,7 +142,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
               onBlur={handleSaveTextTodo}
             />
             {!addTodo && (
-              <div onClick={clickDeleteTodo}>
+              <div onClick={handleDeleteModalOpen}>
                 <DeleteOutlined />
               </div>
             )}
@@ -151,6 +156,16 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
       <Modal types="noBtn" open={ModalOpen} onClose={handleClose}>
         <CategorySelector type="day" handleClick={handleClickCategory} />
+      </Modal>
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={clickDeleteTodo}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="일정" />
       </Modal>
     </div>
   );

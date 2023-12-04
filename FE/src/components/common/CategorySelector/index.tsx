@@ -1,6 +1,8 @@
 import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
+import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { useAppSelector } from "@hooks/hook";
 import { CategoryItemConfig } from "@util/planner.interface";
@@ -12,6 +14,7 @@ interface Props {
 }
 
 const CategorySelector = ({ type, handleClick }: Props) => {
+  const navigator = useNavigate();
   const categoryList: CategoryItemConfig[] = useAppSelector(selectCategoryList);
   return (
     <div className={styles["category__selector"]}>
@@ -39,6 +42,10 @@ const CategorySelector = ({ type, handleClick }: Props) => {
           }[type]
         }
         <div>카테고리 없음</div>
+      </div>
+      <div onClick={() => navigator("/category")}>
+        <AddIcon />
+        <Text>새 카테고리 추가</Text>
       </div>
     </div>
   );

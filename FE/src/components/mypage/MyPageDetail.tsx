@@ -8,7 +8,7 @@ interface Props {
   children: ReactNode;
   title: string;
   handleUpdate: (title: string) => void;
-  handleDelete: (title: string) => void;
+  handleDelete: () => void;
   isDisable: boolean;
 }
 
@@ -25,7 +25,7 @@ const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }
       </div>
       {children}
       <div className={styles["frame__button"]}>
-        <div className={styles[`frame__button--delete${disable}`]} onClick={() => handleDelete(title)}>
+        <div className={styles[`frame__button--delete${disable}`]} onClick={handleDelete}>
           <DeleteOutlined />
           <Text>삭제</Text>
         </div>

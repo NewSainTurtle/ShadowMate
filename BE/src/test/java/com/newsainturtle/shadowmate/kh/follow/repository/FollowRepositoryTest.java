@@ -216,5 +216,27 @@ public class FollowRepositoryTest {
             assertThat(resultFollow).hasSize(1);
             assertThat(result).isEqualTo(1L);
         }
+
+        @Test
+        void 유저와관련된팔로우삭제() {
+            // given
+            followRepository.save(Follow.builder()
+                    .followerId(user1)
+                    .followingId(user2)
+                    .build());
+            followRepository.save(Follow.builder()
+                    .followerId(user2)
+                    .followingId(user1)
+                    .build());
+
+            // when
+            followRepository.deleteAllByFollowingIdOrFollowerId(user1, user1);
+            List<Follow> result1 = followRepository.findAllByFollowerId(user1);
+            List<Follow> result2 = followRepository.findAllByFollowingId(user1);
+
+            // then
+            assertThat(result1).hasSize(0);
+            assertThat(result2).hasSize(0);
+        }
     }
 }

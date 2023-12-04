@@ -83,6 +83,7 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
               ))}
               {Children.toArray(
                 dayList?.map((item, idx) => {
+                  const today = item?.date == dayjs(new Date()).format("YYYY-MM-DD") ? "--today" : "";
                   return (
                     <>
                       {idx % 7 === 0 && (
@@ -94,11 +95,19 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
                       )}
                       <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>
                         {item && (
-                          <div className={styles["calendar__item"]} onClick={() => itemClickHandler(item.date)}>
+                          <div className={styles[`calendar__item`]} onClick={() => itemClickHandler(item.date)}>
                             <div style={{ backgroundColor: statusColor[item.dayStatus] }}>
-                              <Text types="small">{item.dayStatus === 3 ? <CheckRoundedIcon /> : item.todoCount}</Text>
+                              <Text types="small">
+                                {item.dayStatus === 3 ? (
+                                  <CheckRoundedIcon />
+                                ) : item.dayStatus === 0 ? null : (
+                                  item.todoCount
+                                )}
+                              </Text>
                             </div>
-                            <Text types="small">{dayjs(item.date).date()}</Text>
+                            <div className={styles[`calendar__date${today}`]}>
+                              <Text types="small">{dayjs(item.date).date()}</Text>
+                            </div>
                           </div>
                         )}
                       </div>

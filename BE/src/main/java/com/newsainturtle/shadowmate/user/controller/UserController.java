@@ -69,7 +69,7 @@ public class UserController {
     public ResponseEntity<BaseResponse> deleteUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.deleteUser(userId);
+        userService.deleteUser(principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_USER));
     }
 
