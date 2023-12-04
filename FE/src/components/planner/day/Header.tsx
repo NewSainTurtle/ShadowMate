@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
@@ -15,6 +15,8 @@ import { plannerApi, socialApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { setThisWeek } from "@store/planner/weekSlice";
 import { getThisWeek } from "@util/getThisWeek";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 dayjs.locale("ko");
 
 const FriendHeader = () => {
@@ -67,19 +69,26 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
   const userId = useAppSelector(selectUserId);
   const dayPlannerInfo = useAppSelector(selectDayInfo);
   const { plannerAccessScope, likeCount, shareSocial, dailyTodos } = dayPlannerInfo;
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   function handleClick() {
     if (shareSocial == 0) {
+      dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: true }));
       socialClick();
     } else {
-      socialApi
-        .delete(userId, shareSocial)
-        .then(() => {
-          dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: 0 }));
-        })
-        .catch((err) => console.error("공유된 소셜 삭제", err));
+      handleDeleteModalOpen();
     }
   }
+
+  const handleDelete = async () => {
+    await socialApi
+      .delete(userId, shareSocial)
+      .then(() => dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: false })))
+      .catch((err) => console.error(err))
+      .finally(() => handleDeleteModalClose());
+  };
 
   return (
     <div className={styles["planner-header__default"]}>
@@ -87,12 +96,22 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
         ♥ {likeCount}
       </Button>
       {plannerAccessScope == "전체공개" && (
-        <div className={`${shareSocial ? styles["button__visit"] : ""}`}>
+        <div className={`${shareSocial != 0 ? styles["button__visit"] : ""}`}>
           <Button types="blue" onClick={() => handleClick()} disabled={!dailyTodos.length}>
-            소셜공유
+            {shareSocial != 0 ? "공유취소" : "소셜공유"}
           </Button>
         </div>
       )}
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={() => handleDelete()}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="공유된 플래너" />
+      </Modal>
     </div>
   );
 };
