@@ -76,6 +76,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
       .deleteDailyTodos(userId, data)
       .then(() => {
         deleteTodo(idx);
+        handleDeleteModalClose();
       })
       .catch((err) => console.log(err));
   };
