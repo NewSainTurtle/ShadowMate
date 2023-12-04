@@ -150,8 +150,8 @@ public class FollowServiceImpl implements FollowService {
         }
         final User user = result.get();
         return CountFollowResponse.builder()
-                .followerCount(followRepository.countByFollowerId(user))
-                .followingCount(followRepository.countByFollowingId(user))
+                .followerCount(followRepository.countByFollowingId(user))
+                .followingCount(followRepository.countByFollowerId(user))
                 .build();
     }
 
