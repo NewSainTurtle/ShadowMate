@@ -83,7 +83,7 @@ $color-gray-5: var(--color-gray-5);
 }
 
 .signup-account {
-  .input_box__button {
+  &__input {
     display: flex;
     width: 100%;
     gap: 0.3em;

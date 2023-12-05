@@ -137,7 +137,7 @@ const SignupAccount = () => {
   return (
     <>
       <div className={styles["signup-account__form"]}>
-        <div className={styles["input_box__button"]}>
+        <div className={styles["signup-account__input"]}>
           <Input
             placeholder="이메일"
             name="email"
@@ -153,7 +153,7 @@ const SignupAccount = () => {
           </Button>
         </div>
         {isEmailAuthentication && (
-          <div className={styles["input_box__button"]}>
+          <div className={styles["signup-account__input"]}>
             <Input
               placeholder="이메일 인증 코드"
               name="code"
@@ -188,7 +188,7 @@ const SignupAccount = () => {
           error={!!error.passwordCheck}
           helperText={error.passwordCheck || " "}
         />
-        <div className={styles["input_box__button"]}>
+        <div className={styles["signup-account__input"]}>
           <Input
             placeholder="닉네임(특수문자 제외, 2~10자)"
             name="nickname"
