@@ -207,10 +207,11 @@ const Signup = () => {
           </div>
         </div>
 
+        <div className={styles["signup_warning"]}>
+          <Text types="small">{errorMessage}</Text>
+        </div>
+
         <div className={styles["signup_box_2"]}>
-          <div className={styles["signup_warning"]}>
-            <Text types="small">{errorMessage}</Text>
-          </div>
           <div onClick={onClickJoin}>
             <AuthButton>Sign up</AuthButton>
           </div>
