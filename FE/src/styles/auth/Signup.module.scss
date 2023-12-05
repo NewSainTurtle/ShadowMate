@@ -1,5 +1,6 @@
 $color-warning: var(--color-warning);
 $color-gray-2: var(--color-gray-2);
+$color-gray-3: var(--color-gray-3);
 $color-gray-4: var(--color-gray-4);
 $color-gray-5: var(--color-gray-5);
 
@@ -41,6 +42,13 @@ $color-gray-5: var(--color-gray-5);
   &__button {
     margin: 1.5em 0;
     align-items: center;
+
+    &.--disable {
+      > div {
+        background-color: $color-gray_3;
+        cursor: default;
+      }
+    }
   }
 }
 
