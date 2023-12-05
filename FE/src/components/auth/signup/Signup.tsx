@@ -64,7 +64,10 @@ const Signup = () => {
       else if (!error.email) {
         authApi
           .emailAuthentication({ email })
-          .then(() => setEmailAuthentication(true))
+          .then(() => {
+            setEmailAuthentication(true);
+            setErrorMessage("");
+          })
           .catch((err) => {
             const { code, message } = err.response.data;
             setEmailAuthentication(false);
@@ -80,6 +83,7 @@ const Signup = () => {
         .then(() => {
           setEmailRedundancy(true);
           setError({ ...error, code: "" });
+          setErrorMessage("");
         })
         .catch(() => {
           setEmailRedundancy(false);
@@ -94,6 +98,7 @@ const Signup = () => {
           .then(() => {
             setNicknameAuthentication(true);
             setError({ ...error, nickname: "" });
+            setErrorMessage("");
           })
           .catch(() => {
             setNicknameAuthentication(false);
