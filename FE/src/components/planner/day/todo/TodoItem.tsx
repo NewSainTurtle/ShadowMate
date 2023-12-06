@@ -4,6 +4,7 @@ import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
 import CategorySelector from "@components/common/CategorySelector";
+import TimeTableDeleteModal from "@components/common/Modal/TimeTableDeleteModal";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
@@ -40,6 +41,10 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
+
+  const [warnModalOpen, setWarnModalOpen] = useState<boolean>(false);
+  const handleWarnModalOpen = () => setWarnModalOpen(true);
+  const handleWarnModalClose = () => setWarnModalOpen(false);
 
   const editText = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length > maxLength) {
@@ -83,8 +88,9 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const handleSaveStatusTodo = () => {
     if (text === "") return;
     if (todoStatus == "완료") {
-      if (todoItem.timeTable && todoItem.timeTable.startTime != "") deleteTimeTable(todoItem.todoId, "미완료");
-      else {
+      if (todoItem.timeTable && todoItem.timeTable.startTime != "") {
+        handleWarnModalOpen();
+      } else {
         updateTodo(idx, {
           ...todoItem,
           todoStatus: "미완료",
@@ -172,6 +178,18 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         warning
       >
         <DeleteModal types="일정" />
+      </Modal>
+      <Modal
+        types="twoBtn"
+        open={warnModalOpen}
+        onClose={handleWarnModalClose}
+        onClick={() => {
+          deleteTimeTable(todoItem.todoId, "미완료");
+          handleWarnModalClose();
+        }}
+        onClickMessage="확인"
+      >
+        <TimeTableDeleteModal />
       </Modal>
     </div>
   );
