@@ -26,11 +26,13 @@ const MyPassword = () => {
     const { name, value } = e.target;
     if (name == "oldPassword" && error.oldPassword) setError({ ...error, [name]: false });
     if (name == "newPassword") {
-      if (value.length > 0 && !userRegex.password.test(value)) setError({ ...error, [name]: true });
+      if (!!value && !userRegex.password.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
+      if (!!newPasswordCheck && newPasswordCheck != value) setError({ ...error, newPasswordCheck: true });
+      else setError({ ...error, newPasswordCheck: false });
     }
     if (name == "newPasswordCheck") {
-      if (value.length > 0 && newPassword != value) setError({ ...error, [name]: true });
+      if (!!value && newPassword != value) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
     }
     setPassword({
