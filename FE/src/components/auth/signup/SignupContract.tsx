@@ -51,7 +51,7 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
             </div>
             <Checkbox name="conditionsAgreed" checked={conditionsAgreed} onChange={handleAgreementChange} />
           </div>
-          <textarea className={styles["signup-contract__textarea"]} readOnly>
+          <textarea className={styles["signup-contract__textarea"]} value={Conditions} readOnly>
             {Conditions}
           </textarea>
         </div>
@@ -64,7 +64,7 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
             </div>
             <Checkbox name="personalInfoAgreed" checked={personalInfoAgreed} onChange={handleAgreementChange} />
           </div>
-          <textarea className={styles["signup-contract__textarea"]} readOnly>
+          <textarea className={styles["signup-contract__textarea"]} value={PersonalInformation} readOnly>
             {PersonalInformation}
           </textarea>
         </div>
