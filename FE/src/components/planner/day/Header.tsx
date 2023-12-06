@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
@@ -11,10 +11,12 @@ import { setDayDate, selectDayDate, selectDayInfo, setDayLike, setDayInfo } from
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { selectFriendInfo } from "@store/friendSlice";
-import { plannerApi } from "@api/Api";
+import { plannerApi, socialApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { setThisWeek } from "@store/planner/weekSlice";
 import { getThisWeek } from "@util/getThisWeek";
+import Modal from "@components/common/Modal";
+import DeleteModal from "@components/common/Modal/DeleteModal";
 dayjs.locale("ko");
 
 const FriendHeader = () => {
@@ -64,15 +66,29 @@ const FriendHeader = () => {
 
 const MyHeader = ({ socialClick, clicked }: { socialClick: () => Promise<void>; clicked: boolean }) => {
   const dispatch = useAppDispatch();
+  const userId = useAppSelector(selectUserId);
   const dayPlannerInfo = useAppSelector(selectDayInfo);
   const { plannerAccessScope, likeCount, shareSocial, dailyTodos } = dayPlannerInfo;
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   function handleClick() {
-    if (!shareSocial) {
+    if (shareSocial == 0) {
       dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: true }));
       socialClick();
-    } else dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: false }));
+    } else {
+      handleDeleteModalOpen();
+    }
   }
+
+  const handleDelete = async () => {
+    await socialApi
+      .delete(userId, shareSocial)
+      .then(() => dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: false })))
+      .catch((err) => console.error(err))
+      .finally(() => handleDeleteModalClose());
+  };
 
   return (
     <div className={styles["planner-header__default"]}>
@@ -86,6 +102,16 @@ const MyHeader = ({ socialClick, clicked }: { socialClick: () => Promise<void>; 
           </Button>
         </div>
       )}
+      <Modal
+        types="twoBtn"
+        open={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onClick={() => handleDelete()}
+        onClickMessage="삭제"
+        warning
+      >
+        <DeleteModal types="공유된 플래너" />
+      </Modal>
     </div>
   );
 };

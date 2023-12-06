@@ -5,7 +5,7 @@ import TimeTable from "@components/planner/day/todo/TimeTable";
 import TodoList from "@components/planner/day/todo/TodoList";
 import Ment from "@components/planner/day/Ment";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectDayDate, selectTodoList, setDayInfo, setTodoItem } from "@store/planner/daySlice";
+import { selectDayDate, selectDayInfo, selectTodoList, setDayInfo, setTodoItem } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
 import { TodoConfig } from "@util/planner.interface";
@@ -24,6 +24,7 @@ const DayPage = () => {
   friendUserId = friendUserId != 0 ? friendUserId : userId;
   const date = useAppSelector(selectDayDate);
   const todoList = useAppSelector(selectTodoList);
+  const dayPlannerInfo = useAppSelector(selectDayInfo);
   const [ment, setMent] = useState({
     todayGoal: "",
     tomorrowGoal: "",
@@ -50,7 +51,7 @@ const DayPage = () => {
             dday: response.dday,
             like: response.like,
             likeCount: response.likeCount,
-            shareSocial: response.shareSocial,
+            shareSocial: response.shareSocial || 0,
             dailyTodos: response.dailyTodos || [],
           }),
         );
@@ -153,7 +154,13 @@ const DayPage = () => {
         const storageRef = ref(firebaseStorage, `social/${userId + "_" + date}`);
         uploadBytes(storageRef, file).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadURL) =>
-            plannerApi.social(userId, { date, socialImage: downloadURL }).catch((err) => console.error(err)),
+            plannerApi
+              .social(userId, { date, socialImage: downloadURL })
+              .then((res) => {
+                const shareSocial = res.data.data.sharSocial;
+                dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial }));
+              })
+              .catch((err) => console.error(err)),
           ),
         );
       }
