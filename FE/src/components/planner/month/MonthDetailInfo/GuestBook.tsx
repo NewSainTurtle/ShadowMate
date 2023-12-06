@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import Avatar from "@components/common/Avatar";
@@ -114,6 +114,14 @@ const GuestBook = () => {
     }
   }, [friendId, guestBookList]);
 
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (guestBookInput === "") return;
+    if (e.key == "Enter") {
+      if (e.nativeEvent.isComposing) return;
+      addGuestBook();
+    }
+  };
+
   const addGuestBook = async () => {
     const response = await plannerApi.addGuestBook(friendId, { visitorBookContent: guestBookInput });
     if (response.status === 200) {
@@ -201,6 +209,7 @@ const GuestBook = () => {
               value={guestBookInput}
               placeholder="방명록을 남겨주세요."
               onChange={handleGuestBookChange}
+              onKeyDown={handleOnKeyPress}
             />
             <div className={styles["guest__send"]} onClick={addGuestBook}>
               <ArrowCircleUpIcon />
