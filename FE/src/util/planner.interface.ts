@@ -5,6 +5,7 @@ export interface MonthType {
 }
 
 export interface GuestBookConfig {
+  visitorId: number;
   visitorBookId: number;
   visitorNickname: string;
   visitorProfileImage: string;

@@ -7,13 +7,16 @@ import Loading from "@components/common/Loading";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
 import { DeleteOutline } from "@mui/icons-material";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
-import { selectFriendId } from "@store/friendSlice";
-import { plannerApi } from "@api/Api";
+import { selectFriendId, setFriendInfo } from "@store/friendSlice";
+import { plannerApi, userApi } from "@api/Api";
 import { GuestBookConfig } from "@util/planner.interface";
+import { useNavigate } from "react-router-dom";
 
 const GuestBook = () => {
+  const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const userInfo = useAppSelector(selectUserInfo);
   const userId = useAppSelector(selectUserId);
   let friendId = useAppSelector(selectFriendId);
@@ -128,6 +131,19 @@ const GuestBook = () => {
     }
   };
 
+  const handleMoveToFriendProfile = (id: number, nickname: string) => {
+    userApi
+      .searches(userId, { nickname })
+      .then((res) => {
+        const response = res.data.data;
+        dispatch(setFriendInfo(response));
+        navigator("/month");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <>
       <div className={styles["guest"]}>
@@ -140,9 +156,16 @@ const GuestBook = () => {
                 const mine = friendId === userId || userInfo.nickname === item.visitorNickname ? "--mine" : "";
                 return (
                   <div className={styles["guest__comment"]} key={item.visitorBookId}>
-                    <Avatar src={item.visitorProfileImage} sx={{ width: 30, height: 30 }} />
+                    <Avatar
+                      src={item.visitorProfileImage}
+                      sx={{ width: 30, height: 30, cursor: "pointer" }}
+                      onClick={() => handleMoveToFriendProfile(item.visitorId, item.visitorNickname)}
+                    />
                     <div>
-                      <div className={styles["guest__nickname"]}>
+                      <div
+                        className={styles["guest__nickname"]}
+                        onClick={() => handleMoveToFriendProfile(item.visitorId, item.visitorNickname)}
+                      >
                         <Text bold types="small">
                           {item.visitorNickname}
                         </Text>
