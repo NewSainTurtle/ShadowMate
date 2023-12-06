@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import styles from "@styles/common/Modal.module.scss";
 import Text from "@components/common/Text";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { useNavigate } from "react-router-dom";
 
 const TokenExpiration = () => {
   return (
