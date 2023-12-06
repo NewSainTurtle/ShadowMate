@@ -1,5 +1,5 @@
 import React, { InputHTMLAttributes } from "react";
-import styles from "@styles/common/checkbox.module.scss";
+import styles from "@styles/common/Checkbox.module.scss";
 import Text from "@components/common/Text";
 
 interface CheckBoxProps extends InputHTMLAttributes<HTMLInputElement> {
