@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner.service;
 
+import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.AddWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.RemoveWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoContentRequest;
@@ -16,24 +17,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
+public class WeeklyPlannerServiceImpl extends DateCommonService implements WeeklyPlannerService {
 
     private final WeeklyRepository weeklyRepository;
     private final WeeklyTodoRepository weeklyTodoRepository;
 
     private Weekly getOrCreateWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
         checkValidWeek(startDateStr, endDateStr);
-        final Date startDate = Date.valueOf(startDateStr);
-        final Date endDate = Date.valueOf(endDateStr);
-        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || Period.between(startDate.toLocalDate(), endDate.toLocalDate()).getDays() != 6) {
+        final LocalDate startDate = stringToLocalDate(startDateStr);
+        final LocalDate endDate = stringToLocalDate(endDateStr);
+        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || Period.between(startDate, endDate).getDays() != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
         Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDate, endDate);
@@ -49,7 +48,7 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
 
     private Weekly getWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
         checkValidWeek(startDateStr, endDateStr);
-        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, Date.valueOf(startDateStr), Date.valueOf(endDateStr));
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, stringToLocalDate(startDateStr), stringToLocalDate(endDateStr));
         if (weekly == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER);
         }
@@ -58,7 +57,7 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
 
     private void checkValidWeek(final String startDateStr, final String endDateStr) {
         if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1
-                || Period.between(Date.valueOf(startDateStr).toLocalDate(), Date.valueOf(endDateStr).toLocalDate()).getDays() != 6) {
+                || Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
     }
@@ -70,11 +69,6 @@ public class WeeklyPlannerServiceImpl implements WeeklyPlannerService {
             throw new PlannerException(PlannerErrorResult.INVALID_TODO);
         }
         return weeklyTodo;
-    }
-
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
     }
 
     @Override

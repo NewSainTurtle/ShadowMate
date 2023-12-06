@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner.service;
 
+import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.planner.dto.response.*;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
@@ -21,12 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SearchPlannerServiceImpl implements SearchPlannerService {
+public class SearchPlannerServiceImpl extends DateCommonService implements SearchPlannerService {
 
     private final UserRepository userRepository;
     private final DailyPlannerRepository dailyPlannerRepository;
@@ -47,23 +45,8 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
     private final WeeklyTodoRepository weeklyTodoRepository;
     private final SocialRepository socialRepository;
 
-    private String localDateTimeToString(final LocalDateTime time) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return time.format(formatter);
-    }
-
-    private String localDateToString(final LocalDate date) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(formatter);
-    }
-
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
-    }
-
     private Dday getDday(final User user) {
-        final Date today = Date.valueOf(LocalDate.now());
+        final LocalDate today = LocalDate.now();
         Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
         if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
         return dday;
@@ -89,7 +72,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
 
     private void checkValidWeek(final String startDateStr, final String endDateStr) {
         if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1
-                || Period.between(Date.valueOf(startDateStr).toLocalDate(), Date.valueOf(endDateStr).toLocalDate()).getDays() != 6) {
+                || Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
     }
@@ -105,7 +88,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
     private List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
         final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
         checkValidWeek(startDate, endDate);
-        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, Date.valueOf(startDate), Date.valueOf(endDate));
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, stringToLocalDate(startDate), stringToLocalDate(endDate));
         if (weekly != null) {
             final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
             if (permission) {
@@ -131,7 +114,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
             final int lastDay = YearMonth.from(date).lengthOfMonth();
 
             for (int i = 0; i < lastDay; i++) {
-                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
+                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date.plusDays(i));
                 int todoCount = 0;
                 int dayStatus = 0;
                 if (dailyPlanner != null) {
@@ -173,7 +156,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
     private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
         final List<WeeklyPlannerDailyResponse> dayList = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date.plusDays(i)));
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date.plusDays(i));
             final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
             if (dailyPlanner == null || !permission) {
                 dayList.add(WeeklyPlannerDailyResponse.builder()
@@ -210,7 +193,7 @@ public class SearchPlannerServiceImpl implements SearchPlannerService {
     public SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date) {
         checkValidDate(date);
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, stringToLocalDate(date));
         final Dday dday = getDday(user);
         int totalMinutes = 0;
         if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {
