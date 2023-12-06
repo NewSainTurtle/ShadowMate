@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,15 +32,10 @@ class WeeklyTodoRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    private final LocalDate startDay = stringToLocalDate("2023-10-09");
-    private final LocalDate endDay = stringToLocalDate("2023-10-15");
+    private final String startDay = "2023-10-09";
+    private final String endDay = "2023-10-15";
     private Weekly weekly;
     private final String weeklyTodoContent = "지원서 작성하기";
-
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
-    }
 
     @BeforeEach
     void init() {

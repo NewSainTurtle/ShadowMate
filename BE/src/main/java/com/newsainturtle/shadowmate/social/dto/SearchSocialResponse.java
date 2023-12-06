@@ -3,8 +3,6 @@ package com.newsainturtle.shadowmate.social.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
-
 @Getter
 @Builder
 public class SearchSocialResponse {
@@ -13,7 +11,7 @@ public class SearchSocialResponse {
 
     private String socialImage;
 
-    private LocalDate dailyPlannerDay;
+    private String dailyPlannerDay;
 
     private long userId;
 

@@ -27,8 +27,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +66,7 @@ class SocialControllerTest{
     final String date = "2023-10-30";
     final String Image = "testImage";
     final DailyPlanner dailyPlanner = DailyPlanner.builder()
-            .dailyPlannerDay(stringToLocalDate(date))
+            .dailyPlannerDay(date)
             .user(user1)
             .build();
     final Social social = Social.builder()
@@ -76,11 +74,6 @@ class SocialControllerTest{
             .dailyPlanner(dailyPlanner)
             .socialImage(Image)
             .build();
-
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
-    }
 
     @BeforeEach
     public void init() {

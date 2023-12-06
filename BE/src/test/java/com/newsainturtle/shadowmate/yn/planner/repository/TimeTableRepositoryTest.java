@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -44,11 +43,6 @@ class TimeTableRepositoryTest {
     private Todo todo;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
-    }
-
     @BeforeEach
     void init() {
         user = userRepository.save(User.builder()
@@ -60,7 +54,7 @@ class TimeTableRepositoryTest {
                 .withdrawal(false)
                 .build());
         dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate("2023-09-25"))
+                .dailyPlannerDay("2023-09-25")
                 .user(user)
                 .build());
         todo = todoRepository.save(Todo.builder()

@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,11 +31,6 @@ class DailyPlannerRepositoryTest {
 
     private final String date = "2023-09-25";
 
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
-    }
-
     @BeforeEach
     void init() {
         user = userRepository.save(User.builder()
@@ -54,7 +47,7 @@ class DailyPlannerRepositoryTest {
     void 일일플래너등록() {
         //given
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate(date))
+                .dailyPlannerDay(date)
                 .user(user)
                 .build();
 
@@ -63,7 +56,7 @@ class DailyPlannerRepositoryTest {
 
         //then
         assertThat(saveDailyPlanner).isNotNull();
-        assertThat(saveDailyPlanner.getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+        assertThat(saveDailyPlanner.getDailyPlannerDay()).isEqualTo(date);
         assertThat(saveDailyPlanner.getUser()).isEqualTo(user);
         assertThat(saveDailyPlanner.getRetrospection()).isNull();
         assertThat(saveDailyPlanner.getRetrospectionImage()).isNull();
@@ -78,7 +71,7 @@ class DailyPlannerRepositoryTest {
             //given
 
             //when
-            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
 
             //then
             assertThat(findDailyPlanner).isNull();
@@ -88,17 +81,17 @@ class DailyPlannerRepositoryTest {
         void 개별조회_일일플래너있음() {
             //given
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .build();
             dailyPlannerRepository.save(dailyPlanner);
 
             //when
-            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
 
             //then
             assertThat(findDailyPlanner).isNotNull();
-            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(date);
             assertThat(findDailyPlanner.getUser()).isEqualTo(user);
             assertThat(findDailyPlanner.getRetrospection()).isNull();
             assertThat(findDailyPlanner.getRetrospectionImage()).isNull();
@@ -110,11 +103,11 @@ class DailyPlannerRepositoryTest {
         void 전체조회() {
             //given
             final DailyPlanner dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .build());
             final DailyPlanner dailyPlanner2 = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate("2023-09-26"))
+                    .dailyPlannerDay("2023-09-26")
                     .user(user)
                     .build());
 
@@ -133,11 +126,11 @@ class DailyPlannerRepositoryTest {
             //given
             final String todayGoal = "오늘의 다짐!!!";
             dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .build());
             //when
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                     .id(dailyPlanner.getId())
                     .createTime(dailyPlanner.getCreateTime())
@@ -149,11 +142,11 @@ class DailyPlannerRepositoryTest {
                     .retrospectionImage(dailyPlanner.getRetrospectionImage())
                     .build();
             dailyPlannerRepository.save(changeDailyPlanner);
-            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
 
             //then
             assertThat(findDailyPlanner).isNotNull();
-            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(date);
             assertThat(findDailyPlanner.getUser()).isEqualTo(user);
             assertThat(findDailyPlanner.getTodayGoal()).isEqualTo(todayGoal);
             assertThat(findDailyPlanner.getTomorrowGoal()).isNull();
@@ -167,11 +160,11 @@ class DailyPlannerRepositoryTest {
             //given
             final String tomorrowGoal = "이제는 더이상 물러나 곳이 없다.";
             dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .build());
             //when
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                     .id(dailyPlanner.getId())
                     .createTime(dailyPlanner.getCreateTime())
@@ -183,11 +176,11 @@ class DailyPlannerRepositoryTest {
                     .retrospectionImage(dailyPlanner.getRetrospectionImage())
                     .build();
             dailyPlannerRepository.save(changeDailyPlanner);
-            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
 
             //then
             assertThat(findDailyPlanner).isNotNull();
-            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(date);
             assertThat(findDailyPlanner.getUser()).isEqualTo(user);
             assertThat(findDailyPlanner.getTodayGoal()).isNull();
             assertThat(findDailyPlanner.getTomorrowGoal()).isEqualTo(tomorrowGoal);
@@ -201,11 +194,11 @@ class DailyPlannerRepositoryTest {
             //given
             final String retrospection = "오늘 계획했던 일을 모두 끝냈다!!! 신남~~";
             dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .build());
             //when
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                     .id(dailyPlanner.getId())
                     .createTime(dailyPlanner.getCreateTime())
@@ -217,11 +210,11 @@ class DailyPlannerRepositoryTest {
                     .retrospectionImage(dailyPlanner.getRetrospectionImage())
                     .build();
             dailyPlannerRepository.save(changeDailyPlanner);
-            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
 
             //then
             assertThat(findDailyPlanner).isNotNull();
-            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(date);
             assertThat(findDailyPlanner.getUser()).isEqualTo(user);
             assertThat(findDailyPlanner.getTodayGoal()).isNull();
             assertThat(findDailyPlanner.getTomorrowGoal()).isNull();
@@ -235,12 +228,12 @@ class DailyPlannerRepositoryTest {
             //given
             final String retrospectionImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
             dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .retrospectionImage(retrospectionImage)
                     .build());
             //when
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                     .id(dailyPlanner.getId())
                     .createTime(dailyPlanner.getCreateTime())
@@ -252,11 +245,11 @@ class DailyPlannerRepositoryTest {
                     .retrospectionImage(null)
                     .build();
             dailyPlannerRepository.save(changeDailyPlanner);
-            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
 
             //then
             assertThat(findDailyPlanner).isNotNull();
-            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(date);
             assertThat(findDailyPlanner.getUser()).isEqualTo(user);
             assertThat(findDailyPlanner.getTodayGoal()).isNull();
             assertThat(findDailyPlanner.getTomorrowGoal()).isNull();
@@ -270,11 +263,11 @@ class DailyPlannerRepositoryTest {
             //given
             final String retrospectionImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
             dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .build());
             //when
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
             final DailyPlanner changeDailyPlanner = DailyPlanner.builder()
                     .id(dailyPlanner.getId())
                     .createTime(dailyPlanner.getCreateTime())
@@ -286,11 +279,11 @@ class DailyPlannerRepositoryTest {
                     .retrospectionImage(retrospectionImage)
                     .build();
             dailyPlannerRepository.save(changeDailyPlanner);
-            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+            final DailyPlanner findDailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
 
             //then
             assertThat(findDailyPlanner).isNotNull();
-            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+            assertThat(findDailyPlanner.getDailyPlannerDay()).isEqualTo(date);
             assertThat(findDailyPlanner.getUser()).isEqualTo(user);
             assertThat(findDailyPlanner.getTodayGoal()).isNull();
             assertThat(findDailyPlanner.getTomorrowGoal()).isNull();

@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,11 +34,6 @@ class DdayRepositoryTest {
     private final SocialType socialType = SocialType.BASIC;
     private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
 
-    private LocalDate stringToLocalDate(final String dateStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateStr, formatter);
-    }
-
     @BeforeEach
     void init() {
         user = userRepository.save(User.builder()
@@ -52,7 +46,7 @@ class DdayRepositoryTest {
                 .build());
         dday = Dday.builder()
                 .ddayTitle("시험")
-                .ddayDate(stringToLocalDate("2023-02-09"))
+                .ddayDate("2023-02-09")
                 .user(user)
                 .build();
     }
@@ -77,7 +71,7 @@ class DdayRepositoryTest {
         ddayRepository.save(dday);
         ddayRepository.save(Dday.builder()
                 .ddayTitle("생일")
-                .ddayDate(stringToLocalDate("2024-09-14"))
+                .ddayDate("2024-09-14")
                 .user(user)
                 .build());
 
@@ -135,7 +129,7 @@ class DdayRepositoryTest {
                 .id(saveDday.getId())
                 .createTime(saveDday.getCreateTime())
                 .ddayTitle("생일")
-                .ddayDate(stringToLocalDate("2023-02-11"))
+                .ddayDate("2023-02-11")
                 .user(user)
                 .build();
         //when
@@ -145,15 +139,15 @@ class DdayRepositoryTest {
         //then
         assertThat(findDday).isNotNull();
         assertThat(findDday.getDdayTitle()).isEqualTo("생일");
-        assertThat(findDday.getDdayDate()).isEqualTo(stringToLocalDate("2023-02-11"));
+        assertThat(findDday.getDdayDate()).isEqualTo("2023-02-11");
     }
 
 
     @Nested
     class 디데이조회_오늘과가까운날짜 {
-        final LocalDate test = stringToLocalDate("2023-02-09");
-        final LocalDate today = LocalDate.now();
-        final LocalDate christmas = LocalDate.of(LocalDate.now().getYear() + 1, 12, 25);
+        final String test = "2023-02-09";
+        final String today = String.valueOf(LocalDate.now());
+        final String christmas = String.valueOf(LocalDate.of(LocalDate.now().getYear() + 1, 12, 25));
 
         @Test
         void 오늘미래과거_디데이데이터가있는경우() {
@@ -212,12 +206,12 @@ class DdayRepositoryTest {
             ddayRepository.save(dday);
             ddayRepository.save(Dday.builder()
                     .ddayTitle("기념")
-                    .ddayDate(stringToLocalDate("2020-01-27"))
+                    .ddayDate("2020-01-27")
                     .user(user)
                     .build());
             ddayRepository.save(Dday.builder()
                     .ddayTitle("새해")
-                    .ddayDate(stringToLocalDate("2023-01-01"))
+                    .ddayDate("2023-01-01")
                     .user(user)
                     .build());
 

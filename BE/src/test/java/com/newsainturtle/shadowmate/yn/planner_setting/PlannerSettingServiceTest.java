@@ -389,7 +389,7 @@ class PlannerSettingServiceTest extends DateCommonService {
         final Dday dday = Dday.builder()
                 .id(1L)
                 .ddayTitle("생일")
-                .ddayDate(stringToLocalDate("2023-02-09"))
+                .ddayDate("2023-02-09")
                 .user(user)
                 .build();
 
@@ -436,7 +436,7 @@ class PlannerSettingServiceTest extends DateCommonService {
                 final List<Dday> list = new ArrayList<>();
                 list.add(Dday.builder()
                         .ddayTitle("시험")
-                        .ddayDate(stringToLocalDate("2024-09-14"))
+                        .ddayDate("2024-09-14")
                         .user(user)
                         .build());
                 list.add(dday);
