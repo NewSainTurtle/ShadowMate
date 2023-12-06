@@ -44,7 +44,7 @@ const Popup = ({ visible }: PopupProps) => {
             <Text types="medium" bold>
               ShadowMate
               <br />
-              이용자 만족도 조사
+              서비스 만족도 조사
             </Text>
           </div>
           <div className={styles["popup__main-wrapper"]}>
