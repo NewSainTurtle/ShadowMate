@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.yn.planner;
 
+import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.AddWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.RemoveWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoContentRequest;
@@ -22,7 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class WeeklyPlannerServiceTest {
+class WeeklyPlannerServiceTest extends DateCommonService {
 
     @InjectMocks
     private WeeklyPlannerServiceImpl weeklyPlannerServiceImpl;
@@ -58,7 +59,7 @@ class WeeklyPlannerServiceTest {
             .plannerAccessScope(plannerAccessScope)
             .withdrawal(false)
             .build();
-
+    
     @Nested
     class 주차별할일등록 {
 
@@ -104,8 +105,8 @@ class WeeklyPlannerServiceTest {
                     .build();
             final Weekly weekly = Weekly.builder()
                     .id(1L)
-                    .startDay(Date.valueOf(startDay))
-                    .endDay(Date.valueOf(endDay))
+                    .startDay(stringToLocalDate(startDay))
+                    .endDay(stringToLocalDate(endDay))
                     .user(user)
                     .build();
 
@@ -116,7 +117,7 @@ class WeeklyPlannerServiceTest {
                     .weeklyTodoStatus(false)
                     .build();
 
-            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).save(any(WeeklyTodo.class));
 
             //when
@@ -126,7 +127,7 @@ class WeeklyPlannerServiceTest {
             assertThat(addWeeklyTodoResponse.getWeeklyTodoId()).isNotNull();
 
             //verify
-            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             verify(weeklyTodoRepository, times(1)).save(any(WeeklyTodo.class));
         }
 
@@ -137,8 +138,8 @@ class WeeklyPlannerServiceTest {
         final String changeWeeklyTodoContent = "자기소개서 첨삭하기";
         final Weekly weekly = Weekly.builder()
                 .id(1L)
-                .startDay(Date.valueOf(startDay))
-                .endDay(Date.valueOf(endDay))
+                .startDay(stringToLocalDate(startDay))
+                .endDay(stringToLocalDate(endDay))
                 .user(user)
                 .build();
         final WeeklyTodo weeklyTodo = WeeklyTodo.builder()
@@ -192,7 +193,7 @@ class WeeklyPlannerServiceTest {
         void 실패_유효하지않은위클리() {
             //given
 
-            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
 
             //when
             final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoContent(user, updateWeeklyTodoContentRequest));
@@ -205,7 +206,7 @@ class WeeklyPlannerServiceTest {
         void 실패_유효하지않은위클리할일() {
             //given
 
-            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             doReturn(null).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
 
             //when
@@ -219,7 +220,7 @@ class WeeklyPlannerServiceTest {
         void 성공() {
             //given
 
-            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
 
             //when
@@ -228,7 +229,7 @@ class WeeklyPlannerServiceTest {
             //then
 
             //verify
-            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             verify(weeklyTodoRepository, times(1)).findByIdAndWeekly(any(Long.class), any(Weekly.class));
         }
 
@@ -238,8 +239,8 @@ class WeeklyPlannerServiceTest {
     class 주차별할일상태수정 {
         final Weekly weekly = Weekly.builder()
                 .id(1L)
-                .startDay(Date.valueOf(startDay))
-                .endDay(Date.valueOf(endDay))
+                .startDay(stringToLocalDate(startDay))
+                .endDay(stringToLocalDate(endDay))
                 .user(user)
                 .build();
         final WeeklyTodo weeklyTodo = WeeklyTodo.builder()
@@ -293,7 +294,7 @@ class WeeklyPlannerServiceTest {
         void 실패_유효하지않은위클리() {
             //given
 
-            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
 
             //when
             final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.updateWeeklyTodoStatus(user, updateWeeklyTodoStatusRequest));
@@ -306,7 +307,7 @@ class WeeklyPlannerServiceTest {
         void 실패_유효하지않은위클리할일() {
             //given
 
-            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             doReturn(null).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
 
             //when
@@ -320,7 +321,7 @@ class WeeklyPlannerServiceTest {
         void 성공() {
             //given
 
-            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             doReturn(weeklyTodo).when(weeklyTodoRepository).findByIdAndWeekly(any(Long.class), any(Weekly.class));
 
             //when
@@ -329,7 +330,7 @@ class WeeklyPlannerServiceTest {
             //then
 
             //verify
-            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             verify(weeklyTodoRepository, times(1)).findByIdAndWeekly(any(Long.class), any(Weekly.class));
         }
 
@@ -379,7 +380,7 @@ class WeeklyPlannerServiceTest {
         @Test
         void 실패_유효하지않은위클리() {
             //given
-            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
 
             //when
             final PlannerException result = assertThrows(PlannerException.class, () -> weeklyPlannerServiceImpl.removeWeeklyTodo(user, removeWeeklyTodoRequest));
@@ -393,12 +394,12 @@ class WeeklyPlannerServiceTest {
             //given
             final Weekly weekly = Weekly.builder()
                     .id(1L)
-                    .startDay(Date.valueOf(startDay))
-                    .endDay(Date.valueOf(endDay))
+                    .startDay(stringToLocalDate(startDay))
+                    .endDay(stringToLocalDate(endDay))
                     .user(user)
                     .build();
 
-            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
 
             //when
             weeklyPlannerServiceImpl.removeWeeklyTodo(user, removeWeeklyTodoRequest);
@@ -406,7 +407,7 @@ class WeeklyPlannerServiceTest {
             //then
 
             //verify
-            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(Date.class), any(Date.class));
+            verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(LocalDate.class), any(LocalDate.class));
             verify(weeklyTodoRepository, times(1)).deleteByIdAndWeekly(any(Long.class), any(Weekly.class));
         }
 

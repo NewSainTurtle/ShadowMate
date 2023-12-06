@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.yn.planner_setting;
 
+import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
@@ -29,7 +30,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PlannerSettingServiceTest {
+class PlannerSettingServiceTest extends DateCommonService {
 
     @InjectMocks
     private PlannerSettingServiceImpl plannerSettingService;
@@ -389,7 +389,7 @@ class PlannerSettingServiceTest {
         final Dday dday = Dday.builder()
                 .id(1L)
                 .ddayTitle("생일")
-                .ddayDate(Date.valueOf("2023-02-09"))
+                .ddayDate(stringToLocalDate("2023-02-09"))
                 .user(user)
                 .build();
 
@@ -436,7 +436,7 @@ class PlannerSettingServiceTest {
                 final List<Dday> list = new ArrayList<>();
                 list.add(Dday.builder()
                         .ddayTitle("시험")
-                        .ddayDate(Date.valueOf("2024-09-14"))
+                        .ddayDate(stringToLocalDate("2024-09-14"))
                         .user(user)
                         .build());
                 list.add(dday);

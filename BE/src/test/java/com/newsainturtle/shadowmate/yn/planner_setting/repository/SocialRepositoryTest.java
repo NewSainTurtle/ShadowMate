@@ -15,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +40,11 @@ class SocialRepositoryTest {
     private DailyPlanner dailyPlanner2;
     private DailyPlanner dailyPlanner3;
 
+    private LocalDate stringToLocalDate(final String dateStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
+
     @BeforeEach
     void init() {
         user = userRepository.save(User.builder()
@@ -50,15 +56,15 @@ class SocialRepositoryTest {
                 .withdrawal(false)
                 .build());
         dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-25"))
+                .dailyPlannerDay(stringToLocalDate("2023-09-25"))
                 .user(user)
                 .build());
         dailyPlanner2 = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-26"))
+                .dailyPlannerDay(stringToLocalDate("2023-09-26"))
                 .user(user)
                 .build());
         dailyPlanner3 = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf("2023-09-27"))
+                .dailyPlannerDay(stringToLocalDate("2023-09-27"))
                 .user(user)
                 .build());
     }

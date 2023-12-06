@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.kh.social;
 
+import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepository;
 import com.newsainturtle.shadowmate.social.dto.SearchNicknamePublicDailyPlannerRequest;
@@ -29,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SocialServiceTest {
+class SocialServiceTest extends DateCommonService {
 
     @InjectMocks
     private SocialServiceImpl socialService;
@@ -54,7 +55,7 @@ class SocialServiceTest {
             .withdrawal(false)
             .build();
     final DailyPlanner dailyPlanner = DailyPlanner.builder()
-            .dailyPlannerDay(Date.valueOf(date))
+            .dailyPlannerDay(stringToLocalDate(date))
             .user(user1)
             .build();
     final Social social = Social.builder()
@@ -143,7 +144,7 @@ class SocialServiceTest {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date2))
+                .dailyPlannerDay(stringToLocalDate(date2))
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
@@ -163,8 +164,8 @@ class SocialServiceTest {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(Date.valueOf(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
     }
 
     @Test
@@ -176,7 +177,7 @@ class SocialServiceTest {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date2))
+                .dailyPlannerDay(stringToLocalDate(date2))
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
@@ -199,8 +200,8 @@ class SocialServiceTest {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(Date.valueOf(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
     }
 
     @Test
@@ -354,7 +355,7 @@ class SocialServiceTest {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date2))
+                .dailyPlannerDay(stringToLocalDate(date2))
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
@@ -375,8 +376,8 @@ class SocialServiceTest {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(Date.valueOf(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
     }
 
     @Test
@@ -393,7 +394,7 @@ class SocialServiceTest {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date2))
+                .dailyPlannerDay(stringToLocalDate(date2))
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
@@ -417,8 +418,8 @@ class SocialServiceTest {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(Date.valueOf(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(Date.valueOf(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
     }
 
     @Test
@@ -427,7 +428,7 @@ class SocialServiceTest {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date))
+                .dailyPlannerDay(stringToLocalDate(date))
                 .user(user1)
                 .build();
         final Social social = Social.builder()
@@ -451,7 +452,7 @@ class SocialServiceTest {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date))
+                .dailyPlannerDay(stringToLocalDate(date))
                 .user(user1)
                 .build();
         final Social social = Social.builder()
