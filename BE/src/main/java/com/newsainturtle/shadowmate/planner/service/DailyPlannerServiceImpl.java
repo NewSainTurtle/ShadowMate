@@ -42,10 +42,10 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     private final SocialRepository socialRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
-        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
         if (dailyPlanner == null) {
             dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(stringToLocalDate(date))
+                    .dailyPlannerDay(date)
                     .user(user)
                     .build());
         }
@@ -53,7 +53,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     }
 
     private DailyPlanner getDailyPlanner(final User user, final String date) {
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
         if (dailyPlanner == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
         }
@@ -84,7 +84,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
 
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
 
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, stringToLocalDate(date));
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
         if (dailyPlanner == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
         }
