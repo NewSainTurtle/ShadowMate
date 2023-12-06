@@ -38,7 +38,6 @@ const friendSlice = createSlice({
       state.followState = payload;
     },
     setFollowingList: (state, { payload }: PayloadAction<followingType[]>) => {
-      console.log(payload);
       state.followingList = payload;
     },
     clearFriendInfo: (state) => {
