@@ -1,0 +1,133 @@
+@use "@styles/common/Text.module.scss";
+$color-dark: #3b3b3e;
+$color-blue: #4376d0;
+$color-white: #ffffff;
+$color-title: #cde1ff;
+
+.popup {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  &:focus-visible {
+    outline: none;
+  }
+
+  &__container {
+    position: relative;
+    width: 26.3em;
+    border-radius: 25px;
+    background-color: $color-title;
+    align-items: center;
+  }
+
+  &__title-wrapper {
+    background-color: $color-blue;
+    border-radius: 25px 25px 0 0;
+    display: flex;
+    padding: 1.5em;
+    box-sizing: border-box;
+    > span {
+      color: #edf2ff;
+    }
+  }
+
+  &__main-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2em;
+    padding: 1em;
+    box-sizing: border-box;
+
+    > .popup__commentary {
+      color: #3b3b3e;
+      letter-spacing: -0.0375em;
+      padding: 0em 0.8em;
+      box-sizing: border-box;
+    }
+  }
+
+  &__content-wrapper {
+    width: 100%;
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-template-rows: repeat(4, 1fr);
+    justify-content: space-around;
+    align-items: baseline;
+    background-color: $color-white;
+    border-radius: 20px;
+    padding: 1em;
+    box-sizing: border-box;
+
+    > .content-title {
+      display: inline-flex;
+      justify-content: center;
+      height: fit-content;
+      width: 4em;
+      background-color: #94c0f4;
+      padding: 0.3em 0;
+      box-sizing: border-box;
+      border-radius: 15px;
+      color: black;
+
+      > div {
+        @extend .text-small;
+        width: 3.5em;
+        align-items: center;
+        font-weight: 600;
+        text-align: justify;
+        &::after {
+          content: "";
+          display: inline-block;
+          width: 100%;
+        }
+      }
+    }
+
+    > span {
+      color: black;
+      line-height: 135%;
+      &:nth-child(6) {
+        display: inline;
+        width: max-content;
+        box-shadow: inset 0 1.3em 0 #ffeb3b;
+      }
+    }
+  }
+
+  &__button {
+    &-questionnaire {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: $color-blue;
+      padding: 0.6em 1.5em;
+      box-sizing: border-box;
+      border-radius: 0.625em;
+      cursor: pointer;
+
+      > span:nth-child(1) {
+        color: $color-white;
+        font-weight: 600;
+      }
+    }
+
+    &-close {
+      position: absolute;
+      width: 100%;
+      top: -2em;
+      padding: 0.5em 1.5em;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+
+      > span {
+        @extend .text-small;
+        color: $color-white;
+        cursor: pointer;
+      }
+    }
+  }
+}
