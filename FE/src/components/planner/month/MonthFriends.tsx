@@ -1,27 +1,29 @@
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
-import FriendProfileIcon, { ProfileIconInfo } from "@components/common/FriendProfileIcon";
+import FriendProfileIcon from "@components/common/FriendProfileIcon";
 import AddIcon from "@mui/icons-material/Add";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { followingType } from "@util/friend.interface";
-import { followApi } from "@api/Api";
 import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
+import { ProfileConfig } from "@components/common/FriendProfile";
+import { selectFollowingList } from "@store/friendSlice";
 
 const MonthFriends = () => {
   const navigator = useNavigate();
   const userId = useAppSelector(selectUserId);
   const userInfo = useAppSelector(selectUserInfo);
-  const userProfile: ProfileIconInfo = {
+  const userProfile: ProfileConfig = {
     userId: userId,
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,
     statusMessage: userInfo.statusMessage,
   };
-  const [followingData, setFollowingData] = useState<followingType[]>([]);
+  const followingList = useAppSelector(selectFollowingList);
+
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [isDrag, setIsDrag] = useState<boolean>(false);
   const [startX, setStartX] = useState<number>(0);
@@ -45,23 +47,9 @@ const MonthFriends = () => {
   const delay = 100;
   const onThrottleDragMove = throttle(onDragMove, delay);
 
-  const getFollowing = () => {
-    followApi
-      .getFollowing(userId)
-      .then((res) => {
-        const response = res.data.data;
-        setFollowingData(response);
-      })
-      .catch((err) => console.error(err));
-  };
-
   const handleBtnAdd = () => {
     navigator("/search");
   };
-
-  useEffect(() => {
-    getFollowing();
-  }, []);
 
   return (
     <div className={styles["friend"]}>
@@ -79,9 +67,9 @@ const MonthFriends = () => {
         onMouseLeave={onDragEnd}
       >
         <FriendProfileIcon profile={userProfile} />
-        {followingData && followingData.length > 0 && (
+        {followingList && followingList.length > 0 && (
           <>
-            {followingData.map((item: followingType, key: number) => {
+            {followingList.map((item: followingType, key: number) => {
               const { followingId, nickname, profileImage, statusMessage } = item;
               const followInfo = {
                 userId: followingId,
