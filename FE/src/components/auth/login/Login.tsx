@@ -8,6 +8,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
 import { useAppDispatch } from "@hooks/hook";
 import { setIsGoogle, setLogin, setUserInfo } from "@store/authSlice";
+import { setPopupOpen } from "@store/modalSlice";
 
 const getCookie = (name: string) => {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
@@ -67,6 +68,8 @@ const Login = () => {
           dispatch(setUserInfo(res.data.data));
           navigator("/month");
         });
+
+        dispatch(setPopupOpen());
       })
       .catch((err) => {
         setShowAlert(true);

@@ -2,27 +2,29 @@ import React, { useLayoutEffect } from "react";
 import styles from "@styles/common/Popup.module.scss";
 import Modal from "@mui/material/Modal";
 import Text from "@components/common/Text";
+import { useAppDispatch } from "@hooks/hook";
+import { setPopupClose, setPopupOpen } from "@store/modalSlice";
 
 interface PopupProps {
   visible: boolean;
-  onOpen: () => void;
-  onClose: () => void;
 }
 
-const Popup = ({ visible, onOpen, onClose }: PopupProps) => {
+const Popup = ({ visible }: PopupProps) => {
   if (!visible) return null;
 
-  useLayoutEffect(() => {
-    const VISITED_BEFORE_DATE = localStorage.getItem("popup_visible"); // 이전방문 날짜
-    const VISITED_NOW_DATE = String(new Date().getDate());
+  const dispatch = useAppDispatch();
+  const VISITED_BEFORE_DATE = localStorage.getItem("popup_visible"); // 이전방문 날짜
+  const VISITED_NOW_DATE = String(new Date().getDate());
+  const onOpen = () => dispatch(setPopupOpen());
+  const onClose = () => dispatch(setPopupClose());
 
-    if (VISITED_BEFORE_DATE !== null) {
-      if (VISITED_BEFORE_DATE == VISITED_NOW_DATE) {
-        localStorage.removeItem("popup_visible");
-        onOpen();
-      } else onClose();
-    }
-  }, []);
+  useLayoutEffect(() => {
+    if (VISITED_BEFORE_DATE == null) return;
+    if (VISITED_BEFORE_DATE == VISITED_NOW_DATE) {
+      localStorage.removeItem("popup_visible");
+      onOpen();
+    } else onClose();
+  }, [VISITED_BEFORE_DATE]);
 
   const Dayclose = () => {
     onClose();
@@ -35,7 +37,7 @@ const Popup = ({ visible, onOpen, onClose }: PopupProps) => {
       <div className={styles["popup"]}>
         <div className={styles["popup__button-close"]}>
           <span onClick={Dayclose}>오늘 하루 보지 않기</span>
-          <span onClick={onClose}> 닫기</span>
+          <span onClick={onClose}>닫기</span>
         </div>
         <div className={styles["popup__container"]}>
           <div className={styles["popup__title-wrapper"]}>
@@ -93,4 +95,4 @@ const Popup = ({ visible, onOpen, onClose }: PopupProps) => {
   );
 };
 
-export default React.memo(Popup);
+export default Popup;
