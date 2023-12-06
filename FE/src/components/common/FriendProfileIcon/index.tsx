@@ -2,19 +2,13 @@ import React from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import Avatar from "@components/common/Avatar";
+import { ProfileConfig } from "@components/common/FriendProfile";
 import { useAppDispatch } from "@hooks/hook";
 import { setFriendInfo } from "@store/friendSlice";
 import { useNavigate } from "react-router-dom";
 
-export interface ProfileIconInfo {
-  userId: number;
-  nickname: string;
-  profileImage: string;
-  statusMessage: string;
-}
-
 interface Props {
-  profile: ProfileIconInfo;
+  profile: ProfileConfig;
 }
 
 const FriendProfileIcon = ({ profile }: Props) => {
