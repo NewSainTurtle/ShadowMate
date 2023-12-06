@@ -83,7 +83,13 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const handleSaveStatusTodo = () => {
     if (text === "") return;
     if (todoStatus == "완료") {
-      deleteTimeTable(todoItem.todoId, "미완료");
+      if (todoItem.timeTable && todoItem.timeTable.startTime != "") deleteTimeTable(todoItem.todoId, "미완료");
+      else {
+        updateTodo(idx, {
+          ...todoItem,
+          todoStatus: "미완료",
+        });
+      }
     } else {
       updateTodo(idx, {
         ...todoItem,
