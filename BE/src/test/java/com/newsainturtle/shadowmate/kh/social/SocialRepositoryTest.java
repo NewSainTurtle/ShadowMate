@@ -14,14 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class SocialRepositoryTest {
+class SocialRepositoryTest{
 
     @Autowired
     private UserRepository userRepository;
@@ -41,6 +42,12 @@ class SocialRepositoryTest {
             .profileImage("TestprofileImage")
             .withdrawal(false)
             .build();
+
+    private LocalDate stringToLocalDate(final String dateStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
+
     @BeforeEach
     public void init() {
         userRepository.save(user1);
@@ -52,7 +59,7 @@ class SocialRepositoryTest {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date))
+                .dailyPlannerDay(stringToLocalDate(date))
                 .user(user1)
                 .build();
         final Social social = Social.builder()
@@ -75,7 +82,7 @@ class SocialRepositoryTest {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date))
+                .dailyPlannerDay(stringToLocalDate(date))
                 .user(user1)
                 .build();
 
@@ -96,7 +103,7 @@ class SocialRepositoryTest {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date))
+                .dailyPlannerDay(stringToLocalDate(date))
                 .user(user1)
                 .build();
         final Social social = Social.builder()
@@ -121,7 +128,7 @@ class SocialRepositoryTest {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date))
+                .dailyPlannerDay(stringToLocalDate(date))
                 .user(user1)
                 .build();
         final Social social = Social.builder()

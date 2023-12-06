@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner.service;
 
+import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
@@ -25,14 +26,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DailyPlannerServiceImpl implements DailyPlannerService {
+public class DailyPlannerServiceImpl extends DateCommonService implements DailyPlannerService {
 
     private final DailyPlannerRepository dailyPlannerRepository;
     private final TodoRepository todoRepository;
@@ -43,10 +42,10 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     private final SocialRepository socialRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
-        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
+        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
         if (dailyPlanner == null) {
             dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(Date.valueOf(date))
+                    .dailyPlannerDay(stringToLocalDate(date))
                     .user(user)
                     .build());
         }
@@ -54,7 +53,7 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
     }
 
     private DailyPlanner getDailyPlanner(final User user, final String date) {
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, Date.valueOf(date));
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, stringToLocalDate(date));
         if (dailyPlanner == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
         }
@@ -85,16 +84,11 @@ public class DailyPlannerServiceImpl implements DailyPlannerService {
 
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
 
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, Date.valueOf(date));
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, stringToLocalDate(date));
         if (dailyPlanner == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
         }
         return dailyPlanner;
-    }
-
-    private LocalDateTime stringToLocalDateTime(final String timeStr) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(timeStr, formatter);
     }
 
     private void checkValidDateTime(final String date, final LocalDateTime startTime, final LocalDateTime endTime) {

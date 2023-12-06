@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
 
 @SuperBuilder
 @Entity
@@ -19,7 +19,7 @@ import java.sql.Date;
 public class Dday extends CommonEntity {
 
     @Column(name = "dday_date")
-    private Date ddayDate;
+    private LocalDate ddayDate;
 
     @Column(name = "dday_title", length = 40, nullable = false)
     private String ddayTitle;
@@ -28,7 +28,7 @@ public class Dday extends CommonEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void updateDdayDateAndTitle(final Date ddayDate,
+    public void updateDdayDateAndTitle(final LocalDate ddayDate,
                                        final String ddayTitle) {
         this.ddayDate = ddayDate;
         this.ddayTitle = ddayTitle;

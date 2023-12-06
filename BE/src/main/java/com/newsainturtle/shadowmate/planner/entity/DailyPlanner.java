@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
 
 @SuperBuilder
 @Entity
@@ -19,7 +19,7 @@ import java.sql.Date;
 public class DailyPlanner extends CommonEntity {
 
     @Column(name = "daily_planner_day", nullable = false)
-    private Date dailyPlannerDay;
+    private LocalDate dailyPlannerDay;
 
     @Column(name = "today_goal", length = 100)
     private String todayGoal;

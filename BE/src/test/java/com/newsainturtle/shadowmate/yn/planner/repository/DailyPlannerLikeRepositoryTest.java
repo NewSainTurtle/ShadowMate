@@ -15,7 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class DailyPlannerLikeRepositoryTest {
+class DailyPlannerLikeRepositoryTest{
 
     @Autowired
     private DailyPlannerLikeRepository dailyPlannerLikeRepository;
@@ -42,6 +43,11 @@ class DailyPlannerLikeRepositoryTest {
     private final SocialType socialType = SocialType.BASIC;
     private final PlannerAccessScope plannerAccessScope = PlannerAccessScope.PUBLIC;
     private final String date = "2023-09-25";
+
+    private LocalDate stringToLocalDate(final String dateStr) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
 
     @BeforeEach
     void init() {
@@ -62,7 +68,7 @@ class DailyPlannerLikeRepositoryTest {
                 .withdrawal(false)
                 .build());
         dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay(Date.valueOf(date))
+                .dailyPlannerDay(stringToLocalDate(date))
                 .user(user1)
                 .build());
     }
@@ -204,19 +210,19 @@ class DailyPlannerLikeRepositoryTest {
             //given
             final List<Long> dailyPlannerIdList = new ArrayList<>();
             final DailyPlanner dailyPlanner1 = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(Date.valueOf("2023-10-31"))
+                    .dailyPlannerDay(stringToLocalDate("2023-10-31"))
                     .user(user1)
                     .build());
             final DailyPlanner dailyPlanner2 = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(Date.valueOf("2023-11-01"))
+                    .dailyPlannerDay(stringToLocalDate("2023-11-01"))
                     .user(user1)
                     .build());
             final DailyPlanner dailyPlanner3 = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(Date.valueOf("2023-11-02"))
+                    .dailyPlannerDay(stringToLocalDate("2023-11-02"))
                     .user(user1)
                     .build());
             final DailyPlanner dailyPlanner4 = dailyPlannerRepository.save(DailyPlanner.builder()
-                    .dailyPlannerDay(Date.valueOf("2023-11-03"))
+                    .dailyPlannerDay(stringToLocalDate("2023-11-03"))
                     .user(user1)
                     .build());
             dailyPlannerLikeRepository.save(DailyPlannerLike.builder()

@@ -5,7 +5,7 @@ import com.newsainturtle.shadowmate.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -13,6 +13,6 @@ public interface DdayRepository extends JpaRepository<Dday, Long> {
     List<Dday> findByUserOrderByDdayDateDesc(final User user);
     Dday findByUserAndId(final User user, final Long id);
     void deleteByUserAndId(final User user, final Long id);
-    Dday findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(final User user, final Date today);
-    Dday findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(final User user, final Date today);
+    Dday findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(final User user, final LocalDate today);
+    Dday findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(final User user, final LocalDate today);
 }

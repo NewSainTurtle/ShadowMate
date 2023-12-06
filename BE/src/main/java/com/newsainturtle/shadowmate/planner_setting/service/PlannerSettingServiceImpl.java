@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
+import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
@@ -25,15 +26,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PlannerSettingServiceImpl implements PlannerSettingService {
+public class PlannerSettingServiceImpl extends DateCommonService implements PlannerSettingService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryColorRepository categoryColorRepository;
@@ -153,7 +155,7 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
     @Transactional
     public AddDdayResponse addDday(final User user, final AddDdayRequest addDdayRequest) {
         final Dday dday = Dday.builder()
-                .ddayDate(Date.valueOf(addDdayRequest.getDdayDate()))
+                .ddayDate(stringToLocalDate(addDdayRequest.getDdayDate()))
                 .ddayTitle(addDdayRequest.getDdayTitle())
                 .user(user)
                 .build();
@@ -189,6 +191,6 @@ public class PlannerSettingServiceImpl implements PlannerSettingService {
         if (findDday == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY);
         }
-        findDday.updateDdayDateAndTitle(Date.valueOf(updateDdayRequest.getDdayDate()), updateDdayRequest.getDdayTitle());
+        findDday.updateDdayDateAndTitle(stringToLocalDate(updateDdayRequest.getDdayDate()), updateDdayRequest.getDdayTitle());
     }
 }

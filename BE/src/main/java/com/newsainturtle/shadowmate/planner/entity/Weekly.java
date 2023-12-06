@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
 
 @SuperBuilder
 @Entity
@@ -19,10 +19,10 @@ import java.sql.Date;
 public class Weekly extends CommonEntity {
 
     @Column(name = "start_day", nullable = false)
-    private Date startDay;
+    private LocalDate startDay;
 
     @Column(name = "end_day", nullable = false)
-    private Date endDay;
+    private LocalDate endDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
