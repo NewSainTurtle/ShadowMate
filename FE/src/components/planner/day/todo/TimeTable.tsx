@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
@@ -43,7 +43,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     selectItem.todoId,
     selectItem.category?.categoryColorCode || BASIC_CATEGORY_ITEM.categoryColorCode,
   ];
-  const todoList = useAppSelector(selectTodoList);
+  const todoList: TodoConfig[] = useAppSelector(selectTodoList);
   const makeTimeArr: tableTimeType[] = (() => {
     const plannerDate = dayjs(date).startOf("d").format("YYYY-MM-DD");
     // 오전 4시 ~ 익일 4시
@@ -70,6 +70,11 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const [deleteIdx, setDeleteIdx] = useState<number>(0);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
+  const count = useMemo(() => {
+    const status = todoList.filter((ele) => ele.todoStatus == "완료").length;
+    const saveTime = todoList.filter((ele) => ele.timeTable && ele.timeTable.startTime != "").length;
+    return { status, saveTime };
+  }, [todoList]);
 
   const mouseModule = (() => {
     const mouseDown = (e: React.MouseEvent<HTMLDivElement>, startTime: string) => {
@@ -103,11 +108,12 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
 
   const saveTimeTable = async (endTime: string) => {
     let { startTime } = selectTime;
+    if (!startTime) return;
     if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
     startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
 
     await todoList.map((item: TodoConfig) => {
-      if (!!startTime && item.timeTable && !!item.timeTable.startTime) {
+      if (item.timeTable && !!item.timeTable.startTime) {
         if (
           !(
             dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
@@ -175,13 +181,27 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     }
   }, [selectTime]);
 
-  const clickedStyle = clicked ? styles["--clicked"] : "";
-  const todoListNoneStyle = !todoList.length ? styles["--none"] : "";
+  const timeTableClick = () => {
+    if (count.status > 0) setClicked(true);
+  };
+
+  const timeTableStyle =
+    todoId != 0 && count.saveTime == 0
+      ? styles["--dragBefore"]
+      : clicked && count.saveTime == 0
+      ? styles["--clicked"]
+      : timeClick || count.saveTime != 0
+      ? styles["--drag"]
+      : !todoList.length
+      ? styles["--none"]
+      : count.status == 0
+      ? styles["--stateNone"]
+      : styles["--defalut"];
 
   return (
     <>
-      <div className={styles["timetable__container"]} onClick={() => setClicked(true)}>
-        <div className={`${styles["timetable__container-box"]} ${todoListNoneStyle} ${clickedStyle} `}>
+      <div className={styles["timetable__container"]} onClick={timeTableClick}>
+        <div className={`${styles["timetable__container-box"]} ${timeTableStyle}`}>
           <div className={styles["timetable__hours"]}>
             {Array.from({ length: 24 }).map((_, idx) => (
               <div key={idx}>{String((4 + idx) % 24).padStart(2, "0")}</div>
@@ -189,27 +209,25 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
           </div>
           <div className={styles["timetable__minutes"]}>
             {timeArr.map((item, idx) => (
-              <>
-                <div
-                  key={idx}
-                  className={styles["timetable__minutes__item"]}
-                  onMouseDown={(e) => mouseModule.mouseDown(e, item.time)}
-                  onMouseEnter={() => mouseModule.debounceMouseEnter(item.time)}
-                  onMouseUp={() => mouseModule.mouseUp(item.time)}
-                  style={{ backgroundColor: item.categoryColorCode }}
-                >
-                  {item.closeButton && (
-                    <div
-                      onClick={() => {
-                        handleDeleteModalOpen();
-                        setDeleteIdx(item.todoId);
-                      }}
-                    >
-                      <DoDisturbOnIcon />
-                    </div>
-                  )}
-                </div>
-              </>
+              <div
+                key={idx}
+                className={styles["timetable__minutes__item"]}
+                onMouseDown={(e) => mouseModule.mouseDown(e, item.time)}
+                onMouseEnter={() => mouseModule.debounceMouseEnter(item.time)}
+                onMouseUp={() => mouseModule.mouseUp(item.time)}
+                style={{ backgroundColor: item.categoryColorCode }}
+              >
+                {item.closeButton && (
+                  <div
+                    onClick={(e) => {
+                      handleDeleteModalOpen();
+                      setDeleteIdx(item.todoId);
+                    }}
+                  >
+                    <DoDisturbOnIcon />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>

@@ -72,13 +72,26 @@ const daySlice = createSlice({
     setTodoList: (state, action: PayloadAction<dayInfoConfig["dailyTodos"]>) => {
       state.info.dailyTodos = action.payload;
     },
-    setTimeTable: (state, action: PayloadAction<{ todoId: number; startTime: string; endTime: string }>) => {
+    setTimeTable: (
+      state,
+      action: PayloadAction<{
+        todoId: number;
+        startTime: string;
+        endTime: string;
+        todoStatus?: TodoConfig["todoStatus"];
+      }>,
+    ) => {
       const { todoId, startTime, endTime } = action.payload;
 
       const tempArr = state.info.dailyTodos;
       const findIndex = tempArr.findIndex((item) => item.todoId == todoId);
-      const timeTableInfo = tempArr[findIndex].timeTable as TimeTableConfig;
-      tempArr[findIndex].timeTable = { ...timeTableInfo, startTime, endTime };
+      const todoInfo = tempArr[findIndex] as TodoConfig;
+      const todoStatus = action.payload.todoStatus || todoInfo.todoStatus;
+      tempArr[findIndex] = {
+        ...todoInfo,
+        todoStatus,
+        timeTable: { ...todoInfo.timeTable!, startTime, endTime },
+      };
 
       state.info.dailyTodos = tempArr;
       state.todoItem = initialState.todoItem;

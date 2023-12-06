@@ -174,7 +174,7 @@ const DayPage = () => {
 
   return (
     <div ref={screenDivRef} className={styles["page-container"]} key={date}>
-      <Header isFriend={userId != friendUserId} socialClick={handleDownload} />
+      <Header isFriend={userId != friendUserId} socialClick={handleDownload} clicked={isClickTimeTable} />
       <div className={`${styles["page-content"]} ${isFriend ? styles["--friend"] : ""}`}>
         <Ment
           title={"오늘의 다짐"}

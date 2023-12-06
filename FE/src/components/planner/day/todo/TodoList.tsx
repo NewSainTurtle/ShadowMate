@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { BASIC_TODO_ITEM, setTodoList, selectTodoList, selectDayDate } from "@store/planner/daySlice";
+import { BASIC_TODO_ITEM, setTodoList, selectTodoList, selectDayDate, setTimeTable } from "@store/planner/daySlice";
 import { TodoConfig } from "@util/planner.interface";
 import TodoItemChoice from "./TodoItemChoice";
 import { plannerApi } from "@api/Api";
@@ -63,6 +63,12 @@ const TodoList = ({ clicked }: Props) => {
         });
     };
 
+    const deleteTimeTable = async (todoId: number, todoStatus: TodoConfig["todoStatus"]) => {
+      await plannerApi
+        .deleteTimetable(userId, { date, todoId: todoId })
+        .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "", todoStatus })));
+    };
+
     const deleteTodo = async (idx: number, todoId: number) => {
       await plannerApi
         .deleteDailyTodos(userId, {
@@ -79,6 +85,7 @@ const TodoList = ({ clicked }: Props) => {
       insertTodo,
       updateTodo,
       deleteTodo,
+      deleteTimeTable,
     };
   })();
 

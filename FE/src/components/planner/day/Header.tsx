@@ -64,7 +64,7 @@ const FriendHeader = () => {
   );
 };
 
-const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
+const MyHeader = ({ socialClick, clicked }: { socialClick: () => Promise<void>; clicked: boolean }) => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
   const dayPlannerInfo = useAppSelector(selectDayInfo);
@@ -96,9 +96,9 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
         ♥ {likeCount}
       </Button>
       {plannerAccessScope == "전체공개" && (
-        <div className={`${shareSocial != 0 ? styles["button__visit"] : ""}`}>
-          <Button types="blue" onClick={() => handleClick()} disabled={!dailyTodos.length}>
-            {shareSocial != 0 ? "공유취소" : "소셜공유"}
+        <div className={`${shareSocial ? styles["button__visit"] : ""}`}>
+          <Button types="blue" onClick={() => handleClick()} disabled={!dailyTodos.length || clicked}>
+            소셜공유
           </Button>
         </div>
       )}
@@ -119,9 +119,10 @@ const MyHeader = ({ socialClick }: { socialClick: () => Promise<void> }) => {
 interface Props {
   isFriend?: boolean;
   socialClick: () => Promise<void>;
+  clicked: boolean;
 }
 
-const Header = ({ isFriend, socialClick }: Props) => {
+const Header = ({ isFriend, ...rest }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDayDate);
   const { dday: nearDate } = useAppSelector(selectDayInfo);
@@ -153,7 +154,7 @@ const Header = ({ isFriend, socialClick }: Props) => {
           </div>
         </div>
       </div>
-      {isFriend ? <FriendHeader /> : <MyHeader socialClick={socialClick} />}
+      {isFriend ? <FriendHeader /> : <MyHeader {...rest} />}
     </div>
   );
 };
