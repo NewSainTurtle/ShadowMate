@@ -86,7 +86,7 @@ const Popup = ({ visible }: PopupProps) => {
               className={styles["popup__button-questionnaire"]}
               onClick={() => window.open("https://forms.gle/UAztt4dsGeqKWkHy9")}
             >
-              <span>설문참여하기</span>
+              <span>설문 참여하기</span>
             </div>
           </div>
         </div>
