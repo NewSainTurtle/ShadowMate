@@ -49,13 +49,15 @@ const SignupAccount = () => {
     else if (!value) setError({ ...error, [name]: "필수 정보입니다." });
     else if (name == "email" && !userRegex.email.test(email))
       setError({ ...error, [name]: "이메일 형식이 올바르지 않습니다." });
-    else if (name == "password" && !userRegex.password.test(password))
-      setError({ ...error, [name]: "6~20자의 영문, 숫자, 특수문자(!?^&*@#)를 사용해 주세요." });
-    else if (["password", "passwordCheck"].includes(name) && !!passwordCheck) {
-      if (passwordCheck != value || password != value)
-        setError({ ...error, passwordCheck: "비밀번호가 일치하지 않습니다." });
-      else setError({ ...error, passwordCheck: "" });
-    } else if (name == "nickname" && !userRegex.nickname.test(nickname))
+    else if (name == "password")
+      setError({
+        ...error,
+        password: !userRegex.password.test(password) ? "6~20자의 영문, 숫자, 특수문자(!?^&*@#)를 사용해 주세요." : "",
+        passwordCheck: !!passwordCheck && passwordCheck != password ? "비밀번호가 일치하지 않습니다." : "",
+      });
+    else if (name == "passwordCheck" && !!passwordCheck && passwordCheck != password)
+      setError({ ...error, passwordCheck: "비밀번호가 일치하지 않습니다." });
+    else if (name == "nickname" && !userRegex.nickname.test(nickname))
       setError({ ...error, [name]: "2~10자의 특수문자를 제외한 문자를 사용해 주세요." });
     else setError({ ...error, [name]: "" });
   };
