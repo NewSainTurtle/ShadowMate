@@ -10,7 +10,7 @@ import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { MonthConfig, MonthDayConfig, setFollowCount, setMonthInfo, setStatistics } from "@store/planner/monthSlice";
-import { followApi, plannerApi, userApi } from "@api/Api";
+import { followApi, plannerApi } from "@api/Api";
 import { selectFriendId } from "@store/friendSlice";
 import Popup from "@components/common/Popup";
 import { selectPopupVisible } from "@store/modalSlice";
@@ -26,7 +26,6 @@ const Month = () => {
   friendId = friendId != 0 ? friendId : userId;
   const [loading, setLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const visible = useAppSelector(selectPopupVisible);
 
   const handlePrevMonth = () => {
     const newDate = dayjs(selectedDay).subtract(1, "month").endOf("month").format("MM/DD/YY");
@@ -115,7 +114,7 @@ const Month = () => {
         {loading ? <Loading /> : <MonthCalendar selectedDay={selectedDay} isOpen={isOpen} />}
       </div>
       <MonthDetail isOpen={isOpen} />
-      <Popup visible={visible} />
+      <Popup />
     </div>
   );
 };

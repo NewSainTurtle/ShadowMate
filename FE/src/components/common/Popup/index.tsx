@@ -2,14 +2,11 @@ import React, { useLayoutEffect } from "react";
 import styles from "@styles/common/Popup.module.scss";
 import Modal from "@mui/material/Modal";
 import Text from "@components/common/Text";
-import { useAppDispatch } from "@hooks/hook";
-import { setPopupClose, setPopupOpen } from "@store/modalSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { selectPopupVisible, setPopupClose, setPopupOpen } from "@store/modalSlice";
 
-interface PopupProps {
-  visible: boolean;
-}
-
-const Popup = ({ visible }: PopupProps) => {
+const Popup = () => {
+  const visible = useAppSelector(selectPopupVisible);
   if (!visible) return null;
 
   const dispatch = useAppDispatch();
