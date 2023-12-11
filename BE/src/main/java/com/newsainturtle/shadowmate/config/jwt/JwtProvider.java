@@ -33,6 +33,7 @@ public class JwtProvider {
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRES))
                 .withClaim("id", principalDetails.getUser().getId())
                 .withClaim("email", principalDetails.getUser().getEmail())
+                .withClaim("socialType", principalDetails.getUser().getSocialLogin().toString())
                 .sign(Algorithm.HMAC512(SECRETKEY));
     }
 
@@ -62,6 +63,21 @@ public class JwtProvider {
         catch (Exception e){
             request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN);
+        }
+    }
+
+    public String validateSocialType(HttpServletRequest request) {
+        String jwtToken = getToken(getHeader(request));
+        try {
+            return JWT.require(Algorithm.HMAC512(SECRETKEY))
+                    .build()
+                    .verify(jwtToken)
+                    .getClaim("socialType")
+                    .asString();
+        }
+        catch (Exception e){
+            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
+            throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
         }
     }
 
