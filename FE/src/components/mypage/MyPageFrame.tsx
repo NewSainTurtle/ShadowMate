@@ -71,7 +71,7 @@ const MyPageFrame = ({ title }: Props) => {
       const init = {
         categoryTitle: "새 카테고리",
         categoryEmoticon: null,
-        categoryColorId: 12,
+        categoryColorId: 1,
       };
       settingApi
         .addCategories(userId, init)
@@ -81,7 +81,7 @@ const MyPageFrame = ({ title }: Props) => {
             categoryId: returnId,
             categoryTitle: "새 카테고리",
             categoryEmoticon: "",
-            categoryColorCode: categoryColors[11].categoryColorCode,
+            categoryColorCode: categoryColors[0].categoryColorCode,
           };
           dispatch(setCategoryList([...categoryList, newCategory]));
           dispatch(setCategoryClick(categoryList.length));

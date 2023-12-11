@@ -289,6 +289,7 @@ $color-warning: var(--color-warning);
     display: flex;
     justify-items: center;
     gap: 0.2em;
+    color: $color-gray-4;
     > svg {
       font-size: medium;
     }
