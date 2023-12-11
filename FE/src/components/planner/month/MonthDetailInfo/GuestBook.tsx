@@ -170,13 +170,12 @@ const GuestBook = () => {
                       onClick={() => handleMoveToFriendProfile(item.visitorId, item.visitorNickname)}
                     />
                     <div>
-                      <div
-                        className={styles["guest__nickname"]}
-                        onClick={() => handleMoveToFriendProfile(item.visitorId, item.visitorNickname)}
-                      >
-                        <Text bold types="small">
-                          {item.visitorNickname}
-                        </Text>
+                      <div className={styles["guest__nickname"]}>
+                        <div onClick={() => handleMoveToFriendProfile(item.visitorId, item.visitorNickname)}>
+                          <Text bold types="small">
+                            {item.visitorNickname}
+                          </Text>
+                        </div>
                         <div>
                           <Text types="small">{item.writeDateTime}</Text>
                           <div className={styles[`guest__delete${mine}`]}>
