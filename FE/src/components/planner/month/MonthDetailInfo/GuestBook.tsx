@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import Avatar from "@components/common/Avatar";
@@ -7,13 +7,16 @@ import Loading from "@components/common/Loading";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
 import { DeleteOutline } from "@mui/icons-material";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
-import { selectFriendId } from "@store/friendSlice";
-import { plannerApi } from "@api/Api";
+import { selectFriendId, setFriendInfo } from "@store/friendSlice";
+import { plannerApi, userApi } from "@api/Api";
 import { GuestBookConfig } from "@util/planner.interface";
+import { useNavigate } from "react-router-dom";
 
 const GuestBook = () => {
+  const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const userInfo = useAppSelector(selectUserInfo);
   const userId = useAppSelector(selectUserId);
   let friendId = useAppSelector(selectFriendId);
@@ -111,6 +114,14 @@ const GuestBook = () => {
     }
   }, [friendId, guestBookList]);
 
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (guestBookInput === "") return;
+    if (e.key == "Enter") {
+      if (e.nativeEvent.isComposing) return;
+      addGuestBook();
+    }
+  };
+
   const addGuestBook = async () => {
     const response = await plannerApi.addGuestBook(friendId, { visitorBookContent: guestBookInput });
     if (response.status === 200) {
@@ -128,6 +139,19 @@ const GuestBook = () => {
     }
   };
 
+  const handleMoveToFriendProfile = (id: number, nickname: string) => {
+    userApi
+      .searches(userId, { nickname })
+      .then((res) => {
+        const response = res.data.data;
+        dispatch(setFriendInfo(response));
+        navigator("/month");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <>
       <div className={styles["guest"]}>
@@ -140,9 +164,16 @@ const GuestBook = () => {
                 const mine = friendId === userId || userInfo.nickname === item.visitorNickname ? "--mine" : "";
                 return (
                   <div className={styles["guest__comment"]} key={item.visitorBookId}>
-                    <Avatar src={item.visitorProfileImage} sx={{ width: 30, height: 30 }} />
+                    <Avatar
+                      src={item.visitorProfileImage}
+                      sx={{ width: 30, height: 30, cursor: "pointer" }}
+                      onClick={() => handleMoveToFriendProfile(item.visitorId, item.visitorNickname)}
+                    />
                     <div>
-                      <div className={styles["guest__nickname"]}>
+                      <div
+                        className={styles["guest__nickname"]}
+                        onClick={() => handleMoveToFriendProfile(item.visitorId, item.visitorNickname)}
+                      >
                         <Text bold types="small">
                           {item.visitorNickname}
                         </Text>
@@ -178,6 +209,7 @@ const GuestBook = () => {
               value={guestBookInput}
               placeholder="방명록을 남겨주세요."
               onChange={handleGuestBookChange}
+              onKeyDown={handleOnKeyPress}
             />
             <div className={styles["guest__send"]} onClick={addGuestBook}>
               <ArrowCircleUpIcon />
