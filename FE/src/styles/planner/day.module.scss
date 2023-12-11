@@ -36,7 +36,10 @@ $color-btn-blue: var(--color-btn-blue);
   grid-template-rows: 0.3fr 2fr max-content;
 
   > div {
-    border-right: 1px solid $color-text;
+    border-right: 1px solid $color-gray_4;
+    &:nth-last-child(-n + 2) {
+      border-bottom: 1px solid $color-gray_4;
+    }
   }
 
   > .item__time {
