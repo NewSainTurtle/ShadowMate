@@ -93,6 +93,11 @@ $color-btn-blue: var(--color-btn-blue);
         pointer-events: none;
       }
     }
+
+    .ment-content__box > span:nth-child(3),
+    .ment-preview__box.--none {
+      visibility: hidden;
+    }
   }
 }
 
@@ -269,7 +274,7 @@ $color-btn-blue: var(--color-btn-blue);
       right: 0;
     }
 
-    &__none {
+    &--none {
       width: 100%;
       height: 100%;
       display: flex;
