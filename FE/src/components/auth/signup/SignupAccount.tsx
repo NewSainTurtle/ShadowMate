@@ -180,7 +180,7 @@ const SignupAccount = () => {
           onChange={handleInput}
           onBlur={checkError}
           error={!!error.password}
-          helperText={error.password || " "}
+          helperText={error.password || "영문, 숫자, 특수문자(!?^&*@#)를 사용한 6~20자."}
         />
         <Input
           placeholder="비밀번호 확인"

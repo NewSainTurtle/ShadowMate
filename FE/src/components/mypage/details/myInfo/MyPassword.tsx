@@ -77,12 +77,12 @@ const MyPassword = () => {
               />
               <Input
                 types="password"
-                placeholder="변경할 비밀번호 입력"
+                placeholder="변경할 비밀번호 입력(6~20자)"
                 name="newPassword"
                 value={newPassword}
                 onChange={handlePassword}
                 error={error.newPassword}
-                helperText={"6 ~ 20자의 비밀번호를 입력할 수 있습니다."}
+                helperText={"영문, 숫자, 특수문자(!?^&*@#)를 사용한 6~20자."}
               />
               <Input
                 types="password"
