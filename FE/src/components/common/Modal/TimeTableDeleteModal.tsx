@@ -1,16 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import styles from "@styles/common/Modal.module.scss";
 import Text from "@components/common/Text";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 
-const TokenExpiration = () => {
+const TimeTableDeleteModal = () => {
   return (
     <div className={styles["contents"]}>
       <WarningAmberRoundedIcon />
-      <Text types="small">세션이 만료되었습니다.</Text>
-      <Text types="small">계속하려면 다시 로그인하세요.</Text>
+      <Text types="small">상태 변경 시 기록된 타임테이블이 삭제됩니다.</Text>
+      <Text types="small">계속하시겠습니까?</Text>
     </div>
   );
 };
 
-export default TokenExpiration;
+export default TimeTableDeleteModal;

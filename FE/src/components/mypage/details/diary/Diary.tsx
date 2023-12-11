@@ -5,7 +5,7 @@ import { FormControlLabel, RadioGroup, Stack } from "@mui/material";
 import RadioButton from "@components/common/RadioButton";
 import SaveIcon from "@mui/icons-material/Save";
 import Modal from "@components/common/Modal";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import DiaryConfirmModal from "@components/common/Modal/DiaryConfirmModal";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectPlannerAccessScope, selectUserId, setUserInfo } from "@store/authSlice";
 import { MonthConfig, setPlannerAccessScope } from "@store/planner/monthSlice";
@@ -19,6 +19,13 @@ const MyPageDiary = () => {
   const [Modalopen, setModalOpen] = useState(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
+
+  const handleCheckScope = () => {
+    if (accessScope === "전체공개") {
+      if (scope === "비공개" || scope === "친구공개") handleOpen();
+      else handleSave();
+    } else handleSave();
+  };
 
   const handleSave = () => {
     settingApi
@@ -72,7 +79,11 @@ const MyPageDiary = () => {
               </div>
             </div>
           </div>
-          <div className={styles["diary__button"]} onClick={scope === "비공개" ? handleOpen : handleSave}>
+          <div
+            className={styles["diary__button"]}
+            // onClick={scope === "비공개" || scope === "친구공개" ? handleOpen : handleSave}
+            onClick={handleCheckScope}
+          >
             <div className={styles["diary__button--save"]}>
               <SaveIcon />
               <Text>저장</Text>
@@ -81,15 +92,7 @@ const MyPageDiary = () => {
         </div>
       </div>
       <Modal types="twoBtn" open={Modalopen} onClose={handleClose} onClick={handleSave}>
-        <div className={styles["diary__modal"]}>
-          <WarningAmberRoundedIcon />
-          <Text types="small">
-            <>전체 공개 및 친구 공개 상태에서 비공개 전환 시,</>
-            <br />
-            <>소셜에 공유된 게시글이 숨김 처리됩니다.</>
-          </Text>
-          <Text types="small">계속 진행하시겠습니까?</Text>
-        </div>
+        <DiaryConfirmModal />
       </Modal>
     </>
   );
