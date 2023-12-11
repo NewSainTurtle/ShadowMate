@@ -1,3 +1,4 @@
+@use "@styles/common/Text.module.scss";
 $color-text: var(--color-text);
 $color-background: var(--color-background);
 $color-gray-1: var(--color-gray-1);
@@ -20,6 +21,7 @@ $color-warning: var(--color-warning);
   align-items: center;
   padding-top: 2em;
   color: $color-text;
+  @extend .text-small;
   > :nth-child(1),
   > :nth-child(2) {
     color: $color-warning;

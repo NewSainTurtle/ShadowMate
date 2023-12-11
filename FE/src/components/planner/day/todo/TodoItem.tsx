@@ -188,6 +188,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
           handleWarnModalClose();
         }}
         onClickMessage="확인"
+        warning
       >
         <TimeTableDeleteModal />
       </Modal>
