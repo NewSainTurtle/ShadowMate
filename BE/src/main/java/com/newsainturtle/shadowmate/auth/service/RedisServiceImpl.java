@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class RedisServiceImpl implements RedisService{
+public class RedisServiceImpl implements RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -49,7 +49,7 @@ public class RedisServiceImpl implements RedisService{
     @Override
     @Transactional
     public void deleteEmailData(final String key) {
-        redisTemplate.opsForHash().delete("email", key);
+        redisTemplate.delete("email " + key);
     }
 
     @Override
