@@ -66,10 +66,8 @@ $color-btn-blue: var(--color-btn-blue);
       border: {
         top: 1px solid $color-gray_4;
         bottom: 1px solid $color-gray_4;
+        right: 1px solid $color-gray_4;
       }
-    }
-    > .item__timetable {
-      border-left: 1px solid $color-text;
     }
 
     .custom-cursor {
@@ -423,7 +421,7 @@ $color-btn-blue: var(--color-btn-blue);
     position: relative;
     height: 100%;
     overflow-y: auto;
-    padding: 0em 0.2em;
+    padding: 0em 0.1em;
     box-sizing: border-box;
 
     &-box {
