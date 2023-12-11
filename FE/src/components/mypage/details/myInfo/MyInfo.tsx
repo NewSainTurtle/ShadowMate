@@ -92,6 +92,7 @@ const MyPageInfo = () => {
       ...userMyInfo,
       profileImage: "",
     });
+    handleDeleteModalClose();
   };
 
   const renderImage = (e: React.ChangeEvent<HTMLInputElement>) => {
