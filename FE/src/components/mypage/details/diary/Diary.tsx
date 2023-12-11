@@ -20,6 +20,13 @@ const MyPageDiary = () => {
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
 
+  const handleCheckScope = () => {
+    if (accessScope === "전체공개") {
+      if (scope === "비공개" || scope === "친구공개") handleOpen();
+      else handleSave();
+    } else handleSave();
+  };
+
   const handleSave = () => {
     settingApi
       .accessScopes(userId, { plannerAccessScope: scope })
@@ -72,7 +79,11 @@ const MyPageDiary = () => {
               </div>
             </div>
           </div>
-          <div className={styles["diary__button"]} onClick={scope === "비공개" ? handleOpen : handleSave}>
+          <div
+            className={styles["diary__button"]}
+            // onClick={scope === "비공개" || scope === "친구공개" ? handleOpen : handleSave}
+            onClick={handleCheckScope}
+          >
             <div className={styles["diary__button--save"]}>
               <SaveIcon />
               <Text>저장</Text>
