@@ -7,8 +7,6 @@ import { selectPopupVisible, setPopupClose, setPopupOpen } from "@store/modalSli
 
 const Popup = () => {
   const visible = useAppSelector(selectPopupVisible);
-  if (!visible) return null;
-
   const dispatch = useAppDispatch();
   const VISITED_BEFORE_DATE = localStorage.getItem("popup_visible"); // 이전방문 날짜
   const VISITED_NOW_DATE = String(new Date().getDate());
