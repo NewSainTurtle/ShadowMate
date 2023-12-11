@@ -41,7 +41,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     }
 
     private User findByEmailAndSocialLogin(final String email) {
-        return userRepository.findByEmailAndSocialLoginAndWithdrawal(email, SocialType.GOOGLE);
+        return userRepository.findByEmailAndSocialLogin(email, SocialType.GOOGLE);
     }
     private String createNicknameRandomCode(String name) {
         final String temp = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
