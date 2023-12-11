@@ -17,7 +17,7 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "user_id"))
 public class User extends CommonEntity {
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @Column(length = 60, nullable = false)
