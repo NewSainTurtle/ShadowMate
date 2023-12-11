@@ -51,9 +51,11 @@ const SignupAccount = () => {
       setError({ ...error, [name]: "이메일 형식이 올바르지 않습니다." });
     else if (name == "password" && !userRegex.password.test(password))
       setError({ ...error, [name]: "비밀번호는 6~20자로 설정해 주세요." });
-    else if (["password", "passwordCheck"].includes(name) && !!passwordCheck && passwordCheck != password)
-      setError({ ...error, passwordCheck: "비밀번호가 일치하지 않습니다." });
-    else if (name == "nickname" && !userRegex.nickname.test(nickname))
+    else if (["password", "passwordCheck"].includes(name) && !!passwordCheck) {
+      if (passwordCheck != value || password != value)
+        setError({ ...error, passwordCheck: "비밀번호가 일치하지 않습니다." });
+      else setError({ ...error, passwordCheck: "" });
+    } else if (name == "nickname" && !userRegex.nickname.test(nickname))
       setError({ ...error, [name]: "닉네임은 특수문자 제외한 2~10자로 설정해 주세요." });
     else setError({ ...error, [name]: "" });
   };

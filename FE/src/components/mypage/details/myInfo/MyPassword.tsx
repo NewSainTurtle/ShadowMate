@@ -24,17 +24,18 @@ const MyPassword = () => {
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
     if (name == "oldPassword" && error.oldPassword) setError({ ...error, [name]: false });
-    if (name == "newPassword") {
-      if (!!value && !userRegex.password.test(value)) setError({ ...error, [name]: true });
-      else setError({ ...error, [name]: false });
-      if (!!newPasswordCheck && newPasswordCheck != value) setError({ ...error, newPasswordCheck: true });
-      else setError({ ...error, newPasswordCheck: false });
+    else if (name == "newPassword") {
+      setError({
+        ...error,
+        [name]: !!value && !userRegex.password.test(value),
+        newPasswordCheck: !!newPasswordCheck && newPasswordCheck != value,
+      });
+    } else if (name == "newPasswordCheck") {
+      setError({ ...error, [name]: !!value && newPassword != value });
     }
-    if (name == "newPasswordCheck") {
-      if (!!value && newPassword != value) setError({ ...error, [name]: true });
-      else setError({ ...error, [name]: false });
-    }
+
     setPassword({
       ...password,
       [name]: value.replace(removeWhitespaceRegex, ""),
