@@ -107,6 +107,13 @@ $color-btn-blue: var(--color-btn-blue);
     display: flex;
     flex-direction: column;
 
+    > div:nth-child(1) {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      color: $color-gray_4;
+    }
+
     > div:nth-child(2) {
       display: flex;
       align-items: flex-end;

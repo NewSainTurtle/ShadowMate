@@ -125,7 +125,7 @@ interface Props {
 const Header = ({ isFriend, ...rest }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDayDate);
-  const { dday: nearDate } = useAppSelector(selectDayInfo);
+  const { dday: nearDate, ddayTitle } = useAppSelector(selectDayInfo);
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
 
   const moveDate = (n: -1 | 0 | 1) => {
@@ -136,7 +136,14 @@ const Header = ({ isFriend, ...rest }: Props) => {
   return (
     <div className={styles["planner-header"]}>
       <div className={styles["planner-header__date"]}>
-        <Dday nearDate={nearDate} comparedDate={date} />
+        <div>
+          <Dday nearDate={nearDate} comparedDate={date} />
+          {!isFriend && (
+            <Text types="small" bold>
+              {ddayTitle}
+            </Text>
+          )}
+        </div>
         <div>
           <Text types="semi-large" bold>
             {titleDay}

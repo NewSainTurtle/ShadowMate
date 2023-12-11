@@ -10,6 +10,7 @@ dayjs.extend(isSameOrAfter);
 interface dayInfoConfig {
   plannerAccessScope: "전체공개" | "친구공개" | "비공개";
   dday: string | null;
+  ddayTitle: string;
   like: boolean;
   likeCount: number;
   shareSocial: number;
@@ -27,6 +28,7 @@ const initialState: dayConfig = {
   info: {
     plannerAccessScope: "전체공개",
     dday: null,
+    ddayTitle: "",
     like: false,
     likeCount: 0,
     shareSocial: 0,
