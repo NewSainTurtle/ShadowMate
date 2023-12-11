@@ -10,8 +10,10 @@ import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { MonthConfig, MonthDayConfig, setFollowCount, setMonthInfo, setStatistics } from "@store/planner/monthSlice";
-import { followApi, plannerApi, userApi } from "@api/Api";
+import { followApi, plannerApi } from "@api/Api";
 import { selectFriendId } from "@store/friendSlice";
+import Popup from "@components/common/Popup";
+import { selectPopupVisible } from "@store/modalSlice";
 
 const Month = () => {
   const dispatch = useAppDispatch();
@@ -112,6 +114,7 @@ const Month = () => {
         {loading ? <Loading /> : <MonthCalendar selectedDay={selectedDay} isOpen={isOpen} />}
       </div>
       <MonthDetail isOpen={isOpen} />
+      <Popup />
     </div>
   );
 };

@@ -1,4 +1,6 @@
+$color-scroll: var(--color-scroll);
 $color-background: var(--color-background);
+$color-gray-5: var(--color-gray-5);
 
 .header_container {
   display: flex;
@@ -9,8 +11,9 @@ $color-background: var(--color-background);
   width: 10em;
   padding: 2em 0;
   box-sizing: border-box;
-  border-right: 1px solid var(--color-scroll);
+  border-right: 1px solid $color-scroll;
   background-color: $color-background;
+  position: relative;
 }
 
 .header_logo {
@@ -20,6 +23,19 @@ $color-background: var(--color-background);
     font-size: 1.5em;
     font-style: italic;
     font-weight: 800;
+  }
+}
+
+.header_questionnaire {
+  position: absolute;
+  top: 7em;
+  display: flex;
+  margin: 0.5em 0;
+  color: $color-gray-5;
+  cursor: pointer;
+  > svg {
+    font-size: large;
+    margin-right: 0.2em;
   }
 }
 
