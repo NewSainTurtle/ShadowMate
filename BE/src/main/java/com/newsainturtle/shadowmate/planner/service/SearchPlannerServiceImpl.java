@@ -46,7 +46,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private final SocialRepository socialRepository;
 
     private Dday getDday(final User user) {
-        final LocalDate today = LocalDate.now();
+        final String today = String.valueOf(LocalDate.now());
         Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
         if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
         return dday;
@@ -88,7 +88,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
         final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
         checkValidWeek(startDate, endDate);
-        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, stringToLocalDate(startDate), stringToLocalDate(endDate));
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, startDate, endDate);
         if (weekly != null) {
             final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
             if (permission) {
@@ -114,7 +114,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             final int lastDay = YearMonth.from(date).lengthOfMonth();
 
             for (int i = 0; i < lastDay; i++) {
-                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date.plusDays(i));
+                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
                 int todoCount = 0;
                 int dayStatus = 0;
                 if (dailyPlanner != null) {
@@ -156,7 +156,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
         final List<WeeklyPlannerDailyResponse> dayList = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date.plusDays(i));
+            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
             final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
             if (dailyPlanner == null || !permission) {
                 dayList.add(WeeklyPlannerDailyResponse.builder()
@@ -193,7 +193,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     public SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date) {
         checkValidDate(date);
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, stringToLocalDate(date));
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
         final Dday dday = getDday(user);
         int totalMinutes = 0;
         if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {

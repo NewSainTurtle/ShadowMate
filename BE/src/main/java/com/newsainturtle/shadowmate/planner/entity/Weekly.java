@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @SuperBuilder
 @Entity
@@ -18,11 +17,11 @@ import java.time.LocalDate;
 @AttributeOverride(name = "id", column = @Column(name = "weekly_id"))
 public class Weekly extends CommonEntity {
 
-    @Column(name = "start_day", nullable = false)
-    private LocalDate startDay;
+    @Column(name = "start_day", length = 10, nullable = false)
+    private String startDay;
 
-    @Column(name = "end_day", nullable = false)
-    private LocalDate endDay;
+    @Column(name = "end_day", length = 10, nullable = false)
+    private String endDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

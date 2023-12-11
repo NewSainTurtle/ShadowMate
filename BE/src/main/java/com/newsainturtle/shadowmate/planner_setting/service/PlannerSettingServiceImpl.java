@@ -26,9 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,7 +153,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     @Transactional
     public AddDdayResponse addDday(final User user, final AddDdayRequest addDdayRequest) {
         final Dday dday = Dday.builder()
-                .ddayDate(stringToLocalDate(addDdayRequest.getDdayDate()))
+                .ddayDate(addDdayRequest.getDdayDate())
                 .ddayTitle(addDdayRequest.getDdayTitle())
                 .user(user)
                 .build();
@@ -191,6 +189,6 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         if (findDday == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY);
         }
-        findDday.updateDdayDateAndTitle(stringToLocalDate(updateDdayRequest.getDdayDate()), updateDdayRequest.getDdayTitle());
+        findDday.updateDdayDateAndTitle(updateDdayRequest.getDdayDate(), updateDdayRequest.getDdayTitle());
     }
 }

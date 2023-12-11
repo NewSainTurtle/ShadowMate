@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.Period;
 
 @Service
@@ -30,16 +29,14 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
 
     private Weekly getOrCreateWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
         checkValidWeek(startDateStr, endDateStr);
-        final LocalDate startDate = stringToLocalDate(startDateStr);
-        final LocalDate endDate = stringToLocalDate(endDateStr);
-        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || Period.between(startDate, endDate).getDays() != 6) {
+        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
-        Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDate, endDate);
+        Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDateStr, endDateStr);
         if (weekly == null) {
             weekly = weeklyRepository.save(Weekly.builder()
-                    .startDay(startDate)
-                    .endDay(endDate)
+                    .startDay(startDateStr)
+                    .endDay(endDateStr)
                     .user(user)
                     .build());
         }
@@ -48,7 +45,7 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
 
     private Weekly getWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
         checkValidWeek(startDateStr, endDateStr);
-        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, stringToLocalDate(startDateStr), stringToLocalDate(endDateStr));
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDateStr, endDateStr);
         if (weekly == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER);
         }

@@ -20,12 +20,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -55,7 +54,7 @@ class SocialServiceTest extends DateCommonService {
             .withdrawal(false)
             .build();
     final DailyPlanner dailyPlanner = DailyPlanner.builder()
-            .dailyPlannerDay(stringToLocalDate(date))
+            .dailyPlannerDay(date)
             .user(user1)
             .build();
     final Social social = Social.builder()
@@ -121,7 +120,7 @@ class SocialServiceTest extends DateCommonService {
         final Long pageNumber = 2L;
         List<Social> socialList = new ArrayList<>();
         int cnt = 7;
-        while(cnt-->0) {
+        while (cnt-- > 0) {
             socialList.add(social);
         }
         doReturn(socialList).when(socialRepository).findAllByDeleteTime();
@@ -144,7 +143,7 @@ class SocialServiceTest extends DateCommonService {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate(date2))
+                .dailyPlannerDay(date2)
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
@@ -164,8 +163,8 @@ class SocialServiceTest extends DateCommonService {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(date2);
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(date);
     }
 
     @Test
@@ -177,7 +176,7 @@ class SocialServiceTest extends DateCommonService {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate(date2))
+                .dailyPlannerDay(date2)
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
@@ -186,7 +185,7 @@ class SocialServiceTest extends DateCommonService {
                 .socialImage(Image)
                 .build();
         int cnt = 7;
-        while(cnt-->0) {
+        while (cnt-- > 0) {
             socialList.add(social2);
         }
         doReturn(socialList).when(socialRepository).findAllByDeleteTime();
@@ -200,8 +199,8 @@ class SocialServiceTest extends DateCommonService {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(date2);
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(date);
     }
 
     @Test
@@ -326,7 +325,7 @@ class SocialServiceTest extends DateCommonService {
                 .build();
         List<Social> socialList = new ArrayList<>();
         int cnt = 7;
-        while(cnt-->0) {
+        while (cnt-- > 0) {
             socialList.add(social);
         }
         doReturn(user1).when(userRepository).findByNicknameAndPlannerAccessScope(user1.getNickname(), PlannerAccessScope.PUBLIC);
@@ -355,11 +354,11 @@ class SocialServiceTest extends DateCommonService {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate(date2))
+                .dailyPlannerDay(date2)
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
-                .id(Long.MAX_VALUE-1L)
+                .id(Long.MAX_VALUE - 1L)
                 .dailyPlanner(dailyPlanner2)
                 .socialImage(Image)
                 .build();
@@ -376,8 +375,8 @@ class SocialServiceTest extends DateCommonService {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(1L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(date2);
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(date);
     }
 
     @Test
@@ -394,16 +393,16 @@ class SocialServiceTest extends DateCommonService {
         socialList.add(social);
         final String date2 = "2023-09-30";
         final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate(date2))
+                .dailyPlannerDay(date2)
                 .user(user1)
                 .build();
         final Social social2 = Social.builder()
-                .id(Long.MAX_VALUE-1L)
+                .id(Long.MAX_VALUE - 1L)
                 .dailyPlanner(dailyPlanner2)
                 .socialImage(Image)
                 .build();
         int cnt = 7;
-        while(cnt-->0) {
+        while (cnt-- > 0) {
             socialList.add(social2);
         }
         doReturn(user1).when(userRepository).findByNicknameAndPlannerAccessScope(user1.getNickname(), PlannerAccessScope.PUBLIC);
@@ -418,8 +417,8 @@ class SocialServiceTest extends DateCommonService {
         assertThat(result.getSocialList()).hasSize(2);
         assertThat(result.getTotalPage()).isEqualTo(2L);
         assertThat(result.getPageNumber()).isEqualTo(pageNumber);
-        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date2));
-        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(stringToLocalDate(date));
+        assertThat(result.getSocialList().get(0).getDailyPlannerDay()).isEqualTo(date2);
+        assertThat(result.getSocialList().get(1).getDailyPlannerDay()).isEqualTo(date);
     }
 
     @Test
@@ -428,7 +427,7 @@ class SocialServiceTest extends DateCommonService {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate(date))
+                .dailyPlannerDay(date)
                 .user(user1)
                 .build();
         final Social social = Social.builder()
@@ -452,7 +451,7 @@ class SocialServiceTest extends DateCommonService {
         final String date = "2023-10-30";
         final String Image = "testImage";
         final DailyPlanner dailyPlanner = DailyPlanner.builder()
-                .dailyPlannerDay(stringToLocalDate(date))
+                .dailyPlannerDay(date)
                 .user(user1)
                 .build();
         final Social social = Social.builder()
