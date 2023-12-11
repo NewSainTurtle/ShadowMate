@@ -34,6 +34,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
   const itemMaxLength = isMine ? 4 : 5;
   const rowMaxLength = isMine ? dailyTodos.length + 1 : dailyTodos.length;
   const retroMaxLength = 100;
+  const friend = isMine ? "" : "--friend";
 
   const handleSaveRetrospection = () => {
     if (dayList[idx].retrospection === null && retrospection === "") return;
@@ -83,7 +84,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
         ))}
         {isMine && <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />}
       </div>
-      <div className={`${styles["item__memo"]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
+      <div className={`${styles[`item__memo${friend}`]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
         <textarea
           disabled={!isMine}
           value={retrospection}
