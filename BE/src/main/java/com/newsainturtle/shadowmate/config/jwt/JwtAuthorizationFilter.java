@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.config.jwt;
 
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,7 +53,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
         String email = jwtProvider.validateToken(request);
         if (email != null) {
-            User userEntity = userRepository.findByEmail(email);
+            String socialType = jwtProvider.validateSocialType(request);
+            User userEntity = userRepository.findByEmailAndSocialLogin(email, SocialType.valueOf(socialType));
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
