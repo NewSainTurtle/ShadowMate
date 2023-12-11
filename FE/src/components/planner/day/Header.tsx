@@ -25,7 +25,7 @@ const FriendHeader = () => {
   const userId = useAppSelector(selectUserId);
   const date = useAppSelector(selectDayDate);
   const friendUserId = useAppSelector(selectFriendInfo).userId;
-  const { likeCount, like } = useAppSelector(selectDayInfo);
+  const { likeCount, like, dailyTodos } = useAppSelector(selectDayInfo);
   const friendInfo = useAppSelector(selectFriendInfo);
 
   function heartClick() {
@@ -51,7 +51,7 @@ const FriendHeader = () => {
     <div className={`${styles["planner-header__friend"]} ${like ? styles["button__visit"] : ""}`}>
       <div>
         <div className={`${like ? styles["button__visit"] : ""}`}>
-          <Button types="red" onClick={() => heartClick()}>
+          <Button types="red" onClick={() => heartClick()} disabled={!dailyTodos.length}>
             ♥ {likeCount}
           </Button>
         </div>
