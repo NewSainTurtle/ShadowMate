@@ -59,7 +59,7 @@ public class FollowRepositoryTest {
         @Test
         void 실패_팔로잉조회_NULL() {
             //given
-            final User user = userRepository.findByEmail("test1@test.com");
+            final User user = userRepository.findByEmailAndSocialLogin("test1@test.com", user1.getSocialLogin());
 
             //when
             final List<Follow> followingList = followRepository.findAllByFollowerId(user);
@@ -71,8 +71,8 @@ public class FollowRepositoryTest {
         @Test
         void 성공_팔로잉조회() {
             //given
-            final User user1 = userRepository.findByEmail("test1@test.com");
-            final User user2 = userRepository.findByEmail("test2@test.com");
+            final User user1 = userRepository.findByEmailAndSocialLogin("test1@test.com", SocialType.BASIC);
+            final User user2 = userRepository.findByEmailAndSocialLogin("test2@test.com", SocialType.BASIC);
             followRepository.save(Follow.builder()
                     .followerId(user1)
                     .followingId(user2)
@@ -160,7 +160,7 @@ public class FollowRepositoryTest {
         @Test
         void 실패_팔로워조회_NULL() {
             //given
-            final User user2 = userRepository.findByEmail("test2@test.com");
+            final User user2 = userRepository.findByEmailAndSocialLogin("test2@test.com", SocialType.BASIC);
 
             //when
             final List<Follow> followList = followRepository.findAllByFollowingId(user2);
