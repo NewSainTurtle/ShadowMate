@@ -302,5 +302,14 @@ $border: 1px;
       right: 0.2em;
       color: $color-gray-4;
     }
+
+    &--friend {
+      @extend .item__memo;
+      > textarea {
+        &::placeholder {
+          visibility: hidden;
+        }
+      }
+    }
   }
 }
