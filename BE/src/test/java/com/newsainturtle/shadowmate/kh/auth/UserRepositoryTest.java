@@ -39,24 +39,6 @@ public class UserRepositoryTest {
         bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
 
-
-    @Nested
-    class 이메일인증 {
-
-        @Test
-        void 실패_이메일이_중복된_경우() {
-            //given
-            userRepository.save(user);
-
-            final String email = "test1@test.com";
-
-            //when
-            final User result = userRepository.findByEmail(email);
-
-            //then
-            assertThat(result).isEqualTo(user).isNotNull();
-        }
-    }
     @Nested
     class 회원가입 {
         @Test

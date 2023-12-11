@@ -11,8 +11,6 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail(final String email);
-
     User findByNickname(final String nickname);
 
     User findByIdAndNickname(final Long userId, final String nickname);
