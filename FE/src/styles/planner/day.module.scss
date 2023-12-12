@@ -86,7 +86,8 @@ $color-btn-blue: var(--color-btn-blue);
     .todo-item,
     .timetable__container-box {
       pointer-events: auto;
-      &:hover::after {
+      &::after,
+      &:hover {
         content: "";
       }
       & > * {
