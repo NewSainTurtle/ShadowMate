@@ -49,12 +49,16 @@ const SignupAccount = () => {
     else if (!value) setError({ ...error, [name]: "필수 정보입니다." });
     else if (name == "email" && !userRegex.email.test(email))
       setError({ ...error, [name]: "이메일 형식이 올바르지 않습니다." });
-    else if (name == "password" && !userRegex.password.test(password))
-      setError({ ...error, [name]: "비밀번호는 6~20자로 설정해 주세요." });
-    else if (name == "passwordCheck" && passwordCheck != password)
-      setError({ ...error, [name]: "비밀번호가 일치하지 않습니다." });
+    else if (name == "password")
+      setError({
+        ...error,
+        password: !userRegex.password.test(password) ? "6~20자의 영문, 숫자, 특수문자(!?^&*@#)를 사용해 주세요." : "",
+        passwordCheck: !!passwordCheck && passwordCheck != password ? "비밀번호가 일치하지 않습니다." : "",
+      });
+    else if (name == "passwordCheck" && !!passwordCheck && passwordCheck != password)
+      setError({ ...error, passwordCheck: "비밀번호가 일치하지 않습니다." });
     else if (name == "nickname" && !userRegex.nickname.test(nickname))
-      setError({ ...error, [name]: "닉네임은 특수문자 제외한 2~10자로 설정해 주세요." });
+      setError({ ...error, [name]: "2~10자의 특수문자를 제외한 문자를 사용해 주세요." });
     else setError({ ...error, [name]: "" });
   };
 
@@ -108,7 +112,7 @@ const SignupAccount = () => {
     };
 
     const onClickJoin = () => {
-      if (!email || !code || !password || !passwordCheck || !nickname) {
+      if (!email || !password || !passwordCheck || !nickname) {
         setError({
           email: !email ? "필수 정보입니다." : "",
           code: !code ? "이메일 인증 코드를 입력해주세요" : "",
@@ -116,9 +120,12 @@ const SignupAccount = () => {
           passwordCheck: !passwordCheck ? "비밀번호를 다시 한번 입력해주세요." : "",
           nickname: !nickname ? "필수 정보입니다." : "",
         });
-      } else if (!isEmailAuthentication) setErrorMessage("메일을 인증을 해주세요.");
-      else if (!isEmailRedundancy) setErrorMessage("인증코드를 확인 해주세요.");
-      else if (!isNicknameAuthentication) setErrorMessage("닉네임을 인증 해주세요.");
+      } else if (!isEmailAuthentication) {
+        setErrorMessage("메일을 인증을 해주세요.");
+      } else if (!code) {
+        setError({ ...error, code: "메일 인증 코드를 입력해주세요" });
+      } else if (!isEmailRedundancy) setErrorMessage("인증코드를 확인 해주세요.");
+      else if (!isNicknameAuthentication) setErrorMessage("닉네임 중복을 확인 해주세요.");
       else {
         authApi.join({ email, password, nickname });
         navigator("/login");
@@ -160,6 +167,7 @@ const SignupAccount = () => {
               value={code}
               onChange={handleInput}
               disabled={isEmailRedundancy}
+              onBlur={checkError}
               error={!!error.code}
               helperText={error.code || " "}
             />

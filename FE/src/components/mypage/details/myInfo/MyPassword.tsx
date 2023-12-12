@@ -24,17 +24,18 @@ const MyPassword = () => {
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
     if (name == "oldPassword" && error.oldPassword) setError({ ...error, [name]: false });
-    if (name == "newPassword") {
-      if (!!value && !userRegex.password.test(value)) setError({ ...error, [name]: true });
-      else setError({ ...error, [name]: false });
-      if (!!newPasswordCheck && newPasswordCheck != value) setError({ ...error, newPasswordCheck: true });
-      else setError({ ...error, newPasswordCheck: false });
+    else if (name == "newPassword") {
+      setError({
+        ...error,
+        [name]: !!value && !userRegex.password.test(value),
+        newPasswordCheck: !!newPasswordCheck && newPasswordCheck != value,
+      });
+    } else if (name == "newPasswordCheck") {
+      setError({ ...error, [name]: !!value && newPassword != value });
     }
-    if (name == "newPasswordCheck") {
-      if (!!value && newPassword != value) setError({ ...error, [name]: true });
-      else setError({ ...error, [name]: false });
-    }
+
     setPassword({
       ...password,
       [name]: value.replace(removeWhitespaceRegex, ""),
@@ -82,7 +83,7 @@ const MyPassword = () => {
                 value={newPassword}
                 onChange={handlePassword}
                 error={error.newPassword}
-                helperText={"6 ~ 20자의 비밀번호를 입력할 수 있습니다."}
+                helperText={"6~20자의 영문, 숫자, 특수문자(!?^&*@#)를 사용해 주세요."}
               />
               <Input
                 types="password"
