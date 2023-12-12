@@ -26,6 +26,7 @@ const Month = () => {
   friendId = friendId != 0 ? friendId : userId;
   const [loading, setLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(true);
+  const visible = useAppSelector(selectPopupVisible);
 
   const handlePrevMonth = () => {
     const newDate = dayjs(selectedDay).subtract(1, "month").endOf("month").format("MM/DD/YY");
@@ -114,7 +115,7 @@ const Month = () => {
         {loading ? <Loading /> : <MonthCalendar selectedDay={selectedDay} isOpen={isOpen} />}
       </div>
       <MonthDetail isOpen={isOpen} />
-      <Popup />
+      {visible && <Popup />}
     </div>
   );
 };

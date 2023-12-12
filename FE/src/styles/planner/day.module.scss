@@ -36,7 +36,10 @@ $color-btn-blue: var(--color-btn-blue);
   grid-template-rows: 0.3fr 2fr max-content;
 
   > div {
-    border-right: 1px solid $color-text;
+    border-right: 1px solid $color-gray_4;
+    &:nth-last-child(-n + 2) {
+      border-bottom: 1px solid $color-gray_4;
+    }
   }
 
   > .item__time {
@@ -63,10 +66,8 @@ $color-btn-blue: var(--color-btn-blue);
       border: {
         top: 1px solid $color-gray_4;
         bottom: 1px solid $color-gray_4;
+        right: 1px solid $color-gray_4;
       }
-    }
-    > .item__timetable {
-      border-left: 1px solid $color-text;
     }
 
     .custom-cursor {
@@ -85,12 +86,18 @@ $color-btn-blue: var(--color-btn-blue);
     .todo-item,
     .timetable__container-box {
       pointer-events: auto;
-      &::after {
+      &::after,
+      &:hover {
         content: "";
       }
       & > * {
         pointer-events: none;
       }
+    }
+
+    .ment-content__box > span:nth-child(3),
+    .ment-preview__box.--none {
+      visibility: hidden;
     }
   }
 }
@@ -106,6 +113,13 @@ $color-btn-blue: var(--color-btn-blue);
   &__date {
     display: flex;
     flex-direction: column;
+
+    > div:nth-child(1) {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      color: $color-gray_4;
+    }
 
     > div:nth-child(2) {
       display: flex;
@@ -167,7 +181,10 @@ $color-btn-blue: var(--color-btn-blue);
       height: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: space-evenly;
+      gap: 0.2em;
+      padding-bottom: 0.15em;
+      box-sizing: border-box;
+      justify-content: flex-end;
 
       .button__visit > button > span {
         color: #f00;
@@ -258,7 +275,7 @@ $color-btn-blue: var(--color-btn-blue);
       right: 0;
     }
 
-    &__none {
+    &--none {
       width: 100%;
       height: 100%;
       display: flex;
@@ -413,7 +430,7 @@ $color-btn-blue: var(--color-btn-blue);
     position: relative;
     height: 100%;
     overflow-y: auto;
-    padding: 0em 0.2em;
+    padding: 0em 0.1em;
     box-sizing: border-box;
 
     &-box {

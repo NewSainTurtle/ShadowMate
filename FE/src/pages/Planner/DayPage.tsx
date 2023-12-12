@@ -45,12 +45,10 @@ const DayPage = () => {
       .daily(friendUserId, { date: day })
       .then((res) => {
         const response = res.data.data;
+        const { ...rest } = response;
         dispatch(
           setDayInfo({
-            plannerAccessScope: response.plannerAccessScope,
-            dday: response.dday,
-            like: response.like,
-            likeCount: response.likeCount,
+            ...rest,
             shareSocial: response.shareSocial || 0,
             dailyTodos: response.dailyTodos || [],
           }),

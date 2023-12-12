@@ -64,7 +64,7 @@ const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) =>
   };
 
   return (
-    <div className={styles["ment-preview__box"]}>
+    <div className={`${styles["ment-preview__box"]} ${!retrospectionImage ? styles["--none"] : ""}`}>
       <input type="file" id="imageFile" accept="image/jpeg, image/png" onChange={renderImage} />
       {retrospectionImage ? (
         <div className={styles["ment-preview__img"]}>
@@ -75,7 +75,7 @@ const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) =>
         </div>
       ) : (
         <label htmlFor="imageFile">
-          <div className={styles["ment-preview__img__none"]}>
+          <div className={styles["ment-preview__img--none"]}>
             <AddPhotoAlternateOutlined />
           </div>
         </label>

@@ -25,7 +25,7 @@ const FriendHeader = () => {
   const userId = useAppSelector(selectUserId);
   const date = useAppSelector(selectDayDate);
   const friendUserId = useAppSelector(selectFriendInfo).userId;
-  const { likeCount, like } = useAppSelector(selectDayInfo);
+  const { likeCount, like, dailyTodos } = useAppSelector(selectDayInfo);
   const friendInfo = useAppSelector(selectFriendInfo);
 
   function heartClick() {
@@ -51,7 +51,7 @@ const FriendHeader = () => {
     <div className={`${styles["planner-header__friend"]} ${like ? styles["button__visit"] : ""}`}>
       <div>
         <div className={`${like ? styles["button__visit"] : ""}`}>
-          <Button types="red" onClick={() => heartClick()}>
+          <Button types="red" onClick={() => heartClick()} disabled={!dailyTodos.length}>
             ♥ {likeCount}
           </Button>
         </div>
@@ -125,7 +125,7 @@ interface Props {
 const Header = ({ isFriend, ...rest }: Props) => {
   const dispatch = useAppDispatch();
   const date = useAppSelector(selectDayDate);
-  const { dday: nearDate } = useAppSelector(selectDayInfo);
+  const { dday: nearDate, ddayTitle } = useAppSelector(selectDayInfo);
   const titleDay = dayjs(date).format("YYYY년 M월 DD일 ddd요일");
 
   const moveDate = (n: -1 | 0 | 1) => {
@@ -136,7 +136,10 @@ const Header = ({ isFriend, ...rest }: Props) => {
   return (
     <div className={styles["planner-header"]}>
       <div className={styles["planner-header__date"]}>
-        <Dday nearDate={nearDate} comparedDate={date} />
+        <div>
+          <Dday nearDate={nearDate} comparedDate={date} />
+          {!isFriend && <Text bold>{ddayTitle}</Text>}
+        </div>
         <div>
           <Text types="semi-large" bold>
             {titleDay}
