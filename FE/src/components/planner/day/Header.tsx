@@ -138,11 +138,7 @@ const Header = ({ isFriend, ...rest }: Props) => {
       <div className={styles["planner-header__date"]}>
         <div>
           <Dday nearDate={nearDate} comparedDate={date} />
-          {!isFriend && (
-            <Text types="small" bold>
-              {ddayTitle}
-            </Text>
-          )}
+          {!isFriend && <Text bold>{ddayTitle}</Text>}
         </div>
         <div>
           <Text types="semi-large" bold>
