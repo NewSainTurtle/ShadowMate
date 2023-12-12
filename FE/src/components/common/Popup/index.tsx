@@ -62,7 +62,7 @@ const Popup = () => {
               <div className={styles["content-title"]}>
                 <div>기 간</div>
               </div>
-              <Text types="small">2023.12.06(수) ~ 2023.12.31(일)</Text>
+              <Text types="small">2023.12.13(수) ~ 2023.12.31(일)</Text>
               <div className={styles["content-title"]}>
                 <div>내 용</div>
               </div>
