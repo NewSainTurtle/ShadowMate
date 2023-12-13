@@ -69,7 +69,7 @@ $color-gray_5: var(--color-gray-5);
   padding: 0em 1em;
   box-sizing: border-box;
   grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
-  grid-template-rows: repeat(2, 20em);
+  grid-auto-rows: minmax(20em, 50%);
   place-items: center stretch;
   gap: 0.5em 2em;
 
