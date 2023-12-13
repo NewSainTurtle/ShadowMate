@@ -1,0 +1,14 @@
+$text: (
+  small: 0.875rem,
+  default: 1rem,
+  semi-medium: 1.125rem,
+  medium: 1.3rem,
+  semi-large: 1.7rem,
+  large: 2.4rem,
+);
+
+@each $key, $value in $text {
+  .text-#{$key} {
+    font-size: $value;
+  }
+}

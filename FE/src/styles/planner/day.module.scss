@@ -1,0 +1,533 @@
+@use "@styles/common/Text.module.scss";
+$color-gray_4: var(--color-gray-4);
+$color-gray_3: var(--color-gray-3);
+$color-gray_2: var(--color-gray-2);
+$color-gray_1: var(--color-gray-1);
+$color-text: var(--color-text);
+$color-warning: var(--color-warning);
+$color-background: var(--color-background);
+$color-btn-red: var(--color-btn-red);
+$color-btn-blue: var(--color-btn-blue);
+
+%item-container {
+  padding: 0.5em 0.5rem;
+  box-sizing: border-box;
+}
+
+%set-input {
+  background-color: $color-background;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: $color-text;
+}
+
+.page-container {
+  background-color: $color-background;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  height: calc(100% - 5em);
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 0.3fr 2fr max-content;
+
+  > div {
+    border-right: 1px solid $color-gray_4;
+    &:nth-last-child(-n + 2) {
+      border-bottom: 1px solid $color-gray_4;
+    }
+  }
+
+  > .item__time {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    place-content: center;
+    gap: 1rem;
+    font: {
+      size: 1.6rem;
+      weight: 600;
+    }
+  }
+
+  > .item__todo {
+    grid-column: 1/3;
+    height: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+
+    > .item__todo-list,
+    > .item__timetable {
+      overflow-y: auto;
+      border: {
+        top: 1px solid $color-gray_4;
+        bottom: 1px solid $color-gray_4;
+        right: 1px solid $color-gray_4;
+      }
+    }
+
+    .custom-cursor {
+      cursor: none;
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+  }
+
+  &.--friend {
+    pointer-events: none;
+
+    .todo-item,
+    .timetable__container-box {
+      pointer-events: auto;
+      &::after,
+      &:hover {
+        content: "";
+      }
+      & > * {
+        pointer-events: none;
+      }
+    }
+
+    .ment-content__box > span:nth-child(3),
+    .ment-preview__box.--none {
+      visibility: hidden;
+    }
+  }
+}
+
+.planner-header {
+  @extend %item-container;
+  height: 5em;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: end;
+  border-bottom: solid 1px $color-gray_4;
+
+  &__date {
+    display: flex;
+    flex-direction: column;
+
+    > div:nth-child(1) {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      color: $color-gray_4;
+    }
+
+    > div:nth-child(2) {
+      display: flex;
+      align-items: flex-end;
+
+      > span:nth-child(1) {
+        width: 19rem;
+      }
+    }
+
+    .date-move {
+      @extend .text-semi-large;
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+      cursor: pointer;
+    }
+  }
+
+  button {
+    width: 5rem;
+  }
+
+  .button__visit > button {
+    box-shadow: inset 0px 3px 6px 0px rgba(black, 0.4);
+    &:disabled {
+      box-shadow: none;
+    }
+  }
+
+  &__default {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 0.2em;
+    gap: 10px;
+
+    > button {
+      &:nth-child(1) {
+        background-color: $color-btn-red;
+        &:active {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  &__friend {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-items: end;
+    justify-content: flex-end;
+    gap: 0.5em;
+    padding-left: 0.5em;
+    box-sizing: border-box;
+
+    > div:nth-child(1) {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2em;
+      padding-bottom: 0.15em;
+      box-sizing: border-box;
+      justify-content: flex-end;
+
+      .button__visit > button > span {
+        color: #f00;
+      }
+    }
+
+    > div:nth-child(2) {
+      width: 22.5vw;
+    }
+  }
+}
+
+.ment-container {
+  @extend %item-container;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr min-content;
+  align-items: center;
+  overflow: hidden;
+
+  > .ment-content__box {
+    height: 100%;
+    position: relative;
+    display: grid;
+    grid-template-rows: min-content 1fr;
+    align-items: center;
+
+    > input {
+      @extend %set-input;
+      @extend .text-default;
+    }
+
+    > textarea {
+      @extend %set-input;
+      @extend .text-default;
+      max-height: 100%;
+      resize: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    > span:nth-child(3) {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      color: $color-gray_4;
+    }
+  }
+}
+
+.ment-preview__box {
+  width: 10em;
+  height: 10em;
+  background: $color-gray_1;
+  margin-left: 0.5em;
+  border-radius: 0.625rem;
+  border: 1px solid $color-gray_2;
+  overflow: hidden;
+
+  > input[type="file"] {
+    display: none;
+  }
+
+  .ment-preview__img {
+    position: relative;
+
+    > img {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0.625rem;
+    }
+
+    > button {
+      display: none;
+    }
+
+    &:hover > button {
+      display: block;
+      color: $color-warning;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    &--none {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-gray_4;
+      cursor: pointer;
+    }
+  }
+}
+
+.todo-list {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: start;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.todo-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(7em, 1.5fr) 8fr minmax(2em, 0.5fr);
+  grid-template-rows: 1fr;
+  border-bottom: 1px solid $color-text;
+  position: relative;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  > div:nth-child(n) {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      @extend .text-default;
+      display: none;
+    }
+
+    &:hover svg {
+      display: block;
+      color: $color-gray_4;
+    }
+  }
+
+  > div:nth-child(-n + 2) {
+    border-right: 1px dashed $color-text;
+    padding: 0 0.5em;
+    box-sizing: border-box;
+  }
+
+  &--disable {
+    @extend .todo-item;
+    border-bottom: 1px solid $color-gray_3;
+  }
+
+  &.--possible {
+    cursor: pointer;
+  }
+
+  &.--impossible {
+    > div div {
+      opacity: 0.3;
+    }
+  }
+
+  &__category,
+  &__content {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    > span {
+      width: 100%;
+      padding: 50%;
+      box-sizing: border-box;
+    }
+
+    &--add {
+      @extend .todo-item__content;
+      cursor: pointer;
+    }
+  }
+
+  &__category,
+  &__category--add {
+    &-box {
+      width: 100%;
+      height: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      > span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  &__content {
+    padding: 0 1em;
+    box-sizing: border-box;
+
+    &__possible {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    input {
+      @extend %set-input;
+      @extend .text-default;
+      height: 100%;
+      padding: 0;
+
+      &::placeholder {
+        @extend .text-small;
+      }
+
+      &:focus::placeholder {
+        color: transparent;
+      }
+    }
+  }
+
+  &__checked {
+    &--add {
+      cursor: pointer;
+    }
+  }
+}
+
+%timetable__item {
+  display: grid;
+  grid-template-rows: repeat(24, calc(100% / 16));
+  > div:nth-child(n) {
+    border-right: 1px solid $color-gray_3;
+    border-bottom: 1px solid $color-gray_3;
+  }
+}
+
+.timetable {
+  &__container {
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    padding: 0em 0.1em;
+    box-sizing: border-box;
+
+    &-box {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: grid;
+      grid-template-columns: 1fr 8fr;
+      grid-template-rows: 1fr;
+
+      @mixin timeTableContent($content) {
+        @extend .text-small;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.5;
+        margin: 0 0 1.2em 1.2em;
+        text-align: center;
+        white-space: pre;
+        line-height: 1.5em;
+        content: $content;
+      }
+
+      &.--none::after,
+      &.--stateNone:hover::after {
+        @include timeTableContent("할 일을 완료하면\A시간을 기록할 수 있습니다.");
+      }
+
+      &.--defalut:hover::after {
+        @include timeTableContent("클릭하여\A시간을 기록할 수 있습니다");
+      }
+
+      &.--clicked::after {
+        @include timeTableContent("기록할 할 일을 클릭해주세요\A기록 중지는 마우스 우클릭 입니다");
+      }
+
+      &.--dragBefore::after {
+        @include timeTableContent("원하는 시간을 드래그해서 기록할 수 있습니다");
+      }
+
+      &.--drag::after {
+        @include timeTableContent("");
+      }
+    }
+  }
+
+  &__hours {
+    @extend %timetable__item;
+    > div:nth-child(n) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    > div:nth-last-child(1) {
+      border-bottom: none;
+    }
+  }
+
+  &__minutes {
+    @extend %timetable__item;
+    grid-template-columns: repeat(6, calc(100% / 6));
+
+    > div {
+      > div:nth-child(6n) {
+        border-right: none;
+      }
+      > div:nth-last-child(-n + 6) {
+        border-bottom: none;
+      }
+    }
+
+    &__item {
+      position: relative;
+
+      > div {
+        cursor: pointer;
+        position: absolute;
+        right: 0.1em;
+        top: 0.1em;
+        background-color: white;
+        border-radius: 50%;
+        svg {
+          display: none;
+          font-size: 1em;
+          color: $color-warning;
+        }
+      }
+
+      &:hover {
+        background-color: $color-gray_1;
+        display: block;
+        svg {
+          display: block;
+        }
+      }
+    }
+  }
+}

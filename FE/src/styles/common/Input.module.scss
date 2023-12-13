@@ -1,0 +1,57 @@
+$color-border: 1px solid var(--color-gray-3);
+$color-text-placeholder: var(--color-gray-4);
+$color-text: var(--color-text);
+$color-icon: var(--color-gray-5);
+$color-background: var(--color-background);
+
+input__underline {
+  border-bottom: $color-border;
+  color: $color-text-placeholder;
+  transition: none;
+}
+
+.input {
+  min-width: 15em;
+  width: 100%;
+
+  & input {
+    font-size: 1rem;
+    padding-left: 0.25em;
+    color: $color-text;
+
+    &::placeholder {
+      color: $color-text-placeholder;
+    }
+
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 100px $color-background inset;
+      -webkit-text-fill-color: $color-text;
+    }
+  }
+
+  & :before {
+    @extend input__underline;
+  }
+
+  & :hover:not(.Mui-disabled, .Mui-error):before {
+    @extend input__underline;
+  }
+
+  & :after {
+    @extend input__underline;
+  }
+
+  &__helper-text {
+    color: $color-text-placeholder;
+  }
+}
+
+.input__icon {
+  color: $color-icon;
+  margin-left: 0.25rem;
+  margin-right: 0;
+
+  & * {
+    font-size: 1.3rem;
+  }
+}

@@ -1,0 +1,315 @@
+@use "@styles/common/Text.module.scss";
+$color-text: var(--color-text);
+$color-white: var(--color-white);
+$color-black: var(--color-black);
+$color-gray-1: var(--color-gray-1);
+$color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
+$border: 1px;
+
+%under_boder {
+  border-bottom: $border solid $color-text;
+}
+
+%flex_row {
+  display: flex;
+  flex-direction: row;
+}
+
+.top_border {
+  border-top: $border solid $color-text;
+  margin-top: -1px;
+}
+
+.week {
+  // 타이틀 전체 영역
+  &__title {
+    @extend %under_boder, %flex_row;
+    height: 5em;
+    justify-content: space-between;
+    padding: 0.5em 0.5rem;
+    box-sizing: border-box;
+
+    // 타이틀 + 좌우 버튼
+    > div:nth-child(1) {
+      @extend %flex_row;
+      align-items: end;
+
+      > span:nth-child(1) {
+        width: 15rem;
+        box-sizing: border-box;
+      }
+
+      // 좌우 버튼
+      > div:nth-child(2) {
+        @extend %flex_row;
+        @extend .text-semi-large;
+        align-items: center;
+        gap: 0.3em;
+      }
+    }
+
+    // 친구 프로필 영역
+    > div:nth-child(2) {
+      align-self: center;
+      width: 22.5vw;
+    }
+  }
+
+  &__button,
+  &__today {
+    fill: $color-text;
+    cursor: pointer;
+  }
+
+  // 위클리 영역
+  &__list {
+    @extend %flex_row;
+    flex-wrap: wrap;
+    height: calc(100% - 5em - $border); // ( 전체높이 - 타이틀 높이 - border 높이 )
+  }
+}
+
+// Todo 영역
+.todo {
+  @extend %under_boder;
+  display: grid;
+  grid-template-rows: 1fr 7fr;
+  height: calc(100% / 2 - $border);
+  width: calc(100% / 4 - $border);
+  border-right: $border solid $color-text;
+
+  &__item {
+    @extend %flex_row;
+    gap: $border;
+    padding: 0 $border;
+    align-items: center;
+    &:hover {
+      &.todo__item > svg {
+        visibility: visible;
+      }
+    }
+    > svg {
+      visibility: hidden;
+      color: $color-gray-4;
+      font-size: medium;
+      margin-right: 1em;
+      cursor: pointer;
+    }
+
+    &--friend {
+      @extend .todo__item;
+      pointer-events: none;
+    }
+  }
+
+  &__checkbox {
+    display: grid;
+    grid-template-columns: 1fr 9fr;
+    align-items: center;
+    width: 100%;
+    margin-right: 1em;
+    > input[type="checkbox"] {
+      appearance: none;
+      width: 1em;
+      height: 1em;
+      margin: 0 0.5em 0 1em;
+      border-radius: 4px;
+      border: $border solid $color-text;
+      cursor: pointer;
+      &:checked {
+        border-color: transparent;
+        background: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
+        background-size: 100% 100%;
+        background-position: 50%;
+        background-repeat: no-repeat;
+        background-color: $color-gray-4;
+        + .todo__name {
+          color: $color-gray-4;
+          text-decoration: line-through;
+        }
+      }
+    }
+    > input[type="text"] {
+      width: 100%;
+      background: transparent;
+      padding: 0.5em 0;
+      border: none;
+      font-size: 0.875rem;
+      border-bottom: $border solid $color-gray-4;
+
+      &:focus {
+        outline: none;
+        color: $color-text;
+      }
+      &::placeholder {
+        color: $color-gray-5;
+      }
+    }
+  }
+
+  &__name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+}
+
+.item {
+  @extend %under_boder;
+  display: grid;
+  grid-template-rows: 1fr 5fr 2fr;
+  height: calc(100% / 2 - $border);
+  width: calc(100% / 4 - $border);
+  border-right: $border solid $color-text;
+  &:nth-child(n + 5) {
+    height: calc(100% / 2);
+  }
+
+  &__title {
+    @extend %under_boder;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > div:nth-child(1):hover {
+      padding: 0.2em 0.5em;
+      box-sizing: border-box;
+      border-radius: 0.625rem;
+      background-color: $color-gray-1;
+      cursor: pointer;
+    }
+    > span {
+      // DDay
+      &:nth-child(2) {
+        position: absolute;
+        right: 5;
+      }
+    }
+  }
+
+  &__todo {
+    &-list {
+      display: grid;
+      overflow-y: auto;
+    }
+
+    &-item {
+      @extend %under_boder;
+      display: grid;
+      grid-template-columns: 1.5fr 6.5fr 0.5fr 1.5fr;
+      align-items: center;
+      gap: $border;
+      padding: 0 $border;
+      > div {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      // 카테고리 (이모지)
+      > div:nth-child(1) {
+        width: 100%;
+        border-right: $border solid $color-text;
+        cursor: pointer;
+      }
+      // 할 일 내용
+      > div:nth-child(2) {
+        width: 100%;
+        justify-content: start;
+        > span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          word-break: break-word;
+
+          display: -webkit-box;
+          -webkit-line-clamp: 2; // 원하는 라인수
+          -webkit-box-orient: vertical;
+          margin: 0 1em;
+          cursor: pointer;
+        }
+      }
+      // 삭제 아이콘
+      > svg:nth-child(3) {
+        width: 100%;
+        visibility: hidden;
+        font-size: medium;
+        color: $color-gray-4;
+        cursor: pointer;
+      }
+      // 완료 여부
+      > div:nth-child(4) {
+        border-left: $border solid $color-text;
+        cursor: pointer;
+      }
+
+      > input {
+        width: 100%;
+        margin-left: calc(1em - 2px);
+        background: transparent;
+        border: none;
+        font-size: 0.875rem;
+        color: $color-text;
+        &:focus {
+          outline: none;
+        }
+        &::placeholder {
+          color: $color-gray-4;
+        }
+      }
+
+      &:hover {
+        &.item__todo-item > svg {
+          visibility: visible;
+        }
+      }
+
+      &--friend {
+        @extend .item__todo-item;
+        pointer-events: none;
+      }
+    }
+  }
+
+  &__edit-input {
+    padding-right: 1em;
+    box-sizing: border-box;
+  }
+
+  &__memo {
+    position: relative;
+    > textarea {
+      background: transparent;
+      height: 100%;
+      width: 100%;
+      resize: none;
+      border: none;
+      padding: 1em;
+      box-sizing: border-box;
+      color: $color-text;
+      &:focus {
+        outline: none;
+      }
+      &::placeholder {
+        color: $color-gray-4;
+      }
+    }
+
+    > span {
+      position: absolute;
+      bottom: 0.2em;
+      right: 0.2em;
+      color: $color-gray-4;
+    }
+
+    &--friend {
+      @extend .item__memo;
+      > textarea {
+        &::placeholder {
+          visibility: hidden;
+        }
+      }
+    }
+  }
+}

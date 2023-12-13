@@ -1,0 +1,504 @@
+@use "@styles/common/Text.module.scss";
+$color-text: var(--color-text);
+$color-background: var(--color-background);
+$color-gray-1: var(--color-gray-1);
+$color-gray-3: var(--color-gray-3);
+$color-gray-4: var(--color-gray-4);
+$color-gray-5: var(--color-gray-5);
+$color-black: var(--color-black);
+$color-white: var(--color-white);
+$color-blue: var(--color-btn-blue);
+
+.month {
+  display: grid;
+  grid-template-columns: 6fr 4fr;
+  gap: 1em;
+  height: 100%;
+  padding: 2em;
+  box-sizing: border-box;
+  background-color: $color-background;
+
+  &__title {
+    display: flex;
+    align-items: flex-end;
+    height: 8em;
+    margin-bottom: 2em;
+    > div {
+      display: flex;
+      align-items: flex-end;
+      > div:nth-child(1) {
+        display: flex;
+        // 날짜(년월) 영역
+        > span:nth-child(1) {
+          width: 4em;
+          text-align: end;
+        }
+        > span:nth-child(2) {
+          width: 2.5em;
+          text-align: end;
+        }
+      }
+      > div:nth-child(2) {
+        @extend .text-semi-large;
+        display: flex;
+        align-items: center;
+        gap: 0.3em;
+        margin-left: 1em;
+      }
+    }
+  }
+}
+
+.calendar {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto repeat(7, 1fr);
+  grid-template-rows: auto repeat(6, 1fr);
+  height: calc(100% - 8em - 2em);
+  padding: 1em;
+  box-sizing: border-box;
+
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $color-gray-5;
+  }
+
+  &__week-cnt {
+    > span {
+      margin-bottom: 1em;
+      padding: 0.5em;
+      box-sizing: border-box;
+      cursor: pointer;
+      &:nth-child(1):hover {
+        background-color: $color-gray-1;
+        border-radius: 0.625rem;
+      }
+    }
+  }
+
+  &__week {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $color-gray-5;
+    margin-bottom: 1em;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    > div:nth-child(1) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 3em;
+      width: 3em;
+      color: $color-black;
+      border-radius: 20%;
+      > span > svg {
+        font-size: large;
+        color: $color-black;
+      }
+    }
+
+    &--null {
+      @extend .calendar__item;
+      > div:nth-child(1) {
+        background-color: $color-gray-1;
+      }
+      > span {
+        visibility: hidden;
+      }
+    }
+  }
+
+  &__date {
+    margin-top: 0.5em;
+    > span {
+      color: $color-text;
+    }
+    &--today {
+      @extend .calendar__date;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 1.3rem;
+      height: 1.3rem;
+      border-radius: 50%;
+      background-color: $color-text;
+      > span {
+        color: $color-background;
+      }
+    }
+  }
+
+  &__overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: -4em;
+    > svg {
+      margin-bottom: 1em;
+      fill: $color-text;
+    }
+  }
+}
+
+.detail {
+  display: grid;
+  grid-template-rows: min-content min-content calc(4rem * 1.4 + 2vw + 2vw + 0.5em) min-content auto;
+  width: 100%;
+  height: 100%;
+  gap: 1em;
+
+  &__stats {
+    display: flex;
+    gap: 1em;
+  }
+
+  &--close {
+    @extend .detail;
+    grid-template-rows: min-content min-content calc(4rem * 1.4 + 2vw + 2vw + 0.5em) auto;
+  }
+}
+
+.friend {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+
+  &__container {
+    display: grid;
+    grid-auto-flow: column;
+    // grid-template-columns: repeat(10, 1fr);
+    padding: 0.2em 1em 0.2em 1em;
+    box-sizing: border-box;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera*/
+    }
+  }
+
+  &__btn {
+    &--left,
+    &--right {
+      display: flex;
+      align-items: center;
+      width: 1em;
+      height: 4em;
+      background-color: $color-gray-1;
+      cursor: pointer;
+      > svg {
+        font-size: small;
+        color: $color-gray-3;
+      }
+    }
+
+    &--left {
+      border-radius: 8px 0 0 8px;
+    }
+
+    &--right {
+      border-radius: 0 8px 8px 0;
+    }
+
+    &--add {
+      width: 3em;
+      height: 4em;
+      margin: 0 0.2em;
+      > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        margin: 0.2em auto;
+        border-radius: 50%;
+        background-color: $color-gray-3;
+        cursor: pointer;
+        > svg {
+          font-size: medium;
+        }
+      }
+    }
+  }
+}
+
+.icon-box {
+  position: relative;
+  width: 100%;
+  border: 0.5px solid $color-gray-3;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1vw;
+    box-sizing: border-box;
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      > div:nth-child(1) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 2vw;
+        height: 2vw;
+        border-radius: 50%;
+        > svg {
+          fill: white;
+          width: 70%;
+          height: 70%;
+        }
+      }
+    }
+    > svg {
+      margin-right: 0.4em;
+      justify-self: end;
+      font-size: medium;
+      cursor: pointer;
+    }
+  }
+}
+
+.introduction {
+  height: calc(4rem * 1.4);
+  padding: 0 1em;
+  box-sizing: border-box;
+  overflow: auto;
+
+  &__tool {
+    > span {
+      color: $color-gray-5;
+    }
+    > svg {
+      margin-right: 0.4em;
+      justify-self: end;
+      font-size: medium;
+      cursor: pointer;
+    }
+  }
+
+  &__edit {
+    position: relative;
+    width: 100%;
+    > textarea {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      outline: none;
+      border: none;
+      resize: none;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: $color-gray-5;
+      background-color: $color-background;
+    }
+  }
+
+  &__contents {
+    line-height: 1.4;
+  }
+
+  &__none {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > span {
+      color: $color-gray-3;
+    }
+  }
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  margin: 0 1em 1vw 1em;
+  &__contents {
+    display: flex;
+    justify-content: space-between;
+    > span:nth-child(1) {
+      color: $color-gray-4;
+    }
+  }
+}
+
+.guest {
+  width: 100%;
+  &__input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5em;
+    padding-left: 1em;
+    box-sizing: border-box;
+    border-top: 0.5px solid $color-gray-3;
+    > input {
+      width: 100%;
+      height: 100%;
+      padding-left: 0;
+      outline: none;
+      border: none;
+      color: $color-text;
+      background-color: $color-background;
+    }
+  }
+
+  &__send {
+    height: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+    border-left: 0.5px solid $color-gray-3;
+    cursor: pointer;
+    > svg {
+      fill: $color-gray-4;
+    }
+  }
+
+  &__contents {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    height: calc(100% - 2vw - 2vw - 2.5em);
+    width: 100%;
+    padding: 0 0.2em 0.2em 1em;
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    &--none {
+      @extend .guest__contents;
+      height: calc(100% - 2vw - 2vw);
+    }
+  }
+
+  &__comment {
+    display: flex;
+    padding-right: 0.2em;
+    gap: 0.5em;
+
+    &:hover {
+      .guest__delete--mine {
+        visibility: visible;
+      }
+    }
+
+    > div:nth-child(2) {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 0.2em;
+    }
+  }
+
+  &__nickname {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    > div:nth-child(1) > span {
+      cursor: pointer;
+    }
+    > div:nth-child(2) {
+      display: flex;
+      justify-items: center;
+      align-items: center;
+      gap: 0.2em;
+      > span {
+        color: $color-gray-4;
+      }
+    }
+  }
+
+  &__delete,
+  &__delete--mine {
+    visibility: hidden;
+    > svg {
+      font-size: small;
+      color: $color-gray-4;
+      cursor: pointer;
+    }
+  }
+
+  &__none {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > span {
+      color: $color-gray-3;
+    }
+  }
+}
+
+@media screen and (max-width: 1180px) {
+  .detail {
+    grid-template-rows: min-content min-content calc(4rem * 1.4 + 2vw + 1rem + 0.5em) min-content auto;
+    &--close {
+      grid-template-rows: min-content min-content calc(4rem * 1.4 + 2vw + 1rem + 0.5em) auto;
+    }
+  }
+  .calendar__item {
+    > div:nth-child(1) {
+      height: 2.5em;
+      width: 2.5em;
+    }
+  }
+  .icon-box__title {
+    > div {
+      > div:nth-child(1) {
+        display: none;
+      }
+      > span {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    }
+  }
+  .introduction {
+    padding: 0 1vw;
+  }
+}
+
+@media screen and (min-width: 1512px) {
+  .detail {
+    grid-template-rows: min-content min-content calc(4rem * 1.4 + 2em + 2em + 0.5em) min-content auto;
+    &--close {
+      grid-template-rows: min-content min-content calc(4rem * 1.4 + 2em + 2em + 0.5em) auto;
+    }
+  }
+  .icon-box__title {
+    padding: 1em;
+    > div {
+      > div:nth-child(1) {
+        width: 2em;
+        height: 2em;
+      }
+    }
+  }
+
+  .guest {
+    &__contents {
+      height: calc(100% - 4em - 2.5em);
+      &--none {
+        height: calc(100% - 4em);
+      }
+    }
+  }
+}

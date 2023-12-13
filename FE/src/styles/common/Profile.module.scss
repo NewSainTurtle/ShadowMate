@@ -1,0 +1,142 @@
+$color-background: var(--color-background);
+$color-gray_1: var(--color-gray-1);
+$color-gray_3: var(--color-gray-3);
+$color-blue: var(--color-btn-blue);
+$color-white: var(--color-white);
+$color-text: var(--color-text);
+
+.profile_container,
+.fprofile_container {
+  display: flex;
+  flex-direction: row;
+  border-radius: 1em;
+}
+
+.profile_container {
+  height: 7em;
+  border: 0.5px solid $color-gray_3;
+}
+
+.fprofile_container {
+  height: 4em;
+  background-color: $color-gray_1;
+}
+
+.profile_img,
+.fprofile_img {
+  display: flex;
+  align-items: center;
+  margin-left: 0.8em;
+  padding: 0.4em;
+  box-sizing: border-box;
+  border-radius: 50%;
+
+  > div {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.fprofile_img {
+  cursor: pointer;
+}
+
+.profile_content,
+.fprofile_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 0.4em;
+}
+
+.fprofile_content {
+  cursor: pointer;
+  > span:nth-child(1) {
+    margin-bottom: 0.2em;
+  }
+}
+
+.profile_content {
+  > span:nth-child(1) {
+    margin-bottom: 0.5em;
+  }
+}
+
+.profile_button {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 1.4em;
+  > svg {
+    font-size: medium;
+    cursor: pointer;
+  }
+  > div:nth-child(1) {
+    width: 2.5rem;
+    height: 2.5rem;
+    position: relative;
+    border: none;
+    border-radius: 50%;
+    background-color: $color-gray_1;
+    cursor: pointer;
+    > svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: $color-blue;
+    }
+  }
+}
+
+.fprofile_button {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 0.8em;
+  > button {
+    justify-content: center;
+    width: 6.2em;
+    height: 2.875em;
+    margin-right: 0.8em;
+    border: none;
+    border-radius: 0.625rem;
+    background-color: $color-background;
+    color: $color-text;
+    cursor: pointer;
+  }
+  > div {
+    width: 2.5rem;
+    height: 2.5rem;
+    position: relative;
+    border: none;
+    border-radius: 50%;
+    background-color: $color-background;
+    cursor: pointer;
+    > svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: $color-blue;
+    }
+  }
+}
+
+.f-icon {
+  display: block;
+  width: 3em;
+  height: 4em;
+  margin: 0 0.2em;
+  text-align: center;
+  cursor: pointer;
+  > div {
+    margin: 0.2em auto;
+  }
+
+  &__nickname {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
