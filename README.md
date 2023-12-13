@@ -147,9 +147,13 @@ ex) develop
 
 #### 1. 랜딩
 
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/016f50e9-209e-45a6-a455-bf4f3a7e3873" width="70%"/></div>
+
 <br>
 
 #### 2. 회원가입/로그인
+
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/e2f29e61-ee2a-43e7-a60f-6f436ecd7eeb" width="70%"/></div>
 
 <div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fa8dfae6-1be7-4410-9687-0062b9ce86bf" width="70%"/></div>
 
@@ -159,7 +163,7 @@ ex) develop
 
 #### 3. 월별(메인)
 
-<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/85155789/fc329dfc-d5d9-48b6-b07e-4c468b0f6527" width="70%"/></div>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/5d053237-527b-408e-8cc6-dd2f1af4ab16" width="70%"/></div>
 
 <br>
 
@@ -172,7 +176,7 @@ ex) develop
 #### 5. 일별 플래너
 
 - 나의 플래너 
-<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/6b28751b-70d5-47ec-9321-b412e899ddc0" width="70%"/></div>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/4f139a76-86c8-4bf5-a7ff-75c67e5e2772" width="70%"/></div>
 
 
 - 다른 사용자 플래너
@@ -209,3 +213,7 @@ ex) develop
 <br>
 
 #### 8. 다크모드 지원
+
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/146ac8df-76cf-4efa-85cd-fb4676d842e1" width="70%"/></div>
+
+<br>
