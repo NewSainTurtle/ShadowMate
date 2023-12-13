@@ -413,7 +413,7 @@ $color-blue: var(--color-btn-blue);
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    > span:nth-child(1) {
+    > div:nth-child(1) > span {
       cursor: pointer;
     }
     > div:nth-child(2) {
