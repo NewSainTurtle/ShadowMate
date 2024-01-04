@@ -18,7 +18,7 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "todo_id"))
 public class Todo extends CommonEntity {
 
-    @Column(name = "todo_content", length = 100, nullable = false)
+    @Column(name = "todo_content", length = 50, nullable = false)
     private String todoContent;
 
     @Column(name = "todo_status")
