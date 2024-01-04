@@ -278,6 +278,7 @@ $border: 1px;
   }
 
   &__memo {
+    height: 100%;
     position: relative;
     > textarea {
       background: transparent;
