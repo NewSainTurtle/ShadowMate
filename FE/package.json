@@ -31,6 +31,7 @@
     "dayjs": "^1.11.9",
     "firebase": "^10.5.2",
     "html2canvas": "^1.4.1",
+    "imagemin-webp-webpack-plugin": "^3.3.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.2",
