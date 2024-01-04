@@ -11,7 +11,7 @@ const LandingPage = () => {
     <div className={styles.landing_container}>
       <picture>
         <source srcSet={backgroundImageWebP} type="image/webp" />
-        <img className={styles.landing_backgroundImg} src={backgroundImageSvg} alt="랜딩이미지" />
+        <img className={styles.landing_backgroundImg} src={backgroundImageSvg} alt="ShadowMate 플래너 이미지" />
       </picture>
 
       <div className={styles.landing_content}>
