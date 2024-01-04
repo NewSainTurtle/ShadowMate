@@ -18,7 +18,7 @@ public class UpdateTomorrowGoalRequest {
     private String date;
 
     @NotNull
-    @Size(max = 50)
+    @Size(max = 100)
     private String tomorrowGoal;
 
     @Builder

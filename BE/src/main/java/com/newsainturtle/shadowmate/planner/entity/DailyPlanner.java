@@ -20,10 +20,10 @@ public class DailyPlanner extends CommonEntity {
     @Column(name = "daily_planner_day", length = 10, nullable = false)
     private String dailyPlannerDay;
 
-    @Column(name = "today_goal", length = 100)
+    @Column(name = "today_goal", length = 50)
     private String todayGoal;
 
-    @Column(length = 200)
+    @Column(length = 250)
     private String retrospection;
 
     @Column(name = "retrospection_image")
