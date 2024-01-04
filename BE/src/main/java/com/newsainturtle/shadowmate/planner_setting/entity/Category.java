@@ -17,7 +17,7 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "category_id"))
 public class Category extends CommonEntity {
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 10, nullable = false)
     private String categoryTitle;
 
     @Column
