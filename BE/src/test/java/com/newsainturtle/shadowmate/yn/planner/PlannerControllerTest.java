@@ -753,7 +753,7 @@ class PlannerControllerTest {
                     // 내일의 다짐 길이초과
                     Arguments.of(UpdateTomorrowGoalRequest.builder()
                             .date(date)
-                            .tomorrowGoal("012345678901234567890123456789012345678901234567890")
+                            .tomorrowGoal("01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")
                             .build()),
                     // 날짜 Null
                     Arguments.of(UpdateTomorrowGoalRequest.builder()
@@ -796,7 +796,9 @@ class PlannerControllerTest {
                     // 오늘의 회고 길이초과
                     Arguments.of(UpdateRetrospectionRequest.builder()
                             .date("2023-09-26")
-                            .retrospection("01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")
+                            .retrospection("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                                    "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                                    "012345678901234567890123456789012345678901234567890")
                             .build()),
                     // 날짜 Null
                     Arguments.of(UpdateRetrospectionRequest.builder()
