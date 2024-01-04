@@ -68,7 +68,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
         <div onClick={handleMoveToDay}>
           <Text>{dateFormat(date)}</Text>
         </div>
-        <Dday nearDate={nearDate} comparedDate={dateFormat(date)} />
+        <Dday nearDate={nearDate} comparedDate={date} />
       </div>
       <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, 20%` }}>
         {dailyTodos.map((item: TodoConfig, key: number) => (
