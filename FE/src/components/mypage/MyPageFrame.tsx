@@ -114,7 +114,7 @@ const MyPageFrame = ({ title }: Props) => {
         categoryEmoticon: categoryInput.categoryEmoticon || "",
         categoryColorId: colorClick + 1,
       };
-      if (input.categoryTitle.length < 2 || input.categoryTitle.length >= 10) return;
+      if (input.categoryTitle.length < 2 || input.categoryTitle.length > 10) return;
       settingApi
         .editCategories(userId, input)
         .then((res) => {
@@ -134,7 +134,7 @@ const MyPageFrame = ({ title }: Props) => {
         ddayTitle: ddayInput.ddayTitle,
         ddayDate: dayjs(ddayInput.ddayDate).format("YYYY-MM-DD"),
       };
-      if (input.ddayTitle.length < 2 || input.ddayTitle.length >= 20) return;
+      if (input.ddayTitle.length < 2 || input.ddayTitle.length > 20) return;
       settingApi
         .editDdays(userId, input)
         .then((res) => {
