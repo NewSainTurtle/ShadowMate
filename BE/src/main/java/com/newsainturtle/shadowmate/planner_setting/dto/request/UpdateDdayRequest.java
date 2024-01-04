@@ -17,7 +17,7 @@ public class UpdateDdayRequest {
     private Long ddayId;
 
     @NotNull
-    @Size(max = 40)
+    @Size(min = 1, max = 20)
     private String ddayTitle;
 
     @NotNull

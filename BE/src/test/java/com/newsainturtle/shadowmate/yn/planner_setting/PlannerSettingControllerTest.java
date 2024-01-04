@@ -414,7 +414,7 @@ class PlannerSettingControllerTest {
                             .build()),
                     // 유효길이가 아닌 타이틀
                     Arguments.of(AddCategoryRequest.builder()
-                            .categoryTitle("국")
+                            .categoryTitle("일이삼사오육칠팔구십일")
                             .categoryEmoticon(categoryEmoticon)
                             .categoryColorId(categoryColorId)
                             .build()),
@@ -455,7 +455,7 @@ class PlannerSettingControllerTest {
                     // 유효하지 않은 카테고리 타이틀
                     Arguments.of(UpdateCategoryRequest.builder()
                             .categoryId(categoryId)
-                            .categoryTitle("국")
+                            .categoryTitle("일이삼사오육칠팔구십일")
                             .categoryEmoticon(categoryEmoticon)
                             .categoryColorId(categoryColorId)
                             .build()),

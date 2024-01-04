@@ -18,7 +18,7 @@ public class UpdateRetrospectionRequest {
     private String date;
 
     @NotNull
-    @Size(max = 100)
+    @Size(max = 250)
     private String retrospection;
 
     @Builder

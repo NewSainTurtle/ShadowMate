@@ -25,6 +25,6 @@ public class VisitorBook extends CommonEntity {
     @JoinColumn(name = "visitor_id")
     private User visitor;
 
-    @Column(name = "visitor_book_content", length = 60)
+    @Column(name = "visitor_book_content", length = 30)
     private String visitorBookContent;
 }

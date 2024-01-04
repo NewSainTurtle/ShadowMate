@@ -20,7 +20,7 @@ public class Dday extends CommonEntity {
     @Column(name = "dday_date", length = 10, nullable = false)
     private String ddayDate;
 
-    @Column(name = "dday_title", length = 40, nullable = false)
+    @Column(name = "dday_title", length = 20, nullable = false)
     private String ddayTitle;
 
     @ManyToOne(fetch = FetchType.LAZY)

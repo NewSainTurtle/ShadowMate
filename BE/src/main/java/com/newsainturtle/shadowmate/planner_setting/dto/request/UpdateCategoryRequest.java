@@ -16,7 +16,7 @@ public class UpdateCategoryRequest {
     private Long categoryId;
 
     @NotNull
-    @Size(min = 2, max = 10)
+    @Size(min = 1, max = 10)
     private String categoryTitle;
 
     @NotNull

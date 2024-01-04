@@ -16,7 +16,7 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "weekly_todo_id"))
 public class WeeklyTodo extends CommonEntity {
 
-    @Column(name = "weekly_todo_content", nullable = false, length = 100)
+    @Column(name = "weekly_todo_content", nullable = false, length = 50)
     private String weeklyTodoContent;
 
     @Column(name = "weekly_todo_status", nullable = false)
