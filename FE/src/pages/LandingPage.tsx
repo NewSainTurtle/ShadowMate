@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import styles from "@styles/auth/Landing.module.scss";
 import Text from "@components/common/Text";
 import AuthButton from "@components/auth/AuthButton";
-import backgroundImg from "@assets/Imgs/landing_background.svg";
+import backgroundImageSvg from "@assets/Imgs/landing_background.svg";
+import backgroundImageWebP from "@assets/Imgs/landing_background.webp";
 
 const LandingPage = () => {
   return (
     <div className={styles.landing_container}>
-      <img src={backgroundImg} className={styles.landing_backgroundImg} />
+      <picture>
+        <source srcSet={backgroundImageWebP} type="image/webp" />
+        <img className={styles.landing_backgroundImg} src={backgroundImageSvg} alt="랜딩이미지" />
+      </picture>
+
       <div className={styles.landing_content}>
         <p className={styles.landing_title}>
           SHADOW
