@@ -30,7 +30,7 @@ public class User extends CommonEntity {
     @Column(name = "profile_image")
     private String profileImage;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 20, nullable = false)
     private String nickname;
 
     @Column(name = "status_message", length = 40)
