@@ -72,14 +72,20 @@ class SocialRepositoryTest {
             final Social social = socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .build());
             final Social social2 = socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner2)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .build());
             final Social social3 = socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner3)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .build());
 
             //when
@@ -105,16 +111,22 @@ class SocialRepositoryTest {
             final Social social = socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .deleteTime(localDateTime)
                     .build());
             final Social social2 = socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner2)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner2.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .deleteTime(localDateTime)
                     .build());
             final Social social3 = socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner3)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner3.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .deleteTime(localDateTime)
                     .build());
 

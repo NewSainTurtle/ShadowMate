@@ -64,6 +64,8 @@ class SocialControllerTest{
             .id(9999L)
             .dailyPlanner(dailyPlanner)
             .socialImage(Image)
+            .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+            .ownerId(user1.getId())
             .build();
 
     @BeforeEach
