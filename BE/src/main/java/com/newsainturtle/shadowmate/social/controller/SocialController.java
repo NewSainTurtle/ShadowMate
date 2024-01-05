@@ -3,14 +3,11 @@ package com.newsainturtle.shadowmate.social.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.social.dto.SearchNicknamePublicDailyPlannerRequest;
 import com.newsainturtle.shadowmate.social.service.SocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 import static com.newsainturtle.shadowmate.social.constant.SocialConstant.*;
 
@@ -24,20 +21,15 @@ public class SocialController {
     private final SocialService socialService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<BaseResponse> searchPublicDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                                 @PathVariable("userId") final Long userId,
-                                                                 @RequestParam final String sort,
-                                                                 @RequestParam final Long pageNumber) {
+    public ResponseEntity<BaseResponse> getSocial(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                  @PathVariable("userId") final Long userId,
+                                                  @RequestParam final String sort,
+                                                  @RequestParam(name = "page-number") final Integer pageNumber,
+                                                  @RequestParam final String nickname,
+                                                  @RequestParam(name = "start-date") final String startDate,
+                                                  @RequestParam(name = "end-date") final String endDate) {
         authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_PUBLIC_DAILY_PLANNER, socialService.searchPublicDailyPlanner(sort, pageNumber)));
-    }
-
-    @PostMapping("/{userId}/searches/nicknames")
-    public ResponseEntity<BaseResponse> searchNicknamePublicDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                                         @PathVariable("userId") final Long userId,
-                                                                         @RequestBody @Valid final SearchNicknamePublicDailyPlannerRequest searchNicknamePublicDailyPlannerRequest) {
-        authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_NICKNAME_PUBLIC_DAILY_PLANNER, socialService.searchNicknamePublicDailyPlanner(searchNicknamePublicDailyPlannerRequest)));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_SOCIAL, socialService.getSocial(sort, pageNumber, nickname, startDate, endDate)));
     }
 
     @DeleteMapping("/{userId}/{socialId}")

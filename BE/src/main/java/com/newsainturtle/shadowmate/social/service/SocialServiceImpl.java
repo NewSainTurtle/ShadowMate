@@ -1,23 +1,26 @@
 package com.newsainturtle.shadowmate.social.service;
 
-import com.newsainturtle.shadowmate.planner.repository.DailyPlannerLikeRepository;
-import com.newsainturtle.shadowmate.social.dto.SearchNicknamePublicDailyPlannerRequest;
-import com.newsainturtle.shadowmate.social.dto.SearchPublicDailyPlannerResponse;
+import com.newsainturtle.shadowmate.social.dto.SearchSocialPlannerResponse;
 import com.newsainturtle.shadowmate.social.dto.SearchSocialResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
+import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
 import com.newsainturtle.shadowmate.social.exception.SocialException;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.*;
+import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.NOT_FOUND_SOCIAL;
 
 @Service
 @RequiredArgsConstructor
@@ -28,104 +31,165 @@ public class SocialServiceImpl implements SocialService {
 
     private final UserRepository userRepository;
 
-    private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
-
-    class SocialLike implements Comparable<SocialLike> {
-        Social social;
-        long cnt;
-
-        public SocialLike(Social social, long cnt) {
-            this.social = social;
-            this.cnt = cnt;
+    private void checkValidDate(final String startDate, final String endDate) {
+        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$";
+        if (!Pattern.matches(datePattern, startDate) || !Pattern.matches(datePattern, endDate)) {
+            throw new SocialException(SocialErrorResult.INVALID_DATE_FORMAT);
+        }
+        if (startDate.compareTo(endDate) > 0) {
+            throw new SocialException(SocialErrorResult.INVALID_DATE_PERIOD);
         }
 
-        @Override
-        public int compareTo(SocialLike o) {
-            return (int)(o.cnt - this.cnt);
+    }
+
+    private void checkSortFormat(String sort) {
+        if (!sort.equals("latest") && !sort.equals("popularity")) {
+            throw new SocialException(SocialErrorResult.BAD_REQUEST_SORT);
         }
     }
 
     @Override
-    public SearchPublicDailyPlannerResponse searchPublicDailyPlanner(final String sort, final long pageNumber) {
-        List<Social> socialList = socialRepository.findAllByDeleteTime();
-        return makeSearchPlannerResponse(socialList, sort, pageNumber);
+    public SearchSocialPlannerResponse getSocial(final String sort, final int pageNumber, final String nickname, final String startDate, final String endDate) {
+        checkSortFormat(sort);
+        if ((startDate == null && endDate == null) || (startDate.isEmpty() && endDate.isEmpty())) {
+            if (nickname == null || nickname.isEmpty()) return getSocialList(sort, pageNumber);
+            else return getSocialList(sort, pageNumber, nickname);
+        } else {
+            checkValidDate(startDate, endDate);
+            if (nickname == null || nickname.isEmpty()) return getSocialList(sort, pageNumber, startDate, endDate);
+            else return getSocialList(sort, pageNumber, nickname, startDate, endDate);
+        }
     }
 
-    @Override
-    public SearchPublicDailyPlannerResponse searchNicknamePublicDailyPlanner(final SearchNicknamePublicDailyPlannerRequest searchNicknamePublicDailyPlannerRequest) {
-        User user = userRepository.findByNicknameAndPlannerAccessScope(searchNicknamePublicDailyPlannerRequest.getNickname(), PlannerAccessScope.PUBLIC);
-        List<Social> socialList = new ArrayList<>();
-        if(user!=null) {
-            socialList = socialRepository.findAllByDailyPlannerAndSocial(user.getId());
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber) {
+        List<Social> socialList;
+        int totalCount = socialRepository.countByDeleteTimeIsNull();
+        int totalPage = totalCount / 6 + 1;
+        if (totalCount == 0) {
+            return SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(new ArrayList<>())
+                    .build();
         }
-        return makeSearchPlannerResponse(socialList, searchNicknamePublicDailyPlannerRequest.getSort(), searchNicknamePublicDailyPlannerRequest.getPageNumber());
+        if (sort.equals("latest")) {
+            socialList = socialRepository.findAllByDeleteTimeIsNullSortLatest(PageRequest.of(pageNumber - 1, 6));
+        } else {
+            socialList = socialRepository.findAllByDeleteTimeIsNullSortPopularity(PageRequest.of(pageNumber - 1, 6));
+        }
+
+        if (0 == socialList.size() % 6) {
+            totalPage--;
+        }
+
+        return SearchSocialPlannerResponse.builder()
+                .pageNumber(pageNumber)
+                .totalPage(totalPage)
+                .sort(sort)
+                .socialList(makeSearchSocialResponseList(socialList))
+                .build();
+    }
+
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String nickname) {
+        List<Social> socialList;
+        User owner = userRepository.findByNicknameAndPlannerAccessScope(nickname, PlannerAccessScope.PUBLIC);
+        int totalCount = owner == null ? 0 : socialRepository.countByOwnerIdAndDeleteTimeIsNull(owner.getId());
+        int totalPage = totalCount / 6 + 1;
+        if (totalCount == 0) {
+            return SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(new ArrayList<>())
+                    .build();
+        }
+
+        if (sort.equals("latest")) {
+            socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullSortLatest(owner.getId(), PageRequest.of(pageNumber - 1, 6));
+        } else {
+            socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullSortPopularity(owner.getId(), PageRequest.of(pageNumber - 1, 6));
+        }
+
+        if (0 == socialList.size() % 6) {
+            totalPage--;
+        }
+        return SearchSocialPlannerResponse.builder()
+                .pageNumber(pageNumber)
+                .totalPage(totalPage)
+                .sort(sort)
+                .socialList(makeSearchSocialResponseList(socialList))
+                .build();
+    }
+
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String startDate, final String endDate) {
+        List<Social> socialList;
+        int totalCount = socialRepository.countByDeleteTimeIsNullAndPeriod(startDate, endDate);
+        int totalPage = totalCount / 6 + 1;
+        if (totalCount == 0) {
+            return SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(new ArrayList<>())
+                    .build();
+        }
+        if (sort.equals("latest")) {
+            socialList = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortLatest(startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        } else {
+            socialList = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortPopularity(startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        }
+
+        if (0 == socialList.size() % 6) {
+            totalPage--;
+        }
+        return SearchSocialPlannerResponse.builder()
+                .pageNumber(pageNumber)
+                .totalPage(totalPage)
+                .sort(sort)
+                .socialList(makeSearchSocialResponseList(socialList))
+                .build();
+    }
+
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String nickname, final String startDate, final String endDate) {
+        List<Social> socialList;
+        User owner = userRepository.findByNicknameAndPlannerAccessScope(nickname, PlannerAccessScope.PUBLIC);
+        int totalCount = owner == null ? 0 : socialRepository.countByOwnerIdAndDeleteTimeIsNullAndPeriod(owner.getId(), startDate, endDate);
+        int totalPage = totalCount / 6 + 1;
+        if (totalCount == 0) {
+            return SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(new ArrayList<>())
+                    .build();
+        }
+        if (sort.equals("latest")) {
+            socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(owner.getId(), startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        } else {
+            socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortPopularity(owner.getId(), startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        }
+
+
+        if (0 == socialList.size() % 6) {
+            totalPage--;
+        }
+        return SearchSocialPlannerResponse.builder()
+                .pageNumber(pageNumber)
+                .totalPage(totalPage)
+                .sort(sort)
+                .socialList(makeSearchSocialResponseList(socialList))
+                .build();
     }
 
     @Override
     @Transactional
     public void deleteSocial(final long socialId) {
         Optional<Social> social = socialRepository.findById(socialId);
-        if(social.isPresent()) {
+        if (social.isPresent()) {
             socialRepository.delete(social.get());
-        }
-        else {
+        } else {
             throw new SocialException(NOT_FOUND_SOCIAL);
-        }
-    }
-
-    private SearchPublicDailyPlannerResponse makeSearchPlannerResponse(List<Social> socialList, String sort, long pageNumber) {
-        if(socialList.isEmpty()) {
-            return SearchPublicDailyPlannerResponse.builder()
-                    .pageNumber(pageNumber)
-                    .totalPage(1L)
-                    .sort(sort)
-                    .socialList(new ArrayList<>())
-                    .build();
-        }
-        int totalPage = socialList.size()/6;
-        if(0 < socialList.size() % 6) totalPage++;
-        if(totalPage < pageNumber) throw new SocialException(NOT_FOUND_PAGE_NUMBER);
-        if(sort.equals("latest")) {
-            socialList.sort(new Comparator<Social>() {
-                @Override
-                public int compare(Social o1, Social o2) {
-                    if(o2.getDailyPlanner().getDailyPlannerDay().equals(o1.getDailyPlanner().getDailyPlannerDay())) {
-                        return o2.getId().compareTo(o1.getId());
-                    }
-                    return o2.getDailyPlanner().getDailyPlannerDay().compareTo(o1.getDailyPlanner().getDailyPlannerDay());
-                }
-            });
-            List<Social> newList = new ArrayList<>();
-            for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
-                if(cnt==6) break;
-                newList.add(socialList.get(i));
-            }
-            return SearchPublicDailyPlannerResponse.builder()
-                    .pageNumber(pageNumber)
-                    .totalPage(totalPage)
-                    .sort(sort)
-                    .socialList(makeSearchSocialResponseList(newList))
-                    .build();
-        }
-        else if(sort.equals("popularity")) {
-            List<SocialLike> socialLikeList = socialList.stream()
-                    .map(social -> new SocialLike(social,dailyPlannerLikeRepository.countByDailyPlanner(social.getDailyPlanner())))
-                    .collect(Collectors.toList());
-            Collections.sort(socialLikeList);
-            List<Social> newList = new ArrayList<>();
-            for(int i=(int)(pageNumber-1)*6, cnt=0; i<socialList.size(); i++, cnt++) {
-                if(cnt==6) break;
-                newList.add(socialLikeList.get(i).social);
-            }
-            return SearchPublicDailyPlannerResponse.builder()
-                    .pageNumber(pageNumber)
-                    .totalPage(totalPage)
-                    .sort(sort)
-                    .socialList(makeSearchSocialResponseList(newList))
-                    .build();
-        }
-        else {
-            throw new SocialException(BAD_REQUEST_SORT);
         }
     }
 

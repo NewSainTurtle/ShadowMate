@@ -897,6 +897,8 @@ class DailyPlannerServiceTest extends DateCommonService {
                     .id(1L)
                     .socialImage(socialImage)
                     .dailyPlanner(dailyPlanner)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .build();
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
             doReturn(social).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
@@ -919,6 +921,8 @@ class DailyPlannerServiceTest extends DateCommonService {
                     .id(1L)
                     .socialImage(socialImage)
                     .dailyPlanner(dailyPlanner)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .build();
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
             doReturn(null).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
