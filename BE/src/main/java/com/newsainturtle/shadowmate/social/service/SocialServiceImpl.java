@@ -1,6 +1,6 @@
 package com.newsainturtle.shadowmate.social.service;
 
-import com.newsainturtle.shadowmate.social.dto.SearchPublicDailyPlannerResponse;
+import com.newsainturtle.shadowmate.social.dto.SearchSocialPlannerResponse;
 import com.newsainturtle.shadowmate.social.dto.SearchSocialResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.NOT_FOUND_SOCIAL;
@@ -30,27 +31,48 @@ public class SocialServiceImpl implements SocialService {
 
     private final UserRepository userRepository;
 
-    @Override
-    public SearchPublicDailyPlannerResponse searchPublicDailyPlanner(final String sort, final int pageNumber, final String nickname) {
+    private void checkValidDate(final String startDate, final String endDate) {
+        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$";
+        if (!Pattern.matches(datePattern, startDate) || !Pattern.matches(datePattern, endDate)) {
+            throw new SocialException(SocialErrorResult.INVALID_DATE_FORMAT);
+        }
+        if (startDate.compareTo(endDate) > 0) {
+            throw new SocialException(SocialErrorResult.INVALID_DATE_PERIOD);
+        }
+
+    }
+
+    private void checkSortFormat(String sort) {
         if (!sort.equals("latest") && !sort.equals("popularity")) {
             throw new SocialException(SocialErrorResult.BAD_REQUEST_SORT);
         }
-        return nickname == null || nickname.isEmpty() ? getSocial(sort, pageNumber) : getSocialSearchNickname(sort, pageNumber, nickname);
     }
 
-    private SearchPublicDailyPlannerResponse getSocial(final String sort, final int pageNumber) {
+    @Override
+    public SearchSocialPlannerResponse getSocial(final String sort, final int pageNumber, final String nickname, final String startDate, final String endDate) {
+        checkSortFormat(sort);
+        if ((startDate == null && endDate == null) || (startDate.isEmpty() && endDate.isEmpty())) {
+            if (nickname == null || nickname.isEmpty()) return getSocialList(sort, pageNumber);
+            else return getSocialList(sort, pageNumber, nickname);
+        } else {
+            checkValidDate(startDate, endDate);
+            if (nickname == null || nickname.isEmpty()) return getSocialList(sort, pageNumber, startDate, endDate);
+            else return getSocialList(sort, pageNumber, nickname, startDate, endDate);
+        }
+    }
+
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber) {
         List<Social> socialList;
         int totalCount = socialRepository.countByDeleteTimeIsNull();
         int totalPage = totalCount / 6 + 1;
         if (totalCount == 0) {
-            return SearchPublicDailyPlannerResponse.builder()
+            return SearchSocialPlannerResponse.builder()
                     .pageNumber(pageNumber)
                     .totalPage(totalPage)
                     .sort(sort)
                     .socialList(new ArrayList<>())
                     .build();
         }
-
         if (sort.equals("latest")) {
             socialList = socialRepository.findAllByDeleteTimeIsNullSortLatest(PageRequest.of(pageNumber - 1, 6));
         } else {
@@ -60,7 +82,8 @@ public class SocialServiceImpl implements SocialService {
         if (0 == socialList.size() % 6) {
             totalPage--;
         }
-        return SearchPublicDailyPlannerResponse.builder()
+
+        return SearchSocialPlannerResponse.builder()
                 .pageNumber(pageNumber)
                 .totalPage(totalPage)
                 .sort(sort)
@@ -68,13 +91,13 @@ public class SocialServiceImpl implements SocialService {
                 .build();
     }
 
-    private SearchPublicDailyPlannerResponse getSocialSearchNickname(final String sort, final int pageNumber, final String nickname) {
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String nickname) {
         List<Social> socialList;
         User owner = userRepository.findByNicknameAndPlannerAccessScope(nickname, PlannerAccessScope.PUBLIC);
         int totalCount = owner == null ? 0 : socialRepository.countByOwnerIdAndDeleteTimeIsNull(owner.getId());
         int totalPage = totalCount / 6 + 1;
         if (totalCount == 0) {
-            return SearchPublicDailyPlannerResponse.builder()
+            return SearchSocialPlannerResponse.builder()
                     .pageNumber(pageNumber)
                     .totalPage(totalPage)
                     .sort(sort)
@@ -91,7 +114,67 @@ public class SocialServiceImpl implements SocialService {
         if (0 == socialList.size() % 6) {
             totalPage--;
         }
-        return SearchPublicDailyPlannerResponse.builder()
+        return SearchSocialPlannerResponse.builder()
+                .pageNumber(pageNumber)
+                .totalPage(totalPage)
+                .sort(sort)
+                .socialList(makeSearchSocialResponseList(socialList))
+                .build();
+    }
+
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String startDate, final String endDate) {
+        List<Social> socialList;
+        int totalCount = socialRepository.countByDeleteTimeIsNullAndPeriod(startDate, endDate);
+        int totalPage = totalCount / 6 + 1;
+        if (totalCount == 0) {
+            return SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(new ArrayList<>())
+                    .build();
+        }
+        if (sort.equals("latest")) {
+            socialList = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortLatest(startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        } else {
+            socialList = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortPopularity(startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        }
+
+        if (0 == socialList.size() % 6) {
+            totalPage--;
+        }
+        return SearchSocialPlannerResponse.builder()
+                .pageNumber(pageNumber)
+                .totalPage(totalPage)
+                .sort(sort)
+                .socialList(makeSearchSocialResponseList(socialList))
+                .build();
+    }
+
+    private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String nickname, final String startDate, final String endDate) {
+        List<Social> socialList;
+        User owner = userRepository.findByNicknameAndPlannerAccessScope(nickname, PlannerAccessScope.PUBLIC);
+        int totalCount = owner == null ? 0 : socialRepository.countByOwnerIdAndDeleteTimeIsNullAndPeriod(owner.getId(), startDate, endDate);
+        int totalPage = totalCount / 6 + 1;
+        if (totalCount == 0) {
+            return SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(totalPage)
+                    .sort(sort)
+                    .socialList(new ArrayList<>())
+                    .build();
+        }
+        if (sort.equals("latest")) {
+            socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(owner.getId(), startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        } else {
+            socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortPopularity(owner.getId(), startDate, endDate, PageRequest.of(pageNumber - 1, 6));
+        }
+
+
+        if (0 == socialList.size() % 6) {
+            totalPage--;
+        }
+        return SearchSocialPlannerResponse.builder()
                 .pageNumber(pageNumber)
                 .totalPage(totalPage)
                 .sort(sort)
