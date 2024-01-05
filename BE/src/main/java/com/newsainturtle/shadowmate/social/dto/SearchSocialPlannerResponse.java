@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class SearchPublicDailyPlannerResponse {
+public class SearchSocialPlannerResponse {
 
     private long pageNumber;
 
