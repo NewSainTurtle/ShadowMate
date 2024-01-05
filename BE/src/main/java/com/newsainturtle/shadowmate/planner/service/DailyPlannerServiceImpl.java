@@ -229,6 +229,8 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         final Social social = Social.builder()
                 .dailyPlanner(dailyPlanner)
                 .socialImage(shareSocialRequest.getSocialImage())
+                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                .ownerId(user.getId())
                 .build();
         final Social saveSocial = socialRepository.save(social);
         return ShareSocialResponse.builder().socialId(saveSocial.getId()).build();
