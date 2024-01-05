@@ -9,8 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static com.newsainturtle.shadowmate.social.constant.SocialConstant.SUCCESS_DELETE_SOCIAL;
-import static com.newsainturtle.shadowmate.social.constant.SocialConstant.SUCCESS_SEARCH_PUBLIC_DAILY_PLANNER;
+import static com.newsainturtle.shadowmate.social.constant.SocialConstant.*;
 
 @RestController
 @RequestMapping("/api/social")
@@ -22,13 +21,15 @@ public class SocialController {
     private final SocialService socialService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<BaseResponse> searchPublicDailyPlanner(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                                 @PathVariable("userId") final Long userId,
-                                                                 @RequestParam final String sort,
-                                                                 @RequestParam(name = "page-number") final Integer pageNumber,
-                                                                 @RequestParam final String nickname) {
+    public ResponseEntity<BaseResponse> getSocial(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                  @PathVariable("userId") final Long userId,
+                                                  @RequestParam final String sort,
+                                                  @RequestParam(name = "page-number") final Integer pageNumber,
+                                                  @RequestParam final String nickname,
+                                                  @RequestParam(name = "start-date") final String startDate,
+                                                  @RequestParam(name = "end-date") final String endDate) {
         authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_PUBLIC_DAILY_PLANNER, socialService.searchPublicDailyPlanner(sort, pageNumber, nickname)));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_SOCIAL, socialService.getSocial(sort, pageNumber, nickname, startDate, endDate)));
     }
 
     @DeleteMapping("/{userId}/{socialId}")
