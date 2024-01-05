@@ -24,7 +24,10 @@ public class Social extends CommonEntity {
     @Column(name = "social_image")
     private String socialImage;
 
-    public void updateSocial(final String socialImage) {
-        this.socialImage = socialImage;
-    }
+    @Column(name = "daily_planner_day", length = 10, nullable = false)
+    private String dailyPlannerDay;
+
+    @Column(name = "owner_id", nullable = false)
+    private Long ownerId;
+
 }
