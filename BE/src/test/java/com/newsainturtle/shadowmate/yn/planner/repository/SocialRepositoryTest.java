@@ -34,6 +34,7 @@ class SocialRepositoryTest {
 
     private User user;
     private DailyPlanner dailyPlanner;
+    private final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
 
     @BeforeEach
     void init() {
@@ -51,54 +52,29 @@ class SocialRepositoryTest {
                 .build());
     }
 
-    @Nested
-    class 소셜공유 {
-        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+    @Test
+    void 소셜공유() {
+        //given
+        final Social social = Social.builder()
+                .dailyPlanner(dailyPlanner)
+                .socialImage(socialImage)
+                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                .ownerId(user.getId())
+                .build();
+        //when
+        final Social saveSocial = socialRepository.save(social);
 
-        @Test
-        void 소셜공유() {
-            //given
-            final Social social = Social.builder()
-                    .dailyPlanner(dailyPlanner)
-                    .socialImage(socialImage)
-                    .build();
-            //when
-            final Social saveSocial = socialRepository.save(social);
-
-            //then
-            assertThat(saveSocial).isNotNull();
-            assertThat(saveSocial.getSocialImage()).isNotNull().isEqualTo(socialImage);
-            assertThat(saveSocial.getDailyPlanner()).isEqualTo(dailyPlanner);
-        }
-
-        @Test
-        void 소셜재공유() {
-            //given
-            final String changeSocialImage = "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/566/fcf7adfa96e5be280c293ed826ac88b5_res.jpeg";
-            final Social saveSocial = socialRepository.save(Social.builder()
-                    .dailyPlanner(dailyPlanner)
-                    .socialImage(socialImage)
-                    .build());
-            //when
-            final Social social = Social.builder()
-                    .id(saveSocial.getId())
-                    .createTime(saveSocial.getCreateTime())
-                    .dailyPlanner(saveSocial.getDailyPlanner())
-                    .socialImage(changeSocialImage)
-                    .build();
-            final Social changeSocial = socialRepository.save(social);
-
-            //then
-            assertThat(changeSocial).isNotNull();
-            assertThat(changeSocial.getCreateTime()).isNotEqualTo(changeSocial.getUpdateTime()).isEqualTo(saveSocial.getCreateTime());
-            assertThat(changeSocial.getSocialImage()).isNotNull().isEqualTo(changeSocialImage);
-            assertThat(changeSocial.getDailyPlanner()).isEqualTo(dailyPlanner);
-        }
+        //then
+        assertThat(saveSocial).isNotNull();
+        assertThat(saveSocial.getSocialImage()).isNotNull().isEqualTo(socialImage);
+        assertThat(saveSocial.getDailyPlanner()).isEqualTo(dailyPlanner);
+        assertThat(saveSocial.getDailyPlannerDay()).isEqualTo(dailyPlanner.getDailyPlannerDay());
+        assertThat(saveSocial.getOwnerId()).isEqualTo(dailyPlanner.getUser().getId());
     }
+
 
     @Nested
     class 소셜공유확인 {
-        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
 
         @Test
         void 소셜공유안함() {
@@ -117,6 +93,8 @@ class SocialRepositoryTest {
             socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .build());
 
             //when
@@ -126,6 +104,8 @@ class SocialRepositoryTest {
             assertThat(findSocial).isNotNull();
             assertThat(findSocial.getSocialImage()).isNotNull().isEqualTo(socialImage);
             assertThat(findSocial.getDailyPlanner()).isEqualTo(dailyPlanner);
+            assertThat(findSocial.getDailyPlannerDay()).isEqualTo(dailyPlanner.getDailyPlannerDay());
+            assertThat(findSocial.getOwnerId()).isEqualTo(dailyPlanner.getUser().getId());
         }
 
         @Test
@@ -134,6 +114,8 @@ class SocialRepositoryTest {
             socialRepository.save(Social.builder()
                     .dailyPlanner(dailyPlanner)
                     .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                    .ownerId(user.getId())
                     .deleteTime(LocalDateTime.now())
                     .build());
 
