@@ -6,13 +6,14 @@ import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.social.controller.SocialController;
-import com.newsainturtle.shadowmate.social.dto.SearchPublicDailyPlannerResponse;
+import com.newsainturtle.shadowmate.social.dto.SearchSocialPlannerResponse;
 import com.newsainturtle.shadowmate.social.dto.SearchSocialResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
 import com.newsainturtle.shadowmate.social.exception.SocialException;
 import com.newsainturtle.shadowmate.social.service.SocialServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class SocialControllerTest{
+class SocialControllerTest {
 
     @InjectMocks
     private SocialController socialController;
@@ -60,71 +61,306 @@ class SocialControllerTest{
                 .build();
     }
 
-    @Test
-    void 실패_소셜조회_없는사용자() throws Exception {
-        //given
-        doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
+    @Nested
+    class 일반_소셜조회 {
+        @Test
+        void 실패_없는사용자() throws Exception {
+            //given
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
 
-        //when
-        final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url, userId)
-                        .param("sort", sort)
-                        .param("page-number", String.valueOf(pageNumber))
-                        .param("nickname", userNickname)
-        );
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", "")
+                            .param("start-date", "")
+                            .param("end-date", "")
+            );
 
-        //then
-        resultActions.andExpect(status().isForbidden());
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 실패_정렬입력값이잘못됨() throws Exception {
+            //given
+            doThrow(new SocialException(SocialErrorResult.BAD_REQUEST_SORT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", "late")
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", "")
+                            .param("start-date", "")
+                            .param("end-date", "")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_날짜형식이잘못됨() throws Exception {
+            //given
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_FORMAT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", "late")
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", "")
+                            .param("start-date", "2023.12.25")
+                            .param("end-date", "2023.12.26")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_기간이잘못됨() throws Exception {
+            //given
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_PERIOD)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", "late")
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", "")
+                            .param("start-date", "2023-12-25")
+                            .param("end-date", "2023-12-24")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공() throws Exception {
+            // given
+            List<Social> socialList = new ArrayList<>();
+            SearchSocialPlannerResponse searchPublicDailyPlannerResponse = SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(socialList.size())
+                    .sort(sort)
+                    .socialList(socialList.stream()
+                            .map(social -> SearchSocialResponse.builder()
+                                    .socialId(social.getId())
+                                    .socialImage(social.getSocialImage())
+                                    .dailyPlannerDay(social.getDailyPlanner().getDailyPlannerDay())
+                                    .userId(social.getDailyPlanner().getUser().getId())
+                                    .statusMessage(social.getDailyPlanner().getUser().getStatusMessage())
+                                    .nickname(social.getDailyPlanner().getUser().getNickname())
+                                    .profileImage(social.getDailyPlanner().getUser().getProfileImage())
+                                    .build())
+                            .collect(Collectors.toList()))
+                    .build();
+            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, "", "", "");
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", "")
+                            .param("start-date", "")
+                            .param("end-date", "")
+            );
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+
+        @Test
+        void 성공_기간() throws Exception {
+            // given
+            List<Social> socialList = new ArrayList<>();
+            SearchSocialPlannerResponse searchPublicDailyPlannerResponse = SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(socialList.size())
+                    .sort(sort)
+                    .socialList(socialList.stream()
+                            .map(social -> SearchSocialResponse.builder()
+                                    .socialId(social.getId())
+                                    .socialImage(social.getSocialImage())
+                                    .dailyPlannerDay(social.getDailyPlanner().getDailyPlannerDay())
+                                    .userId(social.getDailyPlanner().getUser().getId())
+                                    .statusMessage(social.getDailyPlanner().getUser().getStatusMessage())
+                                    .nickname(social.getDailyPlanner().getUser().getNickname())
+                                    .profileImage(social.getDailyPlanner().getUser().getProfileImage())
+                                    .build())
+                            .collect(Collectors.toList()))
+                    .build();
+            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, "", "2023-12-25", "2023-12-26");
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", "")
+                            .param("start-date", "2023-12-25")
+                            .param("end-date", "2023-12-26")
+            );
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
     }
 
-    @Test
-    void 실패_소셜조회_정렬입력값이잘못됨() throws Exception {
-        //given
-        doThrow(new SocialException(SocialErrorResult.BAD_REQUEST_SORT)).when(socialService).searchPublicDailyPlanner(any(String.class), any(Integer.class), any(String.class));
+    @Nested
+    class 닉네임검색_소셜조회 {
+        @Test
+        void 실패_없는사용자() throws Exception {
+            //given
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(), any());
 
-        //when
-        final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url, userId)
-                        .param("sort", "late")
-                        .param("page-number", String.valueOf(pageNumber))
-                        .param("nickname", userNickname)
-        );
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", userNickname)
+                            .param("start-date", "")
+                            .param("end-date", "")
+            );
 
-        //then
-        resultActions.andExpect(status().isBadRequest());
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 실패_정렬입력값이잘못됨() throws Exception {
+            //given
+            doThrow(new SocialException(SocialErrorResult.BAD_REQUEST_SORT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", "late")
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", userNickname)
+                            .param("start-date", "")
+                            .param("end-date", "")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_날짜형식이잘못됨() throws Exception {
+            //given
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_FORMAT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", userNickname)
+                            .param("start-date", "2023.12.25")
+                            .param("end-date", "2023.12.26")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_기간이잘못됨() throws Exception {
+            //given
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_PERIOD)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", userNickname)
+                            .param("start-date", "2023-12-25")
+                            .param("end-date", "2023-12-24")
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공() throws Exception {
+            // given
+            List<Social> socialList = new ArrayList<>();
+            SearchSocialPlannerResponse searchPublicDailyPlannerResponse = SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(socialList.size())
+                    .sort(sort)
+                    .socialList(socialList.stream()
+                            .map(social -> SearchSocialResponse.builder()
+                                    .socialId(social.getId())
+                                    .socialImage(social.getSocialImage())
+                                    .dailyPlannerDay(social.getDailyPlanner().getDailyPlannerDay())
+                                    .userId(social.getDailyPlanner().getUser().getId())
+                                    .statusMessage(social.getDailyPlanner().getUser().getStatusMessage())
+                                    .nickname(social.getDailyPlanner().getUser().getNickname())
+                                    .profileImage(social.getDailyPlanner().getUser().getProfileImage())
+                                    .build())
+                            .collect(Collectors.toList()))
+                    .build();
+            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, userNickname, "", "");
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", userNickname)
+                            .param("start-date", "")
+                            .param("end-date", "")
+            );
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+
+        @Test
+        void 성공_기간() throws Exception {
+            // given
+            List<Social> socialList = new ArrayList<>();
+            SearchSocialPlannerResponse searchPublicDailyPlannerResponse = SearchSocialPlannerResponse.builder()
+                    .pageNumber(pageNumber)
+                    .totalPage(socialList.size())
+                    .sort(sort)
+                    .socialList(socialList.stream()
+                            .map(social -> SearchSocialResponse.builder()
+                                    .socialId(social.getId())
+                                    .socialImage(social.getSocialImage())
+                                    .dailyPlannerDay(social.getDailyPlanner().getDailyPlannerDay())
+                                    .userId(social.getDailyPlanner().getUser().getId())
+                                    .statusMessage(social.getDailyPlanner().getUser().getStatusMessage())
+                                    .nickname(social.getDailyPlanner().getUser().getNickname())
+                                    .profileImage(social.getDailyPlanner().getUser().getProfileImage())
+                                    .build())
+                            .collect(Collectors.toList()))
+                    .build();
+            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, userNickname, "2023-12-25", "2023-12-26");
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("sort", sort)
+                            .param("page-number", String.valueOf(pageNumber))
+                            .param("nickname", userNickname)
+                            .param("start-date", "2023-12-25")
+                            .param("end-date", "2023-12-26")
+            );
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
     }
 
-    @Test
-    void 성공_소셜조회() throws Exception {
-        // given
-        List<Social> socialList = new ArrayList<>();
-        SearchPublicDailyPlannerResponse searchPublicDailyPlannerResponse = SearchPublicDailyPlannerResponse.builder()
-                .pageNumber(pageNumber)
-                .totalPage(socialList.size())
-                .sort(sort)
-                .socialList(socialList.stream()
-                        .map(social -> SearchSocialResponse.builder()
-                                .socialId(social.getId())
-                                .socialImage(social.getSocialImage())
-                                .dailyPlannerDay(social.getDailyPlanner().getDailyPlannerDay())
-                                .userId(social.getDailyPlanner().getUser().getId())
-                                .statusMessage(social.getDailyPlanner().getUser().getStatusMessage())
-                                .nickname(social.getDailyPlanner().getUser().getNickname())
-                                .profileImage(social.getDailyPlanner().getUser().getProfileImage())
-                                .build())
-                        .collect(Collectors.toList()))
-                .build();
-        doReturn(searchPublicDailyPlannerResponse).when(socialService).searchPublicDailyPlanner(sort, pageNumber, "");
-
-        //when
-        final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url, userId)
-                        .param("sort", sort)
-                        .param("page-number", String.valueOf(pageNumber))
-                        .param("nickname", "")
-        );
-
-        // then
-        resultActions.andExpect(status().isOk());
-    }
 }
