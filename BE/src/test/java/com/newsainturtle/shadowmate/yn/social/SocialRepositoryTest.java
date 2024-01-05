@@ -64,15 +64,15 @@ class SocialRepositoryTest {
                 .withdrawal(false)
                 .build());
         dailyPlanner1 = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay("2023-09-25")
+                .dailyPlannerDay("2000-09-25")
                 .user(user1)
                 .build());
         dailyPlanner2 = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay("2023-09-25")
+                .dailyPlannerDay("2000-09-25")
                 .user(user2)
                 .build());
         dailyPlanner3 = dailyPlannerRepository.save(DailyPlanner.builder()
-                .dailyPlannerDay("2023-09-27")
+                .dailyPlannerDay("2000-09-27")
                 .user(user2)
                 .build());
     }
@@ -151,6 +151,65 @@ class SocialRepositoryTest {
             // then
             assertThat(result).isNotEmpty();
         }
+
+        @Test
+        void 성공_기간_없음() {
+            // given
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner1)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner1.getDailyPlannerDay())
+                    .ownerId(user1.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner2)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner2.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner3)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner3.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+
+            // when
+            final List<Social> result = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortLatest("2000-09-23", "2000-09-24", PageRequest.of(0, 6));
+
+            // then
+            assertThat(result).isNotNull().hasSize(0);
+        }
+
+        @Test
+        void 성공_기간_있음() {
+            // given
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner1)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner1.getDailyPlannerDay())
+                    .ownerId(user1.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner2)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner2.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner3)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner3.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+
+            // when
+            final List<Social> result = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortLatest("2000-09-23", "2000-09-25", PageRequest.of(0, 6));
+
+            // then
+            assertThat(result).isNotNull().hasSize(2);
+        }
+
     }
 
     @Nested
@@ -199,7 +258,7 @@ class SocialRepositoryTest {
 
             // then
             assertThat(result).isNotEmpty().hasSize(2);
-            assertThat(result.get(0).getDailyPlannerDay()).isEqualTo("2023-09-27");
+            assertThat(result.get(0).getDailyPlannerDay()).isEqualTo("2000-09-27");
         }
 
         @Test
@@ -233,7 +292,65 @@ class SocialRepositoryTest {
 
             // then
             assertThat(result).isNotEmpty().hasSize(2);
-            assertThat(result.get(0).getDailyPlannerDay()).isEqualTo("2023-09-25");
+            assertThat(result.get(0).getDailyPlannerDay()).isEqualTo("2000-09-25");
+        }
+
+        @Test
+        void 성공_기간_없음() {
+            // given
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner1)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner1.getDailyPlannerDay())
+                    .ownerId(user1.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner2)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner2.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner3)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner3.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+
+            // when
+            final List<Social> result = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(user1.getId(),"2000-09-23", "2000-09-24", PageRequest.of(0, 6));
+
+            // then
+            assertThat(result).isNotNull().hasSize(0);
+        }
+
+        @Test
+        void 성공_기간_있음() {
+            // given
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner1)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner1.getDailyPlannerDay())
+                    .ownerId(user1.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner2)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner2.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+            socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner3)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner3.getDailyPlannerDay())
+                    .ownerId(user2.getId())
+                    .build());
+
+            // when
+            final List<Social> result = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(user1.getId(), "2000-09-23", "2000-09-25", PageRequest.of(0, 6));
+
+            // then
+            assertThat(result).isNotNull().hasSize(1);
         }
     }
 }
