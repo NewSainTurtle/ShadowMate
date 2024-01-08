@@ -205,24 +205,17 @@ class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
+        todoRepository.updateAllByTodoId("비문학 2문제 풀기", category2, TodoStatus.COMPLETE, LocalDateTime.now(), saveTodo.getId());
         final Todo findTodo = todoRepository.findByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
-        final Todo changeTodo = todoRepository.save(Todo.builder()
-                .id(findTodo.getId())
-                .createTime(findTodo.getCreateTime())
-                .todoContent("비문학 2문제 풀기")
-                .category(category2)
-                .todoStatus(TodoStatus.COMPLETE)
-                .dailyPlanner(findTodo.getDailyPlanner())
-                .build());
 
         //then
-        assertThat(changeTodo).isNotNull();
-        assertThat(changeTodo.getId()).isEqualTo(findTodo.getId());
-        assertThat(changeTodo.getTodoContent()).isEqualTo("비문학 2문제 풀기");
-        assertThat(changeTodo.getCategory()).isEqualTo(category2);
-        assertThat(changeTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
-        assertThat(changeTodo.getDailyPlanner()).isEqualTo(dailyPlanner);
-        assertThat(changeTodo.getCreateTime()).isNotEqualTo(changeTodo.getUpdateTime());
+        assertThat(findTodo).isNotNull();
+        assertThat(findTodo.getId()).isEqualTo(findTodo.getId());
+        assertThat(findTodo.getTodoContent()).isEqualTo("비문학 2문제 풀기");
+        assertThat(findTodo.getCategory().getId()).isEqualTo(category2.getId());
+        assertThat(findTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
+        assertThat(findTodo.getDailyPlanner().getId()).isEqualTo(dailyPlanner.getId());
+        assertThat(findTodo.getCreateTime()).isNotEqualTo(findTodo.getUpdateTime());
     }
 
     @Test
