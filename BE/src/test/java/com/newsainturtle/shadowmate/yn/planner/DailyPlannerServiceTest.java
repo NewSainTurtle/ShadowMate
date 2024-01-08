@@ -738,7 +738,26 @@ class DailyPlannerServiceTest extends DateCommonService {
             }
 
             @Test
+            void 실패_타임테이블등록_불가상태() {
+                //given
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.FAILED_ADDED_TIMETABLE);
+            }
+
+            @Test
             void 성공() {
+                final Todo todo = Todo.builder()
+                        .id(1L)
+                        .category(null)
+                        .todoContent(todoContent)
+                        .todoStatus(TodoStatus.COMPLETE)
+                        .dailyPlanner(dailyPlanner)
+                        .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
                 doReturn(timeTable).when(timeTableRepository).save(any(TimeTable.class));
