@@ -3,10 +3,7 @@ package com.newsainturtle.shadowmate.planner.service;
 import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.planner.dto.response.*;
-import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
-import com.newsainturtle.shadowmate.planner.entity.Todo;
-import com.newsainturtle.shadowmate.planner.entity.Weekly;
-import com.newsainturtle.shadowmate.planner.entity.WeeklyTodo;
+import com.newsainturtle.shadowmate.planner.entity.*;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
@@ -39,11 +36,13 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private final DailyPlannerRepository dailyPlannerRepository;
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
     private final TodoRepository todoRepository;
+    private final TimeTableRepository timeTableRepository;
     private final DdayRepository ddayRepository;
     private final FollowRepository followRepository;
     private final WeeklyRepository weeklyRepository;
     private final WeeklyTodoRepository weeklyTodoRepository;
     private final SocialRepository socialRepository;
+    private int totalMinutes;
 
     private Dday getDday(final User user) {
         final String today = String.valueOf(LocalDate.now());
@@ -189,18 +188,33 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         return dayList;
     }
 
+    private List<DailyPlannerTodoTimeTableResponse> getTimeTable(final Todo todo) {
+        final List<TimeTable> timeTableList = timeTableRepository.findAllByTodo(todo);
+        final List<DailyPlannerTodoTimeTableResponse> timeTables = new ArrayList<>();
+
+        for (TimeTable timeTable : timeTableList) {
+            totalMinutes += ChronoUnit.MINUTES.between(timeTable.getStartTime(), timeTable.getEndTime());
+            timeTables.add(DailyPlannerTodoTimeTableResponse.builder()
+                    .timeTableId(timeTable.getId())
+                    .startTime(localDateTimeToString(timeTable.getStartTime()))
+                    .endTime(localDateTimeToString(timeTable.getEndTime()))
+                    .build());
+        }
+
+        return timeTables;
+    }
+
     @Override
     public SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date) {
         checkValidDate(date);
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
         final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
         final Dday dday = getDday(user);
-        int totalMinutes = 0;
         if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {
             return SearchDailyPlannerResponse.builder()
                     .date(date)
                     .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                    .dday(dday == null ? null : dday.getDdayDate().toString())
+                    .dday(dday == null ? null : dday.getDdayDate())
                     .ddayTitle(dday == null ? null : dday.getDdayTitle())
                     .build();
         } else {
@@ -209,6 +223,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             final long likeCount = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
             final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
             final List<DailyPlannerTodoResponse> dailyTodos = new ArrayList<>();
+            totalMinutes = 0;
             for (Todo todo : todoList) {
                 dailyTodos.add(DailyPlannerTodoResponse.builder()
                         .todoId(todo.getId())
@@ -220,15 +235,8 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                                 .build() : null)
                         .todoContent(todo.getTodoContent())
                         .todoStatus(todo.getTodoStatus().getStatus())
-                        .timeTable(todo.getTimeTable() != null ? DailyPlannerTodoTimeTableResponse.builder()
-                                .timeTableId(todo.getTimeTable().getId())
-                                .startTime(localDateTimeToString(todo.getTimeTable().getStartTime()))
-                                .endTime(localDateTimeToString(todo.getTimeTable().getEndTime()))
-                                .build() : null)
+                        .timeTables(getTimeTable(todo))
                         .build());
-                if (todo.getTimeTable() != null) {
-                    totalMinutes += ChronoUnit.MINUTES.between(todo.getTimeTable().getStartTime(), todo.getTimeTable().getEndTime());
-                }
             }
 
             return SearchDailyPlannerResponse.builder()

@@ -1876,9 +1876,9 @@ class PlannerControllerTest {
             }
 
             @Test
-            void 실패_이미타임테이블시간이존재() throws Exception {
+            void 실패_타임테이블등록_불가상태() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1914,6 +1914,7 @@ class PlannerControllerTest {
             final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                     .date(date)
                     .todoId(1L)
+                    .timeTableId(1L)
                     .build();
 
             @Test
@@ -1931,22 +1932,6 @@ class PlannerControllerTest {
 
                 //then
                 resultActions.andExpect(status().isForbidden());
-            }
-
-            @Test
-            void 실패_유효하지않은타임테이블() throws Exception {
-                //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
             }
 
             @Test

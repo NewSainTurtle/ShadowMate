@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.planner.entity.TimeTable;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
@@ -44,6 +45,9 @@ class TodoRepositoryTest {
 
     @Autowired
     private CategoryColorRepository categoryColorRepository;
+
+    @Autowired
+    private TimeTableRepository timeTableRepository;
 
     private User user;
     private DailyPlanner dailyPlanner;
@@ -134,7 +138,7 @@ class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
-        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        todoRepository.deleteById(saveTodo.getId());
         final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
@@ -161,14 +165,14 @@ class TodoRepositoryTest {
                 .dailyPlanner(dailyPlanner)
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
-        final TimeTable timeTable = TimeTable.builder()
+        timeTableRepository.save(TimeTable.builder()
                 .startTime(startTime)
                 .endTime(endTime)
-                .build();
-        saveTodo.setTimeTable(timeTable);
+                .todo(todo)
+                .build());
 
         //when
-        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        todoRepository.deleteById(saveTodo.getId());
         final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
@@ -201,24 +205,17 @@ class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
+        todoRepository.updateAllByTodoId("비문학 2문제 풀기", category2, TodoStatus.COMPLETE, LocalDateTime.now(), saveTodo.getId());
         final Todo findTodo = todoRepository.findByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
-        final Todo changeTodo = todoRepository.save(Todo.builder()
-                .id(findTodo.getId())
-                .createTime(findTodo.getCreateTime())
-                .todoContent("비문학 2문제 풀기")
-                .category(category2)
-                .todoStatus(TodoStatus.COMPLETE)
-                .dailyPlanner(findTodo.getDailyPlanner())
-                .build());
 
         //then
-        assertThat(changeTodo).isNotNull();
-        assertThat(changeTodo.getId()).isEqualTo(findTodo.getId());
-        assertThat(changeTodo.getTodoContent()).isEqualTo("비문학 2문제 풀기");
-        assertThat(changeTodo.getCategory()).isEqualTo(category2);
-        assertThat(changeTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
-        assertThat(changeTodo.getDailyPlanner()).isEqualTo(dailyPlanner);
-        assertThat(changeTodo.getCreateTime()).isNotEqualTo(changeTodo.getUpdateTime());
+        assertThat(findTodo).isNotNull();
+        assertThat(findTodo.getId()).isEqualTo(findTodo.getId());
+        assertThat(findTodo.getTodoContent()).isEqualTo("비문학 2문제 풀기");
+        assertThat(findTodo.getCategory().getId()).isEqualTo(category2.getId());
+        assertThat(findTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
+        assertThat(findTodo.getDailyPlanner().getId()).isEqualTo(dailyPlanner.getId());
+        assertThat(findTodo.getCreateTime()).isNotEqualTo(findTodo.getUpdateTime());
     }
 
     @Test
@@ -238,10 +235,6 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
-                .build());
-        saveTodo1.setTimeTable(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-10-06 16:10", formatter))
-                .endTime(LocalDateTime.parse("2023-10-06 18:30", formatter))
                 .build());
 
         todoRepository.save(Todo.builder()
@@ -263,10 +256,6 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .build());
-        saveTodo4.setTimeTable(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-10-06 23:40", formatter))
-                .endTime(LocalDateTime.parse("2023-10-07 01:10", formatter))
-                .build());
 
         //when
         final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
@@ -287,7 +276,7 @@ class TodoRepositoryTest {
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("국어")
-                .todoStatus(TodoStatus.EMPTY)
+                .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .build());
         todoRepository.save(Todo.builder()
