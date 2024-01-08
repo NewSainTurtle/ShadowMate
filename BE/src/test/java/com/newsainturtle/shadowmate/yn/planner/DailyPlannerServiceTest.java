@@ -328,7 +328,7 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
-                verify(todoRepository, times(1)).deleteByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                verify(todoRepository, times(1)).deleteById(any(Long.class));
             }
 
         }
