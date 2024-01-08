@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, Dispatch, SetStateAction } from "react";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
@@ -29,8 +29,8 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
   const nearDate = useAppSelector(selectWeekDday);
   const dayList: DayListConfig[] = useAppSelector(selectDayList);
   const date = dayList[idx].date;
-  const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos || []);
-  const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection || "");
+  const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos ?? []);
+  const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection ?? "");
   const itemMaxLength = isMine ? 4 : 5;
   const rowMaxLength = isMine ? dailyTodos.length + 1 : dailyTodos.length;
   const retroMaxLength = 100;
@@ -58,8 +58,8 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
   };
 
   useEffect(() => {
-    setDailyTodos(dayList[idx].dailyTodos || []);
-    setRetrospection(dayList[idx].retrospection || "");
+    setDailyTodos(dayList[idx].dailyTodos ?? []);
+    setRetrospection(dayList[idx].retrospection ?? "");
   }, [dayList]);
 
   return (
@@ -73,7 +73,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
       <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, 20%` }}>
         {dailyTodos.map((item: TodoConfig, key: number) => (
           <WeekItem
-            key={key}
+            key={item.todoId}
             idx={key}
             item={item}
             isMine={isMine}

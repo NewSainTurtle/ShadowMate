@@ -13,7 +13,7 @@ const DdayList = () => {
       {ddayList.length != 0 ? (
         <>
           {ddayList.map((item: DdayItemConfig, idx: number) => (
-            <MyPageDdayItem key={idx} idx={idx} item={item} />
+            <MyPageDdayItem key={item.ddayId} idx={idx} item={item} />
           ))}
         </>
       ) : (

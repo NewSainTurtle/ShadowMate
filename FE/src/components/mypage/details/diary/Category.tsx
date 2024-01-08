@@ -24,7 +24,7 @@ const MyPageCategory = () => {
   const categoryInput: CategoryItemConfig = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
 
-  const { categoryTitle, categoryEmoticon } = categoryInput || "";
+  const { categoryTitle, categoryEmoticon } = categoryInput ?? "";
   const [length, setLength] = useState<number>(categoryTitle ? categoryTitle.length : 0);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +62,7 @@ const MyPageCategory = () => {
         <Text>카테고리 이름</Text>
         <Input
           name="categoryTitle"
-          value={categoryTitle || ""}
+          value={categoryTitle ?? ""}
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
@@ -73,7 +73,7 @@ const MyPageCategory = () => {
         <Text>카테고리 이모지</Text>
         <Input
           name="categoryEmoticon"
-          value={categoryEmoticon || ""}
+          value={categoryEmoticon ?? ""}
           placeholder="카테고리 이모지"
           onChange={onChangeInput}
           helperText={"이모지 외 사용이 불가능합니다."}

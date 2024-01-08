@@ -1,9 +1,7 @@
-import React, { MouseEvent, useEffect, useRef, useState } from "react";
+import React, { MouseEvent, useRef, useState } from "react";
 import styles from "@styles/planner/Month.module.scss";
 import FriendProfileIcon from "@components/common/FriendProfileIcon";
 import AddIcon from "@mui/icons-material/Add";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { followingType } from "@util/friend.interface";
@@ -11,6 +9,8 @@ import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
 import { ProfileConfig } from "@components/common/FriendProfile";
 import { selectFollowingList } from "@store/friendSlice";
+// import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"; // 추후 추가 예정
+// import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const MonthFriends = () => {
   const navigator = useNavigate();
@@ -77,7 +77,7 @@ const MonthFriends = () => {
                 profileImage,
                 statusMessage,
               };
-              return <FriendProfileIcon profile={followInfo} key={key} />;
+              return <FriendProfileIcon profile={followInfo} key={item.followId} />;
             })}
           </>
         )}

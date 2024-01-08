@@ -1,5 +1,5 @@
 import { TodoConfig } from "@util/planner.interface";
-import { Dispatch, MutableRefObject, RefObject, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 interface Props {
   todos: TodoConfig[];

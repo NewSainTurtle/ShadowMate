@@ -1,8 +1,7 @@
-import React, { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { DdayItemConfig } from "@util/planner.interface";
-import Dday from "@components/common/Dday";
 import { dateFormat } from "@util/getThisWeek";
 import dayjs, { Dayjs } from "dayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
