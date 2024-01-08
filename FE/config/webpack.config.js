@@ -5,6 +5,7 @@ const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const DotenvWebpack = require("dotenv-webpack");
 const tsConfigPath = path.resolve(__dirname, "../tsconfig.json");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ImageminWebpWebpackPlugin = require("imagemin-webp-webpack-plugin");
 const isDevMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
@@ -32,7 +33,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.svg$/,
+        test: /\.(svg|webp)$/,
         use: [
           {
             loader: "file-loader",
@@ -77,6 +78,7 @@ module.exports = {
       chunkFilename: "assets/css/[name].[contenthash:8].chunk.css",
     }),
     new DotenvWebpack(),
+    new ImageminWebpWebpackPlugin(),
   ],
   stats: {
     loggingDebug: ["sass-loader"],
