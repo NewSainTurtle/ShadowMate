@@ -33,12 +33,4 @@ public class Todo extends CommonEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    public void updateTodoContentAndCategoryAndStatus(final String todoContent,
-                                                      final Category category,
-                                                      final TodoStatus todoStatus) {
-        this.todoContent = todoContent;
-        this.category = category;
-        this.todoStatus = todoStatus;
-
-    }
 }

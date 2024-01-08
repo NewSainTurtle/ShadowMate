@@ -132,7 +132,11 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         final DailyPlanner dailyPlanner = getDailyPlanner(user, updateDailyTodoRequest.getDate());
         final Category category = getCategory(user, updateDailyTodoRequest.getCategoryId());
         final Todo todo = getTodo(updateDailyTodoRequest.getTodoId(), dailyPlanner);
-        todo.updateTodoContentAndCategoryAndStatus(updateDailyTodoRequest.getTodoContent(), category, status);
+        if ((status.equals(TodoStatus.EMPTY) || status.equals(TodoStatus.INCOMPLETE)) &&
+                (todo.getTodoStatus().equals(TodoStatus.INPROGRESS) || todo.getTodoStatus().equals(TodoStatus.COMPLETE))) {
+            timeTableRepository.deleteAllByTodoId(todo.getId());
+        }
+        todoRepository.updateAllByTodoId(updateDailyTodoRequest.getTodoContent(), category, status, LocalDateTime.now(), todo.getId());
     }
 
     @Override
@@ -195,6 +199,10 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
 
         final DailyPlanner dailyPlanner = getDailyPlanner(user, addTimeTableRequest.getDate());
         final Todo todo = getTodo(addTimeTableRequest.getTodoId(), dailyPlanner);
+        if (todo.getTodoStatus().equals(TodoStatus.EMPTY) || todo.getTodoStatus().equals(TodoStatus.INCOMPLETE)) {
+            throw new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE);
+        }
+
         final TimeTable saveTimeTable = timeTableRepository.save(TimeTable.builder()
                 .endTime(endTime)
                 .startTime(startTime)
