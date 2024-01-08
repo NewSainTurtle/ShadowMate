@@ -138,7 +138,7 @@ class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
-        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        todoRepository.deleteById(saveTodo.getId());
         final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
@@ -172,7 +172,7 @@ class TodoRepositoryTest {
                 .build());
 
         //when
-        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        todoRepository.deleteById(saveTodo.getId());
         final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
