@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Text from "@components/common/Text";
 import colors from "@util/colors";
 import dayjs from "dayjs";

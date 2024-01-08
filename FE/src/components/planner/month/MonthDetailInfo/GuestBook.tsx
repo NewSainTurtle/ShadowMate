@@ -61,7 +61,7 @@ const GuestBook = () => {
         if (last === 0) setGuestBookList(list);
         else setGuestBookList((prev) => [...list, ...prev]);
         preventRef.current = true;
-        setIsEnd(list.length < 10 ? true : false);
+        setIsEnd(list.length < 10);
       }
       setLoading(false);
     },

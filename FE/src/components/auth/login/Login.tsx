@@ -11,7 +11,7 @@ import { setIsGoogle, setLogin, setUserInfo } from "@store/authSlice";
 import { setPopupOpen } from "@store/modalSlice";
 
 const getCookie = (name: string) => {
-  var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  const value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
   return value ? value[2] : null;
 };
 

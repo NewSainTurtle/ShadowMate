@@ -1,11 +1,11 @@
-import React, { ChangeEvent, Dispatch, MouseEvent, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import dayjs from "dayjs";
 import { DdayItemConfig } from "@util/planner.interface";
 import { dateFormat } from "@util/getThisWeek";
-import dayjs from "dayjs";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -20,7 +20,7 @@ const MyPageDday = () => {
   const [error, setError] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  const { ddayTitle, ddayDate } = ddayInput || "";
+  const { ddayTitle, ddayDate } = ddayInput ?? "";
   const [length, setLength] = useState<number>(ddayTitle ? ddayTitle.length : 0);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {

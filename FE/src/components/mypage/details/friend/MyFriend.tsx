@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import { followerType, followingType, followRequestType } from "@util/friend.interface";
 import { useAppSelector } from "@hooks/hook";

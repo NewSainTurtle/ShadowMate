@@ -56,7 +56,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
       date: dayjs(date).format("YYYY-MM-DD"),
       todoId: item.todoId,
       todoContent: e.target.value,
-      categoryId: item.category?.categoryId || 0,
+      categoryId: item.category?.categoryId ?? 0,
       todoStatus: item.todoStatus,
     };
     plannerApi
@@ -100,17 +100,22 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
   };
 
   const setStatus = (status: string) => {
-    return status === "공백" ? " " : status === "완료" ? "O" : "X";
+    if (status === "공백") return " ";
+    return status === "완료" ? "O" : "X";
+  };
+
+  const setNewTodoStatus = (status: string) => {
+    if (status === "공백") return "완료";
+    return status === "완료" ? "미완료" : "공백";
   };
 
   const handleStatusSave = () => {
-    const newStatus: TodoConfig["todoStatus"] =
-      item.todoStatus === "공백" ? "완료" : item.todoStatus === "완료" ? "미완료" : "공백";
+    const newStatus: TodoConfig["todoStatus"] = setNewTodoStatus(item.todoStatus);
     const data = {
       date: dayjs(date).format("YYYY-MM-DD"),
       todoId: item.todoId,
       todoContent: item.todoContent,
-      categoryId: item.category?.categoryId || 0,
+      categoryId: item.category?.categoryId ?? 0,
       todoStatus: newStatus,
     };
     plannerApi
@@ -128,7 +133,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
     <>
       <div className={styles[`item__todo-item${friend}`]}>
         <div onClick={() => setModalOpen(!Modalopen)}>
-          <span>{item.category?.categoryEmoticon || ""}</span>
+          <span>{item.category?.categoryEmoticon ?? ""}</span>
         </div>
         {item.todoUpdate ? (
           <input

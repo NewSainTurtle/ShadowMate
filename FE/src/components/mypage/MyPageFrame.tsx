@@ -110,8 +110,8 @@ const MyPageFrame = ({ title }: Props) => {
     if (title === "카테고리") {
       const input = {
         categoryId: categoryInput.categoryId,
-        categoryTitle: categoryInput.categoryTitle || "",
-        categoryEmoticon: categoryInput.categoryEmoticon || "",
+        categoryTitle: categoryInput.categoryTitle ?? "",
+        categoryEmoticon: categoryInput.categoryEmoticon ?? "",
         categoryColorId: colorClick + 1,
       };
       if (input.categoryTitle.length < 2 || input.categoryTitle.length > 10) return;

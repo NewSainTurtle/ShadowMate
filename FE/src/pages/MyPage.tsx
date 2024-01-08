@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Profile from "@components/common/Profile";
 import MyPageTab from "@components/mypage/MyPageTab";
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const MyPage = ({ name }: Props) => {
-  const [tabName, setTabName] = useState<string>(name ? name : "내 정보 확인");
+  const [tabName, setTabName] = useState<string>(name ?? "내 정보 확인");
   const userId: number = useAppSelector(selectUserId);
   const userInfo: userInfoConfig = useAppSelector(selectUserInfo);
 

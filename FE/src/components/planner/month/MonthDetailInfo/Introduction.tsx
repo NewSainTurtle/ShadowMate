@@ -2,7 +2,7 @@ import React, { ChangeEvent, Dispatch, Fragment, SetStateAction, useEffect } fro
 import styles from "@styles/planner/Month.module.scss";
 import Text from "@components/common/Text";
 import { useAppSelector } from "@hooks/hook";
-import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { selectUserId } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
 import { userApi } from "@api/Api";
 

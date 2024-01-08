@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import Month from "@components/planner/month/Month";
 import { followApi, settingApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";

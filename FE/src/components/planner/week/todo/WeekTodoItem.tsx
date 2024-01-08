@@ -7,7 +7,7 @@ import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
 import { DeleteOutlined } from "@mui/icons-material";
-import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { selectUserId } from "@store/authSlice";
 import { getThisWeek } from "@util/getThisWeek";
 import { plannerApi } from "@api/Api";
 

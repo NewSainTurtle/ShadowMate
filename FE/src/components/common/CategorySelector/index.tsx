@@ -23,7 +23,7 @@ const CategorySelector = ({ type, handleClick }: Props) => {
       </div>
       <div>
         {categoryList.map((item, idx) => (
-          <div key={idx} className={styles["category__item--hover"]} onClick={() => handleClick(item)}>
+          <div key={item.categoryId} className={styles["category__item--hover"]} onClick={() => handleClick(item)}>
             {
               {
                 week: <div>{item.categoryEmoticon}</div>,
