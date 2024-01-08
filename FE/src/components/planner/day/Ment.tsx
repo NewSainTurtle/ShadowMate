@@ -18,7 +18,7 @@ interface fileImgProps {
 
 interface Props {
   title: string;
-  maxLength: 50 | 100;
+  maxLength: 50 | 100 | 250;
   name: string;
   value: string;
   isFile?: boolean;
