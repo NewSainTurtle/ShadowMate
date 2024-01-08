@@ -140,4 +140,26 @@ class TimeTableRepositoryTest {
         assertThat(findTimeTables).isNotNull().hasSize(2);
     }
 
+    @Test
+    void 타임테이블삭제_할일삭제시한번에삭제() {
+        //given
+        timeTableRepository.save(TimeTable.builder()
+                .startTime(LocalDateTime.parse("2023-09-25 16:10", formatter))
+                .endTime(LocalDateTime.parse("2023-09-25 18:30", formatter))
+                .todo(todo)
+                .build());
+        timeTableRepository.save(TimeTable.builder()
+                .startTime(LocalDateTime.parse("2023-09-25 20:10", formatter))
+                .endTime(LocalDateTime.parse("2023-09-25 21:30", formatter))
+                .todo(todo)
+                .build());
+
+        //when
+        timeTableRepository.deleteAllByTodoId(todo.getId());
+        final List<TimeTable> findTimeTables = timeTableRepository.findAllByTodo(todo);
+
+        //then
+        assertThat(findTimeTables).isNotNull().hasSize(0);
+    }
+
 }
