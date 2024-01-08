@@ -46,7 +46,7 @@ const App = () => {
 
   useEffect(() => {
     const theme = localStorage.getItem("theme");
-    let isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    let isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     if (!theme) localStorage.setItem("theme", isDarkMode);
     else isDarkMode = theme;
 
@@ -59,7 +59,7 @@ const App = () => {
 
   useEffect(() => {
     // 자동 로그인 확인 시
-    const accessToken = localStorage.getItem("accessToken") || "";
+    const accessToken = localStorage.getItem("accessToken") ?? "";
     const id = localStorage.getItem("id");
     let userId = 0;
     if (id) userId = parseInt(id);

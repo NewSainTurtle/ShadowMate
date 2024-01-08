@@ -1,6 +1,5 @@
 import { ProfileConfig } from "@components/common/FriendProfile";
-import { CategoryItemConfig } from "@util/planner.interface";
-import { TodoConfig } from "@util/planner.interface";
+import { CategoryItemConfig, TodoConfig } from "@util/planner.interface";
 import dayjs from "dayjs";
 
 export const todoData_friend: ProfileConfig = {

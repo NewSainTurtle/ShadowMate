@@ -1,17 +1,17 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 import { ProfileConfig } from "@components/common/FriendProfile";
-import { followingType } from "@util/friend.interface";
+import { FollowingType } from "@util/friend.interface";
 import dayjs from "dayjs";
 
-interface friendConfig {
+interface FriendConfig {
   followState: number;
   friendDate: string;
   friendInfo: ProfileConfig;
-  followingList: followingType[];
+  followingList: FollowingType[];
 }
 
-const initialState: friendConfig = {
+const initialState: FriendConfig = {
   followState: 0,
   friendDate: dayjs().format("YYYY-MM-DD"),
   friendInfo: {
@@ -27,17 +27,17 @@ const friendSlice = createSlice({
   name: "friend",
   initialState,
   reducers: {
-    setFriendDate: (state, { payload }: PayloadAction<friendConfig["friendDate"]>) => {
+    setFriendDate: (state, { payload }: PayloadAction<FriendConfig["friendDate"]>) => {
       state.friendDate = payload;
     },
     setFriendInfo: (state, { payload }: PayloadAction<ProfileConfig>) => {
       const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
       state.friendInfo = { ...payload, statusMessage, profileImage };
     },
-    setFollowState: (state, { payload }: PayloadAction<friendConfig["followState"]>) => {
+    setFollowState: (state, { payload }: PayloadAction<FriendConfig["followState"]>) => {
       state.followState = payload;
     },
-    setFollowingList: (state, { payload }: PayloadAction<followingType[]>) => {
+    setFollowingList: (state, { payload }: PayloadAction<FollowingType[]>) => {
       state.followingList = payload;
     },
     clearFriendInfo: (state) => {

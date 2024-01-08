@@ -1,7 +1,7 @@
-import { followRequestType, followerType, followingType, friendSearchType } from "@util/friend.interface";
+import { FollowRequestType, FollowerType, FollowingType, FriendSearchType } from "@util/friend.interface";
 
 // followId : 테이블 ID, followerId : 친구 Id
-export const followerListData: followerType[] = [
+export const followerListData: FollowerType[] = [
   {
     followId: 1,
     followerId: 1,
@@ -58,7 +58,7 @@ export const followerListData: followerType[] = [
   },
 ];
 
-export const followingListData: followingType[] = [
+export const followingListData: FollowingType[] = [
   {
     followId: 1,
     followingId: 5,
@@ -85,7 +85,7 @@ export const followingListData: followingType[] = [
   },
 ];
 
-export const followRequestData: followRequestType[] = [
+export const followRequestData: FollowRequestType[] = [
   {
     followRequestId: 1,
     email: "mung@todo.mate",
@@ -112,7 +112,7 @@ export const followRequestData: followRequestType[] = [
   },
 ];
 
-export const FriendSearch: friendSearchType[] = [
+export const FriendSearch: FriendSearchType[] = [
   {
     userId: 1,
     email: "ribbonE@todo.mate",

@@ -15,7 +15,7 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
   const handleAgreementChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setAgreements({ ...agreements, [name]: checked });
-    const allChecked = Object.values({ ...agreements, [name]: checked }).every((value) => value == true);
+    const allChecked = Object.values({ ...agreements, [name]: checked }).every((value) => value);
     setAllAgreed(allChecked);
   };
 

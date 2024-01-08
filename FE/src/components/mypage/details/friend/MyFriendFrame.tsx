@@ -1,15 +1,15 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
 import {
-  followerType,
-  followingType,
-  followRequestType,
-  followType,
-  friendInfo,
-  friendSearchType,
+  FollowerType,
+  FollowingType,
+  FollowRequestType,
+  FollowType,
+  FriendInfo,
+  FriendSearchType,
 } from "@util/friend.interface";
 import { selectUserId } from "@store/authSlice";
 import { useAppSelector } from "@hooks/hook";
@@ -17,23 +17,23 @@ import { userApi } from "@api/Api";
 import { useDebounce } from "@util/EventControlModule";
 import { selectFollowState } from "@store/friendSlice";
 
-interface MyFriendListType extends friendInfo {
+interface MyFriendListType extends FriendInfo {
   followerId?: number;
   followingId?: number;
   requesterId?: number;
   userId?: number;
-  isFollow?: followType["types"];
+  isFollow?: FollowType["types"];
 }
 
 interface Props {
   title: string;
   search?: boolean;
-  friendList?: (followerType | followingType | followRequestType)[];
+  friendList?: (FollowerType | FollowingType | FollowRequestType)[];
 }
 
 const MyFriendFrame = ({ title, search, friendList }: Props) => {
   const userId: number = useAppSelector(selectUserId);
-  const [searchFriend, setSearchFriend] = useState<friendSearchType[]>([]);
+  const [searchFriend, setSearchFriend] = useState<FriendSearchType[]>([]);
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const debounceKeyword = useDebounce(searchKeyWord, 400);
   const [alertMessage, setAlertMessage] = useState("");
@@ -68,7 +68,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   }, [search]);
 
   useLayoutEffect(() => {
-    if (!!searchKeyWord)
+    if (searchKeyWord)
       userApi
         .searches(userId, { nickname: searchKeyWord })
         .then((res) => {
@@ -92,14 +92,14 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     if (friend.followerId)
       return {
         id: friend.followerId,
-        isFollow: typeToFollow(friend.isFollow || "FOLLOW"),
+        isFollow: typeToFollow(friend.isFollow ?? "FOLLOW"),
       };
     else if (friend.followingId) return { id: friend.followingId, isFollow: "팔로잉 삭제" };
     else if (friend.requesterId) return { id: friend.requesterId, isFollow: "요청" };
     else return { id: friend.userId, isFollow: friend.isFollow };
   };
 
-  const followList: (followerType | followingType | followRequestType | friendSearchType)[] = search
+  const followList: (FollowerType | FollowingType | FollowRequestType | FriendSearchType)[] = search
     ? searchFriend
     : friendList!;
 
@@ -123,7 +123,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
               profileImage,
             };
             return (
-              <FriendProfile key={title + id + isFollow} types={isFollow as followType["types"]} profile={followInfo} />
+              <FriendProfile key={title + id + isFollow} types={isFollow as FollowType["types"]} profile={followInfo} />
             );
           })
         ) : (

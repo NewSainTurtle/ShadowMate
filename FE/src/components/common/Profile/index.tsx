@@ -6,7 +6,7 @@ import Avatar from "@components/common/Avatar";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { ProfileConfig } from "@components/common/FriendProfile";
-import { followingType } from "@util/friend.interface";
+import { FollowingType } from "@util/friend.interface";
 import { persistor } from "@hooks/configStore";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, setLogout } from "@store/authSlice";
@@ -40,7 +40,7 @@ const Profile = ({ types, profile }: Props) => {
       .addRequested(userId, { followingId: friendId })
       .then((res) => {
         const followId = res.data.data.followId;
-        const followingInfo: followingType = {
+        const followingInfo: FollowingType = {
           followingId: friendId,
           nickname,
           profileImage,

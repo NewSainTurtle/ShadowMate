@@ -34,6 +34,8 @@ const MyPageDdayItem = ({ item, idx }: Props) => {
     ddayCalculate(item.ddayDate);
   }, [item]);
 
+  const ddayStyle = calc == 0 ? "--today" : calc < 0 ? "--minus" : "--plus";
+
   return (
     <div
       ref={idx === click ? endRef : null}
@@ -44,7 +46,7 @@ const MyPageDdayItem = ({ item, idx }: Props) => {
         <Text>{item.ddayTitle}</Text>
         <Text types="small">{dateFormat(item.ddayDate)}</Text>
       </div>
-      <div className={styles[`dday__item${calc == 0 ? "--today" : calc < 0 ? "--minus" : "--plus"}`]}>
+      <div className={styles[`dday__item${ddayStyle}`]}>
         <Text types="semi-medium" bold>
           {calc == 0 ? "D-Day" : calc < 0 ? "D" + calc : "D+" + calc}
         </Text>
