@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.planner.service;
 import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.AddTimeTableResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
@@ -186,34 +187,26 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     }
 
     @Override
-    public void addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
+    public AddTimeTableResponse addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
         LocalDateTime startTime = stringToLocalDateTime(addTimeTableRequest.getStartTime());
         LocalDateTime endTime = stringToLocalDateTime(addTimeTableRequest.getEndTime());
         checkValidDateTime(addTimeTableRequest.getDate(), startTime, endTime);
 
         final DailyPlanner dailyPlanner = getDailyPlanner(user, addTimeTableRequest.getDate());
         final Todo todo = getTodo(addTimeTableRequest.getTodoId(), dailyPlanner);
-
-        if (todo.getTimeTable() != null) {
-            throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE);
-        }
-
-        todo.setTimeTable(TimeTable.builder()
+        final TimeTable saveTimeTable = timeTableRepository.save(TimeTable.builder()
                 .endTime(endTime)
                 .startTime(startTime)
+                .todo(todo)
                 .build());
+
+        return AddTimeTableResponse.builder().timeTableId(saveTimeTable.getId()).build();
     }
 
     @Override
     public void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest) {
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, removeTimeTableRequest.getDate());
-        final Todo todo = getTodo(removeTimeTableRequest.getTodoId(), dailyPlanner);
-        if (todo.getTimeTable() == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE);
-        }
-        final long timeTableId = todo.getTimeTable().getId();
-        todo.setTimeTable(null);
-        timeTableRepository.deleteById(timeTableId);
+        getDailyPlanner(user, removeTimeTableRequest.getDate());
+        timeTableRepository.deleteByIdAndTodoId(removeTimeTableRequest.getTodoId(), removeTimeTableRequest.getTodoId());
     }
 
     @Override
