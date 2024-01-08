@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     Todo findByIdAndDailyPlanner(final Long id, final DailyPlanner dailyPlanner);
-    void deleteByIdAndDailyPlanner(final Long id, final DailyPlanner dailyPlanner);
+    void deleteById(final Long id);
     long countByCategory(final Category category);
     List<Todo> findAllByDailyPlanner(final DailyPlanner dailyPlanner);
     int countByDailyPlanner(final DailyPlanner dailyPlanner);
