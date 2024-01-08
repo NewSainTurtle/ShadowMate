@@ -33,17 +33,6 @@ public class Todo extends CommonEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "timeTable_id")
-    private TimeTable timeTable;
-
-    public void setTimeTable(TimeTable timeTable) {
-        this.timeTable = timeTable;
-        if (timeTable != null) {
-            timeTable.setTodo(this);
-        }
-    }
-
     public void updateTodoContentAndCategoryAndStatus(final String todoContent,
                                                       final Category category,
                                                       final TodoStatus todoStatus) {
