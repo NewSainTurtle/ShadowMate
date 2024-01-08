@@ -1876,6 +1876,22 @@ class PlannerControllerTest {
             }
 
             @Test
+            void 실패_타임테이블등록_불가상태() throws Exception {
+                //given
+                doThrow(new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addTimeTableRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
             void 성공() throws Exception {
                 //given
 
