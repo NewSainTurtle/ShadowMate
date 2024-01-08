@@ -738,30 +738,10 @@ class DailyPlannerServiceTest extends DateCommonService {
             }
 
             @Test
-            void 실패_이미타임테이블시간이존재() {
-                //given
-                final Todo todo = Todo.builder()
-                        .id(1L)
-                        .category(null)
-                        .todoContent(todoContent)
-                        .todoStatus(TodoStatus.EMPTY)
-                        .dailyPlanner(dailyPlanner)
-                        .timeTable(timeTable)
-                        .build();
-                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
-
-                //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest));
-
-                //then
-                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE);
-            }
-
-            @Test
             void 성공() {
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
+                doReturn(timeTable).when(timeTableRepository).save(any(TimeTable.class));
 
                 //when
                 dailyPlannerServiceImpl.addTimeTable(user, addTimeTableRequest);
@@ -796,45 +776,9 @@ class DailyPlannerServiceTest extends DateCommonService {
             }
 
             @Test
-            void 실패_유효하지않은할일() {
-                //given
-                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
-
-                //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest));
-
-                //then
-                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
-            }
-
-            @Test
-            void 실패_타임테이블값없음() {
-                //given
-                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
-
-                //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest));
-
-                //then
-                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TIME_TABLE);
-            }
-
-            @Test
             void 성공() {
                 //given
-                final Todo todo = Todo.builder()
-                        .id(1L)
-                        .category(null)
-                        .todoContent(todoContent)
-                        .todoStatus(TodoStatus.EMPTY)
-                        .dailyPlanner(dailyPlanner)
-                        .timeTable(timeTable)
-                        .build();
-
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
 
                 //when
                 dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest);
@@ -843,8 +787,7 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
-                verify(todoRepository, times(1)).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
-                verify(timeTableRepository, times(1)).deleteById(any(Long.class));
+                verify(timeTableRepository, times(1)).deleteByIdAndTodoId(any(Long.class), any(Long.class));
             }
 
         }
