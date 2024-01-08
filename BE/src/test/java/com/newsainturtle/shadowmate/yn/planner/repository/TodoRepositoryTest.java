@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.planner.entity.TimeTable;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
@@ -44,6 +45,9 @@ class TodoRepositoryTest {
 
     @Autowired
     private CategoryColorRepository categoryColorRepository;
+
+    @Autowired
+    private TimeTableRepository timeTableRepository;
 
     private User user;
     private DailyPlanner dailyPlanner;
@@ -161,11 +165,11 @@ class TodoRepositoryTest {
                 .dailyPlanner(dailyPlanner)
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
-        final TimeTable timeTable = TimeTable.builder()
+        timeTableRepository.save(TimeTable.builder()
                 .startTime(startTime)
                 .endTime(endTime)
-                .build();
-        saveTodo.setTimeTable(timeTable);
+                .todo(todo)
+                .build());
 
         //when
         todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
@@ -239,10 +243,6 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .build());
-        saveTodo1.setTimeTable(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-10-06 16:10", formatter))
-                .endTime(LocalDateTime.parse("2023-10-06 18:30", formatter))
-                .build());
 
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -262,10 +262,6 @@ class TodoRepositoryTest {
                 .todoContent("개념원리 1단원 문제 풀기")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
-                .build());
-        saveTodo4.setTimeTable(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-10-06 23:40", formatter))
-                .endTime(LocalDateTime.parse("2023-10-07 01:10", formatter))
                 .build());
 
         //when
@@ -287,7 +283,7 @@ class TodoRepositoryTest {
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("국어")
-                .todoStatus(TodoStatus.EMPTY)
+                .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .build());
         todoRepository.save(Todo.builder()
