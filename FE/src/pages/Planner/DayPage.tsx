@@ -207,7 +207,7 @@ const DayPage = () => {
           value={retrospection}
           onChange={handleInput}
           rows={5}
-          maxLength={100}
+          maxLength={250}
           isFile
           retrospectionImage={retrospectionImage || ""}
           setRetrospectionImage={setRetrospectionImage}
@@ -220,7 +220,7 @@ const DayPage = () => {
           value={tomorrowGoal}
           onChange={handleInput}
           rows={5}
-          maxLength={50}
+          maxLength={100}
           onBlur={saveTomorrowGoals}
         />
       </div>
