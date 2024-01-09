@@ -78,7 +78,7 @@ export const plannerApi = {
       todoId: number;
       todoContent: string;
       categoryId: number;
-      todoStatus: "공백" | "완료" | "미완료";
+      todoStatus: "공백" | "완료" | "진행중" | "미완료";
     },
   ) => Axios.put(api.planners.dailyTodos(userId), data),
   deleteDailyTodos: (userId: number, data: { date: string; todoId: number }) =>

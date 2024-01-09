@@ -42,7 +42,7 @@ export interface TodoConfig {
   todoId: number;
   category?: CategoryItemConfig | null;
   todoContent: string;
-  todoStatus: "공백" | "완료" | "미완료";
+  todoStatus: "공백" | "완료" | "진행중" | "미완료";
   todoUpdate?: boolean;
   timeTable?: TimeTableConfig | null;
 }

@@ -71,7 +71,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const count = useMemo(() => {
-    const status = todoList.filter((ele) => ele.todoStatus == "완료").length;
+    const status = todoList.filter((ele) => ele.todoStatus == "완료" || ele.todoStatus == "진행중").length;
     const saveTime = todoList.filter((ele) => ele.timeTable && ele.timeTable.startTime != "").length;
     return { status, saveTime };
   }, [todoList]);
@@ -112,7 +112,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
     startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
 
-    Promise.resolve(
+    await Promise.resolve(
       todoList.map((item: TodoConfig) => {
         if (item.timeTable && !!item.timeTable.startTime) {
           if (

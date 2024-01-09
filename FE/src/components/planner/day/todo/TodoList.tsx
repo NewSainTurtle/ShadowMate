@@ -107,14 +107,17 @@ const TodoList = ({ clicked }: Props) => {
         </>
       ) : (
         <>
-          {todoArr.map((item: TodoConfig, idx: number) => (
-            <TodoItemChoice
-              key={item.todoId}
-              idx={idx}
-              todoItem={item}
-              possible={item.todoStatus === "완료" && !item.timeTable?.startTime}
-            />
-          ))}
+          {todoArr.map((item: TodoConfig, idx: number) => {
+            const todoFilter = item.todoStatus === "완료" || item.todoStatus === "진행중";
+            return (
+              <TodoItemChoice
+                key={item.todoId}
+                idx={idx}
+                todoItem={item}
+                possible={todoFilter && !item.timeTable?.startTime}
+              />
+            );
+          })}
           {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
             <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} disable />
           ))}
