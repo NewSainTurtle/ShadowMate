@@ -34,9 +34,7 @@ const Header = () => {
       <Menu />
       <div className={styles["header_profile"]}>
         <Toggle />
-        <NavLink to="/mypage">
-          <Avatar src={profileImage} />
-        </NavLink>
+        <Avatar src={profileImage} />
       </div>
     </div>
   );
