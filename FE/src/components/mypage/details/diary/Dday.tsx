@@ -19,7 +19,8 @@ const MyPageDday = () => {
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);
-
+  const minLength = 1;
+  const maxLength = 20;
   const { ddayTitle, ddayDate } = ddayInput ?? "";
   const [length, setLength] = useState<number>(ddayTitle ? ddayTitle.length : 0);
 
@@ -27,7 +28,7 @@ const MyPageDday = () => {
     const { value, name } = e.target;
     if (name === "ddayTitle") {
       setLength(value.length);
-      if (value.length < 2 || value.length > 20) {
+      if (value.length < minLength || value.length > maxLength) {
         setError(true);
       } else setError(false);
     }
@@ -67,7 +68,9 @@ const MyPageDday = () => {
           placeholder="디데이 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
-          helperText={error ? "2 ~ 20자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/20`}
+          helperText={
+            error ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.` : `글자 수: ${length}/${maxLength}`
+          }
         />
       </div>
       <div id={styles["date"]} className={styles["frame__line"]}>
