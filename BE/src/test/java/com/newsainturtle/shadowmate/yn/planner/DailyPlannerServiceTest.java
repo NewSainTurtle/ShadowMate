@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -107,6 +108,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 .todoContent(todoContent)
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
                 .build();
 
         @Nested
@@ -144,8 +146,10 @@ class DailyPlannerServiceTest extends DateCommonService {
                         .todoContent(todoContent)
                         .todoStatus(TodoStatus.EMPTY)
                         .dailyPlanner(dailyPlanner)
+                        .todoIndex(100000D)
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+                doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any());
                 doReturn(todo).when(todoRepository).save(any(Todo.class));
 
                 //when
@@ -153,6 +157,7 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+                assertThat(addDailyTodoResponse.getTodoIndex()).isEqualTo(100000D);
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
@@ -164,6 +169,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 //given
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
                 doReturn(category).when(categoryRepository).findByUserAndId(any(), any(Long.class));
+                doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any());
                 doReturn(todo).when(todoRepository).save(any(Todo.class));
 
                 //when
@@ -171,6 +177,7 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+                assertThat(addDailyTodoResponse.getTodoIndex()).isEqualTo(100000);
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
@@ -644,6 +651,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 .todoContent(todoContent)
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
                 .build();
         final TimeTable timeTable = TimeTable.builder()
                 .id(1L)
@@ -757,6 +765,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                         .todoContent(todoContent)
                         .todoStatus(TodoStatus.COMPLETE)
                         .dailyPlanner(dailyPlanner)
+                        .todoIndex(100000D)
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));

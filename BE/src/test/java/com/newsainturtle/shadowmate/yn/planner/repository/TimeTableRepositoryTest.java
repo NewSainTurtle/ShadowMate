@@ -64,6 +64,7 @@ class TimeTableRepositoryTest {
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
                 .build());
     }
 

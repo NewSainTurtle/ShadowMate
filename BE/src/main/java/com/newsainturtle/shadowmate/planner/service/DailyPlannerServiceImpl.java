@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.AddTimeTableResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -113,14 +114,16 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     public AddDailyTodoResponse addDailyTodo(final User user, final AddDailyTodoRequest addDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, addDailyTodoRequest.getDate());
         final Category category = getCategory(user, addDailyTodoRequest.getCategoryId());
+        final TodoIndexResponse lastTodoIndex = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
         final Todo todo = Todo.builder()
                 .category(category)
                 .todoContent(addDailyTodoRequest.getTodoContent())
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(lastTodoIndex == null ? 100000 : lastTodoIndex.getTodoIndex() + 100000)
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
-        return AddDailyTodoResponse.builder().todoId(saveTodo.getId()).build();
+        return AddDailyTodoResponse.builder().todoId(saveTodo.getId()).todoIndex(saveTodo.getTodoIndex()).build();
     }
 
     @Override

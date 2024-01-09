@@ -164,7 +164,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                         .dailyTodos(dailyTodos)
                         .build());
             } else {
-                final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
+                final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
                 for (Todo todo : todoList) {
                     dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
                             .todoId(todo.getId())
@@ -176,6 +176,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                                     .build() : null)
                             .todoContent(todo.getTodoContent())
                             .todoStatus(todo.getTodoStatus().getStatus())
+                            .todoIndex(todo.getTodoIndex())
                             .build());
                 }
                 dayList.add(WeeklyPlannerDailyResponse.builder()
@@ -221,7 +222,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             final boolean like = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner) != null;
             final Social shareSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
             final long likeCount = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
-            final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
+            final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
             final List<DailyPlannerTodoResponse> dailyTodos = new ArrayList<>();
             totalMinutes = 0;
             for (Todo todo : todoList) {
@@ -235,6 +236,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                                 .build() : null)
                         .todoContent(todo.getTodoContent())
                         .todoStatus(todo.getTodoStatus().getStatus())
+                        .todoIndex(todo.getTodoIndex())
                         .timeTables(getTimeTable(todo))
                         .build());
             }

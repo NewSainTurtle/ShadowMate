@@ -25,6 +25,9 @@ public class Todo extends CommonEntity {
     @Enumerated(EnumType.STRING)
     private TodoStatus todoStatus;
 
+    @Column(name = "todo_index", nullable = false)
+    private Double todoIndex;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "daily_planner_id")
     private DailyPlanner dailyPlanner;
@@ -32,5 +35,4 @@ public class Todo extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
 }

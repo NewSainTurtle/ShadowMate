@@ -13,6 +13,7 @@ public class DailyPlannerTodoResponse {
     private DailyPlannerTodoCategoryResponse category;
     private String todoContent;
     private String todoStatus;
+    private Double todoIndex;
     private List<DailyPlannerTodoTimeTableResponse> timeTables;
 
 }
