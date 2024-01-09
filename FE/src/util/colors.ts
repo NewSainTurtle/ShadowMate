@@ -1,5 +1,12 @@
 import themes from "@styles/global/themes.scss";
 
+export const monthStatusColor = [
+  "var(--color-calendar-0)",
+  "var(--color-calendar-10)",
+  "var(--color-calendar-60)",
+  "var(--color-calendar-100)",
+];
+
 export const colors = {
   colorBlack: themes["color-black"],
   colorWhite: themes["color-white"],
