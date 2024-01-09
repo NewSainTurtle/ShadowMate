@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@styles/common/Header.module.scss";
 import Text from "@components/common/Text";
-import { CalendarToday, EventNote, Today, Groups } from "@mui/icons-material";
+import { CalendarToday, EventNote, Today, Groups, Settings } from "@mui/icons-material";
 import { NavLink } from "react-router-dom";
 import { useAppDispatch } from "@hooks/hook";
 import { clearFriendInfo } from "@store/friendSlice";
@@ -13,6 +13,7 @@ const values = [
   { icon: <EventNote />, message: "주별", link: "/week" },
   { icon: <Today />, message: "일별", link: `/day` },
   { icon: <Groups />, message: "소셜", link: "/social" },
+  { icon: <Settings />, message: "설정", link: "/mypage" },
 ];
 
 const Menu = () => {
