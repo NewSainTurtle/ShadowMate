@@ -268,10 +268,11 @@ class TodoRepositoryTest {
                 .build());
 
         //when
-        final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
+        final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
 
         //then
         assertThat(todoList).isNotNull().hasSize(4);
+        assertThat(todoList.get(0).getTodoContent()).isEqualTo("수능완성 수학 과목별 10문제");
     }
 
     @Test
