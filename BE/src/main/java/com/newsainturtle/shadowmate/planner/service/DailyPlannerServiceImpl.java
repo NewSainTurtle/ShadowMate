@@ -123,7 +123,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
                 .todoIndex(lastTodoIndex == null ? 100000 : lastTodoIndex.getTodoIndex() + 100000)
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
-        return AddDailyTodoResponse.builder().todoId(saveTodo.getId()).todoIndex(saveTodo.getTodoIndex()).build();
+        return AddDailyTodoResponse.builder().todoId(saveTodo.getId()).build();
     }
 
     @Override

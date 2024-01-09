@@ -157,7 +157,6 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
-                assertThat(addDailyTodoResponse.getTodoIndex()).isEqualTo(100000D);
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
@@ -177,7 +176,6 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
-                assertThat(addDailyTodoResponse.getTodoIndex()).isEqualTo(100000);
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());

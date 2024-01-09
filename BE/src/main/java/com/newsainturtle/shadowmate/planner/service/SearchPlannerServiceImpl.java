@@ -176,7 +176,6 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                                     .build() : null)
                             .todoContent(todo.getTodoContent())
                             .todoStatus(todo.getTodoStatus().getStatus())
-                            .todoIndex(todo.getTodoIndex())
                             .build());
                 }
                 dayList.add(WeeklyPlannerDailyResponse.builder()
@@ -236,7 +235,6 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                                 .build() : null)
                         .todoContent(todo.getTodoContent())
                         .todoStatus(todo.getTodoStatus().getStatus())
-                        .todoIndex(todo.getTodoIndex())
                         .timeTables(getTimeTable(todo))
                         .build());
             }
