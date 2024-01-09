@@ -288,6 +288,98 @@ class DailyPlannerServiceTest extends DateCommonService {
         }
 
         @Nested
+        class 일일플래너할일_순서변경 {
+
+            final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest = ChangeDailyTodoSequenceRequest.builder()
+                    .date(date)
+                    .todoId(3L)
+                    .upperTodoId(1L)
+                    .build();
+
+
+            @Test
+            void 실패_유효하지않은일일플래너() {
+                //given
+
+                doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.changeDailyTodoSequence(user, changeDailyTodoSequenceRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+            }
+
+            @Test
+            void 실패_유효하지않은할일() {
+                //given
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(changeDailyTodoSequenceRequest.getTodoId(), dailyPlanner);
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.changeDailyTodoSequence(user, changeDailyTodoSequenceRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
+            }
+
+            @Test
+            void 실패_유효하지않은아래쪽할일() {
+                //given
+                final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest = ChangeDailyTodoSequenceRequest.builder()
+                        .date(date)
+                        .todoId(3L)
+                        .upperTodoId(null)
+                        .build();
+
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(changeDailyTodoSequenceRequest.getTodoId(), dailyPlanner);
+                doReturn(null).when(todoRepository).findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 0);
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.changeDailyTodoSequence(user, changeDailyTodoSequenceRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
+            }
+
+
+            @Test
+            void 실패_유효하지않은위쪽할일() {
+                //given
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(changeDailyTodoSequenceRequest.getTodoId(), dailyPlanner);
+                doReturn(null).when(todoRepository).findByIdAndDailyPlanner(changeDailyTodoSequenceRequest.getUpperTodoId(), dailyPlanner);
+
+                //when
+                final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.changeDailyTodoSequence(user, changeDailyTodoSequenceRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
+            }
+
+            @Test
+            void 성공() {
+                //given
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(changeDailyTodoSequenceRequest.getTodoId(), dailyPlanner);
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(changeDailyTodoSequenceRequest.getUpperTodoId(), dailyPlanner);
+                doReturn(null).when(todoRepository).findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, todo.getTodoIndex());
+
+                //when
+                dailyPlannerServiceImpl.changeDailyTodoSequence(user, changeDailyTodoSequenceRequest);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+                verify(todoRepository, times(2)).findByIdAndDailyPlanner(any(Long.class), any());
+                verify(todoRepository, times(1)).findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(any(), any(Double.class));
+            }
+
+        }
+
+        @Nested
         class 일일플래너할일삭제 {
 
             final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
