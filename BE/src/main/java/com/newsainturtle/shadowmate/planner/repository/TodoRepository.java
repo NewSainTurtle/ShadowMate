@@ -19,7 +19,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     Todo findByIdAndDailyPlanner(final Long id, final DailyPlanner dailyPlanner);
     void deleteById(final Long id);
     long countByCategory(final Category category);
-    List<Todo> findAllByDailyPlanner(final DailyPlanner dailyPlanner);
+    List<Todo> findAllByDailyPlannerOrderByTodoIndex(final DailyPlanner dailyPlanner);
     int countByDailyPlanner(final DailyPlanner dailyPlanner);
     int countByDailyPlannerAndTodoStatusNot(final DailyPlanner dailyPlanner, final TodoStatus todoStatus);
     TodoIndexResponse findTopByDailyPlannerOrderByTodoIndexDesc(final DailyPlanner dailyPlanner);
