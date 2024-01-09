@@ -14,6 +14,7 @@ $color-blue: var(--color-btn-blue);
   grid-template-columns: 6fr 4fr;
   gap: 1em;
   height: 100%;
+  overflow-y: auto;
   padding: 2em;
   box-sizing: border-box;
   background-color: $color-background;
