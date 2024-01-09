@@ -185,7 +185,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    void 일일플래너_할일수정() {
+    void 일일플래너_할일수정() throws InterruptedException {
         //given
         final Category category1 = categoryRepository.save(Category.builder()
                 .categoryColor(categoryColorRepository.findById(1L).orElse(null))
@@ -211,6 +211,7 @@ class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
+        Thread.sleep(10);
         todoRepository.updateAllByTodoId("비문학 2문제 풀기", category2, TodoStatus.COMPLETE, LocalDateTime.now(), saveTodo.getId());
         final Todo findTodo = todoRepository.findByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
 
