@@ -340,7 +340,7 @@ $color-blue: var(--color-btn-blue);
 
 .guest {
   width: 100%;
-  min-height: calc((40px + 0.5em) * 2 + 2em);
+  min-height: calc((40px + 0.5em) + 2em);
   &__input {
     display: flex;
     justify-content: space-between;
