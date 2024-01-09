@@ -185,7 +185,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    void 일일플래너_할일수정() {
+    void 일일플래너_할일수정() throws InterruptedException {
         //given
         final Category category1 = categoryRepository.save(Category.builder()
                 .categoryColor(categoryColorRepository.findById(1L).orElse(null))
@@ -211,6 +211,7 @@ class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
+        Thread.sleep(10);
         todoRepository.updateAllByTodoId("비문학 2문제 풀기", category2, TodoStatus.COMPLETE, LocalDateTime.now(), saveTodo.getId());
         final Todo findTodo = todoRepository.findByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
 
@@ -401,6 +402,60 @@ class TodoRepositoryTest {
 
             //when
             final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
+
+            //then
+            assertThat(todoIndexResponse).isNotNull();
+            assertThat(todoIndexResponse.getTodoIndex()).isEqualTo(200000D);
+        }
+    }
+
+    @Nested
+    class 일일플래너_해당할일인덱스_다음순서의할일인덱스값가져오기 {
+
+        @Test
+        void 할일없음() {
+            //given
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .build());
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 100000D);
+
+            //then
+            assertThat(todoIndexResponse).isNull();
+        }
+
+        @Test
+        void 할일있음() {
+            //given
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .build());
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(300000D)
+                    .build());
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(200000D)
+                    .build());
+
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 100000D);
 
             //then
             assertThat(todoIndexResponse).isNotNull();

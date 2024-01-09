@@ -8,6 +8,5 @@ import lombok.Getter;
 public class AddDailyTodoResponse {
 
     private Long todoId;
-    private Double todoIndex;
 
 }
