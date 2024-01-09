@@ -459,14 +459,21 @@ $color-blue: var(--color-btn-blue);
   > span {
     font-size: 12px;
     margin-bottom: 4px;
+    &:nth-child(1) {
+      margin-left: 10em;
+      margin-right: 0.5em;
+    }
+    &:nth-child(3) {
+      margin-left: 0.5em;
+    }
   }
   > div {
     display: flex;
     align-items: center;
+    gap: 0.5em;
     > div {
       width: 20px;
       height: 20px;
-      margin: 0 0.3em;
       border-radius: 3px;
       background-color: $color-blue;
     }
