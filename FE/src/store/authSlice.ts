@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 import { PURGE } from "redux-persist";
 
-export interface userInfoConfig {
+export interface UserInfoConfig {
   email: string;
   nickname: string;
   profileImage: string;
@@ -10,15 +10,15 @@ export interface userInfoConfig {
   plannerAccessScope: string;
 }
 
-interface authConfig {
+interface AuthConfig {
   accessToken: string;
   userId: number;
   login: boolean;
   isGoogle: boolean;
-  userInfo: userInfoConfig;
+  userInfo: UserInfoConfig;
 }
 
-const initialState: authConfig = {
+const initialState: AuthConfig = {
   accessToken: "",
   userId: 0,
   login: false,
@@ -49,7 +49,7 @@ const authSlice = createSlice({
       localStorage.removeItem("id");
       localStorage.removeItem("accessToken");
     },
-    setUserInfo: (state, { payload }: PayloadAction<userInfoConfig>) => {
+    setUserInfo: (state, { payload }: PayloadAction<UserInfoConfig>) => {
       const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
       state.userInfo = { ...payload, statusMessage, profileImage };
     },

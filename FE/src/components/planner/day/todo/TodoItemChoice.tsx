@@ -15,7 +15,7 @@ interface Props {
 const TodoItemChoice = ({ todoItem, possible, disable }: Props) => {
   const dispatch = useAppDispatch();
   const { todoContent, todoStatus } = todoItem;
-  const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
+  const category = (() => todoItem.category ?? BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
 
   const getTextColorByBackgroundColor = (hexColor: string) => {
@@ -41,11 +41,15 @@ const TodoItemChoice = ({ todoItem, possible, disable }: Props) => {
     if (possible) dispatch(setTodoItem(todoItem));
   }
 
+  const isDisableStyle = disable ? "--disable" : "";
+  const todoStatusView = {
+    공백: " ",
+    완료: "O",
+    미완료: "X",
+  };
+
   return (
-    <div
-      className={`${styles[`todo-item${disable ? "--disable" : ""}`]} ${styles[possibility]}`}
-      onClick={handleClickTodo}
-    >
+    <div className={`${styles[`todo-item${isDisableStyle}`]} ${styles[possibility]}`} onClick={handleClickTodo}>
       <div className={styles["todo-item__category"]}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           <Text>{categoryTitle}</Text>
@@ -58,7 +62,7 @@ const TodoItemChoice = ({ todoItem, possible, disable }: Props) => {
       </div>
       <div className={styles[`todo-item__checked`]}>
         <div>
-          <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
+          <Text types="semi-medium">{todoStatusView[todoStatus]}</Text>
         </div>
       </div>
     </div>

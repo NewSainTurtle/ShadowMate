@@ -7,7 +7,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
-import { selectUserId, selectUserInfo, setUserInfo, userInfoConfig } from "@store/authSlice";
+import { selectUserId, selectUserInfo, setUserInfo, UserInfoConfig } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { resizeImage } from "@util/resizeImage";
@@ -18,8 +18,8 @@ import { userRegex } from "@util/regex";
 const MyPageInfo = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const myInfoData: userInfoConfig = useAppSelector(selectUserInfo);
-  const [userMyInfo, setUserMyInfo] = useState<userInfoConfig>(myInfoData);
+  const myInfoData: UserInfoConfig = useAppSelector(selectUserInfo);
+  const [userMyInfo, setUserMyInfo] = useState<UserInfoConfig>(myInfoData);
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
   const [newNickname, setNewNickname] = useState(nickname);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
@@ -42,6 +42,7 @@ const MyPageInfo = () => {
   const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLength({ ...length, [name]: value.length });
+
     if (name == "nickname") {
       if (isErrorButton) setErrorButton(false);
       if (isNicknameAuthentication) setNicknameAuthentication(false);
@@ -50,9 +51,13 @@ const MyPageInfo = () => {
       if (myInfoData.nickname == value) setNicknameAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
-    } else if (name == "statusMessage") {
+      return;
+    }
+
+    if (name == "statusMessage") {
       if (!userRegex.statusMessage.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
+      return;
     }
 
     setUserMyInfo({
@@ -197,8 +202,8 @@ const MyPageInfo = () => {
     <>
       <div className={styles["info__cantainer"]}>
         <div className={styles["info__contents"]}>
-          {MY_INFO.map((item, idx) => (
-            <div className={styles["info__line"]} key={idx}>
+          {MY_INFO.map((item) => (
+            <div className={styles["info__line"]} key={item.title}>
               <div>
                 <Text>{item.title}</Text>
               </div>

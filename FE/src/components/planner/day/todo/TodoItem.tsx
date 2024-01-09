@@ -7,8 +7,7 @@ import CategorySelector from "@components/common/CategorySelector";
 import TimeTableDeleteModal from "@components/common/Modal/TimeTableDeleteModal";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
-import { TodoConfig } from "@util/planner.interface";
-import { CategoryItemConfig } from "@util/planner.interface";
+import { TodoConfig, CategoryItemConfig } from "@util/planner.interface";
 
 interface Props {
   idx?: number;
@@ -25,7 +24,7 @@ interface Props {
 
 const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
   const { todoContent, todoStatus } = todoItem;
-  const category = (() => todoItem.category || BASIC_CATEGORY_ITEM)();
+  const category = (() => todoItem.category ?? BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
   const { insertTodo, updateTodo, deleteTodo, deleteTimeTable } = todoModule;
   const [text, setText] = useState(todoContent);
@@ -126,16 +125,23 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   };
 
   const clicked = !addTodo && !disable;
+  const isDisableStyle = disable ? "--disable" : "";
+  const isClickedStyle = clicked ? "--add" : "";
+  const todoStatusView = {
+    공백: " ",
+    완료: "O",
+    미완료: "X",
+  };
 
   return (
-    <div className={styles[`todo-item${disable ? "--disable" : ""}`]}>
-      <div ref={dropMenuRef} className={styles[`todo-item__category${clicked ? "--add" : ""}`]} onClick={handleOpen}>
+    <div className={styles[`todo-item${isDisableStyle}`]}>
+      <div ref={dropMenuRef} className={styles[`todo-item__category${isClickedStyle}`]} onClick={handleOpen}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}
         </div>
       </div>
 
-      <div className={styles[`todo-item__content${clicked ? "--add" : ""}`]}>
+      <div className={styles[`todo-item__content${isClickedStyle}`]}>
         {disable ? (
           addTodo && (
             <span>
@@ -162,8 +168,8 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         )}
       </div>
 
-      <div className={styles[`todo-item__checked${clicked ? "--add" : ""}`]} onClick={handleSaveStatusTodo}>
-        <Text types="semi-medium">{todoStatus == "공백" ? " " : todoStatus == "완료" ? "O" : "X"}</Text>
+      <div className={styles[`todo-item__checked${isClickedStyle}`]} onClick={handleSaveStatusTodo}>
+        <Text types="semi-medium">{todoStatusView[todoStatus]}</Text>
       </div>
 
       <Modal types="noBtn" open={ModalOpen} onClose={handleClose}>

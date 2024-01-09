@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDayDate, selectDayInfo, selectTodoList, setDayInfo, setTodoItem } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
-import { TodoConfig } from "@util/planner.interface";
+import { TimeTableConfig, TodoConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -68,8 +68,8 @@ const DayPage = () => {
     const sumMinute = todoList
       .filter((ele: TodoConfig) => ele.timeTable && ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
       .reduce(
-        (accumulator: number, item: { timeTable: any }) =>
-          accumulator + Number(dayjs(item.timeTable!.endTime).diff(dayjs(item.timeTable!.startTime), "m")),
+        (accumulator: number, item: { timeTable: TimeTableConfig }) =>
+          accumulator + Number(dayjs(item.timeTable.endTime).diff(dayjs(item.timeTable.startTime), "m")),
         0,
       );
     const studyTimeHour = Math.floor(sumMinute / 60);
@@ -79,7 +79,7 @@ const DayPage = () => {
 
   useEffect(() => {
     const handleOutsideClose = (e: MouseEvent) => {
-      if (todoDivRef && todoDivRef.current && e.button == 2) {
+      if (todoDivRef?.current && e.button == 2) {
         setIsClickTimeTable(false);
         dispatch(
           setTodoItem({
@@ -209,7 +209,7 @@ const DayPage = () => {
           rows={5}
           maxLength={250}
           isFile
-          retrospectionImage={retrospectionImage || ""}
+          retrospectionImage={retrospectionImage}
           setRetrospectionImage={setRetrospectionImage}
           onBlur={saveRetrospections}
         />

@@ -8,7 +8,7 @@ import DeleteModal from "@components/common/Modal/DeleteModal";
 import { followApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
-import { followType } from "@util/friend.interface";
+import { FollowType } from "@util/friend.interface";
 import { selectFollowState, setFollowState, setFriendInfo } from "@store/friendSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +21,7 @@ export interface ProfileConfig {
 
 interface Props {
   profile: ProfileConfig;
-  types: "기본" | "아이콘" | followType["types"];
+  types: "기본" | "아이콘" | FollowType["types"];
 }
 
 interface ProfileButtonProps extends Omit<Props, "profile"> {
