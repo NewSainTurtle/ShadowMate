@@ -408,4 +408,58 @@ class TodoRepositoryTest {
             assertThat(todoIndexResponse.getTodoIndex()).isEqualTo(200000D);
         }
     }
+
+    @Nested
+    class 일일플래너_해당할일인덱스_다음순서의할일인덱스값가져오기 {
+
+        @Test
+        void 할일없음() {
+            //given
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .build());
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 100000D);
+
+            //then
+            assertThat(todoIndexResponse).isNull();
+        }
+
+        @Test
+        void 할일있음() {
+            //given
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .build());
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(300000D)
+                    .build());
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(200000D)
+                    .build());
+
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 100000D);
+
+            //then
+            assertThat(todoIndexResponse).isNotNull();
+            assertThat(todoIndexResponse.getTodoIndex()).isEqualTo(200000D);
+        }
+    }
 }
