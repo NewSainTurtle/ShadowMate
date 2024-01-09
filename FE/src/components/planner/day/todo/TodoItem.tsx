@@ -87,7 +87,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const handleSaveStatusTodo = () => {
     if (text === "") return;
     if (todoStatus === "진행중") {
-      if (todoItem.timeTable && todoItem.timeTable.startTime != "") {
+      if (todoItem.timeTables && todoItem.timeTables.startTime != "") {
         handleWarnModalOpen();
       } else {
         updateTodo(idx, {

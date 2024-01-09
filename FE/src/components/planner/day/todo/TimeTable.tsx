@@ -72,7 +72,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
   const count = useMemo(() => {
     const status = todoList.filter((ele) => ele.todoStatus == "완료" || ele.todoStatus == "진행중").length;
-    const saveTime = todoList.filter((ele) => ele.timeTable && ele.timeTable.startTime != "").length;
+    const saveTime = todoList.filter((ele) => ele.timeTables && ele.timeTables.startTime != "").length;
     return { status, saveTime };
   }, [todoList]);
 
@@ -92,7 +92,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       if (todoId != 0) {
         setTimeClicked(false);
 
-        if (selectItem.timeTable && selectItem.timeTable.startTime != "")
+        if (selectItem.timeTables && selectItem.timeTables.startTime != "")
           deleteTimeTable(todoId).then(() => saveTimeTable(endTime));
         else saveTimeTable(endTime);
       }
@@ -114,11 +114,11 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
 
     await Promise.resolve(
       todoList.map((item: TodoConfig) => {
-        if (item.timeTable && !!item.timeTable.startTime) {
+        if (item.timeTables && !!item.timeTables.startTime) {
           if (
             !(
-              dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
-              dayjs(item.timeTable.startTime).isSameOrAfter(endTime)
+              dayjs(item.timeTables.endTime).isSameOrBefore(startTime) ||
+              dayjs(item.timeTables.startTime).isSameOrAfter(endTime)
             )
           )
             deleteTimeTable(item.todoId);
@@ -145,11 +145,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele: TodoConfig) => ele.timeTable && ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
+      .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.startTime != "" && ele.timeTables.endTime != "")
       .map((item: TodoConfig) => {
-        const { todoId, category } = item;
-        const timeTable = item.timeTable as TimeTableConfig;
-        let { startTime, endTime } = timeTable;
+        const { todoId, category, timeTables } = item;
+        let { startTime, endTime } = timeTables as TimeTableConfig;
         const miniArr: TimeTableType[] = [];
         let tempTime = startTime;
         while (tempTime != endTime) {

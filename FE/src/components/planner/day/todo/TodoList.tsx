@@ -114,7 +114,7 @@ const TodoList = ({ clicked }: Props) => {
                 key={item.todoId}
                 idx={idx}
                 todoItem={item}
-                possible={todoFilter && !item.timeTable?.startTime}
+                possible={todoFilter && !item.timeTables?.startTime}
               />
             );
           })}

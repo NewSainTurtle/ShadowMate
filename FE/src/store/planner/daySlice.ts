@@ -44,7 +44,7 @@ const initialState: DayConfig = {
       categoryColorCode: "#E9E9EB",
       categoryEmoticon: "",
     },
-    timeTable: {
+    timeTables: {
       timeTableId: 0,
       startTime: "",
       endTime: "",
@@ -92,7 +92,7 @@ const daySlice = createSlice({
       tempArr[findIndex] = {
         ...todoInfo,
         todoStatus,
-        timeTable: { ...todoInfo.timeTable!, startTime, endTime },
+        timeTables: { ...todoInfo.timeTables!, startTime, endTime },
       };
 
       state.info.dailyTodos = tempArr;

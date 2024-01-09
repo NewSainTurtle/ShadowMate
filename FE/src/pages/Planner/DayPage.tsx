@@ -66,10 +66,10 @@ const DayPage = () => {
 
   useEffect(() => {
     const sumMinute = todoList
-      .filter((ele: TodoConfig) => ele.timeTable && ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
+      .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.startTime != "" && ele.timeTables.endTime != "")
       .reduce(
-        (accumulator: number, item: { timeTable: TimeTableConfig }) =>
-          accumulator + Number(dayjs(item.timeTable.endTime).diff(dayjs(item.timeTable.startTime), "m")),
+        (accumulator: number, item: { timeTables: TimeTableConfig }) =>
+          accumulator + Number(dayjs(item.timeTables.endTime).diff(dayjs(item.timeTables.startTime), "m")),
         0,
       );
     const studyTimeHour = Math.floor(sumMinute / 60);
