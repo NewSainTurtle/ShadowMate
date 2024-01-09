@@ -11,5 +11,6 @@ public class WeeklyPlannerDailyTodoResponse {
     private DailyPlannerTodoCategoryResponse category;
     private String todoContent;
     private String todoStatus;
+    private Double todoIndex;
 
 }
