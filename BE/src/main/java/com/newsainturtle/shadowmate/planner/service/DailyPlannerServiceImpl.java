@@ -240,4 +240,28 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         final Social saveSocial = socialRepository.save(social);
         return ShareSocialResponse.builder().socialId(saveSocial.getId()).build();
     }
+
+    @Override
+    public void changeDailyTodoSequence(User user, ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, changeDailyTodoSequenceRequest.getDate());
+        final Todo todo = getTodo(changeDailyTodoSequenceRequest.getTodoId(), dailyPlanner);
+
+        if (changeDailyTodoSequenceRequest.getUpperTodoId() == null) {
+            final TodoIndexResponse lowerTodoIndex = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 0);
+            if (lowerTodoIndex == null) {
+                throw new PlannerException(PlannerErrorResult.INVALID_TODO);
+            } else {
+                todo.updateTodoIndex(lowerTodoIndex.getTodoIndex() / 2);
+            }
+        } else {
+            final double upperTodoIndex = getTodo(changeDailyTodoSequenceRequest.getUpperTodoId(), dailyPlanner).getTodoIndex();
+            final TodoIndexResponse lowerTodoIndex = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, upperTodoIndex);
+            if (lowerTodoIndex == null) {
+                todo.updateTodoIndex(upperTodoIndex + 100000);
+            } else {
+                todo.updateTodoIndex((upperTodoIndex + lowerTodoIndex.getTodoIndex()) / 2);
+            }
+        }
+
+    }
 }
