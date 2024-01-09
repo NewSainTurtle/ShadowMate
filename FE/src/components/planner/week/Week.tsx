@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import WeekList from "@components/planner/week/list/WeekList";
 import WeekTodo from "@components/planner/week/todo/WeekTodo";
@@ -55,12 +55,8 @@ const Week = () => {
       .catch((err) => console.log(err));
   };
 
-  useEffect(() => {
-    setLoading(true);
+  useLayoutEffect(() => {
     getDayList();
-    setTimeout(() => {
-      setLoading(false);
-    }, 100);
     if (friendId === userId) setIsMine(true);
   }, [week, friendId]);
 
