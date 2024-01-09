@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import Button from "@components/common/Button";
 import Avatar from "@components/common/Avatar";
-import SettingsIcon from "@mui/icons-material/Settings";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { ProfileConfig } from "@components/common/FriendProfile";
 import { FollowingType } from "@util/friend.interface";
@@ -17,7 +16,6 @@ import {
   selectFriendId,
   setFollowingList,
 } from "@store/friendSlice";
-import { useNavigate } from "react-router-dom";
 import { followApi, userApi } from "@api/Api";
 
 interface Props {
@@ -30,7 +28,6 @@ const Profile = ({ types, profile }: Props) => {
   let friendId = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
   const dispatch = useAppDispatch();
-  const navigator = useNavigate();
   const { profileImage, nickname, statusMessage } = profile;
   const [isFollow, setIsFollow] = useState<boolean>(false);
   const followingList = useAppSelector(selectFollowingList);
@@ -62,10 +59,6 @@ const Profile = ({ types, profile }: Props) => {
     }, 200);
   };
 
-  const handleProfileBtn = () => {
-    navigator("/mypage");
-  };
-
   useEffect(() => {
     if (types == "기본" && friendId != userId) {
       userApi.searches(userId, { nickname }).then((res) => {
@@ -90,20 +83,13 @@ const Profile = ({ types, profile }: Props) => {
         <>
           {
             {
-              기본:
-                friendId === userId ? (
-                  <div className={styles["profile_button"]} onClick={handleProfileBtn}>
-                    <SettingsIcon />
+              기본: friendId != userId && !isFollow && (
+                <div className={styles["profile_button"]} onClick={() => setIsFollow(true)}>
+                  <div onClick={followRequested}>
+                    <PersonAddIcon />
                   </div>
-                ) : friendId != userId && !isFollow ? (
-                  <div className={styles["profile_button"]} onClick={() => setIsFollow(true)}>
-                    <div onClick={followRequested}>
-                      <PersonAddIcon />
-                    </div>
-                  </div>
-                ) : (
-                  <></>
-                ),
+                </div>
+              ),
               로그아웃: (
                 <div className={styles["profile_button"]}>
                   <Button children="로그아웃" types="gray" onClick={() => handleLogout()} />
