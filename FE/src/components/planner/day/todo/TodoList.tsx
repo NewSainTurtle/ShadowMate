@@ -63,9 +63,9 @@ const TodoList = ({ clicked }: Props) => {
         });
     };
 
-    const deleteTimeTable = async (todoId: number, todoStatus: TodoConfig["todoStatus"]) => {
+    const deleteTimeTable = async (todoId: number, timeTableId: number, todoStatus: TodoConfig["todoStatus"]) => {
       await plannerApi
-        .deleteTimetable(userId, { date, todoId: todoId })
+        .deleteTimetable(userId, { date, todoId, timeTableId })
         .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "", todoStatus })));
     };
 

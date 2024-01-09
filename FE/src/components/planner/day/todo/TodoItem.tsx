@@ -18,7 +18,7 @@ interface Props {
     insertTodo: (props: TodoConfig) => void;
     updateTodo: (idx: number, props: TodoConfig) => void;
     deleteTodo: (idx: number, todoId: number) => void;
-    deleteTimeTable: (todoId: number, todoStatus: TodoConfig["todoStatus"]) => void;
+    deleteTimeTable: (todoId: number, timeTableId: number, todoStatus: TodoConfig["todoStatus"]) => void;
   };
 }
 
@@ -197,7 +197,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         open={warnModalOpen}
         onClose={handleWarnModalClose}
         onClick={() => {
-          deleteTimeTable(todoItem.todoId, "미완료");
+          deleteTimeTable(todoItem.todoId, todoItem.timeTables?.timeTableId as number, "미완료");
           handleWarnModalClose();
         }}
         onClickMessage="확인"

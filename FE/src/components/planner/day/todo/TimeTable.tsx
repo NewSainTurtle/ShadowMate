@@ -30,6 +30,7 @@ interface Props {
 interface TimeTableType {
   todoId: number;
   categoryColorCode: string;
+  timeTableId: number;
   time: string;
   closeButton?: boolean;
 }
@@ -39,9 +40,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   const userId = useAppSelector(selectUserId);
   const date = useAppSelector(selectDayDate);
   const selectItem: TodoConfig = useAppSelector(selectTodoItem);
-  const [todoId, categoryColorCode] = [
+  const [todoId, categoryColorCode, timeTableId] = [
     selectItem.todoId,
     selectItem.category?.categoryColorCode ?? BASIC_CATEGORY_ITEM.categoryColorCode,
+    selectItem.timeTables?.timeTableId ?? 0,
   ];
   const todoList: TodoConfig[] = useAppSelector(selectTodoList);
   const makeTimeArr: TimeTableType[] = (() => {
@@ -53,7 +55,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     let tempTime = dayStartTime;
     while (tempTime != dayEndTime) {
       tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
-      tempArr.push({ todoId: 0, categoryColorCode: "", time: tempTime });
+      tempArr.push({ todoId: 0, timeTableId: 0, categoryColorCode: "", time: tempTime });
     }
     return tempArr;
   })();
@@ -93,7 +95,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
         setTimeClicked(false);
 
         if (selectItem.timeTables && selectItem.timeTables.startTime != "")
-          deleteTimeTable(todoId).then(() => saveTimeTable(endTime));
+          deleteTimeTable(todoId, timeTableId as number).then(() => saveTimeTable(endTime));
         else saveTimeTable(endTime);
       }
     };
@@ -121,7 +123,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
               dayjs(item.timeTables.startTime).isSameOrAfter(endTime)
             )
           )
-            deleteTimeTable(item.todoId);
+            deleteTimeTable(item.todoId, item.timeTables.timeTableId);
         }
       }),
     );
@@ -135,9 +137,9 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       .catch((err) => console.error(err));
   };
 
-  const deleteTimeTable = async (todoId: number) => {
+  const deleteTimeTable = async (todoId: number, timeTableId: number) => {
     await plannerApi
-      .deleteTimetable(userId, { date, todoId: todoId })
+      .deleteTimetable(userId, { date, todoId, timeTableId })
       .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "" })))
       .finally(() => handleDeleteModalClose());
   };
@@ -148,7 +150,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.startTime != "" && ele.timeTables.endTime != "")
       .map((item: TodoConfig) => {
         const { todoId, category, timeTables } = item;
-        let { startTime, endTime } = timeTables as TimeTableConfig;
+        let { timeTableId, startTime, endTime } = timeTables as TimeTableConfig;
         const miniArr: TimeTableType[] = [];
         let tempTime = startTime;
         while (tempTime != endTime) {
@@ -156,6 +158,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
           miniArr.push({
             todoId,
             categoryColorCode: category?.categoryColorCode ?? BASIC_CATEGORY_ITEM.categoryColorCode,
+            timeTableId,
             time: tempTime,
             closeButton: tempTime == endTime,
           });
@@ -175,7 +178,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
       const dragArr: TimeTableType[] = copyTimeArr.map((obj) => {
         if (dayjs(obj.time).isSameOrAfter(startTime) && dayjs(obj.time).isSameOrBefore(endTime)) {
-          return { todoId, categoryColorCode, time: obj.time };
+          return { todoId, categoryColorCode, timeTableId, time: obj.time };
         } else return obj;
       });
       setTimeArr(dragArr);
@@ -233,7 +236,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
         types="twoBtn"
         open={deleteModalOpen}
         onClose={handleDeleteModalClose}
-        onClick={() => deleteTimeTable(deleteIdx)}
+        onClick={() => deleteTimeTable(deleteIdx, timeTableId)}
         onClickMessage="삭제"
         warning
       >

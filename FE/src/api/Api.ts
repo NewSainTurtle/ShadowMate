@@ -86,7 +86,7 @@ export const plannerApi = {
 
   timetables: (userId: number, data: { date: string; todoId: number; startTime: string; endTime: string }) =>
     Axios.post(api.planners.timetables(userId), data),
-  deleteTimetable: (userId: number, data: { date: string; todoId: number }) =>
+  deleteTimetable: (userId: number, data: { date: string; todoId: number; timeTableId: number }) =>
     Axios.delete(api.planners.timetables(userId), { data: data }),
   retrospections: (userId: number, data: { date: string; retrospection: string }) =>
     Axios.put(api.planners.retrospections(userId), data),
