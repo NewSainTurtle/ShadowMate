@@ -10,6 +10,7 @@ import { MonthDayConfig, selectMonthDayList } from "@store/planner/monthSlice";
 import { setDayDate } from "@store/planner/daySlice";
 import { setThisWeek } from "@store/planner/weekSlice";
 import { getThisWeek } from "@util/getThisWeek";
+import { monthStatusColor as statusColor } from "@util/colors";
 
 interface Props {
   selectedDay: string;
@@ -17,12 +18,6 @@ interface Props {
 }
 
 const dayOfWeek = ["", "월", "화", "수", "목", "금", "토", "일"];
-const statusColor = [
-  "var(--color-calendar-0)",
-  "var(--color-calendar-10)",
-  "var(--color-calendar-60)",
-  "var(--color-calendar-100)",
-];
 
 const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
   const navigate = useNavigate();
