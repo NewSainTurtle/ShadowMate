@@ -101,12 +101,14 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
 
   const setStatus = (status: string) => {
     if (status === "공백") return " ";
-    return status === "완료" ? "O" : "X";
+    if (status === "완료") return "O";
+    return status === "진행중" ? "△" : "X";
   };
 
   const setNewTodoStatus = (status: string) => {
     if (status === "공백") return "완료";
-    return status === "완료" ? "미완료" : "공백";
+    if (status === "완료") return "진행중";
+    return status === "진행중" ? "미완료" : "공백";
   };
 
   const handleStatusSave = () => {
