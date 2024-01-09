@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner.repository;
 
+import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
@@ -21,6 +22,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findAllByDailyPlanner(final DailyPlanner dailyPlanner);
     int countByDailyPlanner(final DailyPlanner dailyPlanner);
     int countByDailyPlannerAndTodoStatusNot(final DailyPlanner dailyPlanner, final TodoStatus todoStatus);
+    TodoIndexResponse findTopByDailyPlannerOrderByTodoIndexDesc(final DailyPlanner dailyPlanner);
 
     @Modifying(clearAutomatically = true)
     @Query("update Todo t set t.todoContent = :todoContent, t.category = :category, t.todoStatus = :todoStatus , t.updateTime = :updateTime where t.id = :todoId")
