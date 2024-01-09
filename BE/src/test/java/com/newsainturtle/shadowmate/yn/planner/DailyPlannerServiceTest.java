@@ -108,6 +108,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 .todoContent(todoContent)
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
                 .build();
 
         @Nested
@@ -145,6 +146,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                         .todoContent(todoContent)
                         .todoStatus(TodoStatus.EMPTY)
                         .dailyPlanner(dailyPlanner)
+                        .todoIndex(100000D)
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
                 doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any());
@@ -155,6 +157,7 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+                assertThat(addDailyTodoResponse.getTodoIndex()).isEqualTo(100000D);
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
@@ -174,6 +177,7 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //then
                 assertThat(addDailyTodoResponse.getTodoId()).isNotNull();
+                assertThat(addDailyTodoResponse.getTodoIndex()).isEqualTo(100000);
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
@@ -647,6 +651,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 .todoContent(todoContent)
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
                 .build();
         final TimeTable timeTable = TimeTable.builder()
                 .id(1L)
@@ -760,6 +765,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                         .todoContent(todoContent)
                         .todoStatus(TodoStatus.COMPLETE)
                         .dailyPlanner(dailyPlanner)
+                        .todoIndex(100000D)
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
