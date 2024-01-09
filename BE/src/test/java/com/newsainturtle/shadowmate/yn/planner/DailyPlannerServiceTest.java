@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -146,6 +147,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                         .dailyPlanner(dailyPlanner)
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
+                doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any());
                 doReturn(todo).when(todoRepository).save(any(Todo.class));
 
                 //when
@@ -164,6 +166,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 //given
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any());
                 doReturn(category).when(categoryRepository).findByUserAndId(any(), any(Long.class));
+                doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any());
                 doReturn(todo).when(todoRepository).save(any(Todo.class));
 
                 //when
