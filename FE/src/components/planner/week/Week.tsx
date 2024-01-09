@@ -1,9 +1,8 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import WeekList from "@components/planner/week/list/WeekList";
 import WeekTodo from "@components/planner/week/todo/WeekTodo";
 import Text from "@components/common/Text";
-import Loading from "@components/common/Loading";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
@@ -25,7 +24,6 @@ const Week = () => {
   const thisWeekCnt = getThisWeekCnt(week);
   const [isMine, setIsMine] = useState<boolean>(userId === friendId);
   const [retroClick, setRetroClick] = useState<number>(-1);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const handleButton = (to: string) => {
     const date = week.getDate();
@@ -88,23 +86,19 @@ const Week = () => {
           </div>
         )}
       </div>
-      {loading ? (
-        <Loading />
-      ) : (
-        <div className={styles["week__list"]}>
-          <WeekTodo isMine={isMine} />
-          {dayList?.map((today: DayListConfig, key: number) => (
-            <WeekList
-              key={key}
-              idx={key}
-              isMine={isMine}
-              today={today}
-              retroClick={retroClick}
-              setRetroClick={setRetroClick}
-            />
-          ))}
-        </div>
-      )}
+      <div className={styles["week__list"]}>
+        <WeekTodo isMine={isMine} />
+        {dayList?.map((today: DayListConfig, key: number) => (
+          <WeekList
+            key={key}
+            idx={key}
+            isMine={isMine}
+            today={today}
+            retroClick={retroClick}
+            setRetroClick={setRetroClick}
+          />
+        ))}
+      </div>
     </div>
   );
 };
