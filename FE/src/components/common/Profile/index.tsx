@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import Button from "@components/common/Button";
