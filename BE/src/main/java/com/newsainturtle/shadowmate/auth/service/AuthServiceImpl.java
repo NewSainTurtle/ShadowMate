@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -49,6 +50,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Value("${shadowmate.jwt.access.expires}")
     private long ACCESS_EXPIRES;
+
+    @Value("${shadowmate.jwt.refresh.expires}")
+    private long REFRESH_EXPIRES;
 
     @Value("${spring.mail.username}")
     private String serverEmail;
@@ -174,6 +178,36 @@ public class AuthServiceImpl implements AuthService {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
         return headers;
+    }
+
+    @Override
+    public HttpHeaders checkAutoLogin(final String key) {
+        final String userId = redisServiceImpl.getAutoLoginData(key);
+        if (userId == null) {
+            throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
+        }
+        final User user = userRepository.findByIdAndWithdrawalIsFalse(Long.valueOf(userId));
+        if (user == null) {
+            throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
+        }
+        final String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
+        createRefreshToken(user, sessionId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
+        headers.set("id", userId);
+        headers.set("type", sessionId);
+        return headers;
+    }
+
+    private void createRefreshToken(final User user, final String type) {
+        final String refreshToken = JWT.create()
+                .withSubject("ShadowMate 리프레시 토큰")
+                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRES))
+                .withClaim("id", user.getId())
+                .withClaim("email", user.getEmail())
+                .withClaim("socialType", user.getSocialLogin().toString())
+                .sign(Algorithm.HMAC512(SECRETKEY));
+        redisServiceImpl.setRefreshTokenData(user.getId(), type, refreshToken, (int) REFRESH_EXPIRES);
     }
 
     private String createAccessToken(final User user) {

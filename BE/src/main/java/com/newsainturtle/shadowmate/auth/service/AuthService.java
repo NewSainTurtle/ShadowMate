@@ -15,5 +15,6 @@ public interface AuthService {
     void deleteCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest);
     void join(final JoinRequest joinRequest);
     HttpHeaders changeToken(final String token, final Long userId, final ChangeTokenRequest changeTokenRequest);
+    HttpHeaders checkAutoLogin(final String key);
 
 }
