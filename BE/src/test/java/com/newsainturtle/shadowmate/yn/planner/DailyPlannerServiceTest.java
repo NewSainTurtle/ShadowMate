@@ -879,6 +879,7 @@ class DailyPlannerServiceTest extends DateCommonService {
             final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                     .date(date)
                     .todoId(todo.getId())
+                    .timeTableId(timeTable.getId())
                     .build();
 
             @Test
