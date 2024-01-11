@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.auth.service;
 
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,10 @@ public class RedisServiceImpl implements RedisService {
     private final static String EMAIL = "email ";
     private final static String NICKNAME = "nickname ";
     private final static String REFRESH = "refresh ";
+    private final static String AUTOLOGIN = "autoLogin ";
+
+    @Value("${shadowmate.autologin.expires}")
+    private int AUTO_LOGIN;
 
     @Override
     public EmailAuthentication getEmailData(final String key) {
@@ -31,6 +36,11 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public String getRefreshTokenData(final Long userId, final String type) {
         return (String) redisTemplate.opsForValue().get(REFRESH + type + " " + userId);
+    }
+
+    @Override
+    public String getAutoLoginData(final String key) {
+        return (String) redisTemplate.opsForValue().get(AUTOLOGIN + key);
     }
 
     @Override
@@ -49,6 +59,11 @@ public class RedisServiceImpl implements RedisService {
     @Transactional
     public void setRefreshTokenData(final Long userId, final String type, final String refreshToken, final int timeout) {
         redisTemplate.opsForValue().set(REFRESH + type + " " + userId, refreshToken, timeout, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void setAutoLoginData(final String key, final String userId) {
+        redisTemplate.opsForValue().set(AUTOLOGIN + key, userId, AUTO_LOGIN, TimeUnit.DAYS);
     }
 
     @Override
