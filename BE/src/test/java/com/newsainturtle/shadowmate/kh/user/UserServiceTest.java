@@ -117,7 +117,7 @@ public class UserServiceTest {
                     .newStatusMessage(newStatusMessage)
                     .build();
             doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
-            doReturn(null).when(redisService).getHashNicknameData(newNickname);
+            doReturn(null).when(redisService).getNicknameData(newNickname);
 
             //when
             final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
@@ -139,7 +139,7 @@ public class UserServiceTest {
                     .newStatusMessage(newStatusMessage)
                     .build();
             doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
-            doReturn(false).when(redisService).getHashNicknameData(newNickname);
+            doReturn(false).when(redisService).getNicknameData(newNickname);
 
             //when
             final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
@@ -183,7 +183,7 @@ public class UserServiceTest {
                     .newStatusMessage(newStatusMessage)
                     .build();
             doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
-            doReturn(true).when(redisService).getHashNicknameData(newNickname);
+            doReturn(true).when(redisService).getNicknameData(newNickname);
 
             //when
             userService.updateUser(userId1, updateUserRequest);

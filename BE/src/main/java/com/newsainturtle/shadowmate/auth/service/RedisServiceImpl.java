@@ -2,10 +2,7 @@ package com.newsainturtle.shadowmate.auth.service;
 
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,50 +14,40 @@ import java.util.concurrent.TimeUnit;
 public class RedisServiceImpl implements RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final static String EMAIL = "email ";
+    private final static String NICKNAME = "nickname ";
 
     @Override
-    public EmailAuthentication getHashEmailData(final String key) {
-        return (EmailAuthentication) redisTemplate.opsForValue().get("email " + key);
+    public EmailAuthentication getEmailData(final String key) {
+        return (EmailAuthentication) redisTemplate.opsForValue().get(EMAIL + key);
     }
 
     @Override
-    public Boolean getHashNicknameData(final String key) {
-        return (Boolean) redisTemplate.opsForValue().get("nickname " + key);
+    public Boolean getNicknameData(final String key) {
+        return (Boolean) redisTemplate.opsForValue().get(NICKNAME + key);
+
+    @Override
+    @Transactional
+    public void setEmailData(final String key, final EmailAuthentication value, final int timeout) {
+        redisTemplate.opsForValue().set(EMAIL + key, value, timeout, TimeUnit.MINUTES);
     }
 
     @Override
     @Transactional
-    public void setHashEmailData(final String key, final EmailAuthentication value, final int timeout) {
-        redisTemplate.opsForValue().set("email " + key, value, timeout, TimeUnit.MINUTES);
-    }
-
-    @Override
-    public void setHashNicknameData(final String key, final boolean value, final int timeout) {
-        redisTemplate.execute(new SessionCallback<Object>() {
-            @Override
-            public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
-                redisTemplate.multi();
-                redisTemplate.opsForValue().set("nickname " + key, value, timeout, TimeUnit.MINUTES);
-                return redisTemplate.exec();
-            }
-        });
+    public void setNicknameData(final String key, final boolean value, final int timeout) {
+        redisTemplate.opsForValue().set(NICKNAME + key, value, timeout, TimeUnit.MINUTES);
     }
 
     @Override
     @Transactional
     public void deleteEmailData(final String key) {
-        redisTemplate.delete("email " + key);
+        redisTemplate.delete(EMAIL + key);
     }
 
     @Override
+    @Transactional
     public void deleteNicknameData(final String key) {
-        redisTemplate.execute(new SessionCallback<Object>() {
-            @Override
-            public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
-                redisTemplate.multi();
-                redisTemplate.delete("nickname " + key);
-                return redisTemplate.exec();
-            }
-        });
+        redisTemplate.delete(NICKNAME + key);
     }
+
 }

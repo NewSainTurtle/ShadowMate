@@ -94,7 +94,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
-            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(emailAuth).when(redisServiceImpl).getEmailData(email);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.sendEmailAuthenticationCode(sendEmailAuthenticationCodeRequest));
@@ -115,7 +115,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, SocialType.BASIC);
-            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(emailAuth).when(redisServiceImpl).getEmailData(email);
             doReturn(message).when(mailSender).createMimeMessage();
 
             //when
@@ -125,7 +125,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(redisServiceImpl, times(1)).getEmailData(any(String.class));
             verify(mailSender, times(1)).createMimeMessage();
         }
 
@@ -137,7 +137,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, SocialType.BASIC);
-            doReturn(null).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(null).when(redisServiceImpl).getEmailData(email);
             doReturn(message).when(mailSender).createMimeMessage();
 
             //when
@@ -147,7 +147,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(redisServiceImpl, times(1)).getEmailData(any(String.class));
             verify(mailSender, times(1)).createMimeMessage();
         }
 
@@ -193,7 +193,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
-            doReturn(null).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(null).when(redisServiceImpl).getEmailData(email);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
@@ -203,7 +203,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(redisServiceImpl, times(1)).getEmailData(any(String.class));
         }
 
         @Test
@@ -219,7 +219,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
-            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(emailAuth).when(redisServiceImpl).getEmailData(email);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
@@ -229,7 +229,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(redisServiceImpl, times(1)).getEmailData(any(String.class));
         }
 
         @Test
@@ -245,7 +245,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, SocialType.BASIC);
-            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(emailAuth).when(redisServiceImpl).getEmailData(email);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest));
@@ -255,7 +255,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(redisServiceImpl, times(1)).getEmailData(any(String.class));
         }
 
         @Test
@@ -271,7 +271,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
-            doReturn(emailAuth).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(emailAuth).when(redisServiceImpl).getEmailData(email);
 
             //when
             authServiceImpl.checkEmailAuthenticationCode(checkEmailAuthenticationCodeRequest);
@@ -280,7 +280,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(any(String.class));
+            verify(redisServiceImpl, times(1)).getEmailData(any(String.class));
         }
 
     }
@@ -318,7 +318,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
-            doReturn(null).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(null).when(redisServiceImpl).getEmailData(email);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.join(joinRequest));
@@ -328,7 +328,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(email);
+            verify(redisServiceImpl, times(1)).getEmailData(email);
         }
 
         @Test
@@ -345,7 +345,7 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
-            doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(emailAuthentication).when(redisServiceImpl).getEmailData(email);
 
             //when
             final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.join(joinRequest));
@@ -355,7 +355,7 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashEmailData(email);
+            verify(redisServiceImpl, times(1)).getEmailData(email);
         }
 
         @Test
@@ -372,8 +372,8 @@ class AuthServiceTest {
                     .build();
 
             doReturn(null).when(userRepository).findByEmailAndSocialLogin(email, socialType);
-            doReturn(true).when(redisServiceImpl).getHashNicknameData(nickname);
-            doReturn(emailAuthentication).when(redisServiceImpl).getHashEmailData(email);
+            doReturn(true).when(redisServiceImpl).getNicknameData(nickname);
+            doReturn(emailAuthentication).when(redisServiceImpl).getEmailData(email);
             doReturn(user).when(userRepository).save(any(User.class));
 
             //when
@@ -383,8 +383,8 @@ class AuthServiceTest {
 
             //verify
             verify(userRepository, times(1)).findByEmailAndSocialLogin(any(String.class), any(SocialType.class));
-            verify(redisServiceImpl, times(1)).getHashNicknameData(nickname);
-            verify(redisServiceImpl, times(1)).getHashEmailData(email);
+            verify(redisServiceImpl, times(1)).getNicknameData(nickname);
+            verify(redisServiceImpl, times(1)).getEmailData(email);
             verify(userRepository, times(1)).save(any(User.class));
             verify(redisServiceImpl, times(1)).deleteEmailData(email);
             verify(redisServiceImpl, times(1)).deleteNicknameData(nickname);

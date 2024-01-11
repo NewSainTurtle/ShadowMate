@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
     public void updateUser(final Long userId, final UpdateUserRequest updateUserRequest) {
         final User user = userRepository.findByIdAndNickname(userId, updateUserRequest.getNewNickname());
         if(user == null) {
-            final Boolean getHashNickname = redisService.getHashNicknameData(updateUserRequest.getNewNickname());
+            final Boolean getHashNickname = redisService.getNicknameData(updateUserRequest.getNewNickname());
             if(getHashNickname == null || !getHashNickname) {
                 throw new UserException(UserErrorResult.RETRY_NICKNAME);
             }
