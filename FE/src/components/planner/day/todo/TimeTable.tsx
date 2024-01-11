@@ -74,7 +74,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   });
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
-  const count = useMemo(() => {
+  const activeTodoCount = useMemo(() => {
     const status = todoList.filter((ele) => ele.todoStatus == "완료" || ele.todoStatus == "진행중").length;
     const saveTime = todoList.filter((ele) => ele.timeTables).length;
     return { status, saveTime };
@@ -188,15 +188,15 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   }, [selectTime]);
 
   const timeTableClick = () => {
-    if (count.status > 0) setClicked(true);
+    if (activeTodoCount.status > 0) setClicked(true);
   };
 
   const timeTableStyle = (() => {
-    if (todoId != 0 && count.saveTime == 0) return "--dragBefore";
-    if (clicked && count.saveTime == 0) return "--clicked";
-    if (timeClick || count.saveTime != 0) return "--drag";
+    if (todoId != 0 && activeTodoCount.saveTime == 0) return "--dragBefore";
+    if (clicked && activeTodoCount.saveTime == 0) return "--clicked";
+    if (timeClick || activeTodoCount.saveTime != 0) return "--drag";
     if (!todoList.length) return "--none";
-    if (count.status == 0) return "--stateNone";
+    if (activeTodoCount.status == 0) return "--stateNone";
     return "--defalut";
   })();
 
