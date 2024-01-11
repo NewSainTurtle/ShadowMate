@@ -23,7 +23,7 @@ const DayPage = () => {
   let friendUserId = useAppSelector(selectFriendId);
   friendUserId = friendUserId != 0 ? friendUserId : userId;
   const date = useAppSelector(selectDayDate);
-  const todoList = useAppSelector(selectTodoList);
+  const todoList: TodoConfig[] = useAppSelector(selectTodoList);
   const dayPlannerInfo = useAppSelector(selectDayInfo);
   const [ment, setMent] = useState({
     todayGoal: "",
@@ -65,13 +65,14 @@ const DayPage = () => {
   }, [date, friendUserId]);
 
   useEffect(() => {
-    const sumMinute = todoList
-      .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.length > 0)
-      .reduce(
-        (accumulator: number, item: { timeTables: TimeTableConfig }) =>
-          accumulator + Number(dayjs(item.timeTables.endTime).diff(dayjs(item.timeTables.startTime), "m")),
-        0,
-      );
+    const sumMinute = todoList.reduce((accumulate: number, ele: TodoConfig) => {
+      const sumTodoTime = ele.timeTables?.reduce((sumTime: number, item: TimeTableConfig) => {
+        return sumTime + Number(dayjs(item.endTime).diff(dayjs(item.startTime), "m"));
+      }, 0) as number;
+      console.log(sumTodoTime);
+      return accumulate + sumTodoTime;
+    }, 0);
+
     const studyTimeHour = Math.floor(sumMinute / 60);
     const studyTimeMinute = Math.floor(sumMinute % 60);
     setTotalTime({ studyTimeHour, studyTimeMinute });
