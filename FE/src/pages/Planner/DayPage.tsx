@@ -66,7 +66,7 @@ const DayPage = () => {
 
   useEffect(() => {
     const sumMinute = todoList
-      .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.startTime != "" && ele.timeTables.endTime != "")
+      .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.length > 0)
       .reduce(
         (accumulator: number, item: { timeTables: TimeTableConfig }) =>
           accumulator + Number(dayjs(item.timeTables.endTime).diff(dayjs(item.timeTables.startTime), "m")),
