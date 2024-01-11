@@ -48,6 +48,15 @@ public class PlannerController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_DAILY_TODO));
     }
 
+    @PutMapping("/{userId}/daily/todo-sequence")
+    public ResponseEntity<BaseResponse> changeDailyTodoSequence(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                                @PathVariable("userId") final Long userId,
+                                                                @RequestBody @Valid final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.changeDailyTodoSequence(principalDetails.getUser(), changeDailyTodoSequenceRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_CHANGE_DAILY_TODO_SEQUENCE));
+    }
+
     @DeleteMapping("/{userId}/daily/todos")
     public ResponseEntity<BaseResponse> removeDailyTodo(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                         @PathVariable("userId") final Long userId,

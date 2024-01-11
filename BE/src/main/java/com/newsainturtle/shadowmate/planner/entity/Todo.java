@@ -35,4 +35,8 @@ public class Todo extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    public void updateTodoIndex(final Double todoIndex) {
+        this.todoIndex = todoIndex;
+    }
 }

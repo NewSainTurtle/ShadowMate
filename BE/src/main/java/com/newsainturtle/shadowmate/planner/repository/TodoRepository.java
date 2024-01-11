@@ -23,6 +23,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     int countByDailyPlanner(final DailyPlanner dailyPlanner);
     int countByDailyPlannerAndTodoStatusNot(final DailyPlanner dailyPlanner, final TodoStatus todoStatus);
     TodoIndexResponse findTopByDailyPlannerOrderByTodoIndexDesc(final DailyPlanner dailyPlanner);
+    TodoIndexResponse findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(final DailyPlanner dailyPlanner, final double todoIndex);
 
     @Modifying(clearAutomatically = true)
     @Query("update Todo t set t.todoContent = :todoContent, t.category = :category, t.todoStatus = :todoStatus , t.updateTime = :updateTime where t.id = :todoId")

@@ -493,6 +493,80 @@ class PlannerControllerTest {
     }
 
     @Nested
+    class 일일플래너할일_순서변경 {
+        final String url = "/api/planners/{userId}/daily/todo-sequence";
+        final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest = ChangeDailyTodoSequenceRequest.builder()
+                .date(date)
+                .todoId(1L)
+                .upperTodoId(2L)
+                .build();
+
+        @Test
+        void 실패_없는사용자() throws Exception {
+            //given
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 실패_유효하지않은할일() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_유효하지않은일일플래너() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
     class 일일플래너수정 {
         @Nested
         class 오늘의다짐편집 {

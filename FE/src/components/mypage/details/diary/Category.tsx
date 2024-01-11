@@ -23,7 +23,8 @@ const MyPageCategory = () => {
   const categoryColors = useAppSelector(selectCategoryColors);
   const categoryInput: CategoryItemConfig = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
-
+  const minLength = 1;
+  const maxLength = 10;
   const { categoryTitle, categoryEmoticon } = categoryInput ?? "";
   const [length, setLength] = useState<number>(categoryTitle ? categoryTitle.length : 0);
 
@@ -37,7 +38,7 @@ const MyPageCategory = () => {
     }
     if (name === "categoryTitle") {
       setLength(value.length);
-      if (value.length < 2 || value.length > 10) {
+      if (value.length < minLength || value.length > maxLength) {
         setError(true);
       } else setError(false);
     }
@@ -66,7 +67,9 @@ const MyPageCategory = () => {
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
-          helperText={error ? "2 ~ 10자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/10`}
+          helperText={
+            error ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.` : `글자 수: ${length}/${maxLength}`
+          }
         />
       </div>
       <div className={styles["frame__line"]}>

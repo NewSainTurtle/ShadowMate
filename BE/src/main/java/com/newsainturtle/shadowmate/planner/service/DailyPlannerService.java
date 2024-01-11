@@ -19,4 +19,5 @@ public interface DailyPlannerService {
     AddTimeTableResponse addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest);
     void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest);
     ShareSocialResponse shareSocial(final User user, final ShareSocialRequest shareSocialRequest);
+    void changeDailyTodoSequence(final User user, final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest);
 }
