@@ -218,7 +218,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     @Override
     public void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest) {
         getDailyPlanner(user, removeTimeTableRequest.getDate());
-        timeTableRepository.deleteByIdAndTodoId(removeTimeTableRequest.getTodoId(), removeTimeTableRequest.getTodoId());
+        timeTableRepository.deleteByIdAndTodoId(removeTimeTableRequest.getTimeTableId(), removeTimeTableRequest.getTodoId());
     }
 
     @Override
