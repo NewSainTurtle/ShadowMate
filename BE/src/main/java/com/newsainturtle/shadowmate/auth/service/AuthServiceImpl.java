@@ -1,9 +1,8 @@
 package com.newsainturtle.shadowmate.auth.service;
 
-import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
-import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
-import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
-import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.newsainturtle.shadowmate.auth.dto.*;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
@@ -15,6 +14,7 @@ import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,18 @@ public class AuthServiceImpl implements AuthService {
     private final JavaMailSender mailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisService redisServiceImpl;
+
+    @Value("${shadowmate.jwt.header}")
+    private String HEADER;
+
+    @Value("${shadowmate.jwt.prefix}")
+    private String PREFIX;
+
+    @Value("${shadowmate.jwt.secret}")
+    private String SECRETKEY;
+
+    @Value("${shadowmate.jwt.access.expires}")
+    private long ACCESS_EXPIRES;
 
     @Value("${spring.mail.username}")
     private String serverEmail;
@@ -59,11 +72,11 @@ public class AuthServiceImpl implements AuthService {
                 .authStatus(false)
                 .build();
 
-        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getEmailData(email);
         if (findEmailAuth != null && findEmailAuth.isAuthStatus()) {
             throw new AuthException(AuthErrorResult.ALREADY_AUTHENTICATED_EMAIL);
         }
-        redisServiceImpl.setHashEmailData(email, emailAuth, 3);
+        redisServiceImpl.setEmailData(email, emailAuth, 3);
 
         try {
             mailSender.send(createMessage(email, code));
@@ -78,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
         final String email = checkEmailAuthenticationCodeRequest.getEmail();
         checkDuplicatedEmail(email);
 
-        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getEmailData(email);
         if (findEmailAuth == null) {
             throw new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
         } else if (findEmailAuth.isAuthStatus()) {
@@ -93,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
                 .code(findEmailAuth.getCode())
                 .authStatus(true)
                 .build();
-        redisServiceImpl.setHashEmailData(email, emailAuth, 10);
+        redisServiceImpl.setEmailData(email, emailAuth, 10);
     }
 
     @Override
@@ -102,11 +115,11 @@ public class AuthServiceImpl implements AuthService {
         if (user != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
         }
-        final Boolean checkNickname = redisServiceImpl.getHashNicknameData(duplicatedNicknameRequest.getNickname());
-        if(checkNickname != null) {
+        final Boolean checkNickname = redisServiceImpl.getNicknameData(duplicatedNicknameRequest.getNickname());
+        if (checkNickname != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
         }
-        redisServiceImpl.setHashNicknameData(duplicatedNicknameRequest.getNickname(), true, 10);
+        redisServiceImpl.setNicknameData(duplicatedNicknameRequest.getNickname(), true, 10);
     }
 
     @Override
@@ -120,13 +133,13 @@ public class AuthServiceImpl implements AuthService {
         String email = joinRequest.getEmail();
         checkDuplicatedEmail(email);
 
-        final EmailAuthentication findEmailAuth = redisServiceImpl.getHashEmailData(email);
+        final EmailAuthentication findEmailAuth = redisServiceImpl.getEmailData(email);
         if (findEmailAuth == null) {
             throw new AuthException(AuthErrorResult.EMAIL_AUTHENTICATION_TIME_OUT);
         } else if (!findEmailAuth.isAuthStatus()) {
             throw new AuthException(AuthErrorResult.UNAUTHENTICATED_EMAIL);
         }
-        final Boolean getHashNickname = redisServiceImpl.getHashNicknameData(joinRequest.getNickname());
+        final Boolean getHashNickname = redisServiceImpl.getNicknameData(joinRequest.getNickname());
         if (getHashNickname == null || !getHashNickname) {
             throw new UserException(UserErrorResult.RETRY_NICKNAME);
         }
@@ -143,6 +156,34 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(userEntity);
         redisServiceImpl.deleteEmailData(email);
         redisServiceImpl.deleteNicknameData(joinRequest.getNickname());
+    }
+
+    @Override
+    public HttpHeaders changeToken(final String token, final Long userId, final ChangeTokenRequest changeTokenRequest) {
+        final String type = changeTokenRequest.getType();
+        final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
+
+        if (user == null || !userId.toString().equals(JWT.decode(token.replace(PREFIX, "")).getClaim("id").toString())) {
+            throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
+        }
+        final String refreshToken = redisServiceImpl.getRefreshTokenData(userId, type);
+        if (refreshToken == null || JWT.decode(refreshToken).getExpiresAt().before(new Date())) {
+            throw new AuthException(AuthErrorResult.EXPIRED_REFRESH_TOKEN);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
+        return headers;
+    }
+
+    private String createAccessToken(final User user) {
+        return JWT.create()
+                .withSubject("ShadowMate 액세스 토큰")
+                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_EXPIRES))
+                .withClaim("id", user.getId())
+                .withClaim("email", user.getEmail())
+                .withClaim("socialType", user.getSocialLogin().toString())
+                .sign(Algorithm.HMAC512(SECRETKEY));
     }
 
     private void checkDuplicatedEmail(final String email) {
