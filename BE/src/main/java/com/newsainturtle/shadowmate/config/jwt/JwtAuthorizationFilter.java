@@ -37,6 +37,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/api/auth/email-authentication",
                 "/api/auth/email-authentication/check",
                 "/api/auth/nickname-duplicated",
+                "/api/auth/token",
         };
         String path = request.getRequestURI();
         return Arrays.stream(excludePath).anyMatch(path::startsWith);
