@@ -118,8 +118,9 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       await Promise.resolve(
         todoList.map((item: TodoConfig) => {
           item.timeTables?.map((time) => {
-            if (!(dayjs(time.endTime).isSameOrBefore(startTime) || dayjs(time.startTime).isSameOrAfter(endTime)))
+            if (!(dayjs(time.endTime).isSameOrBefore(startTime) || dayjs(time.startTime).isSameOrAfter(endTime))) {
               deleteTimeTable(item.todoId, time.timeTableId);
+            }
           });
         }),
       );
@@ -128,7 +129,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     await plannerApi
       .timetables(userId, { date, todoId, startTime, endTime })
       .then((res) => {
-        const timeTableId = res.data.timeTabled;
+        const { timeTableId } = res.data.data;
         dispatch(setTimeTable({ todoId, timeTableId, startTime, endTime }));
         setSelectTime({ startTime: "", endTime: "" });
       })
