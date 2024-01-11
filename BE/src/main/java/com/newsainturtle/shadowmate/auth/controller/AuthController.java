@@ -4,7 +4,6 @@ import com.newsainturtle.shadowmate.auth.dto.*;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +39,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> login() {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_LOGIN));
+    }
+
+    @PostMapping("/auto-login")
+    public ResponseEntity<BaseResponse> autoLogin(@RequestHeader("Auto-Login") final String key) {
+        return ResponseEntity.ok().headers(authServiceImpl.checkAutoLogin(key)).body(BaseResponse.from(SUCCESS_AUTO_LOGIN));
     }
 
     @PostMapping("/nickname-duplicated")

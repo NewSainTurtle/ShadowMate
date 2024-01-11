@@ -10,6 +10,7 @@ public class AuthConstant {
     public static final String SUCCESS_NICKNAME_CHECK = "닉네임이 사용가능합니다.";
     public static final String SUCCESS_DELETE_NICKNAME_CHECK = "닉네임 중복검증 삭제가 완료되었습니다.";
     public static final String SUCCESS_LOGIN = "로그인이 완료되었습니다.";
+    public static final String SUCCESS_AUTO_LOGIN = "자동로그인이 완료되었습니다.";
     public static final String SUCCESS_CHECK_EMAIL_AUTHENTICATION_CODE = "이메일 인증코드 확인이 완료되었습니다.";
     public static final String SUCCESS_CHANGE_ACCESS_TOKEN = "액세스 토큰 재발급이 완료되었습니다.";
 }
