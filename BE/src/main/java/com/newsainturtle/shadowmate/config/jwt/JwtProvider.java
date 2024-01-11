@@ -39,44 +39,55 @@ public class JwtProvider {
 
     public void addTokenHeader(HttpServletResponse response, String jwtToken) {
         StringBuilder sb = new StringBuilder();
-        response.addHeader(HEADER,sb.append(PREFIX).append(jwtToken).toString());
+        response.addHeader(HEADER, sb.append(PREFIX).append(jwtToken).toString());
     }
 
     public boolean validateHeader(HttpServletRequest request) {
         String jwtHeader = getHeader(request);
         if (jwtHeader == null || !jwtHeader.startsWith(PREFIX)) {
-            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN);
+            request.setAttribute("exception", AuthErrorResult.FAIL_VALIDATE_TOKEN);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN);
         }
         return true;
     }
 
     public String validateToken(HttpServletRequest request) {
-        String jwtToken = getToken(getHeader(request));
+        final String jwtToken = getToken(getHeader(request));
         try {
+            if (JWT.decode(jwtToken).getExpiresAt().before(new Date())) {
+                throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            }
             return JWT.require(Algorithm.HMAC512(SECRETKEY))
                     .build()
                     .verify(jwtToken)
                     .getClaim("email")
                     .asString();
-        }
-        catch (Exception e){
-            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN);
+        } catch (AuthException e) {
+            request.setAttribute("exception", AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+        } catch (Exception e) {
+            request.setAttribute("exception", AuthErrorResult.FAIL_VALIDATE_TOKEN);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN);
         }
     }
 
     public String validateSocialType(HttpServletRequest request) {
-        String jwtToken = getToken(getHeader(request));
+        final String jwtToken = getToken(getHeader(request));
         try {
+            if (JWT.decode(jwtToken).getExpiresAt().before(new Date())) {
+                throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            }
+
             return JWT.require(Algorithm.HMAC512(SECRETKEY))
                     .build()
                     .verify(jwtToken)
                     .getClaim("socialType")
                     .asString();
-        }
-        catch (Exception e){
-            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
+        } catch (AuthException e) {
+            request.setAttribute("exception", AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+        } catch (Exception e) {
+            request.setAttribute("exception", AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
         }
     }
