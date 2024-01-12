@@ -95,8 +95,8 @@ public class AuthServiceTest {
                     .authStatus(true)
                     .code(code)
                     .build();
-            doReturn(false).when(redisService).getHashNicknameData(any());
-            doReturn(emailAuthentication).when(redisService).getHashEmailData(any());
+            doReturn(false).when(redisService).getNicknameData(any());
+            doReturn(emailAuthentication).when(redisService).getEmailData(any());
 
             //when
             final UserException result = assertThrows(UserException.class, () -> authServiceImpl.join(joinRequest));
@@ -119,8 +119,8 @@ public class AuthServiceTest {
                     .authStatus(true)
                     .code(code)
                     .build();
-            doReturn(null).when(redisService).getHashNicknameData(any());
-            doReturn(emailAuthentication).when(redisService).getHashEmailData(any());
+            doReturn(null).when(redisService).getNicknameData(any());
+            doReturn(emailAuthentication).when(redisService).getEmailData(any());
 
             //when
             final UserException result = assertThrows(UserException.class, () -> authServiceImpl.join(joinRequest));
@@ -151,8 +151,8 @@ public class AuthServiceTest {
                     .authStatus(true)
                     .code(code)
                     .build();
-            doReturn(true).when(redisService).getHashNicknameData(any());
-            doReturn(emailAuthentication).when(redisService).getHashEmailData(any());
+            doReturn(true).when(redisService).getNicknameData(any());
+            doReturn(emailAuthentication).when(redisService).getEmailData(any());
             doReturn(userEntity).when(userRepository).save(any(User.class));
 
             //when
@@ -186,7 +186,7 @@ public class AuthServiceTest {
         void 실패_닉네임중복_Redis사용중() {
             // given
             doReturn(null).when(userRepository).findByNickname(nickname);
-            doReturn(true).when(redisService).getHashNicknameData(duplicatedNicknameRequest.getNickname());
+            doReturn(true).when(redisService).getNicknameData(duplicatedNicknameRequest.getNickname());
 
             // when
             final AuthException authException = assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
@@ -199,13 +199,13 @@ public class AuthServiceTest {
         void 성공_닉네임중복아님() {
             // given
             doReturn(null).when(userRepository).findByNickname(duplicatedNicknameRequest.getNickname());
-            doReturn(null).when(redisService).getHashNicknameData(duplicatedNicknameRequest.getNickname());
+            doReturn(null).when(redisService).getNicknameData(duplicatedNicknameRequest.getNickname());
 
             // when
             authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
 
             // then
-            verify(redisService, times(1)).setHashNicknameData(any(String.class), any(boolean.class), any(int.class));
+            verify(redisService, times(1)).setNicknameData(any(String.class), any(boolean.class), any(int.class));
 
         }
 

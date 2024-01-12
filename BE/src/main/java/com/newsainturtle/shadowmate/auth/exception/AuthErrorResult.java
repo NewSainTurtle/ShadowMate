@@ -18,6 +18,8 @@ public enum AuthErrorResult implements BaseErrorResult {
     ALREADY_AUTHENTICATED_EMAIL(HttpStatus.BAD_REQUEST, "이미 인증된 이메일입니다."),
     UNAUTHENTICATED_EMAIL(HttpStatus.BAD_REQUEST, "인증되지 않은 이메일입니다."),
     INVALID_EMAIL_AUTHENTICATION_CODE(HttpStatus.BAD_REQUEST, "이메일 인증 코드가 틀렸습니다."),
+    EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "액세스 토큰이 만료되었습니다."),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다."),
     ;
 
     private final HttpStatus httpStatus;

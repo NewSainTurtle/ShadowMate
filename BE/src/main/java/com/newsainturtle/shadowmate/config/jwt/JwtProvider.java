@@ -4,7 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
+import com.newsainturtle.shadowmate.auth.service.RedisService;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +15,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
     @Value("${shadowmate.jwt.secret}")
     private String SECRETKEY;
 
-    @Value("${shadowmate.jwt.expires}")
-    private long EXPIRES;
+    @Value("${shadowmate.jwt.access.expires}")
+    private long ACCESS_EXPIRES;
+
+    @Value("${shadowmate.jwt.refresh.expires}")
+    private long REFRESH_EXPIRES;
 
     @Value("${shadowmate.jwt.header}")
     private String HEADER;
@@ -27,56 +33,85 @@ public class JwtProvider {
     @Value("${shadowmate.jwt.prefix}")
     private String PREFIX;
 
-    public String createToken(PrincipalDetails principalDetails) {
+    private final RedisService redisServiceImpl;
+
+    public String createToken(final PrincipalDetails principalDetails, final String type) {
+        createRefreshToken(principalDetails, type);
+        return createAccessToken(principalDetails);
+    }
+
+    public String createAccessToken(final PrincipalDetails principalDetails) {
         return JWT.create()
-                .withSubject("ShadowMate 토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRES))
+                .withSubject("ShadowMate 액세스 토큰")
+                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_EXPIRES))
                 .withClaim("id", principalDetails.getUser().getId())
                 .withClaim("email", principalDetails.getUser().getEmail())
                 .withClaim("socialType", principalDetails.getUser().getSocialLogin().toString())
                 .sign(Algorithm.HMAC512(SECRETKEY));
     }
 
+    public void createRefreshToken(final PrincipalDetails principalDetails, final String type) {
+        final String refreshToken = JWT.create()
+                .withSubject("ShadowMate 리프레시 토큰")
+                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRES))
+                .withClaim("id", principalDetails.getUser().getId())
+                .withClaim("email", principalDetails.getUser().getEmail())
+                .withClaim("socialType", principalDetails.getUser().getSocialLogin().toString())
+                .sign(Algorithm.HMAC512(SECRETKEY));
+        redisServiceImpl.setRefreshTokenData(principalDetails.getUser().getId(), type, refreshToken, (int) REFRESH_EXPIRES);
+    }
+
     public void addTokenHeader(HttpServletResponse response, String jwtToken) {
         StringBuilder sb = new StringBuilder();
-        response.addHeader(HEADER,sb.append(PREFIX).append(jwtToken).toString());
+        response.addHeader(HEADER, sb.append(PREFIX).append(jwtToken).toString());
     }
 
     public boolean validateHeader(HttpServletRequest request) {
         String jwtHeader = getHeader(request);
         if (jwtHeader == null || !jwtHeader.startsWith(PREFIX)) {
-            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN);
+            request.setAttribute("exception", AuthErrorResult.FAIL_VALIDATE_TOKEN);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN);
         }
         return true;
     }
 
     public String validateToken(HttpServletRequest request) {
-        String jwtToken = getToken(getHeader(request));
+        final String jwtToken = getToken(getHeader(request));
         try {
+            if (JWT.decode(jwtToken).getExpiresAt().before(new Date())) {
+                throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            }
             return JWT.require(Algorithm.HMAC512(SECRETKEY))
                     .build()
                     .verify(jwtToken)
                     .getClaim("email")
                     .asString();
-        }
-        catch (Exception e){
-            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN);
+        } catch (AuthException e) {
+            request.setAttribute("exception", AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+        } catch (Exception e) {
+            request.setAttribute("exception", AuthErrorResult.FAIL_VALIDATE_TOKEN);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN);
         }
     }
 
     public String validateSocialType(HttpServletRequest request) {
-        String jwtToken = getToken(getHeader(request));
+        final String jwtToken = getToken(getHeader(request));
         try {
+            if (JWT.decode(jwtToken).getExpiresAt().before(new Date())) {
+                throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            }
+
             return JWT.require(Algorithm.HMAC512(SECRETKEY))
                     .build()
                     .verify(jwtToken)
                     .getClaim("socialType")
                     .asString();
-        }
-        catch (Exception e){
-            request.setAttribute("exception",AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
+        } catch (AuthException e) {
+            request.setAttribute("exception", AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+            throw new AuthException(AuthErrorResult.EXPIRED_ACCESS_TOKEN);
+        } catch (Exception e) {
+            request.setAttribute("exception", AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
             throw new AuthException(AuthErrorResult.FAIL_VALIDATE_TOKEN_SOCIAL_TYPE);
         }
     }
