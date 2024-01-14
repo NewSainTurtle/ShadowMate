@@ -14,5 +14,6 @@ public interface RedisService {
     void setAutoLoginData(final String key, final String userId);
     void deleteEmailData(final String key);
     void deleteNicknameData(final String key);
-    
+    void deleteRefreshTokenData(final Long userId, final String type);
+    void deleteAutoLoginData(final String key);
 }
