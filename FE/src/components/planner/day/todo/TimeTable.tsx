@@ -30,6 +30,7 @@ interface Props {
 interface TimeTableType {
   todoId: number;
   categoryColorCode: string;
+  timeTableId: number;
   time: string;
   closeButton?: boolean;
 }
@@ -53,7 +54,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     let tempTime = dayStartTime;
     while (tempTime != dayEndTime) {
       tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
-      tempArr.push({ todoId: 0, categoryColorCode: "", time: tempTime });
+      tempArr.push({ todoId: 0, timeTableId: 0, categoryColorCode: "", time: tempTime });
     }
     return tempArr;
   })();
@@ -67,12 +68,15 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   });
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const [deleteIdx, setDeleteIdx] = useState<number>(0);
+  const [deleteTimeIdx, setDeleteTimeIdx] = useState({
+    todoId: 0,
+    timeTableId: 0,
+  });
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
-  const count = useMemo(() => {
+  const activeTodoCount = useMemo(() => {
     const status = todoList.filter((ele) => ele.todoStatus == "완료" || ele.todoStatus == "진행중").length;
-    const saveTime = todoList.filter((ele) => ele.timeTable && ele.timeTable.startTime != "").length;
+    const saveTime = todoList.filter((ele) => ele.timeTables).length;
     return { status, saveTime };
   }, [todoList]);
 
@@ -91,10 +95,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     const mouseUp = (endTime: string) => {
       if (todoId != 0) {
         setTimeClicked(false);
-
-        if (selectItem.timeTable && selectItem.timeTable.startTime != "")
-          deleteTimeTable(todoId).then(() => saveTimeTable(endTime));
-        else saveTimeTable(endTime);
+        saveTimeTable(endTime);
       }
     };
     const debounceMouseEnter = debouncing(mouseEnter, 50);
@@ -112,58 +113,61 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
     if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
     startTime = dayjs(startTime).subtract(10, "m").format("YYYY-MM-DD HH:mm");
 
-    await Promise.resolve(
-      todoList.map((item: TodoConfig) => {
-        if (item.timeTable && !!item.timeTable.startTime) {
-          if (
-            !(
-              dayjs(item.timeTable.endTime).isSameOrBefore(startTime) ||
-              dayjs(item.timeTable.startTime).isSameOrAfter(endTime)
-            )
-          )
-            deleteTimeTable(item.todoId);
-        }
-      }),
-    );
+    /** 다른 todod와 겹칠 때, 다른 todo의 등록된 시간 삭제 */
+    (async () => {
+      await Promise.resolve(
+        todoList.map((item: TodoConfig) => {
+          item.timeTables?.map((time) => {
+            if (!(dayjs(time.endTime).isSameOrBefore(startTime) || dayjs(time.startTime).isSameOrAfter(endTime))) {
+              deleteTimeTable(item.todoId, time.timeTableId);
+            }
+          });
+        }),
+      );
+    })();
 
     await plannerApi
       .timetables(userId, { date, todoId, startTime, endTime })
-      .then(() => {
-        dispatch(setTimeTable({ todoId: todoId, startTime, endTime }));
+      .then((res) => {
+        const { timeTableId } = res.data.data;
+        dispatch(setTimeTable({ todoId, timeTableId, startTime, endTime }));
         setSelectTime({ startTime: "", endTime: "" });
       })
       .catch((err) => console.error(err));
   };
 
-  const deleteTimeTable = async (todoId: number) => {
+  const deleteTimeTable = async (todoId: number, timeTableId: number) => {
     await plannerApi
-      .deleteTimetable(userId, { date, todoId: todoId })
-      .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "" })))
+      .deleteTimetable(userId, { date, todoId, timeTableId })
+      .then(() => dispatch(setTimeTable({ todoId, timeTableId })))
+      .catch((err) => console.error(err))
       .finally(() => handleDeleteModalClose());
   };
 
   useEffect(() => {
     let tempArr = [...makeTimeArr];
     todoList
-      .filter((ele: TodoConfig) => ele.timeTable && ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
+      .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.length > 0)
       .map((item: TodoConfig) => {
-        const { todoId, category } = item;
-        const timeTable = item.timeTable as TimeTableConfig;
-        let { startTime, endTime } = timeTable;
-        const miniArr: TimeTableType[] = [];
-        let tempTime = startTime;
-        while (tempTime != endTime) {
-          tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
-          miniArr.push({
-            todoId,
-            categoryColorCode: category?.categoryColorCode ?? BASIC_CATEGORY_ITEM.categoryColorCode,
-            time: tempTime,
-            closeButton: tempTime == endTime,
-          });
-        }
-        startTime = dayjs(startTime).add(10, "m").format("YYYY-MM-DD HH:mm");
-        const startIndex = tempArr.findIndex((e) => e.time == startTime);
-        tempArr.splice(startIndex, miniArr.length, ...miniArr);
+        const { todoId, category, timeTables } = item;
+        timeTables?.map((time: TimeTableConfig) => {
+          const miniArr: TimeTableType[] = [];
+          let { timeTableId, startTime, endTime } = time;
+          let tempTime = startTime;
+          while (tempTime != endTime) {
+            tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
+            miniArr.push({
+              todoId,
+              categoryColorCode: category?.categoryColorCode ?? BASIC_CATEGORY_ITEM.categoryColorCode,
+              timeTableId,
+              time: tempTime,
+              closeButton: tempTime == endTime,
+            });
+          }
+          startTime = dayjs(startTime).add(10, "m").format("YYYY-MM-DD HH:mm");
+          const startIndex = tempArr.findIndex((e) => e.time == startTime);
+          tempArr.splice(startIndex, miniArr.length, ...miniArr);
+        });
       });
 
     setTimeArr(tempArr);
@@ -176,7 +180,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       if (startTime > endTime) [startTime, endTime] = [endTime, startTime];
       const dragArr: TimeTableType[] = copyTimeArr.map((obj) => {
         if (dayjs(obj.time).isSameOrAfter(startTime) && dayjs(obj.time).isSameOrBefore(endTime)) {
-          return { todoId, categoryColorCode, time: obj.time };
+          return { todoId, categoryColorCode, timeTableId: 0, time: obj.time };
         } else return obj;
       });
       setTimeArr(dragArr);
@@ -184,15 +188,15 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   }, [selectTime]);
 
   const timeTableClick = () => {
-    if (count.status > 0) setClicked(true);
+    if (activeTodoCount.status > 0) setClicked(true);
   };
 
   const timeTableStyle = (() => {
-    if (todoId != 0 && count.saveTime == 0) return "--dragBefore";
-    if (clicked && count.saveTime == 0) return "--clicked";
-    if (timeClick || count.saveTime != 0) return "--drag";
+    if (todoId != 0 && activeTodoCount.saveTime == 0) return "--dragBefore";
+    if (clicked && activeTodoCount.saveTime == 0) return "--clicked";
+    if (timeClick || activeTodoCount.saveTime != 0) return "--drag";
     if (!todoList.length) return "--none";
-    if (count.status == 0) return "--stateNone";
+    if (activeTodoCount.status == 0) return "--stateNone";
     return "--defalut";
   })();
 
@@ -217,9 +221,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
               >
                 {item.closeButton && (
                   <div
-                    onClick={(e) => {
+                    onClick={() => {
+                      const { todoId, timeTableId } = item;
                       handleDeleteModalOpen();
-                      setDeleteIdx(item.todoId);
+                      setDeleteTimeIdx({ todoId, timeTableId });
                     }}
                   >
                     <DoDisturbOnIcon />
@@ -234,7 +239,7 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
         types="twoBtn"
         open={deleteModalOpen}
         onClose={handleDeleteModalClose}
-        onClick={() => deleteTimeTable(deleteIdx)}
+        onClick={() => deleteTimeTable(deleteTimeIdx.todoId, deleteTimeIdx.timeTableId)}
         onClickMessage="삭제"
         warning
       >

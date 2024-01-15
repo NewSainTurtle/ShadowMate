@@ -44,7 +44,7 @@ export interface TodoConfig {
   todoContent: string;
   todoStatus: "공백" | "완료" | "진행중" | "미완료";
   todoUpdate?: boolean;
-  timeTable?: TimeTableConfig | null;
+  timeTables?: TimeTableConfig[] | null;
 }
 
 /* --- Week Interfaces --- */

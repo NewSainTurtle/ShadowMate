@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
-import { TodoConfig } from "@util/planner.interface";
+import { TimeTableConfig, TodoConfig } from "@util/planner.interface";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -44,11 +44,7 @@ const initialState: DayConfig = {
       categoryColorCode: "#E9E9EB",
       categoryEmoticon: "",
     },
-    timeTable: {
-      timeTableId: 0,
-      startTime: "",
-      endTime: "",
-    },
+    timeTables: [],
   },
 };
 
@@ -78,21 +74,32 @@ const daySlice = createSlice({
       state,
       action: PayloadAction<{
         todoId: number;
-        startTime: string;
-        endTime: string;
+        timeTableId: number;
+        startTime?: string;
+        endTime?: string;
         todoStatus?: TodoConfig["todoStatus"];
       }>,
     ) => {
-      const { todoId, startTime, endTime } = action.payload;
+      const { todoId, timeTableId, startTime, endTime } = action.payload;
 
       const tempArr = state.info.dailyTodos;
-      const findIndex = tempArr.findIndex((item) => item.todoId == todoId);
-      const todoInfo = tempArr[findIndex] as TodoConfig;
+      const findTodoIndex = tempArr.findIndex((item) => item.todoId == todoId);
+      const todoInfo = tempArr[findTodoIndex] as TodoConfig;
       const todoStatus = action.payload.todoStatus || todoInfo.todoStatus;
-      tempArr[findIndex] = {
+      const todoTimetable = (() => {
+        let tempTimeTable = todoInfo.timeTables ?? [];
+        if (startTime) return [...tempTimeTable, { timeTableId, startTime, endTime }];
+        else {
+          const findTimeIndex = tempTimeTable?.findIndex((item) => item.timeTableId === timeTableId) as number;
+          tempTimeTable?.splice(findTimeIndex, 1);
+          return tempTimeTable;
+        }
+      })() as TimeTableConfig[];
+
+      tempArr[findTodoIndex] = {
         ...todoInfo,
         todoStatus,
-        timeTable: { ...todoInfo.timeTable!, startTime, endTime },
+        timeTables: todoTimetable,
       };
 
       state.info.dailyTodos = tempArr;

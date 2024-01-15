@@ -7,7 +7,7 @@ import CategorySelector from "@components/common/CategorySelector";
 import TimeTableDeleteModal from "@components/common/Modal/TimeTableDeleteModal";
 import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
-import { TodoConfig, CategoryItemConfig } from "@util/planner.interface";
+import { TodoConfig, CategoryItemConfig, TimeTableConfig } from "@util/planner.interface";
 
 interface Props {
   idx?: number;
@@ -18,7 +18,7 @@ interface Props {
     insertTodo: (props: TodoConfig) => void;
     updateTodo: (idx: number, props: TodoConfig) => void;
     deleteTodo: (idx: number, todoId: number) => void;
-    deleteTimeTable: (todoId: number, todoStatus: TodoConfig["todoStatus"]) => void;
+    deleteTimeTable: (todoId: number, timeTables: TimeTableConfig[], todoStatus: TodoConfig["todoStatus"]) => void;
   };
 }
 
@@ -86,8 +86,8 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
   const handleSaveStatusTodo = () => {
     if (text === "") return;
-    if (todoStatus === "진행중") {
-      if (todoItem.timeTable && todoItem.timeTable.startTime != "") {
+    if (todoStatus === "완료") {
+      if (todoItem.timeTables && todoItem.timeTables.length > 0) {
         handleWarnModalOpen();
       } else {
         updateTodo(idx, {
@@ -97,8 +97,8 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
       }
     } else {
       const changeStatus = {
-        공백: "완료",
-        완료: "진행중",
+        공백: "진행중",
+        진행중: "완료",
         미완료: "공백",
       }[todoStatus] as "완료" | "진행중" | "공백";
 
@@ -136,8 +136,8 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const todoStatusView = {
     공백: " ",
     완료: "O",
-    미완료: "X",
     진행중: "△",
+    미완료: "X",
   };
 
   return (
@@ -197,7 +197,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         open={warnModalOpen}
         onClose={handleWarnModalClose}
         onClick={() => {
-          deleteTimeTable(todoItem.todoId, "미완료");
+          deleteTimeTable(todoItem.todoId, todoItem.timeTables as TimeTableConfig[], "미완료");
           handleWarnModalClose();
         }}
         onClickMessage="확인"

@@ -3,7 +3,7 @@ import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { BASIC_TODO_ITEM, setTodoList, selectTodoList, selectDayDate, setTimeTable } from "@store/planner/daySlice";
-import { TodoConfig } from "@util/planner.interface";
+import { TimeTableConfig, TodoConfig } from "@util/planner.interface";
 import TodoItemChoice from "./TodoItemChoice";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
@@ -63,10 +63,16 @@ const TodoList = ({ clicked }: Props) => {
         });
     };
 
-    const deleteTimeTable = async (todoId: number, todoStatus: TodoConfig["todoStatus"]) => {
-      await plannerApi
-        .deleteTimetable(userId, { date, todoId: todoId })
-        .then(() => dispatch(setTimeTable({ todoId, startTime: "", endTime: "", todoStatus })));
+    /**
+     * todo 상태를 "미완료"로 변경시 등록된 타임테이블 모두 삭제
+     */
+    const deleteTimeTable = (todoId: number, timeTables: TimeTableConfig[], todoStatus: TodoConfig["todoStatus"]) => {
+      timeTables.map(async (item) => {
+        const { timeTableId } = item;
+        await plannerApi
+          .deleteTimetable(userId, { date, todoId, timeTableId })
+          .then(() => dispatch(setTimeTable({ todoId, timeTableId, startTime: "", endTime: "", todoStatus })));
+      });
     };
 
     const deleteTodo = async (idx: number, todoId: number) => {
@@ -107,17 +113,14 @@ const TodoList = ({ clicked }: Props) => {
         </>
       ) : (
         <>
-          {todoArr.map((item: TodoConfig, idx: number) => {
-            const todoFilter = item.todoStatus === "완료" || item.todoStatus === "진행중";
-            return (
-              <TodoItemChoice
-                key={item.todoId}
-                idx={idx}
-                todoItem={item}
-                possible={todoFilter && !item.timeTable?.startTime}
-              />
-            );
-          })}
+          {todoArr.map((item: TodoConfig, idx: number) => (
+            <TodoItemChoice
+              key={item.todoId}
+              idx={idx}
+              todoItem={item}
+              possible={item.todoStatus === "완료" || item.todoStatus === "진행중"}
+            />
+          ))}
           {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
             <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} disable />
           ))}
