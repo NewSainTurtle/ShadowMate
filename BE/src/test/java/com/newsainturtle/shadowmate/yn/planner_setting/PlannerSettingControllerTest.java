@@ -27,6 +27,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -835,4 +837,277 @@ class PlannerSettingControllerTest {
         }
 
     }
+
+    @Nested
+    class 루틴설정 {
+        final String url = "/api/planner-settings/{userId}/routines";
+
+        @Nested
+        class 루틴등록 {
+            final String startDay = "2023-12-25";
+            final String endDay = "2024-01-09";
+            final String routineContent = "아침운동하기";
+            final String[] days = new String[]{"월", "수"};
+            final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                    .routineContent(routineContent)
+                    .startDay(startDay)
+                    .endDay(endDay)
+                    .categoryId(0L)
+                    .days(Arrays.asList(days))
+                    .build();
+
+            @Test
+            void 실패_없는사용자() throws Exception {
+                //given
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            void 실패_루틴내용_null() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(null)
+                        .startDay(startDay)
+                        .endDay(endDay)
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_루틴내용_길이초과() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent("123456789012345678901234567890123456789012345678901")
+                        .startDay(startDay)
+                        .endDay(endDay)
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_잘못된_시작날짜_포맷() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routineContent)
+                        .startDay("2024.01.15")
+                        .endDay(endDay)
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_시작날짜_null() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routineContent)
+                        .startDay(null)
+                        .endDay(endDay)
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_잘못된_종료날짜_포맷() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routineContent)
+                        .startDay(startDay)
+                        .endDay("2024.01.15")
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_종료날짜_null() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routineContent)
+                        .startDay(startDay)
+                        .endDay(null)
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_요일리스트_null() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routineContent)
+                        .startDay(startDay)
+                        .endDay(endDay)
+                        .categoryId(0L)
+                        .days(null)
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_요일리스트_비어있음() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routineContent)
+                        .startDay(startDay)
+                        .endDay(endDay)
+                        .categoryId(0L)
+                        .days(new ArrayList<>())
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_카테고리ID_null() throws Exception {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routineContent)
+                        .startDay(startDay)
+                        .endDay(endDay)
+                        .categoryId(null)
+                        .days(Arrays.asList(days))
+                        .build();
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_시작날짜보다_과거인종료날짜() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE)).when(plannerSettingServiceImpl).addRoutine(any(), any(AddRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은요일이나중복요일() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY)).when(plannerSettingServiceImpl).addRoutine(any(), any(AddRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 성공() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.post(url, userId)
+                                .content(gson.toJson(addRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
+    }
+
 }
