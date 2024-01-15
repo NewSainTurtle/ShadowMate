@@ -16,6 +16,8 @@ interface AuthConfig {
   login: boolean;
   isGoogle: boolean;
   userInfo: UserInfoConfig;
+  type: string;
+  autoLogin?: string;
 }
 
 const initialState: AuthConfig = {
@@ -30,28 +32,36 @@ const initialState: AuthConfig = {
     statusMessage: "",
     plannerAccessScope: "",
   },
+  type: "",
+  autoLogin: "",
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setLogin: (state, { payload }: PayloadAction<{ accessToken: string; userId: number }>) => {
+    setLogin: (
+      state,
+      { payload }: PayloadAction<{ accessToken: string; userId: number; type: string; autoLogin?: string }>,
+    ) => {
       state.login = true;
       state.userId = payload.userId;
       state.accessToken = payload.accessToken;
+      state.type = payload.type;
+      state.autoLogin = payload.autoLogin;
     },
     setIsGoogle: (state, { payload }: PayloadAction<boolean>) => {
       state.isGoogle = payload;
     },
     setLogout: (state) => {
       state.login = false;
-      // localStorage.removeItem("id");
-      // localStorage.removeItem("accessToken");
     },
     setUserInfo: (state, { payload }: PayloadAction<UserInfoConfig>) => {
       const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
       state.userInfo = { ...payload, statusMessage, profileImage };
+    },
+    setAccessToken: (state, { payload }: PayloadAction<string>) => {
+      state.accessToken = payload;
     },
   },
   extraReducers: (builder) => {
@@ -60,7 +70,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setLogin, setLogout, setUserInfo, setIsGoogle } = authSlice.actions;
+export const { setLogin, setLogout, setUserInfo, setIsGoogle, setAccessToken } = authSlice.actions;
 export const selectUserInfo = (state: rootState) => state.auth.userInfo;
 export const selectLoginState = (state: rootState) => state.auth.login;
 export const selectAccessToken = (state: rootState) => state.auth.accessToken;
