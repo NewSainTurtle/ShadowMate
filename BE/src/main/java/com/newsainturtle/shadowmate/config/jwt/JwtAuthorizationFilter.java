@@ -34,6 +34,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String[] excludePath = {
                 "/api/auth/join",
                 "/api/auth/login",
+                "/api/auth/logout",
                 "/api/auth/auto-login",
                 "/api/auth/email-authentication",
                 "/api/auth/email-authentication/check",
