@@ -46,6 +46,13 @@ public class AuthController {
         return ResponseEntity.ok().headers(authServiceImpl.checkAutoLogin(key)).body(BaseResponse.from(SUCCESS_AUTO_LOGIN));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse> autoLogin(@RequestHeader("Auto-Login") final String key,
+                                                  @RequestBody @Valid final RemoveTokenRequest removeTokenRequest) {
+        authServiceImpl.logout(key, removeTokenRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_LOGOUT));
+    }
+
     @PostMapping("/nickname-duplicated")
     public ResponseEntity<BaseResponse> duplicatedCheckNickname(@RequestBody @Valid final DuplicatedNicknameRequest duplicatedNicknameRequest) {
         authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
