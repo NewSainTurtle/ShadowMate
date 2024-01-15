@@ -606,5 +606,36 @@ class PlannerSettingServiceTest extends DateCommonService {
                 verify(routineDayRepository, times(2)).save(any(RoutineDay.class));
             }
         }
+
+        @Test
+        void 루틴목록조회_성공() {
+            //given
+            final Routine[] routines = new Routine[]{routine};
+            final RoutineDay routineDay1 = RoutineDay.builder()
+                    .id(1L)
+                    .routine(routine)
+                    .day("월")
+                    .build();
+            final RoutineDay routineDay2 = RoutineDay.builder()
+                    .id(1L)
+                    .routine(routine)
+                    .day("수")
+                    .build();
+            final RoutineDay[] routineDays = new RoutineDay[]{routineDay1, routineDay2};
+
+            doReturn(routines).when(routineRepository).findAllByUser(any());
+            doReturn(routineDays).when(routineDayRepository).findAllByRoutine(any(Routine.class));
+
+            //when
+            final GetRoutineListResponse getRoutineListResponse = plannerSettingService.getRoutineList(user);
+
+            //then
+            assertThat(getRoutineListResponse).isNotNull();
+            assertThat(getRoutineListResponse.getRoutineList()).isNotNull().hasSize(1);
+
+            //verify
+            verify(routineRepository, times(1)).findAllByUser(any());
+            verify(routineDayRepository, times(1)).findAllByRoutine(any(Routine.class));
+        }
     }
 }
