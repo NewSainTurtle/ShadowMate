@@ -71,4 +71,23 @@ class RoutineDayRepositoryTest {
         assertThat(saveRoutineDay.getRoutine()).isEqualTo(routine);
     }
 
+    @Test
+    void 루틴요일조회() {
+        //given
+        routineDayRepository.save(RoutineDay.builder()
+                .day("월")
+                .routine(routine)
+                .build());
+        routineDayRepository.save(RoutineDay.builder()
+                .day("수")
+                .routine(routine)
+                .build());
+
+        //when
+        final RoutineDay[] findRoutineDay = routineDayRepository.findAllByRoutine(routine);
+
+        //then
+        assertThat(findRoutineDay).isNotNull().hasSize(2);
+    }
+
 }
