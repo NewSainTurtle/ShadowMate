@@ -17,6 +17,7 @@ interface apiInterface {
     nickname: () => string; // 닉네임 중복검사, 삭제
     emailAuthentication: () => string; // 이메일 인증 (+중복검사)
     emailAuthenticationCheck: () => string; // 이메일 인증 - 응답
+    token: (userId: number) => string; // 토큰 재발급
   };
   users: {
     getProfiles: (userId: number) => string; // 프로필 조회
@@ -71,6 +72,7 @@ const api: apiInterface = {
     nickname: () => HOST + AUTH + "nickname-duplicated",
     emailAuthentication: () => HOST + AUTH + "email-authentication",
     emailAuthenticationCheck: () => HOST + AUTH + "email-authentication" + "/check",
+    token: (userId: number) => HOST + AUTH + "token/" + userId,
   },
   users: {
     getProfiles: (userId: number) => HOST + USERS + userId + "/profiles",

@@ -11,6 +11,7 @@ export const authApi = {
   emailAuthentication: (data: { email: string }) => Axios.post(api.auth.emailAuthentication(), data),
   emailAuthenticationCheck: (data: { email: string; code: string }) =>
     Axios.post(api.auth.emailAuthenticationCheck(), data),
+  token: (userId: number, data: { type: string }) => Axios.post(api.auth.token(userId), data),
 };
 
 export const userApi = {

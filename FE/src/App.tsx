@@ -57,14 +57,14 @@ const App = () => {
     setPathName(["/day", "/week", "/month", "/social", "/mypage", "/search", "/category"].includes(location.pathname));
   }, [location.pathname]);
 
-  useEffect(() => {
-    // 자동 로그인 확인 시
-    const accessToken = localStorage.getItem("accessToken") ?? "";
-    const id = localStorage.getItem("id");
-    let userId = 0;
-    if (id) userId = parseInt(id);
-    if (accessToken && id) dispatch(setLogin({ accessToken: accessToken, userId: userId }));
-  }, []);
+  // 자동로그인 구현 시 추가
+  // useEffect(() => {
+  //   const accessToken = localStorage.getItem("accessToken") ?? "";
+  //   const id = localStorage.getItem("id");
+  //   let userId = 0;
+  //   if (id) userId = parseInt(id);
+  //   if (accessToken && id) dispatch(setLogin({ accessToken: accessToken, userId: userId }));
+  // }, []);
 
   return (
     <div className={pathName ? styles["App__header"] : ""}>
