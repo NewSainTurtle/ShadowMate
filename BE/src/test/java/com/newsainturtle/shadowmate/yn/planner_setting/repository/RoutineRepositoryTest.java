@@ -62,4 +62,29 @@ class RoutineRepositoryTest {
         assertThat(saveRoutine.getRoutineContent()).isEqualTo(routineContent);
     }
 
+    @Test
+    void 루틴조회() {
+        //given
+        routineRepository.save(Routine.builder()
+                .startDay(startDay)
+                .endDay(endDay)
+                .routineContent(routineContent)
+                .category(null)
+                .user(user)
+                .build());
+        routineRepository.save(Routine.builder()
+                .startDay(startDay)
+                .endDay(endDay)
+                .routineContent(routineContent)
+                .category(null)
+                .user(user)
+                .build());
+
+        //when
+        final Routine[] findRoutine = routineRepository.findAllByUser(user);
+
+        //then
+        assertThat(findRoutine).isNotNull().hasSize(2);
+    }
+
 }
