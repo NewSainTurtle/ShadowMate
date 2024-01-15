@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.auth.service;
 
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,10 @@ public class RedisServiceImpl implements RedisService {
     private final static String EMAIL = "email ";
     private final static String NICKNAME = "nickname ";
     private final static String REFRESH = "refresh ";
+    private final static String AUTOLOGIN = "autoLogin ";
+
+    @Value("${shadowmate.autologin.expires}")
+    private int AUTOLOGIN_EXPIRES;
 
     @Override
     public EmailAuthentication getEmailData(final String key) {
@@ -31,6 +36,11 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public String getRefreshTokenData(final Long userId, final String type) {
         return (String) redisTemplate.opsForValue().get(REFRESH + type + " " + userId);
+    }
+
+    @Override
+    public String getAutoLoginData(final String key) {
+        return (String) redisTemplate.opsForValue().get(AUTOLOGIN + key);
     }
 
     @Override
@@ -52,6 +62,11 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public void setAutoLoginData(final String key, final String userId) {
+        redisTemplate.opsForValue().set(AUTOLOGIN + key, userId, AUTOLOGIN_EXPIRES, TimeUnit.DAYS);
+    }
+
+    @Override
     @Transactional
     public void deleteEmailData(final String key) {
         redisTemplate.delete(EMAIL + key);
@@ -61,6 +76,18 @@ public class RedisServiceImpl implements RedisService {
     @Transactional
     public void deleteNicknameData(final String key) {
         redisTemplate.delete(NICKNAME + key);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRefreshTokenData(final Long userId, final String type) {
+        redisTemplate.delete(REFRESH + type + " " + userId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAutoLoginData(final String key) {
+        redisTemplate.delete(AUTOLOGIN + key);
     }
 
 }
