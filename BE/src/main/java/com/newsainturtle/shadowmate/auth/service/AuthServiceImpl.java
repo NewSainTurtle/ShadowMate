@@ -163,6 +163,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
+    public void logout(final String key, final RemoveTokenRequest removeTokenRequest) {
+        final String type = removeTokenRequest.getType();
+        redisServiceImpl.deleteRefreshTokenData(removeTokenRequest.getUserId(), type);
+        if (key != null) redisServiceImpl.deleteAutoLoginData(key);
+    }
+
+    @Override
+    @Transactional
     public HttpHeaders changeToken(final String token, final Long userId, final ChangeTokenRequest changeTokenRequest) {
         final String type = changeTokenRequest.getType();
         final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
@@ -181,6 +190,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public HttpHeaders checkAutoLogin(final String key) {
         final String userId = redisServiceImpl.getAutoLoginData(key);
         if (userId == null) {
@@ -190,12 +200,15 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
         }
-        final String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
-        createRefreshToken(user, sessionId);
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
-        headers.set("id", userId);
-        headers.set("type", sessionId);
+        if (RequestContextHolder.getRequestAttributes() != null) {
+            final String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
+            createRefreshToken(user, sessionId);
+            headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
+            headers.set("id", userId);
+            headers.set("type", sessionId);
+        }
+        redisServiceImpl.setAutoLoginData(key, userId);
         return headers;
     }
 
