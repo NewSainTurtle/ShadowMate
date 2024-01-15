@@ -57,12 +57,11 @@ const Login = () => {
         setShowAlert(false);
         const accessToken = res.headers["authorization"];
         const userId = res.headers["id"];
-        dispatch(setLogin({ accessToken: accessToken, userId: userId }));
-        if (autoLogin) {
-          localStorage.clear();
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("id", userId);
-        }
+        // if (auto && auto === "true") {
+        //   localStorage.clear();
+        //   localStorage.setItem("accessToken", accessToken);
+        //   localStorage.setItem("id", userId);
+        // }
 
         userApi.getProfiles(userId).then((res) => {
           dispatch(setUserInfo(res.data.data));

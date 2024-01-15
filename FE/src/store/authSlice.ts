@@ -46,8 +46,8 @@ const authSlice = createSlice({
     },
     setLogout: (state) => {
       state.login = false;
-      localStorage.removeItem("id");
-      localStorage.removeItem("accessToken");
+      // localStorage.removeItem("id");
+      // localStorage.removeItem("accessToken");
     },
     setUserInfo: (state, { payload }: PayloadAction<UserInfoConfig>) => {
       const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
