@@ -111,4 +111,11 @@ public class PlannerSettingController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_ROUTINE, plannerSettingServiceImpl.addRoutine(principalDetails.getUser(), addRoutineRequest)));
     }
+
+    @GetMapping("/{userId}/routines")
+    public ResponseEntity<BaseResponse> getRoutineList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_ROUTINE_LIST, plannerSettingServiceImpl.getRoutineList(principalDetails.getUser())));
+    }
 }
