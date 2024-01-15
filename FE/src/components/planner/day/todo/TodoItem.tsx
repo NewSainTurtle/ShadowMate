@@ -86,7 +86,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
   const handleSaveStatusTodo = () => {
     if (text === "") return;
-    if (todoStatus === "진행중") {
+    if (todoStatus === "완료") {
       if (todoItem.timeTables && todoItem.timeTables.length > 0) {
         handleWarnModalOpen();
       } else {
@@ -97,8 +97,8 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
       }
     } else {
       const changeStatus = {
-        공백: "완료",
-        완료: "진행중",
+        공백: "진행중",
+        진행중: "완료",
         미완료: "공백",
       }[todoStatus] as "완료" | "진행중" | "공백";
 
@@ -136,8 +136,8 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const todoStatusView = {
     공백: " ",
     완료: "O",
-    미완료: "X",
     진행중: "△",
+    미완료: "X",
   };
 
   return (
