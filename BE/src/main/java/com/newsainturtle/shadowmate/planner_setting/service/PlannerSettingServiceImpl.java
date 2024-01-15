@@ -268,4 +268,25 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
                 .routineId(routine.getId())
                 .build();
     }
+
+    @Override
+    public GetRoutineListResponse getRoutineList(final User user) {
+        final List<GetRoutineResponse> routines = new ArrayList<>();
+        final Routine[] routineList = routineRepository.findAllByUser(user);
+        for (Routine routine : routineList) {
+            final RoutineDay[] routineDayList = routineDayRepository.findAllByRoutine(routine);
+            final List<String> routineDays = new ArrayList<>();
+            for (RoutineDay routineDay : routineDayList) {
+                routineDays.add(routineDay.getDay());
+            }
+            routines.add(GetRoutineResponse.builder()
+                    .routineId(routine.getId())
+                    .routineContent(routine.getRoutineContent())
+                    .startDay(routine.getStartDay())
+                    .endDay(routine.getEndDay())
+                    .days(routineDays)
+                    .build());
+        }
+        return GetRoutineListResponse.builder().routineList(routines).build();
+    }
 }
