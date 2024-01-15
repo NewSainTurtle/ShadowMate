@@ -69,7 +69,6 @@ const DayPage = () => {
       const sumTodoTime = ele.timeTables?.reduce((sumTime: number, item: TimeTableConfig) => {
         return sumTime + Number(dayjs(item.endTime).diff(dayjs(item.startTime), "m"));
       }, 0) as number;
-      console.log(sumTodoTime);
       return accumulate + sumTodoTime;
     }, 0);
 
