@@ -15,7 +15,9 @@ import com.newsainturtle.shadowmate.planner.service.SearchPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
+import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -72,6 +74,9 @@ class SearchPlannerServiceTest extends DateCommonService {
 
     @Mock
     private SocialRepository socialRepository;
+
+    @Mock
+    private RoutineTodoRepository routineTodoRepository;
 
     private final String date = "2023-09-25";
     private final String startDay = "2023-10-09";
@@ -135,6 +140,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             //given
             doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(userId);
             doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+            doReturn(new RoutineTodo[0]).when(routineTodoRepository).findAllByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(String.class));
 
@@ -375,6 +381,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(userId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
+            doReturn(new RoutineTodo[0]).when(routineTodoRepository).findAllByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(null).when(socialRepository).findByDailyPlannerAndDeleteTimeIsNull(any(DailyPlanner.class));
             doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
