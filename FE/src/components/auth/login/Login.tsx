@@ -57,6 +57,9 @@ const Login = () => {
         setShowAlert(false);
         const accessToken = res.headers["authorization"];
         const userId = res.headers["id"];
+        const type = res.headers["type"];
+        const auto = res.headers["Auto-Login"] ?? ""; // 자동로그인 아닐 때는 header에 정보 없음.
+        dispatch(setLogin({ accessToken, userId, type, autoLogin: auto }));
         // if (auto && auto === "true") {
         //   localStorage.clear();
         //   localStorage.setItem("accessToken", accessToken);
@@ -79,11 +82,13 @@ const Login = () => {
   useEffect(() => {
     const token = getCookie("token");
     const id = getCookie("userId");
-    if (token && id) {
-      dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
+    const type = getCookie("type");
+    if (token && id && type) {
+      dispatch(setLogin({ accessToken: token, userId: parseInt(id), type }));
       dispatch(setIsGoogle(true));
       deleteCookie("token");
       deleteCookie("userId");
+      deleteCookie("type");
       userApi
         .getProfiles(parseInt(id))
         .then((res) => {
