@@ -7,6 +7,7 @@ import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -62,29 +63,43 @@ class RoutineRepositoryTest {
         assertThat(saveRoutine.getRoutineContent()).isEqualTo(routineContent);
     }
 
-    @Test
-    void 루틴조회() {
-        //given
-        routineRepository.save(Routine.builder()
-                .startDay(startDay)
-                .endDay(endDay)
-                .routineContent(routineContent)
-                .category(null)
-                .user(user)
-                .build());
-        routineRepository.save(Routine.builder()
-                .startDay(startDay)
-                .endDay(endDay)
-                .routineContent(routineContent)
-                .category(null)
-                .user(user)
-                .build());
+    @Nested
+    class 루틴목록조회{
+        @Test
+        void 루틴없음() {
+            //given
 
-        //when
-        final Routine[] findRoutine = routineRepository.findAllByUser(user);
+            //when
+            final Routine[] findRoutine = routineRepository.findAllByUser(user);
 
-        //then
-        assertThat(findRoutine).isNotNull().hasSize(2);
+            //then
+            assertThat(findRoutine).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 루틴있음() {
+            //given
+            routineRepository.save(Routine.builder()
+                    .startDay(startDay)
+                    .endDay(endDay)
+                    .routineContent(routineContent)
+                    .category(null)
+                    .user(user)
+                    .build());
+            routineRepository.save(Routine.builder()
+                    .startDay(startDay)
+                    .endDay(endDay)
+                    .routineContent(routineContent)
+                    .category(null)
+                    .user(user)
+                    .build());
+
+            //when
+            final Routine[] findRoutine = routineRepository.findAllByUser(user);
+
+            //then
+            assertThat(findRoutine).isNotNull().hasSize(2);
+        }
     }
 
 }
