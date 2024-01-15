@@ -20,6 +20,6 @@ public class RoutineDay extends CommonEntity {
     private String day;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "routine_id")
+    @JoinColumn(name = "routine_id", nullable = false)
     private Routine routine;
 }
