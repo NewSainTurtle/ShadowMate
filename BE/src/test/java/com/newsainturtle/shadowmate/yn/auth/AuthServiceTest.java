@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.yn.auth;
 
 import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
+import com.newsainturtle.shadowmate.auth.dto.RemoveTokenRequest;
 import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.entity.EmailAuthentication;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
@@ -391,21 +392,89 @@ class AuthServiceTest {
         }
     }
 
+
+    @Test
+    void 사용자인증_실패_없는사용자() {
+        //given
+        final Long userId = 2L;
+
+        //when
+        final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.certifyUser(userId, user));
+
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNREGISTERED_USER);
+    }
+
+    @Test
+    void 로그아웃() {
+        //given
+        final String key = "0123456789 1";
+        final RemoveTokenRequest removeTokenRequest = RemoveTokenRequest.builder()
+                .type("0123456789")
+                .userId(1L)
+                .build();
+
+        //when
+        authServiceImpl.logout(key, removeTokenRequest);
+
+        //then
+
+        //verify
+        verify(redisServiceImpl, times(1)).deleteRefreshTokenData(removeTokenRequest.getUserId(), removeTokenRequest.getType());
+        verify(redisServiceImpl, times(1)).deleteAutoLoginData(key);
+    }
+
     @Nested
-    class 사용자인증 {
+    class 자동로그인 {
+        final String key = "0123456789 1";
 
         @Test
-        void 실패_없는사용자() {
+        void 실패_자동로그인아님() {
             //given
-            final Long userId = 2L;
+            doReturn(null).when(redisServiceImpl).getAutoLoginData(key);
 
             //when
-            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.certifyUser(userId, user));
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkAutoLogin(key));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNREGISTERED_USER);
+
+            //verify
+            verify(redisServiceImpl, times(1)).getAutoLoginData(any(String.class));
         }
 
+        @Test
+        void 실패_유저없음() {
+            //given
+            doReturn("1").when(redisServiceImpl).getAutoLoginData(key);
+            doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+
+            //when
+            final AuthException result = assertThrows(AuthException.class, () -> authServiceImpl.checkAutoLogin(key));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.UNREGISTERED_USER);
+
+            //verify
+            verify(redisServiceImpl, times(1)).getAutoLoginData(any(String.class));
+            verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
+        }
+
+        @Test
+        void 성공() {
+            //given
+            doReturn("1").when(redisServiceImpl).getAutoLoginData(key);
+            doReturn(user).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+
+            //when
+            authServiceImpl.checkAutoLogin(key);
+
+            //then
+
+            //verify
+            verify(redisServiceImpl, times(1)).getAutoLoginData(any(String.class));
+            verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
+        }
     }
 
 }
