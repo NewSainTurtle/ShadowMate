@@ -10,14 +10,10 @@ import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
-import com.newsainturtle.shadowmate.planner_setting.entity.Category;
-import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
-import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
+import com.newsainturtle.shadowmate.planner_setting.entity.*;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
-import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
-import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
-import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.*;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -26,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +42,9 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     private final SocialRepository socialRepository;
     private final DailyPlannerRepository dailyPlannerRepository;
     private final UserRepository userRepository;
+    private final RoutineRepository routineRepository;
+    private final RoutineDayRepository routineDayRepository;
+    private final RoutineTodoRepository routineTodoRepository;
 
     private CategoryColor getCategoryColor(final Long categoryColorId) {
         final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
@@ -59,6 +60,63 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
         }
         return category;
+    }
+
+    private void checkValidDay(final String startDateStr, final String endDateStr) {
+        if (Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() < 0) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE);
+        }
+    }
+
+    private void addRoutineTodo(final Routine routine, final LocalDate startDate, final LocalDate endDate, List<String> days) {
+        final boolean[] checkDays = new boolean[8];
+        for (String requestDay : days) {
+            int day = getDayIndex(requestDay);
+            if (checkDays[day]) {
+                throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY);
+            }
+            checkDays[day] = true;
+            int plusCount;
+            if (day < startDate.getDayOfWeek().getValue()) {
+                plusCount = day + 7 - startDate.getDayOfWeek().getValue();
+            } else {
+                plusCount = day - startDate.getDayOfWeek().getValue();
+            }
+
+            LocalDate target = startDate.plusDays(plusCount);
+            while (Period.between(target, endDate).getDays() >= 0) {
+                routineTodoRepository.save(RoutineTodo.builder()
+                        .day(requestDay)
+                        .dailyPlannerDay(localDateToString(target))
+                        .routine(routine)
+                        .build());
+                target = target.plusDays(7);
+            }
+
+            routineDayRepository.save(RoutineDay.builder()
+                    .routine(routine)
+                    .day(requestDay)
+                    .build());
+        }
+    }
+
+    private int getDayIndex(String day) {
+        if (day.equals("월")) {
+            return 1;
+        } else if (day.equals("화")) {
+            return 2;
+        } else if (day.equals("수")) {
+            return 3;
+        } else if (day.equals("목")) {
+            return 4;
+        } else if (day.equals("금")) {
+            return 5;
+        } else if (day.equals("토")) {
+            return 6;
+        } else if (day.equals("일")) {
+            return 7;
+        }
+        throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY);
     }
 
     @Override
@@ -190,5 +248,24 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY);
         }
         findDday.updateDdayDateAndTitle(updateDdayRequest.getDdayDate(), updateDdayRequest.getDdayTitle());
+    }
+
+    @Override
+    @Transactional
+    public AddRoutineResponse addRoutine(final User user, final AddRoutineRequest addRoutineRequest) {
+        checkValidDay(addRoutineRequest.getStartDay(), addRoutineRequest.getEndDay());
+        final Category category = addRoutineRequest.getCategoryId() == 0L ? null
+                : categoryRepository.findByUserAndId(user, addRoutineRequest.getCategoryId());
+        final Routine routine = routineRepository.save(Routine.builder()
+                .user(user)
+                .category(category)
+                .routineContent(addRoutineRequest.getRoutineContent())
+                .startDay(addRoutineRequest.getStartDay())
+                .endDay(addRoutineRequest.getEndDay())
+                .build());
+        addRoutineTodo(routine, stringToLocalDate(addRoutineRequest.getStartDay()), stringToLocalDate(addRoutineRequest.getEndDay()), addRoutineRequest.getDays());
+        return AddRoutineResponse.builder()
+                .routineId(routine.getId())
+                .build();
     }
 }
