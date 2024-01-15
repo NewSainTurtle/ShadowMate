@@ -9,14 +9,10 @@ import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
-import com.newsainturtle.shadowmate.planner_setting.entity.Category;
-import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
-import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
+import com.newsainturtle.shadowmate.planner_setting.entity.*;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
-import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
-import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
-import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.*;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -31,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,6 +68,15 @@ class PlannerSettingServiceTest extends DateCommonService {
 
     @Mock
     private SocialRepository socialRepository;
+
+    @Mock
+    private RoutineRepository routineRepository;
+
+    @Mock
+    private RoutineTodoRepository routineTodoRepository;
+
+    @Mock
+    private RoutineDayRepository routineDayRepository;
 
     private final User user = User.builder()
             .id(1L)
@@ -499,6 +505,105 @@ class PlannerSettingServiceTest extends DateCommonService {
 
                 //verify
                 verify(ddayRepository, times(1)).findByUserAndId(user, 1L);
+            }
+        }
+    }
+
+    @Nested
+    class 루틴 {
+        final Routine routine = Routine.builder()
+                .id(1L)
+                .routineContent("아침운동하기")
+                .startDay("2023-12-25")
+                .endDay("2024-01-09")
+                .user(user)
+                .category(null)
+                .build();
+
+        @Nested
+        class 루틴등록 {
+            final String[] days = new String[]{"월", "수"};
+
+            @Test
+            void 실패_시작날짜보다_과거인종료날짜() {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routine.getRoutineContent())
+                        .startDay("2023-12-25")
+                        .endDay("2023-12-20")
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addRoutine(user, addRoutineRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_DATE);
+            }
+
+            @Test
+            void 실패_유효하지않은요일() {
+                //given
+                final String[] days = new String[]{"디", "수"};
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routine.getRoutineContent())
+                        .startDay("2023-12-25")
+                        .endDay("2024-01-09")
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                doReturn(routine).when(routineRepository).save(any(Routine.class));
+
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addRoutine(user, addRoutineRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_ROUTINE_DAY);
+            }
+
+            @Test
+            void 실패_요일중복() {
+                //given
+                final String[] days = new String[]{"월", "수", "월"};
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routine.getRoutineContent())
+                        .startDay("2023-12-25")
+                        .endDay("2024-01-09")
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                doReturn(routine).when(routineRepository).save(any(Routine.class));
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addRoutine(user, addRoutineRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_ROUTINE_DAY);
+            }
+
+            @Test
+            void 성공() {
+                //given
+                final AddRoutineRequest addRoutineRequest = AddRoutineRequest.builder()
+                        .routineContent(routine.getRoutineContent())
+                        .startDay(routine.getStartDay())
+                        .endDay(routine.getEndDay())
+                        .categoryId(0L)
+                        .days(Arrays.asList(days))
+                        .build();
+                doReturn(routine).when(routineRepository).save(any(Routine.class));
+
+                //when
+                plannerSettingService.addRoutine(user, addRoutineRequest);
+
+                //then
+
+                //verify
+                verify(routineRepository, times(1)).save(any(Routine.class));
+                verify(routineTodoRepository, times(5)).save(any(RoutineTodo.class));
+                verify(routineDayRepository, times(2)).save(any(RoutineDay.class));
             }
         }
     }
