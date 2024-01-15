@@ -63,6 +63,7 @@ class RoutineTodoRepositoryTest {
                 .endDay(endDay)
                 .routineContent(routineContent)
                 .category(null)
+                .user(user)
                 .build());
         dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
                 .dailyPlannerDay(startDay)
@@ -119,6 +120,50 @@ class RoutineTodoRepositoryTest {
             assertThat(saveRoutineTodo.getTodo()).isEqualTo(todo);
             assertThat(saveRoutineTodo.getDailyPlannerDay()).isEqualTo(startDay);
             assertThat(saveRoutineTodo.getDay()).isEqualTo("월");
+        }
+    }
+
+    @Nested
+    class 루틴_할일_등록안된루틴조회 {
+        @Test
+        void 데이터없음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .routine(routine)
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build());
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), "2023-12-25");
+
+            //then
+            assertThat(routineTodos).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 데이터있음() {
+            //given
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .routine(routine)
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build());
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), "2023-12-25");
+
+            //then
+            assertThat(routineTodos).isNotNull().hasSize(1);
         }
     }
 
