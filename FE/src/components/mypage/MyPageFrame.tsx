@@ -6,9 +6,10 @@ import MyPageList from "@components/mypage/MyPageList";
 import MyPageDetail from "@components/mypage/MyPageDetail";
 import Category from "@components/mypage/details/diary/Category";
 import Dday from "@components/mypage/details/diary/Dday";
+import Routine from "@components/mypage/details/diary/Routine";
 import CategoryList from "@components/mypage/list/CategoryList";
-import MyPageDday from "./details/diary/Dday";
 import DdayList from "@components/mypage/list/DdayList";
+import RoutineList from "@components/mypage/list/RoutineList";
 import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -31,6 +32,7 @@ import {
   setDdayInput,
   setDdayList,
 } from "@store/mypage/ddaySlice";
+import { selectRoutineClick, selectRoutineInput, selectRoutineList } from "@store/mypage/routineSlice";
 import dayjs from "dayjs";
 
 interface Props {
@@ -59,12 +61,20 @@ const MyPageFrame = ({ title }: Props) => {
   const ddayInput = useAppSelector(selectDdayInput);
   const copyDdays = useMemo(() => JSON.parse(JSON.stringify(ddayList)), [ddayList]);
 
+  /* 루틴 관련 변수 */
+  const routineList = useAppSelector(selectRoutineList);
+  const routineClick = useAppSelector(selectRoutineClick);
+  const routineInput = useAppSelector(selectRoutineInput);
+
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
   /* 삭제 모달 변수 및 함수 */
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const handleDeleteModalOpen = () => setDeleteModalOpen(true);
+  const handleDeleteModalOpen = () => {
+    if (isDisable) return;
+    setDeleteModalOpen(true);
+  };
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const handleAdd = (title: string) => {
@@ -89,7 +99,7 @@ const MyPageFrame = ({ title }: Props) => {
           dispatch(setCategoryInput(newCategory));
         })
         .catch((err) => console.log(err));
-    } else {
+    } else if (title === "디데이") {
       const init = {
         ddayDate: dayjs(new Date()).format("YYYY-MM-DD"),
         ddayTitle: "새 디데이",
@@ -103,6 +113,8 @@ const MyPageFrame = ({ title }: Props) => {
           dispatch(setDdayInput({ ...init, ddayId: returnId }));
         })
         .catch((err) => console.log(err));
+    } else if (title === "루틴") {
+      // 작성 예정
     }
   };
 
@@ -129,7 +141,7 @@ const MyPageFrame = ({ title }: Props) => {
           dispatch(setCategoryList(copyList));
         })
         .catch((err) => console.log(err));
-    } else {
+    } else if (title === "디데이") {
       const input = {
         ddayId: ddayInput.ddayId,
         ddayTitle: ddayInput.ddayTitle,
@@ -143,6 +155,8 @@ const MyPageFrame = ({ title }: Props) => {
           dispatch(setDdayList(copyDdays));
         })
         .catch((err) => console.log(err));
+    } else if (title === "루틴") {
+      // 작성 예정
     }
   };
 
@@ -166,7 +180,7 @@ const MyPageFrame = ({ title }: Props) => {
           console.log(err);
         })
         .finally(() => handleDeleteModalClose());
-    } else {
+    } else if (title === "디데이") {
       if (ddayList.length == 0) return;
       settingApi
         .deleteDdays(userId, ddayList[ddayClick].ddayId)
@@ -183,14 +197,17 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err))
         .finally(() => handleDeleteModalClose());
+    } else if (title === "루틴") {
+      // 작성 예정
     }
   };
 
   useEffect(() => {
     if (title === "카테고리" && categoryList.length < 1) setIsDisable(true);
     else if (title === "디데이" && ddayList.length < 1) setIsDisable(true);
+    else if (title === "루틴" && routineList.length < 1) setIsDisable(true);
     else setIsDisable(false);
-  }, [title, categoryList, ddayList]);
+  }, [title, categoryList, ddayList, routineList]);
 
   return (
     <div className={styles["frame"]}>
@@ -199,6 +216,7 @@ const MyPageFrame = ({ title }: Props) => {
           {
             카테고리: <CategoryList />,
             디데이: <DdayList />,
+            루틴: <RoutineList />,
           }[title]
         }
       </MyPageList>
@@ -213,6 +231,7 @@ const MyPageFrame = ({ title }: Props) => {
             {
               카테고리: categoryList.length != 0 && <Category />,
               디데이: ddayList.length != 0 && <Dday />,
+              루틴: routineList.length != 0 && <Routine />,
             }[title]
           }
         </>

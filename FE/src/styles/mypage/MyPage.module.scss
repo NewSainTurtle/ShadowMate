@@ -363,11 +363,97 @@ $color-warning: var(--color-warning);
   }
 }
 
+.routine {
+  &__item {
+    display: grid;
+    grid-template-columns: 9fr 1fr;
+    align-items: center;
+    height: 5em;
+    padding: 0 1em;
+    box-sizing: border-box;
+    border-bottom: 0.5px solid $color-gray-2;
+    cursor: pointer;
+    > div:nth-child(1) {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3em;
+
+      > div > span {
+        color: $color-gray-4;
+      }
+    }
+
+    > div:nth-child(2) {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+    }
+
+    &--clicked {
+      @extend .routine__item;
+      background-color: $color-gray-1;
+    }
+  }
+  &__day {
+    &-list {
+      display: flex;
+      justify-content: space-evenly;
+      width: 100%;
+      > div > input {
+        display: none;
+      }
+    }
+
+    &-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background-color: $color-gray-2;
+      cursor: pointer;
+
+      &--click {
+        @extend .routine__day-item;
+        background-color: $color-blue;
+      }
+    }
+  }
+  &__period {
+    width: 100%;
+    display: flex;
+    gap: 2em;
+
+    > div > div > input {
+      caret-color: transparent;
+    }
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+
+      > div {
+        min-width: 5em;
+      }
+
+      > svg {
+        font-size: medium;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
 .tab {
   height: 100%;
   width: 10em;
   margin-right: 1em;
-
+  > div:nth-child(2) {
+    height: 12em;
+  }
   &__title {
     > input {
       display: none;
@@ -382,16 +468,9 @@ $color-warning: var(--color-warning);
         background-color: $color-gray-2;
         & + div {
           margin: 0.2em 0;
-          // 탭 아코디언 동작 시 사용됨.
-          // max-height: 0;
-          // transition: all 0.25s;
           overflow: hidden;
           cursor: pointer;
         }
-      }
-
-      &:checked + label + div {
-        max-height: 6.2em;
       }
     }
 
