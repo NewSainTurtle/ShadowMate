@@ -110,4 +110,59 @@ class RoutineRepositoryTest {
         }
     }
 
+    @Nested
+    class 루틴조회 {
+        @Test
+        void 루틴없음() {
+            //given
+
+            //when
+            final Routine findRoutine = routineRepository.findByIdAndUser(0L, user);
+
+            //then
+            assertThat(findRoutine).isNull();
+        }
+
+        @Test
+        void 루틴있음() {
+            //given
+            final Routine routine = routineRepository.save(Routine.builder()
+                    .startDay(startDay)
+                    .endDay(endDay)
+                    .routineContent(routineContent)
+                    .category(null)
+                    .user(user)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
+                    .build());
+
+            //when
+            final Routine findRoutine = routineRepository.findByIdAndUser(routine.getId(), user);
+
+            //then
+            assertThat(findRoutine).isNotNull().isEqualTo(routine);
+        }
+    }
+
+    @Test
+    void 루틴삭제() {
+        //given
+        final Routine routine = routineRepository.save(Routine.builder()
+                .startDay(startDay)
+                .endDay(endDay)
+                .routineContent(routineContent)
+                .category(null)
+                .user(user)
+                .routineDays(new ArrayList<>())
+                .routineTodos(new ArrayList<>())
+                .build());
+
+        //when
+        routineRepository.deleteByIdAndUser(routine.getId(), user);
+        final Routine findRoutine = routineRepository.findByIdAndUser(routine.getId(), user);
+
+        //then
+        assertThat(findRoutine).isNull();
+    }
+
 }
