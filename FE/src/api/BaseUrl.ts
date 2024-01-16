@@ -15,6 +15,7 @@ interface apiInterface {
     login: () => string; // 로그인
     autoLogin: () => string; // 자동로그인
     googleLogin: () => string; // 구글 로그인
+    logout: () => string; // 로그아웃
     nickname: () => string; // 닉네임 중복검사, 삭제
     emailAuthentication: () => string; // 이메일 인증 (+중복검사)
     emailAuthenticationCheck: () => string; // 이메일 인증 - 응답
@@ -71,6 +72,7 @@ const api: apiInterface = {
     login: () => HOST + AUTH + "login",
     autoLogin: () => HOST + AUTH + "auto-login",
     googleLogin: () => HOST + AUTH + "social-login",
+    logout: () => HOST + AUTH + "logout",
     nickname: () => HOST + AUTH + "nickname-duplicated",
     emailAuthentication: () => HOST + AUTH + "email-authentication",
     emailAuthenticationCheck: () => HOST + AUTH + "email-authentication" + "/check",
