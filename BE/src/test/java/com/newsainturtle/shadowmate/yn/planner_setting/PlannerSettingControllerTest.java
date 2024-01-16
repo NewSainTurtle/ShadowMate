@@ -1139,6 +1139,108 @@ class PlannerSettingControllerTest {
                 resultActions.andExpect(status().isOk());
             }
         }
+
+        @Nested
+        class 루틴삭제 {
+            final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder().routineId(1L).order(1).build();
+
+            @Test
+            void 실패_없는사용자() throws Exception {
+                //given
+
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            void 실패_루틴ID_Null() throws Exception {
+                //given
+                final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder().routineId(null).order(1).build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_order_Null() throws Exception {
+                //given
+                final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder().routineId(1L).order(null).build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은루틴() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE)).when(plannerSettingServiceImpl).removeRoutine(any(), any(RemoveRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_올바르지않은order값() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER)).when(plannerSettingServiceImpl).removeRoutine(any(), any(RemoveRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 성공() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.delete(url, userId)
+                                .content(gson.toJson(removeRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
     }
 
 }
