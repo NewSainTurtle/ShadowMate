@@ -6,6 +6,7 @@ import dayReducer from "@store/planner/daySlice";
 import categoryReducer from "@store/mypage/categorySlice";
 import ddayReducer from "@store/mypage/ddaySlice";
 import frinedReducer from "@store/friendSlice";
+import socialReducer from "@store/socialSlice";
 import modalReducer from "@store/modalSlice";
 import alertReducer from "@store/alertSlice";
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   category: categoryReducer,
   dday: ddayReducer,
   friend: frinedReducer,
+  social: socialReducer,
   modal: modalReducer,
   alert: alertReducer,
 });
