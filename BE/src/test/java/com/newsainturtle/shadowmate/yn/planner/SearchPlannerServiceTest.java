@@ -287,6 +287,7 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .categoryRemove(false)
                     .categoryEmoticon("🍅")
                     .build();
+            final List<TimeTable> timeTableList = new ArrayList<>();
             final Todo todo = Todo.builder()
                     .id(1L)
                     .category(category)
@@ -294,15 +295,16 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(timeTableList)
                     .build();
             final List<Todo> todoList = new ArrayList<>();
             todoList.add(todo);
-            final List<TimeTable> timeTableList = new ArrayList<>();
             timeTableList.add(TimeTable.builder()
                     .startTime(stringToLocalDateTime("2023-10-10 22:50"))
                     .endTime(stringToLocalDateTime("2023-10-11 01:30"))
                     .todo(todo)
                     .build());
+
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
@@ -312,7 +314,6 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(todoList).when(todoRepository).findAllByDailyPlannerOrderByTodoIndex(any(DailyPlanner.class));
-            doReturn(timeTableList).when(timeTableRepository).findAllByTodo(any(Todo.class));
 
             //when
             final SearchDailyPlannerResponse searchDailyPlannerResponse = searchPlannerServiceImpl.searchDailyPlanner(user, plannerWriterId, today);
@@ -361,6 +362,7 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .categoryRemove(false)
                     .categoryEmoticon("🍅")
                     .build();
+            final List<TimeTable> timeTableList = new ArrayList<>();
             final Todo todo = Todo.builder()
                     .id(1L)
                     .category(category)
@@ -368,10 +370,10 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(timeTableList)
                     .build();
             final List<Todo> todoList = new ArrayList<>();
             todoList.add(todo);
-            final List<TimeTable> timeTableList = new ArrayList<>();
             timeTableList.add(TimeTable.builder()
                     .startTime(stringToLocalDateTime("2023-10-10 22:50"))
                     .endTime(stringToLocalDateTime("2023-10-11 01:30"))
@@ -386,7 +388,6 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(todoList).when(todoRepository).findAllByDailyPlannerOrderByTodoIndex(any(DailyPlanner.class));
-            doReturn(timeTableList).when(timeTableRepository).findAllByTodo(any(Todo.class));
 
             //when
             final SearchDailyPlannerResponse searchDailyPlannerResponse = searchPlannerServiceImpl.searchDailyPlanner(user, userId, today);

@@ -4,7 +4,6 @@ import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
-import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -32,6 +31,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -742,6 +743,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build();
         final TimeTable timeTable = TimeTable.builder()
                 .id(1L)
@@ -856,6 +858,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                         .todoStatus(TodoStatus.COMPLETE)
                         .dailyPlanner(dailyPlanner)
                         .todoIndex(100000D)
+                        .timeTables(new ArrayList<>())
                         .build();
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(any(Long.class), any(DailyPlanner.class));
@@ -898,6 +901,7 @@ class DailyPlannerServiceTest extends DateCommonService {
             void 성공() {
                 //given
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(timeTable).when(timeTableRepository).findByIdAndTodoId(any(), any());
 
                 //when
                 dailyPlannerServiceImpl.removeTimeTable(user, removeTimeTableRequest);
@@ -906,7 +910,8 @@ class DailyPlannerServiceTest extends DateCommonService {
 
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
-                verify(timeTableRepository, times(1)).deleteByIdAndTodoId(any(Long.class), any(Long.class));
+                verify(timeTableRepository, times(1)).findByIdAndTodoId(any(Long.class), any(Long.class));
+                verify(timeTableRepository, times(1)).deleteById(any(Long.class));
             }
 
         }
