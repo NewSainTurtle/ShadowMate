@@ -1,50 +1,46 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/social/Social.module.scss";
-import { useAppSelector } from "@hooks/hook";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "@styles/common/DataRangePicker.css";
 import ko from "date-fns/locale/ko";
 import SocialInput from "./SocialInput";
-import dayjs from "dayjs";
 import { DateRangePicker, RangeKeyDict } from "react-date-range";
+import {
+  SocialConfig,
+  selectSocialSort,
+  selectSocialKeyword,
+  selectSocialDateRange,
+  setSocialSort,
+  setSocialClear,
+  setSocialDateRange,
+  setSocialKeyWord,
+} from "@store/socialSlice";
+import dayjs from "dayjs";
 
-interface Props {
-  order: string;
-  searchKeyWord: string;
-  setSearchKeyWord: (value: React.SetStateAction<string>) => void;
-  setOrder: (value: React.SetStateAction<"latest" | "popularity">) => void;
-}
-
-const SocialHeader = (props: Props) => {
-  const { order, searchKeyWord, setSearchKeyWord, setOrder } = props;
-  const sortArr: ("latest" | "popularity")[] = ["latest", "popularity"];
+const SocialHeader = () => {
+  const dispatch = useAppDispatch();
   const userName = useAppSelector(selectUserInfo).nickname;
+  const sort: string = useAppSelector(selectSocialSort);
+  const keyword: string = useAppSelector(selectSocialKeyword);
+  const dateRange: SocialConfig["dateRange"] = useAppSelector(selectSocialDateRange);
   const [openCalendar, setOpenCalendar] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(),
-    endDate: new Date(dayjs().add(-7, "day").toDate()),
-  });
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyWord(e.target.value);
-  };
-
-  const onClickMyButton = () => {
-    setSearchKeyWord(userName);
-  };
-
-  const onClickOrder = (name: "latest" | "popularity") => {
-    setOrder(name);
-  };
-
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => dispatch(setSocialKeyWord(e.target.value));
+  const onClickMyButton = () => dispatch(setSocialKeyWord(userName));
+  const onClickSort = (name: SocialConfig["sort"]) => dispatch(setSocialSort(name));
   const onChangeDate = (e: RangeKeyDict) => {
-    const startDate = e.range1.startDate ?? dateRange.startDate;
-    const endDate = e.range1.endDate ?? dateRange.endDate;
-    setDateRange({ startDate, endDate });
+    const startDate = dayjs(e.range1.startDate).format("YYYY-MM-DD");
+    const endDate = dayjs(e.range1.endDate).format("YYYY-MM-DD");
+    dispatch(setSocialDateRange({ startDate, endDate }));
   };
+
+  useEffect(() => {
+    dispatch(setSocialClear());
+  }, []);
 
   useEffect(() => {
     /**  캘린더 외부 영역 클릭 시 발생하는 이벤트*/
@@ -60,40 +56,41 @@ const SocialHeader = (props: Props) => {
     };
   }, [calendarRef]);
 
+  const sortArr: SocialConfig["sort"][] = ["latest", "popularity"];
+
   return (
     <>
       <div className={styles["item-header__search"]}>
         <SocialInput
           name="search"
           placeholder="사용자 닉네임으로 검색 검색"
-          value={searchKeyWord}
+          value={keyword}
           onChange={handleInput}
-          onCalendarClick={() => {
-            setOpenCalendar((value) => !value);
-          }}
+          onCalendarClick={() => setOpenCalendar((value) => !value)}
           onMyClick={onClickMyButton}
         />
         {openCalendar && (
           <div ref={calendarRef} className={styles["date__picker"]}>
             <DateRangePicker
               locale={ko}
-              ranges={[dateRange]}
+              ranges={[{ startDate: dayjs(dateRange.startDate).toDate(), endDate: dayjs(dateRange.endDate).toDate() }]}
               onChange={onChangeDate}
+              shownDate={new Date()}
               showDateDisplay
-              dateDisplayFormat={"yyyy-mm-dd"}
+              dateDisplayFormat={"yyyy-MM-dd"}
               fixedHeight
             />
           </div>
         )}
       </div>
       <div className={styles["item-header__sort"]}>
-        {sortArr.map((sort, idx) => (
+        {sortArr.map((order, idx) => (
           <span
-            className={order != sort ? styles["item-header__sort--none"] : ""}
+            className={sort != order ? styles["item-header__sort--none"] : ""}
             key={idx}
-            onClick={() => onClickOrder(sort)}
+            onClick={() => onClickSort(order)}
           >
-            {sort == "latest" ? "최신순" : "인기순"}
+            {order == "latest" ? "최신순" : "인기순"}
           </span>
         ))}
       </div>

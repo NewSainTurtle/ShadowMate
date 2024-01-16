@@ -3,7 +3,6 @@ import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "@styles/common/DataRangePicker.css";
 import styles from "@styles/mypage/MyPage.module.scss";
-import colors from "@util/colors";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
