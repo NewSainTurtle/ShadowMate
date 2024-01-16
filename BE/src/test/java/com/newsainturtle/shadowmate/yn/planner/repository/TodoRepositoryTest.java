@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,6 +82,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build();
             //when
             final Todo saveTodo = todoRepository.save(todo);
@@ -109,6 +111,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build();
             //when
             final Todo saveTodo = todoRepository.save(todo);
@@ -138,6 +141,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
 
@@ -168,6 +172,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
         timeTableRepository.save(TimeTable.builder()
@@ -207,6 +212,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
 
@@ -237,20 +243,21 @@ class TodoRepositoryTest {
                 .categoryEmoticon("🍅")
                 .build());
 
-        final Todo saveTodo1 = todoRepository.save(Todo.builder()
+        todoRepository.save(Todo.builder()
                 .category(category)
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
-
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("국어")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(category)
@@ -258,14 +265,15 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(300000D)
+                .timeTables(new ArrayList<>())
                 .build());
-
-        final Todo saveTodo4 = todoRepository.save(Todo.builder()
+        todoRepository.save(Todo.builder()
                 .category(category)
                 .todoContent("개념원리 1단원 문제 풀기")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(400000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
@@ -285,6 +293,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -292,6 +301,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -299,6 +309,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(300000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -306,6 +317,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(400000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -313,6 +325,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(500000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
@@ -331,6 +344,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -338,6 +352,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -345,6 +360,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(300000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -352,6 +368,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(400000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
@@ -359,6 +376,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(500000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
@@ -391,6 +409,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build());
             todoRepository.save(Todo.builder()
                     .category(null)
@@ -398,6 +417,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(200000D)
+                    .timeTables(new ArrayList<>())
                     .build());
 
             //when
@@ -421,6 +441,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build());
             //when
             final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 100000D);
@@ -438,6 +459,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build());
             todoRepository.save(Todo.builder()
                     .category(null)
@@ -445,6 +467,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(300000D)
+                    .timeTables(new ArrayList<>())
                     .build());
             todoRepository.save(Todo.builder()
                     .category(null)
@@ -452,6 +475,7 @@ class TodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(200000D)
+                    .timeTables(new ArrayList<>())
                     .build());
 
             //when
