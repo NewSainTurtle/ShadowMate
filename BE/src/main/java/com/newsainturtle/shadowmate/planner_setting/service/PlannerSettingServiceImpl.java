@@ -285,6 +285,13 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
                     .startDay(routine.getStartDay())
                     .endDay(routine.getEndDay())
                     .days(routineDays)
+                    .category(routine.getCategory() == null ? null :
+                            GetCategoryResponse.builder()
+                                    .categoryId(routine.getCategory().getId())
+                                    .categoryColorCode(routine.getCategory().getCategoryColor().getCategoryColorCode())
+                                    .categoryTitle(routine.getCategory().getCategoryTitle())
+                                    .categoryEmoticon(routine.getCategory().getCategoryEmoticon())
+                                    .build())
                     .build());
         }
         return GetRoutineListResponse.builder().routineList(routines).build();
