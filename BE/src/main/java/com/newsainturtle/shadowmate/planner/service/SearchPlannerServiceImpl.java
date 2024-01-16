@@ -203,10 +203,8 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     }
 
     private List<DailyPlannerTodoTimeTableResponse> getTimeTable(final Todo todo) {
-        final List<TimeTable> timeTableList = timeTableRepository.findAllByTodo(todo);
         final List<DailyPlannerTodoTimeTableResponse> timeTables = new ArrayList<>();
-
-        for (TimeTable timeTable : timeTableList) {
+        for (TimeTable timeTable : todo.getTimeTables()) {
             totalMinutes += ChronoUnit.MINUTES.between(timeTable.getStartTime(), timeTable.getEndTime());
             timeTables.add(DailyPlannerTodoTimeTableResponse.builder()
                     .timeTableId(timeTable.getId())
@@ -236,6 +234,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                         .todoStatus(TodoStatus.EMPTY)
                         .dailyPlanner(dailyPlanner)
                         .todoIndex(lastTodoIndex)
+                        .timeTables(new ArrayList<>())
                         .build());
                 routineTodo.updateTodo(todo);
                 lastTodoIndex += 100000;
