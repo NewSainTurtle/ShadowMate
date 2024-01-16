@@ -69,6 +69,18 @@ $color-gray_5: var(--color-gray-5);
       }
     }
 
+    &__box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1em;
+
+      > span {
+        display: block;
+        color: $color-gray_5;
+      }
+    }
+
     &__sort {
       display: inline-flex;
       gap: 0.5em;

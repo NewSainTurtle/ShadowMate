@@ -19,6 +19,7 @@ import {
   setSocialKeyWord,
 } from "@store/socialSlice";
 import dayjs from "dayjs";
+import Text from "@components/common/Text";
 
 const SocialHeader = () => {
   const dispatch = useAppDispatch();
@@ -57,6 +58,14 @@ const SocialHeader = () => {
   }, [calendarRef]);
 
   const sortArr: SocialConfig["sort"][] = ["latest", "popularity"];
+  const searchDateInfo = (() => {
+    if (dateRange.startDate) {
+      return `검색 기간 : ${dayjs(dateRange.startDate).format("YYYY-MM-DD")} ~ ${dayjs(dateRange.endDate).format(
+        "YYYY-MM-DD",
+      )}`;
+    }
+    return "";
+  })();
 
   return (
     <>
@@ -83,16 +92,19 @@ const SocialHeader = () => {
           </div>
         )}
       </div>
-      <div className={styles["item-header__sort"]}>
-        {sortArr.map((order, idx) => (
-          <span
-            className={sort != order ? styles["item-header__sort--none"] : ""}
-            key={idx}
-            onClick={() => onClickSort(order)}
-          >
-            {order == "latest" ? "최신순" : "인기순"}
-          </span>
-        ))}
+      <div className={styles["item-header__box"]}>
+        <Text types="small">{searchDateInfo}</Text>
+        <div className={styles["item-header__sort"]}>
+          {sortArr.map((order, idx) => (
+            <span
+              className={sort != order ? styles["item-header__sort--none"] : ""}
+              key={idx}
+              onClick={() => onClickSort(order)}
+            >
+              {order == "latest" ? "최신순" : "인기순"}
+            </span>
+          ))}
+        </div>
       </div>
     </>
   );
