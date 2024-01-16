@@ -85,11 +85,10 @@ const MyPageDday = () => {
       {openCalendar && (
         <div ref={calendarRef} className={styles["date__picker"]}>
           <Calendar
+            locale={ko}
             date={new Date(ddayDate)}
             onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
             dateDisplayFormat={"yyyy-mm-dd"}
-            monthDisplayFormat={"YYYY MMMM"}
-            locale={ko}
             minDate={new Date(dayjs().startOf("year").add(-25, "year").toDate())}
             maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
             fixedHeight

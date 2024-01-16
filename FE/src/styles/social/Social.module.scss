@@ -27,6 +27,7 @@ $color-gray_5: var(--color-gray-5);
     box-sizing: border-box;
 
     &__search {
+      position: relative;
       width: calc((100% - 6.5em) / 3);
       max-width: 30%;
 
@@ -52,6 +53,19 @@ $color-gray_5: var(--color-gray-5);
       .divider {
         height: 1.3em;
         background-color: $color-gray_3;
+      }
+
+      .date__picker {
+        position: absolute;
+        top: 2.5em;
+        left: calc(10em + 5em);
+        z-index: 3;
+
+        > svg,
+        span,
+        button {
+          color: $color-text;
+        }
       }
     }
 
