@@ -13,13 +13,15 @@ public class GetRoutineResponse {
     private String startDay;
     private String endDay;
     private List<String> days;
+    private GetCategoryResponse category;
 
     @Builder
-    public GetRoutineResponse(Long routineId, String routineContent, String startDay, String endDay, List<String> days) {
+    public GetRoutineResponse(Long routineId, String routineContent, String startDay, String endDay, List<String> days, GetCategoryResponse category) {
         this.routineId = routineId;
         this.routineContent = routineContent;
         this.startDay = startDay;
         this.endDay = endDay;
         this.days = days;
+        this.category = category;
     }
 }
