@@ -30,4 +30,8 @@ public class RoutineTodo extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
     private Todo todo;
+
+    public void updateTodo(final Todo todo) {
+        this.todo = todo;
+    }
 }

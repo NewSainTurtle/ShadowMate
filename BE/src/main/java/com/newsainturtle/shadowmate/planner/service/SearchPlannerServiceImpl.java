@@ -9,7 +9,10 @@ import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.repository.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
+import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.RoutineRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -42,6 +45,8 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private final WeeklyRepository weeklyRepository;
     private final WeeklyTodoRepository weeklyTodoRepository;
     private final SocialRepository socialRepository;
+    private final RoutineRepository routineRepository;
+    private final RoutineTodoRepository routineTodoRepository;
     private int totalMinutes;
 
     private Dday getDday(final User user) {
@@ -152,11 +157,16 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                 .build();
     }
 
-    private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
+    private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final User user, final LocalDate date, final boolean permission) {
         final List<WeeklyPlannerDailyResponse> dayList = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
+            DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
             final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
+
+            if (plannerWriter.getId() == user.getId()) {
+                dailyPlanner = makeRoutineTodo(user, String.valueOf(date.plusDays(i)), dailyPlanner);
+            }
+
             if (dailyPlanner == null || !permission) {
                 dayList.add(WeeklyPlannerDailyResponse.builder()
                         .date(localDateToString(date.plusDays(i)))
@@ -204,12 +214,44 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         return timeTables;
     }
 
+    private DailyPlanner makeRoutineTodo(final User user, final String date, DailyPlanner dailyPlanner) {
+        final RoutineTodo[] routineTodoList = routineTodoRepository.findAllByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), date);
+        if (routineTodoList.length > 0) {
+            if (dailyPlanner == null) {
+                dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+                        .dailyPlannerDay(date)
+                        .user(user)
+                        .build());
+            }
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
+            double lastTodoIndex = todoIndexResponse == null ? 100000 : todoIndexResponse.getTodoIndex() + 100000;
+            for (RoutineTodo routineTodo : routineTodoList) {
+                final Todo todo = todoRepository.save(Todo.builder()
+                        .category(routineTodo.getRoutine().getCategory())
+                        .todoContent(routineTodo.getRoutine().getRoutineContent())
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner)
+                        .todoIndex(lastTodoIndex)
+                        .build());
+                routineTodo.updateTodo(todo);
+                lastTodoIndex += 100000;
+            }
+        }
+        return dailyPlanner;
+    }
+
     @Override
+    @Transactional
     public SearchDailyPlannerResponse searchDailyPlanner(final User user, final Long plannerWriterId, final String date) {
         checkValidDate(date);
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
+        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
         final Dday dday = getDday(user);
+
+        if (plannerWriter.getId() == user.getId()) {
+            dailyPlanner = makeRoutineTodo(user, date, dailyPlanner);
+        }
+
         if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {
             return SearchDailyPlannerResponse.builder()
                     .date(date)
@@ -279,6 +321,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     }
 
     @Override
+    @Transactional
     public SearchWeeklyPlannerResponse searchWeeklyPlanner(final User user, final Long plannerWriterId, final String startDate, final String endDate) {
         checkValidDate(startDate);
         checkValidDate(endDate);
@@ -286,12 +329,12 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
         final boolean permission = havePermissionToSearch(user, plannerWriter);
         final List<WeeklyPlannerTodoResponse> weeklyTodos = getWeeklyTodos(plannerWriter, startDate, endDate, permission);
-        final List<WeeklyPlannerDailyResponse> dayList = getDayList(plannerWriter, stringToLocalDate(startDate), permission);
+        final List<WeeklyPlannerDailyResponse> dayList = getDayList(plannerWriter, user, stringToLocalDate(startDate), permission);
         final Dday dday = getDday(user);
 
         return SearchWeeklyPlannerResponse.builder()
                 .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                .dday(dday == null ? null : dday.getDdayDate().toString())
+                .dday(dday == null ? null : dday.getDdayDate())
                 .weeklyTodos(weeklyTodos)
                 .dayList(dayList)
                 .build();
