@@ -1,0 +1,97 @@
+/* DataRangePicker */
+.rdrCalendarWrapper {
+  background-color: transparent;
+}
+
+.rdrMonthAndYearWrapper {
+  height: 4em;
+  padding: 0;
+  background-color: var(--color-gray-1);
+  border-radius: 4px 4px 0px 0px;
+
+  select {
+    color: var(--color-text);
+    padding: 5px 15px;
+    background: none;
+
+    option {
+      background-color: var(--color-gray-1);
+      color: var(--color-text);
+      padding: 5px 30px 5px 10px;
+    }
+
+    option:hover {
+      background-color: var(--color-btn-blue);
+    }
+  }
+}
+
+.rdrMonthPicker,
+.rdrYearPicker {
+  border-radius: 3px;
+}
+
+.rdrNextPrevButton,
+.rdrPprevButton {
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+.rdrPprevButton i {
+  border-width: 4px 6px 4px 4px;
+  border-color: transparent var(--color-text) transparent transparent !important;
+  transform: translate(-3px, 0px);
+}
+
+.rdrNextButton i {
+  margin: 0 0 0 7px;
+  border-width: 4px 4px 4px 6px;
+  border-color: transparent transparent transparent var(--color-text) !important;
+  transform: translate(3px, 0px);
+}
+
+.rdrMonth {
+  padding: 0;
+  width: 27em;
+  background-color: var(--color-gray-1);
+  border-radius: 0px 0px 4px 4px;
+}
+
+.rdrDayPassive > .rdrDayNumber span {
+  color: var(--color-gray-3);
+}
+
+.rdrWeekDay,
+.rdrDayNumber span {
+  color: var(--color-text);
+}
+
+.rdrCalendarWrapper:not(.rdrDateRangeWrapper) {
+  .rdrDayDisabled,
+  .rdrDayStartPreview,
+  .rdrDayEndPreview {
+    background-color: transparent;
+    border: none;
+  }
+
+  .rdrDayHovered .rdrDayNumber::after {
+    border: 1px solid var(--color-text);
+    top: 0px;
+    bottom: 0px;
+  }
+}
+
+.rdrSelected,
+.rdrDayHovered span,
+.rdrDayHovered > span {
+  left: 8px;
+  right: 8px;
+  border: none;
+}
+
+.rdrDayToday .rdrDayNumber span::after {
+  background: var(--color-btn-blue);
+}
