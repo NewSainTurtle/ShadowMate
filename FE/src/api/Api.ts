@@ -7,6 +7,7 @@ export const authApi = {
   login: (data: { email: string; password: string }) => Axios.post(api.auth.login(), data),
   autoLogin: () => Axios.post(api.auth.autoLogin()),
   googleLogin: () => Axios.post(api.auth.googleLogin()),
+  logout: (data: { userId: number; type: string }) => Axios.post(api.auth.logout(), data),
   nickname: (data: { nickname: string }) => Axios.post(api.auth.nickname(), data),
   deleteNickname: (data: { nickname: string }) => Axios.delete(api.auth.nickname(), { data }),
   emailAuthentication: (data: { email: string }) => Axios.post(api.auth.emailAuthentication(), data),
