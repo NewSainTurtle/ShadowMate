@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoutineRepository extends JpaRepository<Routine, Long> {
     Routine[] findAllByUser(final User user);
+    Routine findByIdAndUser(final Long id, final User user);
+    void deleteByIdAndUser(final Long id, final User user);
 }

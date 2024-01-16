@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -77,6 +79,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
@@ -95,6 +98,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(category)
@@ -102,6 +106,7 @@ class TodoRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when

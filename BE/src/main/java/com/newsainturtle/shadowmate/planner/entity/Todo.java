@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuperBuilder
 @Entity
@@ -36,7 +38,14 @@ public class Todo extends CommonEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "todo", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TimeTable> timeTables = new ArrayList<>();
+
     public void updateTodoIndex(final Double todoIndex) {
         this.todoIndex = todoIndex;
+    }
+
+    public void clearTimeTables() {
+        this.timeTables = new ArrayList<>();
     }
 }

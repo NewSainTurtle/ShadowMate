@@ -14,6 +14,8 @@ public enum PlannerSettingErrorResult implements BaseErrorResult {
     INVALID_DDAY(HttpStatus.BAD_REQUEST, "디데이 ID가 유효하지 않습니다."),
     INVALID_DATE(HttpStatus.BAD_REQUEST, "루틴 시작 날짜, 종료 날짜가 올바르지 않습니다."),
     INVALID_ROUTINE_DAY(HttpStatus.BAD_REQUEST, "루틴 요일값이 올바르지 않습니다."),
+    INVALID_ROUTINE(HttpStatus.BAD_REQUEST, "루틴 ID가 유효하지 않습니다."),
+    INVALID_ORDER(HttpStatus.BAD_REQUEST, "order 값이 올바르지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;

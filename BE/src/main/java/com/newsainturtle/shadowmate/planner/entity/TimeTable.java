@@ -27,4 +27,14 @@ public class TimeTable extends CommonEntity {
     @JoinColumn(name = "todo_id")
     private Todo todo;
 
+    public void setTodo(Todo todo) {
+        if (this.todo != null) {
+            this.todo.getTimeTables().remove(this);
+        }
+
+        this.todo = todo;
+        if (todo != null) {
+            todo.getTimeTables().add(this);
+        }
+    }
 }

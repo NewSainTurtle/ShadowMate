@@ -24,7 +24,7 @@ public class RoutineTodo extends CommonEntity {
     private String dailyPlannerDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "routine_id", nullable = false)
+    @JoinColumn(name = "routine_id")
     private Routine routine;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,5 +33,16 @@ public class RoutineTodo extends CommonEntity {
 
     public void updateTodo(final Todo todo) {
         this.todo = todo;
+    }
+
+    public void setRoutine(Routine routine) {
+        if (this.routine != null) {
+            this.routine.getRoutineTodos().remove(this);
+        }
+
+        this.routine = routine;
+        if (routine != null) {
+            routine.getRoutineTodos().add(this);
+        }
     }
 }

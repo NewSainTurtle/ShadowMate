@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -51,6 +53,8 @@ class RoutineRepositoryTest {
                 .routineContent(routineContent)
                 .category(null)
                 .user(user)
+                .routineDays(new ArrayList<>())
+                .routineTodos(new ArrayList<>())
                 .build();
 
         //when
@@ -64,7 +68,7 @@ class RoutineRepositoryTest {
     }
 
     @Nested
-    class 루틴목록조회{
+    class 루틴목록조회 {
         @Test
         void 루틴없음() {
             //given
@@ -85,6 +89,8 @@ class RoutineRepositoryTest {
                     .routineContent(routineContent)
                     .category(null)
                     .user(user)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
                     .build());
             routineRepository.save(Routine.builder()
                     .startDay(startDay)
@@ -92,6 +98,8 @@ class RoutineRepositoryTest {
                     .routineContent(routineContent)
                     .category(null)
                     .user(user)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
                     .build());
 
             //when
@@ -100,6 +108,61 @@ class RoutineRepositoryTest {
             //then
             assertThat(findRoutine).isNotNull().hasSize(2);
         }
+    }
+
+    @Nested
+    class 루틴조회 {
+        @Test
+        void 루틴없음() {
+            //given
+
+            //when
+            final Routine findRoutine = routineRepository.findByIdAndUser(0L, user);
+
+            //then
+            assertThat(findRoutine).isNull();
+        }
+
+        @Test
+        void 루틴있음() {
+            //given
+            final Routine routine = routineRepository.save(Routine.builder()
+                    .startDay(startDay)
+                    .endDay(endDay)
+                    .routineContent(routineContent)
+                    .category(null)
+                    .user(user)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
+                    .build());
+
+            //when
+            final Routine findRoutine = routineRepository.findByIdAndUser(routine.getId(), user);
+
+            //then
+            assertThat(findRoutine).isNotNull().isEqualTo(routine);
+        }
+    }
+
+    @Test
+    void 루틴삭제() {
+        //given
+        final Routine routine = routineRepository.save(Routine.builder()
+                .startDay(startDay)
+                .endDay(endDay)
+                .routineContent(routineContent)
+                .category(null)
+                .user(user)
+                .routineDays(new ArrayList<>())
+                .routineTodos(new ArrayList<>())
+                .build());
+
+        //when
+        routineRepository.deleteByIdAndUser(routine.getId(), user);
+        final Routine findRoutine = routineRepository.findByIdAndUser(routine.getId(), user);
+
+        //then
+        assertThat(findRoutine).isNull();
     }
 
 }

@@ -5,8 +5,12 @@ import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
+import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.Todo;
+import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
@@ -45,6 +49,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     private final RoutineRepository routineRepository;
     private final RoutineDayRepository routineDayRepository;
     private final RoutineTodoRepository routineTodoRepository;
+    private final TimeTableRepository timeTableRepository;
 
     private CategoryColor getCategoryColor(final Long categoryColorId) {
         final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
@@ -85,18 +90,18 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
 
             LocalDate target = startDate.plusDays(plusCount);
             while (Period.between(target, endDate).getDays() >= 0) {
-                routineTodoRepository.save(RoutineTodo.builder()
+                final RoutineTodo routineTodo = routineTodoRepository.save(RoutineTodo.builder()
                         .day(requestDay)
                         .dailyPlannerDay(localDateToString(target))
-                        .routine(routine)
                         .build());
+                routineTodo.setRoutine(routine);
                 target = target.plusDays(7);
             }
 
-            routineDayRepository.save(RoutineDay.builder()
-                    .routine(routine)
+            final RoutineDay routineDay = routineDayRepository.save(RoutineDay.builder()
                     .day(requestDay)
                     .build());
+            routineDay.setRoutine(routine);
         }
     }
 
@@ -117,6 +122,54 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
             return 7;
         }
         throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY);
+    }
+
+    private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
+        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
+        if (dailyPlanner == null) {
+            dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+                    .dailyPlannerDay(date)
+                    .user(user)
+                    .build());
+        }
+        return dailyPlanner;
+    }
+
+    private void addTodo(final User user, final Routine routine, final boolean onlyPastAndToday, final String today) {
+        RoutineTodo[] routineTodoList;
+        if (onlyPastAndToday) {
+            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(routine, today);
+        } else {
+            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNull(routine);
+        }
+
+        for (RoutineTodo routineTodo : routineTodoList) {
+            final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, routineTodo.getDailyPlannerDay());
+            final TodoIndexResponse lastTodoIndex = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
+            todoRepository.save(Todo.builder()
+                    .category(routineTodo.getRoutine().getCategory())
+                    .todoContent(routineTodo.getRoutine().getRoutineContent())
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(lastTodoIndex == null ? 100000 : lastTodoIndex.getTodoIndex() + 100000)
+                    .timeTables(new ArrayList<>())
+                    .build());
+        }
+    }
+
+    private void removeTodo(final Routine routine, final boolean onlyFuture, final String today) {
+        RoutineTodo[] routineTodoList;
+        if (onlyFuture) {
+            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(routine, today);
+        } else {
+            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNotNull(routine);
+        }
+
+        for (RoutineTodo routineTodo : routineTodoList) {
+            final long todoId = routineTodo.getTodo().getId();
+            routineTodo.updateTodo(null);
+            todoRepository.deleteById(todoId);
+        }
     }
 
     @Override
@@ -262,6 +315,8 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
                 .routineContent(addRoutineRequest.getRoutineContent())
                 .startDay(addRoutineRequest.getStartDay())
                 .endDay(addRoutineRequest.getEndDay())
+                .routineDays(new ArrayList<>())
+                .routineTodos(new ArrayList<>())
                 .build());
         addRoutineTodo(routine, stringToLocalDate(addRoutineRequest.getStartDay()), stringToLocalDate(addRoutineRequest.getEndDay()), addRoutineRequest.getDays());
         return AddRoutineResponse.builder()
@@ -289,4 +344,27 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         }
         return GetRoutineListResponse.builder().routineList(routines).build();
     }
+
+    @Override
+    @Transactional
+    public void removeRoutine(final User user, final RemoveRoutineRequest removeRoutineRequest) {
+        final Routine routine = routineRepository.findByIdAndUser(removeRoutineRequest.getRoutineId(), user);
+        if (routine == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE);
+        }
+
+        final String today = String.valueOf(LocalDate.now());
+        if (removeRoutineRequest.getOrder().equals(1)) {
+            removeTodo(routine, false, today);
+        } else if (removeRoutineRequest.getOrder().equals(2)) {
+            addTodo(user, routine, true, today);
+            removeTodo(routine, true, today);
+        } else if (removeRoutineRequest.getOrder().equals(3)) {
+            addTodo(user, routine, false, today);
+        } else {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER);
+        }
+        routineRepository.deleteByIdAndUser(routine.getId(), user);
+    }
+
 }

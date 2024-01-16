@@ -19,7 +19,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +65,7 @@ class TimeTableRepositoryTest {
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
     }
 
@@ -76,8 +77,9 @@ class TimeTableRepositoryTest {
         final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
                 .startTime(startTime)
                 .endTime(endTime)
-                .todo(todo)
                 .build());
+        timeTable.setTodo(todo);
+
         //when
         final Optional<TimeTable> findTimeTable = timeTableRepository.findById(timeTable.getId());
 
@@ -90,6 +92,27 @@ class TimeTableRepositoryTest {
     }
 
     @Test
+    void 타임테이블조회() {
+        //given
+        final LocalDateTime startTime = LocalDateTime.parse("2023-09-25 16:10", formatter);
+        final LocalDateTime endTime = LocalDateTime.parse("2023-09-25 18:30", formatter);
+        final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .build());
+        timeTable.setTodo(todo);
+
+        //when
+        final TimeTable findTimeTable = timeTableRepository.findByIdAndTodoId(timeTable.getId(), todo.getId());
+
+        //then
+        assertThat(findTimeTable).isNotNull();
+        assertThat(findTimeTable.getStartTime()).isEqualTo(startTime);
+        assertThat(findTimeTable.getEndTime()).isEqualTo(endTime);
+        assertThat(findTimeTable.getTodo()).isEqualTo(todo);
+    }
+
+    @Test
     void 타임테이블삭제() {
         //given
         final LocalDateTime startTime = LocalDateTime.parse("2023-09-25 16:10", formatter);
@@ -97,12 +120,11 @@ class TimeTableRepositoryTest {
         final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
                 .startTime(startTime)
                 .endTime(endTime)
-                .todo(todo)
                 .build());
 
         //when
-        final Todo findTodo = todoRepository.findByIdAndDailyPlanner(todo.getId(), dailyPlanner);
-        timeTableRepository.deleteByIdAndTodoId(timeTable.getId(), findTodo.getId());
+        timeTable.setTodo(null);
+        timeTableRepository.deleteById(timeTable.getId());
         final Optional<TimeTable> findTimeTable = timeTableRepository.findById(timeTable.getId());
 
         //then
@@ -110,41 +132,9 @@ class TimeTableRepositoryTest {
     }
 
     @Test
-    void 타임테이블목록조회_없는경우() {
-        //given
-
-        //when
-        final List<TimeTable> findTimeTables = timeTableRepository.findAllByTodo(todo);
-
-        //then
-        assertThat(findTimeTables).isNotNull().hasSize(0);
-    }
-
-    @Test
-    void 타임테이블목록조회() {
-        //given
-        timeTableRepository.save(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-09-25 16:10", formatter))
-                .endTime(LocalDateTime.parse("2023-09-25 18:30", formatter))
-                .todo(todo)
-                .build());
-        timeTableRepository.save(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-09-25 20:10", formatter))
-                .endTime(LocalDateTime.parse("2023-09-25 22:30", formatter))
-                .todo(todo)
-                .build());
-
-        //when
-        final List<TimeTable> findTimeTables = timeTableRepository.findAllByTodo(todo);
-
-        //then
-        assertThat(findTimeTables).isNotNull().hasSize(2);
-    }
-
-    @Test
     void 타임테이블삭제_할일삭제시한번에삭제() {
         //given
-        timeTableRepository.save(TimeTable.builder()
+        final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
                 .startTime(LocalDateTime.parse("2023-09-25 16:10", formatter))
                 .endTime(LocalDateTime.parse("2023-09-25 18:30", formatter))
                 .todo(todo)
@@ -157,10 +147,12 @@ class TimeTableRepositoryTest {
 
         //when
         timeTableRepository.deleteAllByTodoId(todo.getId());
-        final List<TimeTable> findTimeTables = timeTableRepository.findAllByTodo(todo);
+        todo.clearTimeTables();
+
+        final Optional<TimeTable> findTimeTables = timeTableRepository.findById(timeTable.getId());
 
         //then
-        assertThat(findTimeTables).isNotNull().hasSize(0);
+        assertThat(findTimeTables.isPresent()).isFalse();
     }
 
 }

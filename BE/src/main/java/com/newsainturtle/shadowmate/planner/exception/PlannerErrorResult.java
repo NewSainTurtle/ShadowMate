@@ -25,6 +25,7 @@ public enum PlannerErrorResult implements BaseErrorResult {
     FAILED_SELF_VISITOR_BOOK_WRITING(HttpStatus.BAD_REQUEST, "자신의 방명록에 글을 작성할 수 없습니다."),
     INVALID_VISITOR_BOOK(HttpStatus.BAD_REQUEST, "방명록이 유효하지 않습니다."),
     NO_PERMISSION_TO_REMOVE_VISITOR_BOOK(HttpStatus.FORBIDDEN, "해당 방명록을 삭제할 수 있는 권한이 없습니다."),
+    INVALID_TIMETABLE(HttpStatus.BAD_REQUEST, "타임테이블이 유효하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
