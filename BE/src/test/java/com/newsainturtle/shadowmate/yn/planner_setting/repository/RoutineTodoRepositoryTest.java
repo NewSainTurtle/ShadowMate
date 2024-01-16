@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -64,6 +66,8 @@ class RoutineTodoRepositoryTest {
                 .routineContent(routineContent)
                 .category(null)
                 .user(user)
+                .routineDays(new ArrayList<>())
+                .routineTodos(new ArrayList<>())
                 .build());
         dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
                 .dailyPlannerDay(startDay)
@@ -77,7 +81,6 @@ class RoutineTodoRepositoryTest {
         void 할일없음() {
             //given
             final RoutineTodo routineTodo = RoutineTodo.builder()
-                    .routine(routine)
                     .todo(null)
                     .dailyPlannerDay(startDay)
                     .day("월")
@@ -85,6 +88,7 @@ class RoutineTodoRepositoryTest {
 
             //when
             final RoutineTodo saveRoutineTodo = routineTodoRepository.save(routineTodo);
+            saveRoutineTodo.setRoutine(routine);
 
             //then
             assertThat(saveRoutineTodo).isNotNull();
@@ -103,9 +107,9 @@ class RoutineTodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build());
             final RoutineTodo routineTodo = RoutineTodo.builder()
-                    .routine(routine)
                     .todo(todo)
                     .dailyPlannerDay(startDay)
                     .day("월")
@@ -113,6 +117,7 @@ class RoutineTodoRepositoryTest {
 
             //when
             final RoutineTodo saveRoutineTodo = routineTodoRepository.save(routineTodo);
+            saveRoutineTodo.setRoutine(routine);
 
             //then
             assertThat(saveRoutineTodo).isNotNull();
@@ -134,13 +139,14 @@ class RoutineTodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build());
-            routineTodoRepository.save(RoutineTodo.builder()
-                    .routine(routine)
+            final RoutineTodo routineTodo = routineTodoRepository.save(RoutineTodo.builder()
                     .todo(todo)
                     .dailyPlannerDay("2023-12-25")
                     .day("월")
                     .build());
+            routineTodo.setRoutine(routine);
 
             //when
             final RoutineTodo[] routineTodos = routineTodoRepository.findAllByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), "2023-12-25");
@@ -152,12 +158,12 @@ class RoutineTodoRepositoryTest {
         @Test
         void 데이터있음() {
             //given
-            routineTodoRepository.save(RoutineTodo.builder()
-                    .routine(routine)
+            final RoutineTodo routineTodo = routineTodoRepository.save(RoutineTodo.builder()
                     .todo(null)
                     .dailyPlannerDay("2023-12-25")
                     .day("월")
                     .build());
+            routineTodo.setRoutine(routine);
 
             //when
             final RoutineTodo[] routineTodos = routineTodoRepository.findAllByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), "2023-12-25");
@@ -178,13 +184,14 @@ class RoutineTodoRepositoryTest {
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
                     .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build());
-            routineTodoRepository.save(RoutineTodo.builder()
-                    .routine(routine)
+            final RoutineTodo routineTodo = routineTodoRepository.save(RoutineTodo.builder()
                     .todo(todo)
                     .dailyPlannerDay("2023-12-25")
                     .day("월")
                     .build());
+            routineTodo.setRoutine(routine);
 
             //when
             final int count = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), "2023-12-25");
@@ -196,12 +203,12 @@ class RoutineTodoRepositoryTest {
         @Test
         void 데이터있음() {
             //given
-            routineTodoRepository.save(RoutineTodo.builder()
-                    .routine(routine)
+            final RoutineTodo routineTodo = routineTodoRepository.save(RoutineTodo.builder()
                     .todo(null)
                     .dailyPlannerDay("2023-12-25")
                     .day("월")
                     .build());
+            routineTodo.setRoutine(routine);
 
             //when
             final int count = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), "2023-12-25");

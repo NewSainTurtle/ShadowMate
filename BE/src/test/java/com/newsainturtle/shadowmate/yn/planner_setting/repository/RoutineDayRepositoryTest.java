@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -51,6 +53,8 @@ class RoutineDayRepositoryTest {
                 .routineContent(routineContent)
                 .category(null)
                 .user(user)
+                .routineDays(new ArrayList<>())
+                .routineTodos(new ArrayList<>())
                 .build());
     }
 
@@ -59,11 +63,11 @@ class RoutineDayRepositoryTest {
         //given
         final RoutineDay routineDay = RoutineDay.builder()
                 .day("월")
-                .routine(routine)
                 .build();
 
         //when
         final RoutineDay saveRoutineDay = routineDayRepository.save(routineDay);
+        saveRoutineDay.setRoutine(routine);
 
         //then
         assertThat(saveRoutineDay).isNotNull();
@@ -74,14 +78,14 @@ class RoutineDayRepositoryTest {
     @Test
     void 루틴요일조회() {
         //given
-        routineDayRepository.save(RoutineDay.builder()
+        final RoutineDay routineDay1 = routineDayRepository.save(RoutineDay.builder()
                 .day("월")
-                .routine(routine)
                 .build());
-        routineDayRepository.save(RoutineDay.builder()
+        routineDay1.setRoutine(routine);
+        final RoutineDay routineDay2 = routineDayRepository.save(RoutineDay.builder()
                 .day("수")
-                .routine(routine)
                 .build());
+        routineDay2.setRoutine(routine);
 
         //when
         final RoutineDay[] findRoutineDay = routineDayRepository.findAllByRoutine(routine);
