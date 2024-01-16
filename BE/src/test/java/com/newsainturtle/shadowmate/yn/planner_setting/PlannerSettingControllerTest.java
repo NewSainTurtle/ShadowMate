@@ -1108,6 +1108,37 @@ class PlannerSettingControllerTest {
                 resultActions.andExpect(status().isOk());
             }
         }
+
+        @Nested
+        class 루틴조회 {
+
+            @Test
+            void 실패_없는사용자() throws Exception {
+                //given
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.get(url, userId)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            void 성공() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.get(url, userId)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+        }
     }
 
 }

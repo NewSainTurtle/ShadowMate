@@ -16,4 +16,5 @@ public interface PlannerSettingService {
     void removeDday(final User user, final RemoveDdayRequest removeDdayRequest);
     void updateDday(final User user, final UpdateDdayRequest updateDdayRequest);
     AddRoutineResponse addRoutine(final User user, final AddRoutineRequest addRoutineRequest);
+    GetRoutineListResponse getRoutineList(final User user);
 }
