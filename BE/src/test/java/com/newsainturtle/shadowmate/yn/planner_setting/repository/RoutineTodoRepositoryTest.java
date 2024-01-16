@@ -197,7 +197,7 @@ class RoutineTodoRepositoryTest {
             final int count = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), "2023-12-25");
 
             //then
-            assertThat(count).isEqualTo(0);
+            assertThat(count).isZero();
         }
 
         @Test
@@ -215,6 +215,225 @@ class RoutineTodoRepositoryTest {
 
             //then
             assertThat(count).isEqualTo(1);
+        }
+    }
+
+    @Nested
+    class 루틴_할일_목록조회 {
+        @Test
+        void 루틴_할일_등록안된_목록조회_데이터없음() {
+            //given
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNull(routine);
+
+            //then
+            assertThat(routineTodos).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 루틴_할일_등록안된_목록조회_데이터있음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-27")
+                    .day("수")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-26")
+                    .day("화")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNull(routine);
+
+            //then
+            assertThat(routineTodos).isNotNull().hasSize(2);
+        }
+
+        @Test
+        void 루틴_할일_등록안된_목록조회_과거와오늘_데이터없음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-26")
+                    .day("화")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(routine, "2023-12-26");
+
+            //then
+            assertThat(routineTodos).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 루틴_할일_등록안된_목록조회_과거와오늘_데이터있음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-27")
+                    .day("수")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-26")
+                    .day("화")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(routine, "2023-12-26");
+
+            //then
+            assertThat(routineTodos).isNotNull().hasSize(1);
+        }
+
+        @Test
+        void 루틴_할일_등록된_목록조회_데이터없음() {
+            //given
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-27")
+                    .day("수")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNotNull(routine);
+
+            //then
+            assertThat(routineTodos).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 루틴_할일_등록된_목록조회_데이터있음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-27")
+                    .day("수")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-26")
+                    .day("화")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNotNull(routine);
+
+            //then
+            assertThat(routineTodos).isNotNull().hasSize(1);
+        }
+
+        @Test
+        void 루틴_할일_등록된_목록조회_미래_데이터없음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(routine, "2023-12-25");
+
+            //then
+            assertThat(routineTodos).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 루틴_할일_등록된_목록조회_미래_데이터있음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(null)
+                    .dailyPlannerDay("2023-12-27")
+                    .day("수")
+                    .build()).setRoutine(routine);
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-26")
+                    .day("화")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo[] routineTodos = routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(routine, "2023-12-25");
+
+            //then
+            assertThat(routineTodos).isNotNull().hasSize(1);
         }
     }
 
