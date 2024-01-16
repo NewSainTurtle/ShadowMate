@@ -4,7 +4,8 @@ import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
 import MyPageList from "@components/mypage/MyPageList";
 import MyPageDetail from "@components/mypage/MyPageDetail";
-import MyPageCategory from "@components/mypage/details/diary/Category";
+import Category from "@components/mypage/details/diary/Category";
+import Dday from "@components/mypage/details/diary/Dday";
 import CategoryList from "@components/mypage/list/CategoryList";
 import MyPageDday from "./details/diary/Dday";
 import DdayList from "@components/mypage/list/DdayList";
@@ -210,8 +211,8 @@ const MyPageFrame = ({ title }: Props) => {
         <>
           {
             {
-              카테고리: categoryList.length != 0 && <MyPageCategory />,
-              디데이: ddayList.length != 0 && <MyPageDday />,
+              카테고리: categoryList.length != 0 && <Category />,
+              디데이: ddayList.length != 0 && <Dday />,
             }[title]
           }
         </>

@@ -12,7 +12,7 @@ interface Props {
   idx: number;
 }
 
-const MyPageDdayItem = ({ item, idx }: Props) => {
+const DdayItem = ({ item, idx }: Props) => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectDdayClick);
   const clicked = click === idx ? "--clicked" : "";
@@ -54,4 +54,4 @@ const MyPageDdayItem = ({ item, idx }: Props) => {
   );
 };
 
-export default MyPageDdayItem;
+export default DdayItem;
