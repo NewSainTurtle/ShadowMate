@@ -75,9 +75,10 @@ const Routine = () => {
           <Text>카테고리</Text>
           <Input
             name="routineCategory"
-            value={category.categoryTitle}
+            value={category?.categoryId === 0 ? "카테고리 없음" : category.categoryTitle}
             onClick={handleOpen}
             style={{ caretColor: "transparent" }}
+            placeholder="루틴의 카테고리를 선택하세요."
           />
         </div>
 
