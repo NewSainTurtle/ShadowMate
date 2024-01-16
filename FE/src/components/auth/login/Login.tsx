@@ -27,7 +27,6 @@ const Login = () => {
     email: true,
     password: true,
   });
-  const [autoLogin, setAutoLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
@@ -63,19 +62,16 @@ const Login = () => {
         const accessToken = res.headers["authorization"];
         const userId = res.headers["id"];
         const type = res.headers["type"];
-        const auto = res.headers["Auto-Login"] ?? ""; // 자동로그인 아닐 때는 header에 정보 없음.
-        dispatch(setLogin({ accessToken, userId, type, autoLogin: auto }));
-        // if (auto && auto === "true") {
-        //   localStorage.clear();
-        //   localStorage.setItem("accessToken", accessToken);
-        //   localStorage.setItem("id", userId);
-        // }
+        dispatch(setLogin({ accessToken, userId, type }));
+
+        // 자동로그인 auto-login 코드 저장
+        const auto = res.headers["auto-login"];
+        if (auto) localStorage.setItem("AL", auto);
 
         userApi.getProfiles(userId).then((res) => {
           dispatch(setUserInfo(res.data.data));
           navigator("/month");
         });
-
         dispatch(setPopupOpen());
       })
       .catch((err) => {
@@ -85,6 +81,7 @@ const Login = () => {
   };
 
   useEffect(() => {
+    // 소셜 로그인
     const token = getCookie("token");
     const id = getCookie("userId");
     const type = getCookie("type");

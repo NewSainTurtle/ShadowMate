@@ -1,7 +1,7 @@
 import baseAxios from "axios";
 import { store } from "@hooks/configStore";
 import { authApi } from "@api/Api";
-import { setAccessToken, setLogout } from "@store/authSlice";
+import { setAccessToken, setAutoLogin } from "@store/authSlice";
 import { setModalOpen } from "@store/modalSlice";
 import { setAlertOpen } from "@store/alertSlice";
 
@@ -17,7 +17,15 @@ const Axios = baseAxios.create({
 Axios.interceptors.request.use(
   (config) => {
     const accessToken = store.getState().auth.accessToken;
-    if (accessToken) config.headers.Authorization = accessToken ? `Bearer ${accessToken}` : "";
+    const isAutoLogin = store.getState().auth.autoLogin;
+    if (accessToken) config.headers.Authorization = accessToken ?? "";
+    if (isAutoLogin) {
+      config.headers["Auto-Login"] = "true";
+      store.dispatch(setAutoLogin(false));
+    }
+
+    const autoLoginKey = localStorage.getItem("AL");
+    if (autoLoginKey) config.headers["Auto-Login"] = autoLoginKey;
     return config;
   },
   (error) => {
