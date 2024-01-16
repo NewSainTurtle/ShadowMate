@@ -92,6 +92,27 @@ class TimeTableRepositoryTest {
     }
 
     @Test
+    void 타임테이블조회() {
+        //given
+        final LocalDateTime startTime = LocalDateTime.parse("2023-09-25 16:10", formatter);
+        final LocalDateTime endTime = LocalDateTime.parse("2023-09-25 18:30", formatter);
+        final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .build());
+        timeTable.setTodo(todo);
+
+        //when
+        final TimeTable findTimeTable = timeTableRepository.findByIdAndTodoId(timeTable.getId(), todo.getId());
+
+        //then
+        assertThat(findTimeTable).isNotNull();
+        assertThat(findTimeTable.getStartTime()).isEqualTo(startTime);
+        assertThat(findTimeTable.getEndTime()).isEqualTo(endTime);
+        assertThat(findTimeTable.getTodo()).isEqualTo(todo);
+    }
+
+    @Test
     void 타임테이블삭제() {
         //given
         final LocalDateTime startTime = LocalDateTime.parse("2023-09-25 16:10", formatter);
