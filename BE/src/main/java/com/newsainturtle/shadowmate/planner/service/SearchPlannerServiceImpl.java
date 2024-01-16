@@ -116,16 +116,16 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
 
         if (havePermissionToSearch(user, plannerWriter)) {
             final int lastDay = YearMonth.from(date).lengthOfMonth();
-
             for (int i = 0; i < lastDay; i++) {
                 final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
                 int todoCount = 0;
                 int dayStatus = 0;
+                final int routineCount = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(plannerWriter.getId(), String.valueOf(date.plusDays(i)));
                 if (dailyPlanner != null) {
                     dailyPlannerIdList.add(dailyPlanner.getId());
-                    final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner);
+                    final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner) + routineCount;
                     if (totalCount > 0) {
-                        todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE);
+                        todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE) + routineCount;
                         todoTotal += totalCount;
                         todoIncomplete += todoCount;
                         final double percent = ((totalCount - todoCount) / (double) totalCount) * 100;
@@ -137,7 +137,11 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                             dayStatus = 1;
                         }
                     }
+                } else if (routineCount > 0) {
+                    todoCount = routineCount;
+                    dayStatus = 1;
                 }
+
                 dayList.add(
                         CalendarDayResponse.builder()
                                 .date(localDateToString(date.plusDays(i)))

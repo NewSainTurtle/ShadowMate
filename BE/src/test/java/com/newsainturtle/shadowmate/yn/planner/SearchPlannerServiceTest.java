@@ -546,6 +546,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+            doReturn(0).when(routineTodoRepository).countByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(0).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
 
@@ -592,6 +593,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             //given
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+            doReturn(0).when(routineTodoRepository).countByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(6).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
             doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
@@ -618,6 +620,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             //given
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+            doReturn(0).when(routineTodoRepository).countByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(10).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(2).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
             doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
@@ -644,6 +647,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             //given
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+            doReturn(0).when(routineTodoRepository).countByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(2).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(0).when(todoRepository).countByDailyPlannerAndTodoStatusNot(any(DailyPlanner.class), any(TodoStatus.class));
             doReturn(0L).when(dailyPlannerLikeRepository).countByDailyPlannerIdIn(any(List.class));
