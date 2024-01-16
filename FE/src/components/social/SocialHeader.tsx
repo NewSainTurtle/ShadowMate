@@ -38,6 +38,7 @@ const SocialHeader = () => {
     const endDate = dayjs(e.range1.endDate).format("YYYY-MM-DD");
     dispatch(setSocialDateRange({ startDate, endDate }));
   };
+  const onClickClearDate = () => dispatch(setSocialDateRange({ startDate: "", endDate: "" }));
 
   useEffect(() => {
     dispatch(setSocialClear());
@@ -67,6 +68,18 @@ const SocialHeader = () => {
     return "";
   })();
 
+  const showDateRange = (() => {
+    let startDate, endDate;
+    if (dateRange.startDate) {
+      startDate = dayjs(dateRange.startDate).toDate();
+      endDate = dayjs(dateRange.endDate).toDate();
+    } else {
+      startDate = dayjs().add(-7, "day").toDate();
+      endDate = dayjs().toDate();
+    }
+    return { startDate, endDate };
+  })();
+
   return (
     <>
       <div className={styles["item-header__search"]}>
@@ -80,15 +93,19 @@ const SocialHeader = () => {
         />
         {openCalendar && (
           <div ref={calendarRef} className={styles["date__picker"]}>
-            <DateRangePicker
-              locale={ko}
-              ranges={[{ startDate: dayjs(dateRange.startDate).toDate(), endDate: dayjs(dateRange.endDate).toDate() }]}
-              onChange={onChangeDate}
-              shownDate={new Date()}
-              showDateDisplay
-              dateDisplayFormat={"yyyy-MM-dd"}
-              fixedHeight
-            />
+            <div>
+              <DateRangePicker
+                locale={ko}
+                ranges={[showDateRange]}
+                onChange={onChangeDate}
+                showDateDisplay
+                dateDisplayFormat={"yyyy-MM-dd"}
+                fixedHeight
+              />
+              <div className={styles["date__picker__button"]} onClick={onClickClearDate}>
+                <Text types="small">clear</Text>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -60,11 +60,18 @@ $color-gray_5: var(--color-gray-5);
         top: 2.5em;
         left: calc(10em + 5em);
         z-index: 3;
+        background-color: $color-gray_1;
 
-        > svg,
-        span,
-        button {
-          color: $color-text;
+        > div {
+          position: relative;
+        }
+
+        &__button {
+          position: absolute;
+          left: 1em;
+          bottom: 1em;
+          color: $color-gray_5;
+          cursor: pointer;
         }
       }
     }
