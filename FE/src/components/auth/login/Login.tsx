@@ -6,8 +6,8 @@ import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
-import { useAppDispatch } from "@hooks/hook";
-import { setIsGoogle, setLogin, setUserInfo } from "@store/authSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { setLogin, selectAutoLogin, setAutoLogin, setIsGoogle, setUserInfo } from "@store/authSlice";
 import { setPopupOpen } from "@store/modalSlice";
 
 const getCookie = (name: string) => {
@@ -33,6 +33,7 @@ const Login = () => {
     password: "",
   });
   const { email, password } = loginInfo;
+  const autoLogin = useAppSelector(selectAutoLogin);
 
   const handleGoogleLogin = () => {
     window.location.href = process.env.REACT_APP_API_URL + "/api/oauth/google";
@@ -44,6 +45,10 @@ const Login = () => {
       ...loginInfo,
       [name]: value,
     });
+  };
+
+  const handleAutoLogin = () => {
+    dispatch(setAutoLogin(!autoLogin));
   };
 
   const handleLogin = () => {
@@ -124,13 +129,13 @@ const Login = () => {
           />
         </div>
         <div className={styles.login_toolbox}>
-          {/* <div className={styles.login_checkbox}>
-            <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={() => setAutoLogin(!autoLogin)} />
+          <div className={styles.login_checkbox}>
+            <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={handleAutoLogin} />
             <label htmlFor="auto">
               <Text types="small">자동로그인</Text>
             </label>
           </div>
-          <Text types="small">비밀번호 찾기</Text> */}
+          {/* <Text types="small">비밀번호 찾기</Text> */}
         </div>
         <div className={styles.login_warning} style={{ visibility: showAlert ? "visible" : "hidden" }}>
           <Text types="small">아이디 또는 비밀번호를 잘못 입력했습니다.</Text>
