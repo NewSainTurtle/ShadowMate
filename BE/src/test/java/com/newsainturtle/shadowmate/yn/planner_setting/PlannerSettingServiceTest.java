@@ -5,6 +5,9 @@ import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.Todo;
+import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
@@ -518,6 +521,8 @@ class PlannerSettingServiceTest extends DateCommonService {
                 .endDay("2024-01-09")
                 .user(user)
                 .category(null)
+                .routineDays(new ArrayList<>())
+                .routineTodos(new ArrayList<>())
                 .build();
 
         @Nested
@@ -574,7 +579,19 @@ class PlannerSettingServiceTest extends DateCommonService {
                         .categoryId(0L)
                         .days(Arrays.asList(days))
                         .build();
+                final RoutineTodo routineTodo = RoutineTodo.builder()
+                        .id(1L)
+                        .day("월")
+                        .dailyPlannerDay("2023-12-25")
+                        .todo(null)
+                        .build();
+                final RoutineDay routineDay = RoutineDay.builder()
+                        .id(1L)
+                        .day("월")
+                        .build();
                 doReturn(routine).when(routineRepository).save(any(Routine.class));
+                doReturn(routineTodo).when(routineTodoRepository).save(any(RoutineTodo.class));
+                doReturn(routineDay).when(routineDayRepository).save(any(RoutineDay.class));
 
                 //when
                 final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addRoutine(user, addRoutineRequest));
@@ -593,7 +610,19 @@ class PlannerSettingServiceTest extends DateCommonService {
                         .categoryId(0L)
                         .days(Arrays.asList(days))
                         .build();
+                final RoutineTodo routineTodo = RoutineTodo.builder()
+                        .id(1L)
+                        .day("월")
+                        .dailyPlannerDay("2023-12-25")
+                        .todo(null)
+                        .build();
+                final RoutineDay routineDay = RoutineDay.builder()
+                        .id(1L)
+                        .day("월")
+                        .build();
                 doReturn(routine).when(routineRepository).save(any(Routine.class));
+                doReturn(routineTodo).when(routineTodoRepository).save(any(RoutineTodo.class));
+                doReturn(routineDay).when(routineDayRepository).save(any(RoutineDay.class));
 
                 //when
                 plannerSettingService.addRoutine(user, addRoutineRequest);
@@ -636,6 +665,188 @@ class PlannerSettingServiceTest extends DateCommonService {
             //verify
             verify(routineRepository, times(1)).findAllByUser(any());
             verify(routineDayRepository, times(1)).findAllByRoutine(any(Routine.class));
+        }
+
+        @Nested
+        class 루틴삭제 {
+            final String[] days = new String[]{"월", "수"};
+
+            @Test
+            void 실패_유효하지않은루틴() {
+                //given
+                final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder()
+                        .routineId(0L)
+                        .order(1)
+                        .build();
+                doReturn(null).when(routineRepository).findByIdAndUser(any(Long.class), any());
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.removeRoutine(user, removeRoutineRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_ROUTINE);
+            }
+
+            @Test
+            void 실패_올바르지않은order값() {
+                //given
+                final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder()
+                        .routineId(0L)
+                        .order(4)
+                        .build();
+                doReturn(routine).when(routineRepository).findByIdAndUser(any(Long.class), any());
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.removeRoutine(user, removeRoutineRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_ORDER);
+            }
+
+            @Test
+            void 성공_1() {
+                //given
+                final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder()
+                        .routineId(0L)
+                        .order(1)
+                        .build();
+                final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                        .id(1L)
+                        .dailyPlannerDay("2023-12-25")
+                        .user(user)
+                        .build();
+                final Todo todo = Todo.builder()
+                        .id(1L)
+                        .category(null)
+                        .todoContent(routine.getRoutineContent())
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner)
+                        .todoIndex(100000D)
+                        .build();
+                final RoutineTodo routineTodo = RoutineTodo.builder()
+                        .id(1L)
+                        .day("월")
+                        .dailyPlannerDay("2023-12-25")
+                        .todo(todo)
+                        .build();
+                routineTodo.setRoutine(routine);
+
+                final RoutineTodo[] routineTodoList = new RoutineTodo[]{routineTodo};
+                doReturn(routine).when(routineRepository).findByIdAndUser(any(Long.class), any());
+                doReturn(routineTodoList).when(routineTodoRepository).findAllByRoutineAndTodoIsNotNull(any(Routine.class));
+
+                //when
+                plannerSettingService.removeRoutine(user, removeRoutineRequest);
+
+                //then
+
+                //verify
+                verify(routineRepository, times(1)).findByIdAndUser(any(Long.class), any());
+                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNotNull(any(Routine.class));
+                verify(routineRepository, times(1)).deleteByIdAndUser(any(Long.class), any());
+            }
+
+            @Test
+            void 성공_2() {
+                //given
+                final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder()
+                        .routineId(0L)
+                        .order(2)
+                        .build();
+                final DailyPlanner dailyPlanner1 = DailyPlanner.builder()
+                        .id(1L)
+                        .dailyPlannerDay("2023-12-20")
+                        .user(user)
+                        .build();
+                final Todo todo = Todo.builder()
+                        .id(1L)
+                        .category(null)
+                        .todoContent("수능완성 수학 과목별 10문제")
+                        .todoStatus(TodoStatus.EMPTY)
+                        .dailyPlanner(dailyPlanner1)
+                        .todoIndex(100000D)
+                        .timeTables(new ArrayList<>())
+                        .build();
+                final RoutineTodo routineTodo1 = RoutineTodo.builder()
+                        .id(1L)
+                        .day("수")
+                        .dailyPlannerDay("2023-12-20")
+                        .todo(todo)
+                        .build();
+                routineTodo1.setRoutine(routine);
+                final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
+                        .id(1L)
+                        .dailyPlannerDay("2023-12-25")
+                        .user(user)
+                        .build();
+                final RoutineTodo routineTodo2 = RoutineTodo.builder()
+                        .id(1L)
+                        .day("월")
+                        .dailyPlannerDay("2023-12-25")
+                        .todo(null)
+                        .build();
+                routineTodo2.setRoutine(routine);
+                final RoutineTodo[] routineTodoList1 = new RoutineTodo[]{routineTodo1};
+                final RoutineTodo[] routineTodoList2 = new RoutineTodo[]{routineTodo2};
+
+                doReturn(routine).when(routineRepository).findByIdAndUser(any(Long.class), any());
+                doReturn(routineTodoList1).when(routineTodoRepository).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(any(Routine.class), any(String.class));
+                doReturn(routineTodoList2).when(routineTodoRepository).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(any(Routine.class), any(String.class));
+                doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any(DailyPlanner.class));
+
+                //when
+                plannerSettingService.removeRoutine(user, removeRoutineRequest);
+
+                //then
+
+                //verify
+                verify(routineRepository, times(1)).findByIdAndUser(any(Long.class), any());
+                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(any(Routine.class), any(String.class));
+                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(any(Routine.class), any(String.class));
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
+                verify(todoRepository, times(1)).findTopByDailyPlannerOrderByTodoIndexDesc(any(DailyPlanner.class));
+                verify(routineRepository, times(1)).deleteByIdAndUser(any(Long.class), any());
+            }
+
+            @Test
+            void 성공_3() {
+                //given
+                final RemoveRoutineRequest removeRoutineRequest = RemoveRoutineRequest.builder()
+                        .routineId(0L)
+                        .order(3)
+                        .build();
+                final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                        .id(1L)
+                        .dailyPlannerDay("2023-12-25")
+                        .user(user)
+                        .build();
+                final RoutineTodo routineTodo = RoutineTodo.builder()
+                        .id(1L)
+                        .day("월")
+                        .dailyPlannerDay("2023-12-25")
+                        .todo(null)
+                        .build();
+                routineTodo.setRoutine(routine);
+                final RoutineTodo[] routineTodoList = new RoutineTodo[]{routineTodo};
+
+                doReturn(routine).when(routineRepository).findByIdAndUser(any(Long.class), any());
+                doReturn(routineTodoList).when(routineTodoRepository).findAllByRoutineAndTodoIsNull(any(Routine.class));
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any(DailyPlanner.class));
+
+                //when
+                plannerSettingService.removeRoutine(user, removeRoutineRequest);
+
+                //then
+
+                //verify
+                verify(routineRepository, times(1)).findByIdAndUser(any(Long.class), any());
+                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNull(any(Routine.class));
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
+                verify(todoRepository, times(1)).findTopByDailyPlannerOrderByTodoIndexDesc(any(DailyPlanner.class));
+                verify(routineRepository, times(1)).deleteByIdAndUser(any(Long.class), any());
+            }
         }
     }
 }
