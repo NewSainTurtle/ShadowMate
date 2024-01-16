@@ -7,6 +7,9 @@ import { ProfileConfig } from "@components/common/FriendProfile";
 import { socialApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
+import { SocialConfig, selectSocialDateRange, selectSocialKeyword, selectSocialSort } from "@store/socialSlice";
+import { useDebounce } from "@util/EventControlModule";
+import dayjs from "dayjs";
 
 export interface SocialListType extends ProfileConfig {
   socialId: number;
@@ -15,13 +18,16 @@ export interface SocialListType extends ProfileConfig {
 }
 
 interface Props {
-  sort: "latest" | "popularity";
-  nickname: string;
   scrollRef: RefObject<HTMLDivElement>;
 }
 
-const CardList = ({ sort, nickname, scrollRef }: Props) => {
+const CardList = ({ scrollRef }: Props) => {
   const userId = useAppSelector(selectUserId);
+  const sort: SocialConfig["sort"] = useAppSelector(selectSocialSort);
+  const keyword: string = useAppSelector(selectSocialKeyword);
+  const debounceKeyword = useDebounce(keyword, 400);
+  const dateRange: SocialConfig["dateRange"] = useAppSelector(selectSocialDateRange);
+
   const [list, setList] = useState<SocialListType[]>([]);
   const [load, setLoad] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
@@ -43,7 +49,7 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
     endRef.current = false;
     setPageNumber(1);
     getPost(1);
-  }, [sort, nickname.length]);
+  }, [sort, debounceKeyword.length, dateRange]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(obsHandler);
@@ -68,14 +74,20 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
       setLoad(true);
       try {
         let response: { totalPage: number; socialList: [] };
-        if (nickname.length >= 2)
-          response = (await socialApi.searches(userId, { nickname, sort, pageNumber })).data.data;
-        else response = (await socialApi.getSocial(userId, { sort, pageNumber })).data.data;
+        response = (
+          await socialApi.getSocial(userId, {
+            sort: sort,
+            "page-number": pageNumber,
+            nickname: debounceKeyword,
+            "start-date": dateRange.startDate ? dayjs(dateRange.startDate).format("YYYY-MM-DD") : "",
+            "end-date": dateRange.endDate ? dayjs(dateRange.endDate).format("YYYY-MM-DD") : "",
+          })
+        ).data.data;
 
-        if (pageNumber == response.totalPage) endRef.current = true;
+        if (response.socialList.length <= 6) endRef.current = true;
         if (pageNumber == 1) {
           scrollRef.current?.scrollTo({ left: 0, top: 0 });
-          if (response.totalPage >= 2) setPageNumber(2);
+          setPageNumber(2);
           setList(response.socialList);
         } else setList((prev) => [...prev, ...response.socialList]);
         preventRef.current = true;
@@ -85,7 +97,7 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
         setLoad(false);
       }
     },
-    [pageNumber, sort, nickname.length],
+    [pageNumber, sort, debounceKeyword.length, dateRange],
   );
 
   // 내 공유 플래너 삭제
@@ -104,7 +116,7 @@ const CardList = ({ sort, nickname, scrollRef }: Props) => {
   return (
     <>
       <div className={styles["card-list"]}>
-        {nickname.length >= 2 && list.length == 0 ? (
+        {debounceKeyword.length >= 2 && list.length == 0 ? (
           <div className={styles["card-list--none"]}>검색된 결과가 존재하지 않습니다.</div>
         ) : (
           <>
