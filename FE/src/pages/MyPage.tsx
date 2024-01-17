@@ -8,7 +8,7 @@ import MyPageInfo from "@components/mypage/details/myInfo/MyInfo";
 import MyFriend from "@components/mypage/details/friend/MyFriend";
 import MyPassword from "@components/mypage/details/myInfo/MyPassword";
 import CancelMembership from "@components/mypage/details/myInfo/CancelMembership";
-import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo, UserInfoConfig } from "@store/authSlice";
 
 interface Props {
