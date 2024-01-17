@@ -11,9 +11,9 @@ import { selectRoutineClick, selectRoutineInput, selectRoutineList, setRoutineIn
 
 const Routine = () => {
   const dispatch = useAppDispatch();
-  const click = useAppSelector(selectRoutineClick);
   const routineList = useAppSelector(selectRoutineList);
   const routineInput = useAppSelector(selectRoutineInput);
+  const routineClick = useAppSelector(selectRoutineClick);
   const { routineContent, category, startDay, endDay, days } = routineInput;
   const [Modalopen, setModalOpen] = useState<boolean>(false);
   const handleOpen = () => setModalOpen(true);
@@ -23,7 +23,6 @@ const Routine = () => {
 
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryItemConfig>();
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -54,9 +53,9 @@ const Routine = () => {
   };
 
   useEffect(() => {
-    dispatch(setRoutineInput(routineList[click]));
-    setCheckedList(routineList[click].days);
-  }, [click]);
+    dispatch(setRoutineInput(routineList[routineClick]));
+    setCheckedList(routineList[routineClick].days);
+  }, [routineClick]);
 
   return (
     <>
