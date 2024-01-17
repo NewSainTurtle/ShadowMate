@@ -24,8 +24,6 @@ Axios.interceptors.request.use(
       store.dispatch(setAutoLogin(false));
     }
 
-    const autoLoginKey = localStorage.getItem("AL");
-    if (autoLoginKey) config.headers["Auto-Login"] = autoLoginKey;
     return config;
   },
   (error) => {
