@@ -21,7 +21,8 @@ import { selectLoginState, setLogin, setLogout, setUserInfo } from "@store/authS
 import { selectModal, setModalClose } from "@store/modalSlice";
 import { selectAlertInfo, setAlertClose } from "@store/alertSlice";
 import { persistor } from "@hooks/configStore";
-import { authApi, userApi } from "@api/Api";
+import { authApi } from "@api/Api";
+import { AxiosError } from "axios";
 
 const theme = createTheme({
   typography: {
@@ -56,8 +57,12 @@ const App = () => {
       const profile = await userApi.getProfiles(userId);
       dispatch(setUserInfo(res.data.data));
       navigator("/month");
-    } catch {
-      localStorage.removeItem("AL");
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 403) {
+          localStorage.removeItem("AL");
+        }
+      }
     }
   };
 
