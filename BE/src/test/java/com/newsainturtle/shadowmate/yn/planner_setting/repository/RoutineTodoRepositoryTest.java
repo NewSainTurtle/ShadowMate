@@ -437,4 +437,50 @@ class RoutineTodoRepositoryTest {
         }
     }
 
+    @Nested
+    class 해당할일에관련된_루틴할일조회 {
+        @Test
+        void 데이터없음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+
+            //when
+            final RoutineTodo routineTodo = routineTodoRepository.findByTodo(todo);
+
+            //then
+            assertThat(routineTodo).isNull();
+        }
+
+        @Test
+        void 데이터있음() {
+            //given
+            final Todo todo = todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            routineTodoRepository.save(RoutineTodo.builder()
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .build()).setRoutine(routine);
+
+            //when
+            final RoutineTodo routineTodo = routineTodoRepository.findByTodo(todo);
+
+            //then
+            assertThat(routineTodo).isNotNull();
+        }
+    }
+
 }
