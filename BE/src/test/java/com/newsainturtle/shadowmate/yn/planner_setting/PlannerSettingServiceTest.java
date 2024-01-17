@@ -272,10 +272,11 @@ class PlannerSettingServiceTest extends DateCommonService {
 
 
             @Test
-            void 성공_카테고리_할일에없음() {
+            void 성공_카테고리_할일에없음_루틴에없음() {
                 //given
                 doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
                 doReturn(0L).when(todoRepository).countByCategory(category);
+                doReturn(0L).when(routineRepository).countByCategory(category);
 
                 //when
                 plannerSettingService.removeCategory(user, removeCategoryRequest);
@@ -285,14 +286,16 @@ class PlannerSettingServiceTest extends DateCommonService {
                 //verify
                 verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
                 verify(todoRepository, times(1)).countByCategory(any(Category.class));
+                verify(routineRepository, times(1)).countByCategory(any(Category.class));
                 verify(categoryRepository, times(1)).deleteByUserAndId(any(), any(Long.class));
             }
 
             @Test
-            void 성공_카테고리_할일에있음() {
+            void 성공_카테고리_할일에없음_루틴에있음() {
                 //given
                 doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
-                doReturn(1L).when(todoRepository).countByCategory(category);
+                doReturn(0L).when(todoRepository).countByCategory(category);
+                doReturn(1L).when(routineRepository).countByCategory(category);
 
                 //when
                 plannerSettingService.removeCategory(user, removeCategoryRequest);
@@ -302,6 +305,43 @@ class PlannerSettingServiceTest extends DateCommonService {
                 //verify
                 verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
                 verify(todoRepository, times(1)).countByCategory(any(Category.class));
+                verify(routineRepository, times(1)).countByCategory(any(Category.class));
+            }
+
+            @Test
+            void 성공_카테고리_할일에있음_루틴에없음() {
+                //given
+                doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
+                doReturn(1L).when(todoRepository).countByCategory(category);
+                doReturn(0L).when(routineRepository).countByCategory(category);
+
+                //when
+                plannerSettingService.removeCategory(user, removeCategoryRequest);
+
+                //then
+
+                //verify
+                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
+                verify(todoRepository, times(1)).countByCategory(any(Category.class));
+                verify(routineRepository, times(1)).countByCategory(any(Category.class));
+            }
+
+            @Test
+            void 성공_카테고리_할일에있음_루틴에있음() {
+                //given
+                doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
+                doReturn(1L).when(todoRepository).countByCategory(category);
+                doReturn(1L).when(routineRepository).countByCategory(category);
+
+                //when
+                plannerSettingService.removeCategory(user, removeCategoryRequest);
+
+                //then
+
+                //verify
+                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
+                verify(todoRepository, times(1)).countByCategory(any(Category.class));
+                verify(routineRepository, times(1)).countByCategory(any(Category.class));
             }
         }
     }
