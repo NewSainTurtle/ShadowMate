@@ -36,7 +36,7 @@ const RoutineItem = ({ idx, item }: Props) => {
           <Text types="small">{item.endDay}</Text>
         </div>
       </div>
-      <div style={{ backgroundColor: item.category.categoryColorCode }}></div>
+      <div style={{ backgroundColor: item.category?.categoryColorCode }}></div>
     </div>
   );
 };
