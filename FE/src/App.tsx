@@ -17,7 +17,7 @@ import Alert from "@components/common/Alert";
 import Modal from "@components/common/Modal";
 import TokenExpiration from "@components/common/Modal/TokenExpiration";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectLoginState, setLogin, setLogout, setUserInfo } from "@store/authSlice";
+import { selectLoginState, setLogin, setLogout } from "@store/authSlice";
 import { selectModal, setModalClose } from "@store/modalSlice";
 import { selectAlertInfo, setAlertClose } from "@store/alertSlice";
 import { persistor } from "@hooks/configStore";
