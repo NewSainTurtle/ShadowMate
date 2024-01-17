@@ -18,7 +18,9 @@ import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
+import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -43,6 +45,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     private final TimeTableRepository timeTableRepository;
     private final UserRepository userRepository;
     private final SocialRepository socialRepository;
+    private final RoutineTodoRepository routineTodoRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
@@ -149,6 +152,11 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
         final Todo todo = getTodo(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+        final RoutineTodo routineTodo = routineTodoRepository.findByTodo(todo);
+        if(routineTodo != null){
+            routineTodo.setRoutine(null);
+            routineTodoRepository.deleteById(routineTodo.getId());
+        }
         todoRepository.deleteById(todo.getId());
     }
 
