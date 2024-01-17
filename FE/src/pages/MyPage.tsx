@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Profile from "@components/common/Profile";
 import MyPageTab from "@components/mypage/MyPageTab";
@@ -10,22 +10,15 @@ import MyPassword from "@components/mypage/details/myInfo/MyPassword";
 import CancelMembership from "@components/mypage/details/myInfo/CancelMembership";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo, UserInfoConfig } from "@store/authSlice";
-import { ROUTINES, setRoutineInput } from "@store/mypage/routineSlice";
 
 interface Props {
   name?: string;
 }
 
 const MyPage = ({ name }: Props) => {
-  const dispatch = useAppDispatch();
   const [tabName, setTabName] = useState<string>(name ?? "내 정보 확인");
   const userId: number = useAppSelector(selectUserId);
   const userInfo: UserInfoConfig = useAppSelector(selectUserInfo);
-
-  // 루틴 api 연결 후 삭제 예정
-  useEffect(() => {
-    dispatch(setRoutineInput(ROUTINES[0]));
-  }, []);
 
   return (
     <div className={styles["mypage__container"]}>
