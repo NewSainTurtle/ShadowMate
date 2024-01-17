@@ -16,12 +16,12 @@ import {
   setCategoryInput,
 } from "@store/mypage/categorySlice";
 
-const MyPageCategory = () => {
+const Category = () => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectCategoryClick);
   const categoryList = useAppSelector(selectCategoryList);
   const categoryColors = useAppSelector(selectCategoryColors);
-  const categoryInput: CategoryItemConfig = useAppSelector(selectCategoryInput);
+  const categoryInput = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
   const minLength = 1;
   const maxLength = 10;
@@ -113,4 +113,4 @@ const MyPageCategory = () => {
   );
 };
 
-export default MyPageCategory;
+export default Category;

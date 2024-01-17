@@ -9,7 +9,7 @@ interface Props {
   item: CategoryItemConfig;
 }
 
-const MyPageCategoryItem = ({ item, idx }: Props) => {
+const CategoryItem = ({ item, idx }: Props) => {
   const dispatch = useAppDispatch();
   const click: number = useAppSelector(selectCategoryClick);
   const clicked = click === idx ? "--clicked" : "";
@@ -32,4 +32,4 @@ const MyPageCategoryItem = ({ item, idx }: Props) => {
   );
 };
 
-export default MyPageCategoryItem;
+export default CategoryItem;
