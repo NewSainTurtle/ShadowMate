@@ -12,7 +12,6 @@ interface Props {
 
 const RoutineItem = ({ idx, item }: Props) => {
   const dispatch = useAppDispatch();
-  const routineList = useAppSelector(selectRoutineList);
   const click: number = useAppSelector(selectRoutineClick);
   const clicked = click === idx ? "--clicked" : "";
   const endRef = useRef<HTMLDivElement | null>(null);
