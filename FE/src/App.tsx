@@ -53,9 +53,6 @@ const App = () => {
       const userId = res.headers["id"];
       const type = res.headers["type"];
       dispatch(setLogin({ accessToken, userId, type }));
-
-      const profile = await userApi.getProfiles(userId);
-      dispatch(setUserInfo(res.data.data));
       navigator("/month");
     } catch (err) {
       if (err instanceof AxiosError) {
