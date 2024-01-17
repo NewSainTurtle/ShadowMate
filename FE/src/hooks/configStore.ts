@@ -12,7 +12,7 @@ import modalReducer from "@store/modalSlice";
 import alertReducer from "@store/alertSlice";
 
 import { persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import storage from "redux-persist/lib/storage/session";
 import persistStore from "redux-persist/es/persistStore";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 

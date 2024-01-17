@@ -54,6 +54,7 @@ const Profile = ({ types, profile }: Props) => {
     dispatch(setLogout());
     dispatch(clearFriendInfo());
     dispatch(clearFollowingList());
+    localStorage.removeItem("AL");
     setTimeout(() => {
       persistor.purge();
     }, 200);

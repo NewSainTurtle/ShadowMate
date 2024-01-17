@@ -17,7 +17,7 @@ interface AuthConfig {
   isGoogle: boolean;
   userInfo: UserInfoConfig;
   type: string;
-  autoLogin?: string;
+  autoLogin?: boolean;
 }
 
 const initialState: AuthConfig = {
@@ -33,22 +33,21 @@ const initialState: AuthConfig = {
     plannerAccessScope: "",
   },
   type: "",
-  autoLogin: "",
+  autoLogin: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setLogin: (
-      state,
-      { payload }: PayloadAction<{ accessToken: string; userId: number; type: string; autoLogin?: string }>,
-    ) => {
+    setLogin: (state, { payload }: PayloadAction<{ accessToken: string; userId: number; type: string }>) => {
       state.login = true;
       state.userId = payload.userId;
       state.accessToken = payload.accessToken;
       state.type = payload.type;
-      state.autoLogin = payload.autoLogin;
+    },
+    setAutoLogin: (state, { payload }: PayloadAction<boolean>) => {
+      state.autoLogin = payload;
     },
     setIsGoogle: (state, { payload }: PayloadAction<boolean>) => {
       state.isGoogle = payload;
@@ -70,9 +69,10 @@ const authSlice = createSlice({
   },
 });
 
-export const { setLogin, setLogout, setUserInfo, setIsGoogle, setAccessToken } = authSlice.actions;
+export const { setLogin, setAutoLogin, setLogout, setUserInfo, setIsGoogle, setAccessToken } = authSlice.actions;
 export const selectUserInfo = (state: rootState) => state.auth.userInfo;
 export const selectLoginState = (state: rootState) => state.auth.login;
+export const selectAutoLogin = (state: rootState) => state.auth.autoLogin;
 export const selectAccessToken = (state: rootState) => state.auth.accessToken;
 export const selectUserId = (state: rootState) => state.auth.userId;
 export const selectIsGoogle = (state: rootState) => state.auth.isGoogle;

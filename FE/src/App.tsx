@@ -21,6 +21,8 @@ import { selectLoginState, setLogin, setLogout } from "@store/authSlice";
 import { selectModal, setModalClose } from "@store/modalSlice";
 import { selectAlertInfo, setAlertClose } from "@store/alertSlice";
 import { persistor } from "@hooks/configStore";
+import { authApi } from "@api/Api";
+import { AxiosError } from "axios";
 
 const theme = createTheme({
   typography: {
@@ -44,6 +46,23 @@ const App = () => {
     navigator("/login");
   };
 
+  const handleAutoLogin = async () => {
+    try {
+      const res = await authApi.autoLogin();
+      const accessToken = res.headers["authorization"];
+      const userId = res.headers["id"];
+      const type = res.headers["type"];
+      dispatch(setLogin({ accessToken, userId, type }));
+      navigator("/month");
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 403) {
+          localStorage.removeItem("AL");
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     const theme = localStorage.getItem("theme");
     let isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -57,14 +76,10 @@ const App = () => {
     setPathName(["/day", "/week", "/month", "/social", "/mypage", "/search", "/category"].includes(location.pathname));
   }, [location.pathname]);
 
-  // 자동로그인 구현 시 추가
-  // useEffect(() => {
-  //   const accessToken = localStorage.getItem("accessToken") ?? "";
-  //   const id = localStorage.getItem("id");
-  //   let userId = 0;
-  //   if (id) userId = parseInt(id);
-  //   if (accessToken && id) dispatch(setLogin({ accessToken: accessToken, userId: userId }));
-  // }, []);
+  useEffect(() => {
+    const key = localStorage.getItem("AL");
+    if (key) handleAutoLogin();
+  }, []);
 
   return (
     <div className={pathName ? styles["App__header"] : ""}>
