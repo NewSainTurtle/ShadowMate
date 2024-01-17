@@ -3,30 +3,36 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { selectUserId, setLogout } from "@store/authSlice";
+import { selectType, selectUserId, setLogout } from "@store/authSlice";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { userApi } from "@api/Api";
+import { authApi, userApi } from "@api/Api";
 import { persistor } from "@hooks/configStore";
 
 const CancelMembership = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
+  const type = useAppSelector(selectType);
   const [Modalopen, setModalOpen] = useState(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
 
   const deleteProfile = () => {
-    userApi
-      .userOut(userId)
+    const autoLoginKey = localStorage.getItem("AL");
+    const headers = {
+      "Auto-Login": autoLoginKey ?? "",
+    };
+    Promise.all([userApi.userOut(userId), authApi.logout({ userId, type }, headers)])
       .then(() => {
         handleClose();
         dispatch(setLogout());
       })
       .then(() => {
-        persistor.purge(); // 리덕스 초기화
-        localStorage.clear();
+        persistor.purge();
+        localStorage.removeItem("AL");
+        localStorage.removeItem("popup_visible");
+        localStorage.removeItem("theme");
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.log(err));
   };
 
   return (

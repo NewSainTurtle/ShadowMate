@@ -77,5 +77,6 @@ export const selectAccessToken = (state: rootState) => state.auth.accessToken;
 export const selectUserId = (state: rootState) => state.auth.userId;
 export const selectIsGoogle = (state: rootState) => state.auth.isGoogle;
 export const selectPlannerAccessScope = (state: rootState) => state.auth.userInfo.plannerAccessScope;
+export const selectType = (state: rootState) => state.auth.type;
 
 export default authSlice.reducer;
