@@ -202,7 +202,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     @Transactional
     public void removeCategory(final User user, final RemoveCategoryRequest removeCategoryRequest) {
         final Category findCategory = getCategory(user, removeCategoryRequest.getCategoryId());
-        final long count = todoRepository.countByCategory(findCategory);
+        final long count = todoRepository.countByCategory(findCategory) + routineRepository.countByCategory(findCategory);
 
         if (count == 0) {
             categoryRepository.deleteByUserAndId(user, removeCategoryRequest.getCategoryId());
