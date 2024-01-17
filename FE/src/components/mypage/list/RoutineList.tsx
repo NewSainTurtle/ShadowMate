@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import RoutineItem from "@components/mypage/item/RoutineItem";
 import Text from "@components/common/Text";
+import RoutineItem from "@components/mypage/item/RoutineItem";
 import { useAppSelector } from "@hooks/hook";
 import { RoutineItemConfig, selectRoutineList } from "@store/mypage/routineSlice";
 
