@@ -20,6 +20,7 @@ import {
 } from "@store/socialSlice";
 import dayjs from "dayjs";
 import Text from "@components/common/Text";
+import colors from "@util/colors";
 
 const SocialHeader = () => {
   const dispatch = useAppDispatch();
@@ -73,12 +74,11 @@ const SocialHeader = () => {
     if (dateRange.startDate) {
       startDate = dayjs(dateRange.startDate).toDate();
       endDate = dayjs(dateRange.endDate).toDate();
-    } else {
-      startDate = dayjs().add(-7, "day").toDate();
-      endDate = dayjs().toDate();
     }
     return { startDate, endDate };
   })();
+
+  const dateRangeStyle = dateRange.startDate ? "" : "--none";
 
   return (
     <>
@@ -95,10 +95,10 @@ const SocialHeader = () => {
           <div ref={calendarRef} className={styles["date__picker"]}>
             <div>
               <DateRangePicker
+                className={dateRangeStyle}
                 locale={ko}
                 ranges={[showDateRange]}
                 onChange={onChangeDate}
-                showDateDisplay
                 dateDisplayFormat={"yyyy-MM-dd"}
                 fixedHeight
               />

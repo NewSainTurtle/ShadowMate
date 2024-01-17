@@ -90,6 +90,23 @@
   }
 }
 
+.--none {
+
+  .rdrDay:not(.rdrDayPassive) .rdrInRange~.rdrDayNumber span {
+    color: var(--color-text);
+
+    ::after {
+      background-color: var(--color-btn-blue);
+    }
+  }
+
+  .rdrDay {
+    .rdrInRange {
+      background-color: transparent;
+    }
+  }
+}
+
 .rdrMonthAndYearWrapper,
 .rdrMonthAndYearWrapper select option,
 .rdrDateDisplayWrapper,
