@@ -85,7 +85,7 @@ const SocialHeader = () => {
       <div className={styles["item-header__search"]}>
         <SocialInput
           name="search"
-          placeholder="사용자 닉네임으로 검색 검색"
+          placeholder="사용자 닉네임으로 검색"
           value={keyword}
           onChange={handleInput}
           onCalendarClick={() => setOpenCalendar((value) => !value)}
