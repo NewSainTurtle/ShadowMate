@@ -123,8 +123,9 @@ $color-warning: var(--color-warning);
 .date {
   &__picker {
     position: absolute;
-    right: 2em;
-    top: 10em;
+    right: 3em;
+    top: 11em;
+
     > svg,
     span,
     button {
