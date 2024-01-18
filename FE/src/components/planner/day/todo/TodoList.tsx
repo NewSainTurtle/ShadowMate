@@ -109,19 +109,20 @@ const TodoList = ({ clicked }: Props) => {
 
   const dragModule = (() => {
     const style = `border: 2px dashed red !important;`;
-    /** 드래그 시작할 때 이벤트 */
+    /** 드래그 시작할 때 */
     const dragStart = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
-      // e.dataTransfer.setDragImage(new Image(), 0, 0);
+      e.dataTransfer.setDragImage(new Image(), 0, 0);
       e.currentTarget.style.cssText = style;
       dragItem.current = idx;
     };
-    /** 드래그 대상 객체에 처음 진입할 때 이벤트 */
+    /** 드래그 객체 위로 진입 할 때 */
     const dragEnter = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
       e.preventDefault();
       e.currentTarget.style.cssText = style;
       dragOverItem.current = idx;
     };
 
+    /** 드래그 끝났을 때 */
     const dragLeaveAndDrop = (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.currentTarget.style.cssText = "";
@@ -145,14 +146,17 @@ const TodoList = ({ clicked }: Props) => {
           {todoArr.map((item: TodoConfig, idx: number) => (
             <div
               key={item.todoId}
+              draggable
               className={styles["todo--draggable"]}
               onDragStart={(e) => dragModule.dragStart(e, idx)}
               onDragEnter={(e) => dragModule.dragEnter(e, idx)}
               onDragOver={(e) => e.preventDefault()}
               onDragLeave={(e) => dragModule.dragLeaveAndDrop(e)}
               onDrop={(e) => dragModule.dragLeaveAndDrop(e)}
-              onDragEnd={() => todoModule.dragTodo()}
-              draggable
+              onDragEnd={(e) => {
+                dragModule.dragLeaveAndDrop(e);
+                todoModule.dragTodo();
+              }}
             >
               <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
             </div>

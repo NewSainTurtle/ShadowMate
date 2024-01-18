@@ -19,7 +19,6 @@ interface Props {
     updateTodo: (idx: number, props: TodoConfig) => void;
     deleteTodo: (idx: number, todoId: number) => void;
     deleteTimeTable: (todoId: number, timeTables: TimeTableConfig[], todoStatus: TodoConfig["todoStatus"]) => void;
-    dragTodo: () => void;
   };
 }
 
@@ -27,8 +26,9 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category ?? BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
-  const { insertTodo, updateTodo, deleteTodo, deleteTimeTable, dragTodo } = todoModule;
+  const { insertTodo, updateTodo, deleteTodo, deleteTimeTable } = todoModule;
   const [text, setText] = useState(todoContent);
+  const [isEdit, setIsEdit] = useState(false);
   const dropMenuRef = useRef<HTMLDivElement>(null);
   const maxLength = 50;
 
@@ -83,6 +83,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
     } else {
       updateTodo(idx, { ...todoItem, todoContent: text });
     }
+    setIsEdit(false);
   };
 
   const handleSaveStatusTodo = () => {
@@ -149,7 +150,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
         </div>
       </div>
 
-      <div className={styles[`todo-item__content${isClickedStyle}`]}>
+      <div className={styles[`todo-item__content${isClickedStyle}`]} onClick={() => setIsEdit(true)}>
         {disable ? (
           addTodo && (
             <span>
@@ -158,21 +159,32 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
           )
         ) : (
           <div className={styles["todo-item__content__possible"]}>
-            <input
-              value={text}
-              placeholder={"할 일을 입력하세요"}
-              minLength={2}
-              maxLength={maxLength}
-              onChange={editText}
-              onKeyDown={handleOnKeyPress}
-              onBlur={handleSaveTextTodo}
-            />
+            {addTodo || isEdit ? (
+              <input
+                value={text}
+                placeholder={"할 일을 입력하세요"}
+                minLength={2}
+                maxLength={maxLength}
+                onChange={editText}
+                onKeyDown={handleOnKeyPress}
+                onBlur={() => handleSaveTextTodo()}
+                autoFocus
+              />
+            ) : (
+              <div className={styles["todo-item__content--read"]}>{text}</div>
+            )}
+
             {!addTodo && (
               <div className={styles["todo-item__content__icons"]}>
-                <div onDrag={dragTodo}>
+                <div onClick={(e) => e.stopPropagation()}>
                   <DragHandle />
                 </div>
-                <div onClick={handleDeleteModalOpen}>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteModalOpen();
+                  }}
+                >
                   <DeleteOutlined />
                 </div>
               </div>

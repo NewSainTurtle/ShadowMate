@@ -366,6 +366,12 @@ $color-btn-blue: var(--color-btn-blue);
     }
   }
 
+  %text-nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &__category,
   &__category--add {
     &-box {
@@ -375,9 +381,7 @@ $color-btn-blue: var(--color-btn-blue);
       align-items: center;
       justify-content: center;
       > span {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        @extend %text-nowrap;
       }
     }
   }
@@ -409,11 +413,15 @@ $color-btn-blue: var(--color-btn-blue);
       }
     }
 
+    &--read {
+      @extend %text-nowrap;
+    }
+
     &__icons {
       display: flex;
       gap: 0.5em;
       > div:first-child {
-        cursor: move;
+        cursor: grab;
       }
     }
   }
