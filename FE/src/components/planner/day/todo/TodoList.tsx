@@ -26,6 +26,8 @@ const TodoList = ({ clicked }: Props) => {
   }, [todoArr]);
   const todoEndRef = useRef<HTMLDivElement>(null);
   const copyTodos = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
 
   useEffect(() => {
     if (todoArr.length + 1 >= listSize && todoEndRef.current) {
@@ -87,13 +89,19 @@ const TodoList = ({ clicked }: Props) => {
         });
     };
 
+    const dragTodo = () => {};
+
     return {
       insertTodo,
       updateTodo,
       deleteTodo,
       deleteTimeTable,
+      dragTodo,
     };
   })();
+
+  const dragStart = (idx: number) => (dragItem.current = idx);
+  const dragEnter = (idx: number) => (dragOverItem.current = idx);
 
   return (
     <div
@@ -104,7 +112,17 @@ const TodoList = ({ clicked }: Props) => {
       {!clicked ? (
         <>
           {todoArr.map((item: TodoConfig, idx: number) => (
-            <TodoItem key={item.todoId} idx={idx} todoItem={item} todoModule={todoModule} />
+            <div
+              key={item.todoId}
+              className={styles["todo--draggable"]}
+              onDragStart={() => dragStart(idx)}
+              onDragEnter={() => dragEnter(idx)}
+              onDragOver={(e) => e.preventDefault()}
+              onDragEnd={todoModule.dragTodo}
+              draggable
+            >
+              <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
+            </div>
           ))}
           <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} disable={userId != friendId} />
           {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (

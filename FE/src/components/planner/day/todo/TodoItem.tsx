@@ -5,7 +5,7 @@ import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
 import CategorySelector from "@components/common/CategorySelector";
 import TimeTableDeleteModal from "@components/common/Modal/TimeTableDeleteModal";
-import { AddOutlined, DeleteOutlined } from "@mui/icons-material";
+import { AddOutlined, DeleteOutlined, DragHandle } from "@mui/icons-material";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { TodoConfig, CategoryItemConfig, TimeTableConfig } from "@util/planner.interface";
 
@@ -19,6 +19,7 @@ interface Props {
     updateTodo: (idx: number, props: TodoConfig) => void;
     deleteTodo: (idx: number, todoId: number) => void;
     deleteTimeTable: (todoId: number, timeTables: TimeTableConfig[], todoStatus: TodoConfig["todoStatus"]) => void;
+    dragTodo: () => void;
   };
 }
 
@@ -26,7 +27,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category ?? BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
-  const { insertTodo, updateTodo, deleteTodo, deleteTimeTable } = todoModule;
+  const { insertTodo, updateTodo, deleteTodo, deleteTimeTable, dragTodo } = todoModule;
   const [text, setText] = useState(todoContent);
   const dropMenuRef = useRef<HTMLDivElement>(null);
   const maxLength = 50;
@@ -167,8 +168,13 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
               onBlur={handleSaveTextTodo}
             />
             {!addTodo && (
-              <div onClick={handleDeleteModalOpen}>
-                <DeleteOutlined />
+              <div className={styles["todo-item__content__icons"]}>
+                <div onDrag={dragTodo}>
+                  <DragHandle />
+                </div>
+                <div onClick={handleDeleteModalOpen}>
+                  <DeleteOutlined />
+                </div>
               </div>
             )}
           </div>
