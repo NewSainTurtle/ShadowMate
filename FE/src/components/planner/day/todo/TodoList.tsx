@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -89,7 +89,14 @@ const TodoList = ({ clicked }: Props) => {
         });
     };
 
-    const dragTodo = () => {};
+    const dragTodo = () => {
+      const dragItemConotent = copyTodos[dragItem.current as number];
+      copyTodos.splice(dragItem.current, 1);
+      copyTodos.splice(dragOverItem.current, 0, dragItemConotent);
+      dragItem.current = null;
+      dragOverItem.current = null;
+      dispatch(setTodoList(copyTodos));
+    };
 
     return {
       insertTodo,
@@ -100,8 +107,32 @@ const TodoList = ({ clicked }: Props) => {
     };
   })();
 
-  const dragStart = (idx: number) => (dragItem.current = idx);
-  const dragEnter = (idx: number) => (dragOverItem.current = idx);
+  const dragModule = (() => {
+    const style = `border: 2px dashed red !important;`;
+    /** 드래그 시작할 때 이벤트 */
+    const dragStart = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
+      // e.dataTransfer.setDragImage(new Image(), 0, 0);
+      e.currentTarget.style.cssText = style;
+      dragItem.current = idx;
+    };
+    /** 드래그 대상 객체에 처음 진입할 때 이벤트 */
+    const dragEnter = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
+      e.preventDefault();
+      e.currentTarget.style.cssText = style;
+      dragOverItem.current = idx;
+    };
+
+    const dragLeaveAndDrop = (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.currentTarget.style.cssText = "";
+    };
+
+    return {
+      dragStart,
+      dragEnter,
+      dragLeaveAndDrop,
+    };
+  })();
 
   return (
     <div
@@ -115,10 +146,12 @@ const TodoList = ({ clicked }: Props) => {
             <div
               key={item.todoId}
               className={styles["todo--draggable"]}
-              onDragStart={() => dragStart(idx)}
-              onDragEnter={() => dragEnter(idx)}
+              onDragStart={(e) => dragModule.dragStart(e, idx)}
+              onDragEnter={(e) => dragModule.dragEnter(e, idx)}
               onDragOver={(e) => e.preventDefault()}
-              onDragEnd={todoModule.dragTodo}
+              onDragLeave={(e) => dragModule.dragLeaveAndDrop(e)}
+              onDrop={(e) => dragModule.dragLeaveAndDrop(e)}
+              onDragEnd={() => todoModule.dragTodo()}
               draggable
             >
               <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
