@@ -19,13 +19,13 @@ const TodoList = ({ clicked }: Props) => {
   let friendId = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
   const date = useAppSelector(selectDayDate);
-  const todoArr = useAppSelector(selectTodoList);
+  const todoArr: TodoConfig[] = useAppSelector(selectTodoList);
   const listSize = 11;
   const todoListSize = useMemo(() => {
     return todoArr.length + 1 >= listSize ? todoArr.length + 1 : listSize;
   }, [todoArr]);
   const todoEndRef = useRef<HTMLDivElement>(null);
-  const copyTodos = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
+  const copyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
@@ -89,13 +89,24 @@ const TodoList = ({ clicked }: Props) => {
         });
     };
 
-    const dragTodo = () => {
-      const dragItemConotent = copyTodos[dragItem.current as number];
-      copyTodos.splice(dragItem.current, 1);
-      copyTodos.splice(dragOverItem.current, 0, dragItemConotent);
-      dragItem.current = null;
-      dragOverItem.current = null;
-      dispatch(setTodoList(copyTodos));
+    const dragTodo = async (todoId: number) => {
+      const drageTargetIdx = dragItem.current as number;
+      const endTargetIdx = dragOverItem.current as number;
+      const upperTodoId = endTargetIdx - 1 > 0 ? copyTodos[endTargetIdx - 1].todoId : null;
+      await plannerApi
+        .todoSequence(userId, {
+          date,
+          todoId,
+          upperTodoId,
+        })
+        .then(() => {
+          const dragItemConotent = copyTodos[drageTargetIdx];
+          copyTodos.splice(drageTargetIdx, 1);
+          copyTodos.splice(endTargetIdx, 0, dragItemConotent);
+          dragItem.current = null;
+          dragOverItem.current = null;
+          dispatch(setTodoList(copyTodos));
+        });
     };
 
     return {
@@ -155,7 +166,7 @@ const TodoList = ({ clicked }: Props) => {
               onDrop={(e) => dragModule.dragLeaveAndDrop(e)}
               onDragEnd={(e) => {
                 dragModule.dragLeaveAndDrop(e);
-                todoModule.dragTodo();
+                todoModule.dragTodo(item.todoId);
               }}
             >
               <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
