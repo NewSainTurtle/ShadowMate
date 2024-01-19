@@ -10,7 +10,6 @@ import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
-import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
@@ -49,7 +48,6 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     private final RoutineRepository routineRepository;
     private final RoutineDayRepository routineDayRepository;
     private final RoutineTodoRepository routineTodoRepository;
-    private final TimeTableRepository timeTableRepository;
 
     private CategoryColor getCategoryColor(final Long categoryColorId) {
         final CategoryColor categoryColor = categoryColorRepository.findById(categoryColorId).orElse(null);
@@ -60,8 +58,9 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     }
 
     private Category getCategory(final User user, final Long categoryId) {
-        final Category category = categoryRepository.findByUserAndId(user, categoryId);
-        if (category == null || category.getCategoryRemove()) {
+        if (categoryId == 0) return null;
+        Category category = categoryRepository.findByUserAndId(user, categoryId);
+        if (category == null) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
         }
         return category;
@@ -73,7 +72,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         }
     }
 
-    private void addRoutineTodo(final Routine routine, final LocalDate startDate, final LocalDate endDate, List<String> days) {
+    private void addRoutineTodo(final Routine routine, final LocalDate startDate, final LocalDate endDate, final List<String> days) {
         final boolean[] checkDays = new boolean[8];
         for (String requestDay : days) {
             int day = getDayIndex(requestDay);
@@ -97,7 +96,11 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
                 routineTodo.setRoutine(routine);
                 target = target.plusDays(7);
             }
+        }
+    }
 
+    private void addRoutineDay(final Routine routine, final List<String> days) {
+        for (String requestDay : days) {
             final RoutineDay routineDay = routineDayRepository.save(RoutineDay.builder()
                     .day(requestDay)
                     .build());
@@ -135,14 +138,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         return dailyPlanner;
     }
 
-    private void addTodo(final User user, final Routine routine, final boolean onlyPastAndToday, final String today) {
-        RoutineTodo[] routineTodoList;
-        if (onlyPastAndToday) {
-            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(routine, today);
-        } else {
-            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNull(routine);
-        }
-
+    private void addTodo(final User user, final RoutineTodo[] routineTodoList) {
         for (RoutineTodo routineTodo : routineTodoList) {
             final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, routineTodo.getDailyPlannerDay());
             final TodoIndexResponse lastTodoIndex = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
@@ -157,10 +153,10 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         }
     }
 
-    private void removeTodo(final Routine routine, final boolean onlyFuture, final String today) {
+    private void removeTodo(final Routine routine, final boolean onlyFutureAndToday, final String today) {
         RoutineTodo[] routineTodoList;
-        if (onlyFuture) {
-            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(routine, today);
+        if (onlyFutureAndToday) {
+            routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqual(routine, today);
         } else {
             routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNotNull(routine);
         }
@@ -172,6 +168,118 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         }
     }
 
+    private void removeRoutineTodoAndTodoIsNull(final RoutineTodo[] routineTodoList) {
+        for (RoutineTodo routineTodo : routineTodoList) {
+            routineTodo.setRoutine(null);
+            routineTodoRepository.deleteById(routineTodo.getId());
+        }
+    }
+
+    private void removeRoutineTodoAndTodoIsNotNull(final Routine routine, final RoutineTodo[] routineTodoList) {
+        for (RoutineTodo routineTodo : routineTodoList) {
+            final long todoId = routineTodo.getTodo().getId();
+            if (routine.getRoutineContent().equals(routineTodo.getTodo().getTodoContent()) &&
+                    ((routine.getCategory() == null && routineTodo.getTodo().getCategory() == null) ||
+                            (routine.getCategory() != null && (routineTodo.getTodo().getCategory() != null && routine.getCategory().getId().equals(routineTodo.getTodo().getCategory().getId()))))) {
+                todoRepository.deleteById(todoId);
+            }
+            routineTodo.updateTodo(null);
+            routineTodo.setRoutine(null);
+            routineTodoRepository.deleteById(routineTodo.getId());
+        }
+    }
+
+    private void removeRoutineTodoDay(final Routine routine, final String day) {
+        removeRoutineTodoAndTodoIsNull(routineTodoRepository.findAllByRoutineAndTodoIsNullAndDay(routine, day));
+        removeRoutineTodoAndTodoIsNotNull(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDay(routine, day));
+    }
+
+    private void removeRoutineTodoDays(final Routine routine, final String startDay, final String endDay, final List<String> days) {
+        removeRoutineTodoAndTodoIsNull(routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayBetweenAndDayIn(routine, startDay, endDay, days));
+        removeRoutineTodoAndTodoIsNotNull(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayBetweenAndDayIn(routine, startDay, endDay, days));
+    }
+
+    private void updateTodo(final Routine routine, final RoutineTodo[] routineTodoList, final Category requestCategory, final String requestRoutineContent) {
+        for (RoutineTodo routineTodo : routineTodoList) {
+            if (routine.getRoutineContent().equals(routineTodo.getTodo().getTodoContent()) &&
+                    ((routine.getCategory() == null && routineTodo.getTodo().getCategory() == null) || (routine.getCategory() != null && routine.getCategory().getId().equals(routineTodo.getTodo().getCategory().getId())))) {
+                routineTodo.getTodo().updateCategoryAndTodoContent(requestCategory, requestRoutineContent);
+            }
+        }
+    }
+
+    private boolean[] checkDays(final List<String> days) {
+        final boolean[] checkDays = new boolean[8];
+        for (String requestDay : days) {
+            int day = getDayIndex(requestDay);
+            if (checkDays[day]) {
+                throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY);
+            }
+            checkDays[day] = true;
+        }
+        return checkDays;
+    }
+
+    private boolean[] updateRoutineOriginalDay(final User user, final Routine routine, final String startDay, final String endDay,
+                                               final Category category, final String routineContent, final String today, final boolean[] checkDays, final int order) {
+        final RoutineDay[] routineDays = routineDayRepository.findAllByRoutine(routine);
+        final LocalDate originStartDay = stringToLocalDate(routine.getStartDay());
+        final LocalDate originEndDay = stringToLocalDate(routine.getEndDay());
+        final LocalDate requestStartDay = stringToLocalDate(startDay);
+        final LocalDate requestEndDay = stringToLocalDate(endDay);
+        final boolean checkRemoveDate = Period.between(originStartDay, requestStartDay).getDays() > 0 || Period.between(originEndDay, requestEndDay).getDays() < 0;
+        final boolean checkAddDate = Period.between(originStartDay, requestStartDay).getDays() < 0 || Period.between(originEndDay, requestEndDay).getDays() > 0;
+        final List<String> updateDays = new ArrayList<>();
+
+        for (RoutineDay routineDay : routineDays) {
+            int day = getDayIndex(routineDay.getDay());
+            if (checkDays[day]) {
+                updateDays.add(routineDay.getDay());
+                checkDays[day] = false;
+            } else {
+                if (order == 1) {
+                    removeRoutineTodoDay(routine, routineDay.getDay());
+                }
+                routineDay.setRoutine(null);
+                routineDayRepository.deleteById(routineDay.getId());
+            }
+        }
+
+        if (!updateDays.isEmpty()) {
+            if (order == 1) {
+                if (checkRemoveDate)
+                    removeRoutineTodoOrder1(routine, updateDays, originStartDay, originEndDay, requestStartDay, requestEndDay);
+                updateTodo(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDayIn(routine, updateDays), category, routineContent);
+                if (checkAddDate)
+                    addRoutineTodoOrder1(routine, updateDays, originStartDay, originEndDay, requestStartDay, requestEndDay);
+            }
+        }
+
+
+        return checkDays;
+    }
+
+    private void removeRoutineTodoOrder1(final Routine routine, final List<String> updateDays,
+                                         final LocalDate originStartDay, final LocalDate originEndDay,
+                                         final LocalDate requestStartDay, final LocalDate requestEndDay) {
+        if (Period.between(originStartDay, requestStartDay).getDays() > 0) {
+            removeRoutineTodoDays(routine, localDateToString(originStartDay), localDateToString(requestStartDay), updateDays);
+        }
+        if (Period.between(originEndDay, requestEndDay).getDays() < 0) {
+            removeRoutineTodoDays(routine, localDateToString(requestEndDay.plusDays(1)), localDateToString(originEndDay), updateDays);
+        }
+    }
+
+    private void addRoutineTodoOrder1(final Routine routine, final List<String> updateDays,
+                                      final LocalDate originStartDay, final LocalDate originEndDay,
+                                      final LocalDate requestStartDay, final LocalDate requestEndDay) {
+        if (Period.between(originStartDay, requestStartDay).getDays() < 0) {
+            addRoutineTodo(routine, requestStartDay, originStartDay.minusDays(1), updateDays);
+        }
+        if (Period.between(originEndDay, requestEndDay).getDays() > 0) {
+            addRoutineTodo(routine, originEndDay.plusDays(1), requestEndDay, updateDays);
+        }
+    }
     @Override
     @Transactional
     public AddCategoryResponse addCategory(final User user, final AddCategoryRequest addCategoryRequest) {
@@ -307,8 +415,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     @Transactional
     public AddRoutineResponse addRoutine(final User user, final AddRoutineRequest addRoutineRequest) {
         checkValidDay(addRoutineRequest.getStartDay(), addRoutineRequest.getEndDay());
-        final Category category = addRoutineRequest.getCategoryId() == 0L ? null
-                : categoryRepository.findByUserAndId(user, addRoutineRequest.getCategoryId());
+        final Category category = getCategory(user, addRoutineRequest.getCategoryId());
         final Routine routine = routineRepository.save(Routine.builder()
                 .user(user)
                 .category(category)
@@ -319,6 +426,8 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
                 .routineTodos(new ArrayList<>())
                 .build());
         addRoutineTodo(routine, stringToLocalDate(addRoutineRequest.getStartDay()), stringToLocalDate(addRoutineRequest.getEndDay()), addRoutineRequest.getDays());
+        addRoutineDay(routine, addRoutineRequest.getDays());
+
         return AddRoutineResponse.builder()
                 .routineId(routine.getId())
                 .build();
@@ -364,14 +473,50 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         if (removeRoutineRequest.getOrder().equals(1)) {
             removeTodo(routine, false, today);
         } else if (removeRoutineRequest.getOrder().equals(2)) {
-            addTodo(user, routine, true, today);
+            final RoutineTodo[] routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThan(routine, today);
+            addTodo(user, routineTodoList);
             removeTodo(routine, true, today);
         } else if (removeRoutineRequest.getOrder().equals(3)) {
-            addTodo(user, routine, false, today);
+            final RoutineTodo[] routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNull(routine);
+            addTodo(user, routineTodoList);
         } else {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER);
         }
         routineRepository.deleteByIdAndUser(routine.getId(), user);
+    }
+
+    @Override
+    @Transactional
+    public void updateRoutine(final User user, final UpdateRoutineRequest updateRoutineRequest) {
+        final Routine routine = routineRepository.findByIdAndUser(updateRoutineRequest.getRoutineId(), user);
+        if (routine == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE);
+        }
+        checkValidDay(updateRoutineRequest.getStartDay(), updateRoutineRequest.getEndDay());
+        final Category category = getCategory(user, updateRoutineRequest.getCategoryId());
+        if (!updateRoutineRequest.getOrder().equals(1) && !updateRoutineRequest.getOrder().equals(2)) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER);
+        }
+
+        final String[] strDays = new String[]{"", "월", "화", "수", "목", "금", "토", "일"};
+        final String today = String.valueOf(LocalDate.now());
+        final String startDay = updateRoutineRequest.getStartDay();
+        final String endDay = updateRoutineRequest.getEndDay();
+        boolean[] checkDays = checkDays(updateRoutineRequest.getDays());
+
+        checkDays = updateRoutineOriginalDay(user, routine, startDay, endDay,
+                category, updateRoutineRequest.getRoutineContent(), today, checkDays, updateRoutineRequest.getOrder());
+        final List<String> addDays = new ArrayList<>();
+        for (int day = 1; day <= 7; day++) {
+            if (checkDays[day]) addDays.add(strDays[day]);
+        }
+        if (!addDays.isEmpty()) {
+            if (updateRoutineRequest.getOrder().equals(1)) {
+                addRoutineTodo(routine, stringToLocalDate(startDay), stringToLocalDate(endDay), addDays);
+                addRoutineDay(routine, addDays);
+            }
+        }
+        routine.updateDayAndCategoryAndRoutineContent(startDay, endDay, category, updateRoutineRequest.getRoutineContent());
     }
 
 }
