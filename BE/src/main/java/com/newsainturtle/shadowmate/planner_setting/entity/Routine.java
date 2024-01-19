@@ -42,4 +42,10 @@ public class Routine extends CommonEntity {
     @OneToMany(mappedBy = "routine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoutineDay> routineDays = new ArrayList<>();
 
+    public void updateDayAndCategoryAndRoutineContent(final String startDay, final String endDay, final Category category, final String routineContent) {
+        this.startDay = startDay;
+        this.endDay = endDay;
+        this.category = category;
+        this.routineContent = routineContent;
+    }
 }
