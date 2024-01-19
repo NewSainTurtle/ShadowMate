@@ -591,7 +591,6 @@ class PlannerSettingServiceTest extends DateCommonService {
                         .build();
                 doReturn(routine).when(routineRepository).save(any(Routine.class));
                 doReturn(routineTodo).when(routineTodoRepository).save(any(RoutineTodo.class));
-                doReturn(routineDay).when(routineDayRepository).save(any(RoutineDay.class));
 
                 //when
                 final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.addRoutine(user, addRoutineRequest));
@@ -790,8 +789,8 @@ class PlannerSettingServiceTest extends DateCommonService {
                 final RoutineTodo[] routineTodoList2 = new RoutineTodo[]{routineTodo2};
 
                 doReturn(routine).when(routineRepository).findByIdAndUser(any(Long.class), any());
-                doReturn(routineTodoList1).when(routineTodoRepository).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(any(Routine.class), any(String.class));
-                doReturn(routineTodoList2).when(routineTodoRepository).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(any(Routine.class), any(String.class));
+                doReturn(routineTodoList1).when(routineTodoRepository).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqual(any(Routine.class), any(String.class));
+                doReturn(routineTodoList2).when(routineTodoRepository).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThan(any(Routine.class), any(String.class));
                 doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
                 doReturn(null).when(todoRepository).findTopByDailyPlannerOrderByTodoIndexDesc(any(DailyPlanner.class));
 
@@ -802,8 +801,8 @@ class PlannerSettingServiceTest extends DateCommonService {
 
                 //verify
                 verify(routineRepository, times(1)).findByIdAndUser(any(Long.class), any());
-                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayAfter(any(Routine.class), any(String.class));
-                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanEqual(any(Routine.class), any(String.class));
+                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqual(any(Routine.class), any(String.class));
+                verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThan(any(Routine.class), any(String.class));
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
                 verify(todoRepository, times(1)).findTopByDailyPlannerOrderByTodoIndexDesc(any(DailyPlanner.class));
                 verify(routineRepository, times(1)).deleteByIdAndUser(any(Long.class), any());
