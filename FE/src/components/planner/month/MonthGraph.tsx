@@ -7,8 +7,8 @@ const MonthGraph = () => {
     <div className={styles.graph}>
       <span>Less</span>
       <div>
-        {statusColor.map((colors: string) => (
-          <div style={{ backgroundColor: colors }} />
+        {statusColor.map((colors: string, i: number) => (
+          <div key={i} style={{ backgroundColor: colors }} />
         ))}
       </div>
       <span>More</span>
