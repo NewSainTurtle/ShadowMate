@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
+import Text from "@components/common/Text";
 import { RoutineItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import Text from "@components/common/Text";
-import { selectRoutineClick, selectRoutineList, setRoutineClick } from "@store/mypage/routineSlice";
+import { selectRoutineClick, setRoutineClick } from "@store/mypage/routineSlice";
 
 interface Props {
   idx: number;
@@ -36,7 +36,7 @@ const RoutineItem = ({ idx, item }: Props) => {
           <Text types="small">{item.endDay}</Text>
         </div>
       </div>
-      <div style={{ backgroundColor: item.category.categoryColorCode }}></div>
+      <div style={{ backgroundColor: item.category?.categoryColorCode ?? "#E9E9EB" }}></div>
     </div>
   );
 };

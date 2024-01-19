@@ -37,7 +37,7 @@ export interface RoutineItemConfig {
   startDay: string;
   endDay: string;
   days: string[];
-  category: CategoryItemConfig;
+  category?: CategoryItemConfig;
 }
 
 export interface TimeTableConfig {

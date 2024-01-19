@@ -57,6 +57,7 @@ interface apiInterface {
     categories: (userId: number) => string; // 카테고리 목록 조회, 등록, 수정, 삭제
     categoriesColors: (userId: number) => string; // 카테고리 색상 목록 조회
     ddays: (userId: number) => string; // 디데이 목록 조회, 등록, 수정, 삭제
+    routines: (userId: number) => string;
   };
   social: {
     getSocial: (userId: number) => string; // 공개된 플래너 조회
@@ -113,6 +114,7 @@ const api: apiInterface = {
     categories: (userId: number) => HOST + SETTINGS + userId + "/categories",
     categoriesColors: (userId: number) => HOST + SETTINGS + userId + "/categories" + "/colors",
     ddays: (userId: number) => HOST + SETTINGS + userId + "/d-days",
+    routines: (userId: number) => HOST + SETTINGS + userId + "/routines",
   },
   social: {
     getSocial: (userId: number) => HOST + SOCIAL + userId,

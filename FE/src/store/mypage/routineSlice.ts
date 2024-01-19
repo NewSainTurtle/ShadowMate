@@ -3,33 +3,6 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RoutineItemConfig } from "@util/planner.interface";
 import { PURGE } from "redux-persist";
 
-export const ROUTINES: RoutineItemConfig[] = [
-  {
-    routineId: 1,
-    routineContent: "운동하기",
-    startDay: "2023-12-25",
-    endDay: "2024-01-09",
-    days: ["월", "화", "수"],
-    category: {
-      categoryId: 1,
-      categoryColorCode: "#B2B2B2",
-      categoryTitle: "카테고리",
-    },
-  },
-  {
-    routineId: 2,
-    routineContent: "일기 쓰기",
-    startDay: "2024-01-09",
-    endDay: "2024-01-20",
-    days: ["수", "목", "토"],
-    category: {
-      categoryId: 1,
-      categoryColorCode: "#B2B2B2",
-      categoryTitle: "카테고리",
-    },
-  },
-];
-
 interface RoutineConfig {
   routineList: RoutineItemConfig[];
   routineClick: number;
@@ -37,7 +10,7 @@ interface RoutineConfig {
 }
 
 const initialState: RoutineConfig = {
-  routineList: ROUTINES,
+  routineList: [],
   routineClick: 0,
   routineInput: {
     routineId: 0,
