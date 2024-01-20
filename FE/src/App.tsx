@@ -17,7 +17,7 @@ import Alert from "@components/common/Alert";
 import Modal from "@components/common/Modal";
 import TokenExpiration from "@components/common/Modal/TokenExpiration";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectLoginState, setLogin, setLogout } from "@store/authSlice";
+import { selectLoginState, selectType, selectUserId, setLogin, setLogout } from "@store/authSlice";
 import { selectModal, setModalClose } from "@store/modalSlice";
 import { selectAlertInfo, setAlertClose } from "@store/alertSlice";
 import { persistor } from "@hooks/configStore";
@@ -35,15 +35,29 @@ const App = () => {
   const navigator = useNavigate();
   const location = useLocation();
   const [pathName, setPathName] = useState(false);
+  const userId = useAppSelector(selectUserId);
+  const loginType = useAppSelector(selectType);
   const isLogin = useAppSelector(selectLoginState);
   const { isOpen } = useAppSelector(selectModal);
   const { type, message, open } = useAppSelector(selectAlertInfo);
 
   const handleTokenExpiration = () => {
-    dispatch(setModalClose());
-    dispatch(setLogout());
-    persistor.purge(); // 리덕스 초기화
-    navigator("/login");
+    const autoLoginKey = localStorage.getItem("AL");
+    const headers = {
+      "Auto-Login": autoLoginKey ?? "",
+    };
+    authApi
+      .logout({ userId, type: loginType }, headers)
+      .then(() => {
+        dispatch(setModalClose());
+        dispatch(setLogout());
+      })
+      .then(() => {
+        persistor.purge();
+        localStorage.removeItem("AL");
+        navigator("/login");
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleAutoLogin = async () => {
