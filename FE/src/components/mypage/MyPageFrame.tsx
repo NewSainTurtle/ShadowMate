@@ -259,12 +259,39 @@ const MyPageFrame = ({ title }: Props) => {
     }
   };
 
+  const handleDeleteInit = () => {
+    const last = routineList.length - 2;
+    dispatch(
+      setRoutineList(
+        routineList.filter((_: RoutineItemConfig, idx: number) => {
+          return idx !== routineClick;
+        }),
+      ),
+    );
+    dispatch(setRoutineClick(routineClick === 0 ? routineClick : routineClick - 1));
+    dispatch(setRoutineInput(routineList.length > 0 ? routineList[last] : BASIC_ROUTINE_INPUT));
+    setIsInit(false);
+    setRoutineDayError(false);
+  };
+
   useEffect(() => {
     if (title === "카테고리" && categoryList.length < 1) setIsDisable(true);
     else if (title === "디데이" && ddayList.length < 1) setIsDisable(true);
     else if (title === "루틴" && routineList.length < 1) setIsDisable(true);
     else setIsDisable(false);
   }, [title, categoryList, ddayList, routineList]);
+
+  useEffect(() => {
+    // 임의 생성한 루틴이 있는 경우에서(isInit), 카테고리/디데이 페이지로 이동하면 삭제.
+    if (isInit) handleDeleteInit();
+  }, [title]);
+
+  useEffect(() => {
+    return () => {
+      // 임의 생성한 루틴이 있는 경우에서(isInit), 다른 페이지로 이동하면 삭제.
+      if (isInit) handleDeleteInit();
+    };
+  }, [isInit]);
 
   return (
     <div className={styles["frame"]}>
