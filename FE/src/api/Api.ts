@@ -125,6 +125,10 @@ export const settingApi = {
   editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
+  addRoutines: (
+    userId: number,
+    data: { routineContent: string; startDay: string; endDay: string; categoryId: number; days: string[] },
+  ) => Axios.post(api.setting.routines(userId), data),
 };
 
 export const socialApi = {
