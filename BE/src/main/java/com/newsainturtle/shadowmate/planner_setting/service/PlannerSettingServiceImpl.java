@@ -27,9 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +69,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     }
 
     private void checkValidDay(final String startDateStr, final String endDateStr) {
-        if (Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() < 0) {
+        if (ChronoUnit.DAYS.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)) < 0) {
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE);
         }
     }
@@ -88,7 +90,7 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
             }
 
             LocalDate target = startDate.plusDays(plusCount);
-            while (Period.between(target, endDate).getDays() >= 0) {
+            while (ChronoUnit.DAYS.between(target, endDate) >= 0) {
                 final RoutineTodo routineTodo = routineTodoRepository.save(RoutineTodo.builder()
                         .day(requestDay)
                         .dailyPlannerDay(localDateToString(target))
@@ -189,6 +191,19 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         }
     }
 
+    private void removeRoutineTodoDayLessThanToday(final Routine routine, final String day, final String today) {
+        final RoutineTodo[] routineTodoList = routineTodoRepository.findAllByRoutineAndDailyPlannerDayLessThanAndDay(routine, today, day);
+        for (RoutineTodo routineTodo : routineTodoList) {
+            routineTodo.setRoutine(null);
+            routineTodoRepository.deleteById(routineTodo.getId());
+        }
+    }
+
+    private void removeRoutineTodoDayGreaterThanEqualToday(final Routine routine, final String day, final String today) {
+        removeRoutineTodoAndTodoIsNull(routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayGreaterThanEqualAndDay(routine, today, day));
+        removeRoutineTodoAndTodoIsNotNull(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqualAndDay(routine, today, day));
+    }
+
     private void removeRoutineTodoDay(final Routine routine, final String day) {
         removeRoutineTodoAndTodoIsNull(routineTodoRepository.findAllByRoutineAndTodoIsNullAndDay(routine, day));
         removeRoutineTodoAndTodoIsNotNull(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDay(routine, day));
@@ -220,16 +235,52 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         return checkDays;
     }
 
-    private boolean[] updateRoutineOriginalDay(final User user, final Routine routine, final String startDay, final String endDay,
-                                               final Category category, final String routineContent, final String today, final boolean[] checkDays, final int order) {
+    private boolean[] updateRoutineOriginalDayOrder1(final Routine routine,
+                                                     final LocalDate originStartDay, final LocalDate originEndDay,
+                                                     final LocalDate requestStartDay, final LocalDate requestEndDay,
+                                                     final Category category, final String routineContent, final boolean[] checkDays) {
         final RoutineDay[] routineDays = routineDayRepository.findAllByRoutine(routine);
-        final LocalDate originStartDay = stringToLocalDate(routine.getStartDay());
-        final LocalDate originEndDay = stringToLocalDate(routine.getEndDay());
-        final LocalDate requestStartDay = stringToLocalDate(startDay);
-        final LocalDate requestEndDay = stringToLocalDate(endDay);
-        final boolean checkRemoveDate = Period.between(originStartDay, requestStartDay).getDays() > 0 || Period.between(originEndDay, requestEndDay).getDays() < 0;
-        final boolean checkAddDate = Period.between(originStartDay, requestStartDay).getDays() < 0 || Period.between(originEndDay, requestEndDay).getDays() > 0;
+        final boolean checkRemoveDate = ChronoUnit.DAYS.between(originStartDay, requestStartDay) > 0 || ChronoUnit.DAYS.between(requestEndDay, originEndDay) > 0;
+        final boolean checkAddDate = ChronoUnit.DAYS.between(requestStartDay, originStartDay) > 0 || ChronoUnit.DAYS.between(originEndDay, requestEndDay) > 0;
         final List<String> updateDays = new ArrayList<>();
+        for (RoutineDay routineDay : routineDays) {
+            int day = getDayIndex(routineDay.getDay());
+            if (checkDays[day]) {
+                updateDays.add(routineDay.getDay());
+                checkDays[day] = false;
+            } else {
+                removeRoutineTodoDay(routine, routineDay.getDay());
+                routineDay.setRoutine(null);
+                routineDayRepository.deleteById(routineDay.getId());
+            }
+        }
+
+        if (!updateDays.isEmpty()) {
+            if (checkRemoveDate)
+                removeRoutineTodoOrder1(routine, updateDays, originStartDay, originEndDay, requestStartDay, requestEndDay);
+            updateTodo(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDayIn(routine, updateDays), category, routineContent);
+            if (checkAddDate)
+                addRoutineTodoOrder1(routine, updateDays, originStartDay, originEndDay, requestStartDay, requestEndDay);
+        }
+
+        return checkDays;
+    }
+
+    private boolean[] updateRoutineOriginalDayOrder2(final User user, final Routine routine,
+                                                     final LocalDate originStartDay, final LocalDate originEndDay,
+                                                     final LocalDate requestStartDay, final LocalDate requestEndDay,
+                                                     final Category category, final String routineContent, final String today, final boolean[] checkDays) {
+        final RoutineDay[] routineDays = routineDayRepository.findAllByRoutine(routine);
+        final boolean checkRemoveDate = (ChronoUnit.DAYS.between(originStartDay, requestStartDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), requestStartDay) > 0) ||
+                (ChronoUnit.DAYS.between(requestEndDay, originEndDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), originEndDay) > 0);
+        final boolean checkAddDate = (ChronoUnit.DAYS.between(requestStartDay, originStartDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), originStartDay) > 0) ||
+                (ChronoUnit.DAYS.between(originEndDay, requestEndDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), requestEndDay) > 0);
+        final List<String> updateDays = new ArrayList<>();
+
+        final RoutineTodo[] routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanAndDayIn(routine, today, Arrays.stream(routineDays)
+                .map(RoutineDay::getDay)
+                .collect(Collectors.toList()));
+        addTodo(user, routineTodoList);
 
         for (RoutineDay routineDay : routineDays) {
             int day = getDayIndex(routineDay.getDay());
@@ -237,24 +288,20 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
                 updateDays.add(routineDay.getDay());
                 checkDays[day] = false;
             } else {
-                if (order == 1) {
-                    removeRoutineTodoDay(routine, routineDay.getDay());
-                }
+                removeRoutineTodoDayLessThanToday(routine, routineDay.getDay(), today);
+                removeRoutineTodoDayGreaterThanEqualToday(routine, routineDay.getDay(), today);
                 routineDay.setRoutine(null);
                 routineDayRepository.deleteById(routineDay.getId());
             }
         }
 
         if (!updateDays.isEmpty()) {
-            if (order == 1) {
-                if (checkRemoveDate)
-                    removeRoutineTodoOrder1(routine, updateDays, originStartDay, originEndDay, requestStartDay, requestEndDay);
-                updateTodo(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDayIn(routine, updateDays), category, routineContent);
-                if (checkAddDate)
-                    addRoutineTodoOrder1(routine, updateDays, originStartDay, originEndDay, requestStartDay, requestEndDay);
-            }
+            if (checkRemoveDate)
+                removeRoutineTodoOrder2(routine, updateDays, today, originStartDay, originEndDay, requestStartDay, requestEndDay);
+            updateTodo(routine, routineTodoRepository.findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqualAndDayIn(routine, today, updateDays), category, routineContent);
+            if (checkAddDate)
+                addRoutineTodoOrder2(routine, updateDays, today, originStartDay, originEndDay, requestStartDay, requestEndDay);
         }
-
 
         return checkDays;
     }
@@ -262,10 +309,10 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     private void removeRoutineTodoOrder1(final Routine routine, final List<String> updateDays,
                                          final LocalDate originStartDay, final LocalDate originEndDay,
                                          final LocalDate requestStartDay, final LocalDate requestEndDay) {
-        if (Period.between(originStartDay, requestStartDay).getDays() > 0) {
+        if (ChronoUnit.DAYS.between(originStartDay, requestStartDay) > 0) {
             removeRoutineTodoDays(routine, localDateToString(originStartDay), localDateToString(requestStartDay), updateDays);
         }
-        if (Period.between(originEndDay, requestEndDay).getDays() < 0) {
+        if (ChronoUnit.DAYS.between(requestEndDay, originEndDay) > 0) {
             removeRoutineTodoDays(routine, localDateToString(requestEndDay.plusDays(1)), localDateToString(originEndDay), updateDays);
         }
     }
@@ -273,13 +320,52 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     private void addRoutineTodoOrder1(final Routine routine, final List<String> updateDays,
                                       final LocalDate originStartDay, final LocalDate originEndDay,
                                       final LocalDate requestStartDay, final LocalDate requestEndDay) {
-        if (Period.between(originStartDay, requestStartDay).getDays() < 0) {
+        if (ChronoUnit.DAYS.between(requestStartDay, originStartDay) > 0) {
             addRoutineTodo(routine, requestStartDay, originStartDay.minusDays(1), updateDays);
         }
-        if (Period.between(originEndDay, requestEndDay).getDays() > 0) {
+        if (ChronoUnit.DAYS.between(originEndDay, requestEndDay) > 0) {
             addRoutineTodo(routine, originEndDay.plusDays(1), requestEndDay, updateDays);
         }
     }
+
+    private void removeRoutineTodoOrder2(final Routine routine, final List<String> updateDays, final String today,
+                                         final LocalDate originStartDay, final LocalDate originEndDay,
+                                         final LocalDate requestStartDay, final LocalDate requestEndDay) {
+        if (ChronoUnit.DAYS.between(originStartDay, requestStartDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), requestStartDay) > 0) {
+            if (ChronoUnit.DAYS.between(originStartDay, stringToLocalDate(today)) > 0) {
+                removeRoutineTodoDays(routine, today, localDateToString(requestStartDay.minusDays(1)), updateDays);
+            } else {
+                removeRoutineTodoDays(routine, localDateToString(originStartDay), localDateToString(requestStartDay.minusDays(1)), updateDays);
+            }
+        }
+        if (ChronoUnit.DAYS.between(requestEndDay, originEndDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), originEndDay) > 0) {
+            if (ChronoUnit.DAYS.between(requestEndDay, stringToLocalDate(today)) > 0) {
+                removeRoutineTodoDays(routine, today, localDateToString(originEndDay), updateDays);
+            } else {
+                removeRoutineTodoDays(routine, localDateToString(requestEndDay.plusDays(1)), localDateToString(originEndDay), updateDays);
+            }
+        }
+    }
+
+    private void addRoutineTodoOrder2(final Routine routine, final List<String> updateDays, final String today,
+                                      final LocalDate originStartDay, final LocalDate originEndDay,
+                                      final LocalDate requestStartDay, final LocalDate requestEndDay) {
+        if (ChronoUnit.DAYS.between(requestStartDay, originStartDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), originStartDay) > 0) {
+            if (ChronoUnit.DAYS.between(requestStartDay, stringToLocalDate(today)) > 0) {
+                addRoutineTodo(routine, stringToLocalDate(today), originStartDay.minusDays(1), updateDays);
+            } else {
+                addRoutineTodo(routine, requestStartDay, originStartDay.minusDays(1), updateDays);
+            }
+        }
+        if (ChronoUnit.DAYS.between(originEndDay, requestEndDay) > 0 && ChronoUnit.DAYS.between(stringToLocalDate(today), requestEndDay) > 0) {
+            if (ChronoUnit.DAYS.between(originEndDay, stringToLocalDate(today)) > 0) {
+                addRoutineTodo(routine, stringToLocalDate(today), requestEndDay, updateDays);
+            } else {
+                addRoutineTodo(routine, originEndDay.plusDays(1), requestEndDay, updateDays);
+            }
+        }
+    }
+
     @Override
     @Transactional
     public AddCategoryResponse addCategory(final User user, final AddCategoryRequest addCategoryRequest) {
@@ -500,23 +586,38 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
 
         final String[] strDays = new String[]{"", "월", "화", "수", "목", "금", "토", "일"};
         final String today = String.valueOf(LocalDate.now());
-        final String startDay = updateRoutineRequest.getStartDay();
-        final String endDay = updateRoutineRequest.getEndDay();
+        final LocalDate originStartDay = stringToLocalDate(routine.getStartDay());
+        final LocalDate originEndDay = stringToLocalDate(routine.getEndDay());
+        final LocalDate requestStartDay = stringToLocalDate(updateRoutineRequest.getStartDay());
+        final LocalDate requestEndDay = stringToLocalDate(updateRoutineRequest.getEndDay());
         boolean[] checkDays = checkDays(updateRoutineRequest.getDays());
 
-        checkDays = updateRoutineOriginalDay(user, routine, startDay, endDay,
-                category, updateRoutineRequest.getRoutineContent(), today, checkDays, updateRoutineRequest.getOrder());
+        if (updateRoutineRequest.getOrder().equals(1)) {
+            checkDays = updateRoutineOriginalDayOrder1(routine, originStartDay, originEndDay, requestStartDay, requestEndDay,
+                    category, updateRoutineRequest.getRoutineContent(), checkDays);
+        } else if (updateRoutineRequest.getOrder().equals(2)) {
+            checkDays = updateRoutineOriginalDayOrder2(user, routine, originStartDay, originEndDay, requestStartDay, requestEndDay,
+                    category, updateRoutineRequest.getRoutineContent(), today, checkDays);
+        }
+
         final List<String> addDays = new ArrayList<>();
         for (int day = 1; day <= 7; day++) {
             if (checkDays[day]) addDays.add(strDays[day]);
         }
         if (!addDays.isEmpty()) {
             if (updateRoutineRequest.getOrder().equals(1)) {
-                addRoutineTodo(routine, stringToLocalDate(startDay), stringToLocalDate(endDay), addDays);
+                addRoutineTodo(routine, requestStartDay, requestEndDay, addDays);
+                addRoutineDay(routine, addDays);
+            } else if (updateRoutineRequest.getOrder().equals(2)) {
+                if (ChronoUnit.DAYS.between(stringToLocalDate(today), requestStartDay) >= 0) {
+                    addRoutineTodo(routine, requestStartDay, requestEndDay, addDays);
+                } else if (ChronoUnit.DAYS.between(stringToLocalDate(today), requestEndDay) >= 0) {
+                    addRoutineTodo(routine, stringToLocalDate(today), requestEndDay, addDays);
+                }
                 addRoutineDay(routine, addDays);
             }
         }
-        routine.updateDayAndCategoryAndRoutineContent(startDay, endDay, category, updateRoutineRequest.getRoutineContent());
+        routine.updateDayAndCategoryAndRoutineContent(updateRoutineRequest.getStartDay(), updateRoutineRequest.getEndDay(), category, updateRoutineRequest.getRoutineContent());
     }
 
 }
