@@ -3,7 +3,7 @@
   background-color: transparent;
 
   .rdrMonthAndYearWrapper {
-    height: 4em;
+    height: 3em;
     padding: 0;
 
     select {
@@ -22,7 +22,6 @@
       &:hover {
         background-color: transparent;
       }
-
     }
 
     .rdrPprevButton i {
@@ -41,12 +40,23 @@
 
   .rdrMonth {
     padding: 0;
-    width: 27em;
+    width: 20em;
+  }
+
+  .rdrDay {
+    height: 2em;
+  }
+
+  .rdrDayToday .rdrDayNumber span:after {
+    bottom: -1px;
+  }
+
+  .rdrDayToday:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span:after {
+    background: none;
   }
 }
 
 .rdrCalendarWrapper:not(.rdrDateRangeWrapper) {
-
   .rdrDayDisabled,
   .rdrDayStartPreview,
   .rdrDayEndPreview {
@@ -61,7 +71,6 @@
 }
 
 .rdrDateRangeWrapper {
-
   .rdrStartEdgem,
   .rdrEndEdge,
   .rdrDayStartPreview,
@@ -74,6 +83,21 @@
     border: 1px solid var(--color-gray-4);
   }
 
+  .rdrMonth {
+    width: 27em;
+  }
+
+  .rdrDay {
+    height: 3em;
+  }
+
+  .rdrDayToday .rdrDayNumber span:after {
+    bottom: 3px;
+  }
+
+  .rdrDayToday:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span:after {
+    background: "#fff";
+  }
 }
 
 .rdrDefinedRangesWrapper {
@@ -91,8 +115,7 @@
 }
 
 .--none {
-
-  .rdrDay:not(.rdrDayPassive) .rdrInRange~.rdrDayNumber span {
+  .rdrDay:not(.rdrDayPassive) .rdrInRange ~ .rdrDayNumber span {
     color: var(--color-text);
 
     ::after {
@@ -139,7 +162,7 @@
 
 .rdrSelected,
 .rdrDayHovered span,
-.rdrDayHovered>span {
+.rdrDayHovered > span {
   left: 8px;
   right: 8px;
   border: none;
@@ -151,9 +174,4 @@
 
 .rdrDayEndOfWeek .rdrInRange {
   right: 8px;
-}
-
-.rdrMonthAndYearWrapper option:hover,
-.rdrDayToday .rdrDayNumber span::after {
-  background: var(--color-btn-blue);
 }
