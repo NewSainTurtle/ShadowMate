@@ -77,10 +77,10 @@ const MyPageFrame = ({ title }: Props) => {
   const routineClick = useAppSelector(selectRoutineClick);
   const routineInput: RoutineItemConfig = useAppSelector(selectRoutineInput);
   const [routineDayError, setRoutineDayError] = useState<boolean>(false);
+  const [isInit, setIsInit] = useState<boolean>(false);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
-  const [isInit, setIsInit] = useState<boolean>(false);
 
   /* 삭제 모달 변수 및 함수 */
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);

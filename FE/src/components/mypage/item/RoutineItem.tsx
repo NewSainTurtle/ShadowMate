@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -15,6 +15,10 @@ const RoutineItem = ({ idx, item }: Props) => {
   const click: number = useAppSelector(selectRoutineClick);
   const clicked = click === idx ? "--clicked" : "";
   const endRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [click]);
 
   return (
     <div
