@@ -36,7 +36,7 @@ const RoutineItem = ({ idx, item }: Props) => {
           <Text types="small">{dateFormat(item.endDay)}</Text>
         </div>
       </div>
-      <div style={{ backgroundColor: item.category?.categoryColorCode ?? "#E9E9EB" }}></div>
+      <div style={{ backgroundColor: item.category?.categoryColorCode }}></div>
     </div>
   );
 };
