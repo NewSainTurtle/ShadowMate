@@ -10,14 +10,19 @@ interface Props {
   handleUpdate: (title: string) => void;
   handleDelete: () => void;
   isDisable: boolean;
+  isInit: boolean;
 }
 
 /**
  * MyPage - 다이어리, 디데이 설정 중 오른쪽 사이드
  */
 
-const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }: Props) => {
-  const disable = isDisable ? "--disable" : "";
+const MyPageDetail = ({ children, title, isDisable, isInit, handleUpdate, handleDelete }: Props) => {
+  const disable = () => {
+    if (isInit) return "";
+    return isDisable ? "--disable" : "";
+  };
+
   return (
     <div className={styles["frame__container"]}>
       <div className={styles["frame__title"]}>
@@ -25,11 +30,11 @@ const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }
       </div>
       {children}
       <div className={styles["frame__button"]}>
-        <div className={styles[`frame__button--delete${disable}`]} onClick={handleDelete}>
+        <div className={styles[`frame__button--delete${disable()}`]} onClick={handleDelete}>
           <DeleteOutlined />
           <Text>삭제</Text>
         </div>
-        <div className={styles[`frame__button--save${disable}`]} onClick={() => handleUpdate(title)}>
+        <div className={styles[`frame__button--save${disable()}`]} onClick={() => handleUpdate(title)}>
           <SaveIcon />
           <Text>저장</Text>
         </div>

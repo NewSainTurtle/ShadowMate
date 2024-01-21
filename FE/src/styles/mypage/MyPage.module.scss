@@ -120,11 +120,16 @@ $color-warning: var(--color-warning);
   }
 }
 
+#date {
+  position: relative;
+}
+
 .date {
   &__picker {
     position: absolute;
-    right: 3em;
-    top: 11em;
+    right: 0;
+    top: 40;
+    z-index: 1000;
 
     > svg,
     span,
@@ -364,6 +369,19 @@ $color-warning: var(--color-warning);
   }
 }
 
+#routine {
+  &__days {
+    margin-bottom: 0;
+  }
+  &__error {
+    width: 100%;
+    margin: 0.5em 0 2em 0;
+    > span {
+      color: $color-warning;
+    }
+  }
+}
+
 .routine {
   &__item {
     display: grid;
@@ -398,7 +416,7 @@ $color-warning: var(--color-warning);
   &__day {
     &-list {
       display: flex;
-      justify-content: space-evenly;
+      justify-content: space-between;
       width: 100%;
       > div > input {
         display: none;
@@ -444,6 +462,10 @@ $color-warning: var(--color-warning);
         font-size: medium;
         cursor: pointer;
       }
+    }
+    > .start,
+    .end {
+      position: relative;
     }
   }
 }

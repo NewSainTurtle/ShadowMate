@@ -10,10 +10,11 @@ import Routine from "@components/mypage/details/diary/Routine";
 import CategoryList from "@components/mypage/list/CategoryList";
 import DdayList from "@components/mypage/list/DdayList";
 import RoutineList from "@components/mypage/list/RoutineList";
-import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
 import {
   selectCategoryClick,
   selectCategoryColorClick,
@@ -32,7 +33,17 @@ import {
   setDdayInput,
   setDdayList,
 } from "@store/mypage/ddaySlice";
-import { selectRoutineClick, selectRoutineInput, selectRoutineList } from "@store/mypage/routineSlice";
+import {
+  BASIC_ROUTINE_INPUT,
+  InitRoutineItemConfig,
+  RoutineItemConfig,
+  selectRoutineClick,
+  selectRoutineInput,
+  selectRoutineList,
+  setRoutineClick,
+  setRoutineInput,
+  setRoutineList,
+} from "@store/mypage/routineSlice";
 import dayjs from "dayjs";
 
 interface Props {
@@ -64,10 +75,12 @@ const MyPageFrame = ({ title }: Props) => {
   /* 루틴 관련 변수 */
   const routineList = useAppSelector(selectRoutineList);
   const routineClick = useAppSelector(selectRoutineClick);
-  const routineInput = useAppSelector(selectRoutineInput);
+  const routineInput: RoutineItemConfig = useAppSelector(selectRoutineInput);
+  const [routineDayError, setRoutineDayError] = useState<boolean>(false);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
+  const [isInit, setIsInit] = useState<boolean>(false);
 
   /* 삭제 모달 변수 및 함수 */
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
@@ -76,6 +89,13 @@ const MyPageFrame = ({ title }: Props) => {
     setDeleteModalOpen(true);
   };
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
+
+  const getCategoryItem = (id: number) => {
+    categoryList.map((item: CategoryItemConfig) => {
+      if (item.categoryId == id) return item;
+    });
+    return BASIC_CATEGORY_ITEM;
+  };
 
   const handleAdd = (title: string) => {
     if (title === "카테고리") {
@@ -114,7 +134,18 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err));
     } else if (title === "루틴") {
-      // 작성 예정
+      if (isInit) return;
+      const init: InitRoutineItemConfig = {
+        routineContent: "새 루틴",
+        startDay: new Date(),
+        endDay: new Date(),
+        category: null,
+        days: [],
+      };
+      dispatch(setRoutineList([...routineList, { ...init }]));
+      dispatch(setRoutineClick(routineList.length));
+      dispatch(setRoutineInput({ ...init }));
+      setIsInit(true);
     }
   };
 
@@ -150,13 +181,44 @@ const MyPageFrame = ({ title }: Props) => {
       if (input.ddayTitle.length < 1 || input.ddayTitle.length > 20) return;
       settingApi
         .editDdays(userId, input)
-        .then((res) => {
+        .then(() => {
           copyDdays[ddayClick] = { ...input };
           dispatch(setDdayList(copyDdays));
         })
         .catch((err) => console.log(err));
     } else if (title === "루틴") {
-      // 작성 예정
+      const { routineContent, category, startDay, endDay, days } = routineInput;
+      if (days.length < 1) {
+        setRoutineDayError(true);
+        return;
+      } else setRoutineDayError(false);
+      if (routineContent.length < 1 || routineContent.length > 50) return;
+
+      const input = {
+        startDay: dayjs(startDay).format("YYYY-MM-DD"),
+        endDay: dayjs(endDay).format("YYYY-MM-DD"),
+        categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
+        routineContent,
+        days,
+      };
+
+      // 등록과 수정 구분
+      if (isInit) {
+        settingApi
+          .addRoutines(userId, input)
+          .then((res) => {
+            const routineId = res.data.data.routineId;
+            const category = input.categoryId === 0 ? BASIC_CATEGORY_ITEM : getCategoryItem(input.categoryId);
+            const newRoutine: RoutineItemConfig = { ...input, category, routineId };
+            let copyList = [...routineList];
+            copyList[routineClick] = newRoutine;
+            dispatch(setRoutineList(copyList));
+          })
+          .then(() => {
+            setIsInit(false);
+          })
+          .catch((err) => console.log(err));
+      }
     }
   };
 
@@ -211,7 +273,7 @@ const MyPageFrame = ({ title }: Props) => {
 
   return (
     <div className={styles["frame"]}>
-      <MyPageList handleAdd={handleAdd} title={title}>
+      <MyPageList handleAdd={handleAdd} title={title} isInit={isInit}>
         {
           {
             카테고리: <CategoryList />,
@@ -223,6 +285,7 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
+        isInit={isInit}
         handleUpdate={handleUpdate}
         handleDelete={handleDeleteModalOpen}
       >
@@ -231,7 +294,7 @@ const MyPageFrame = ({ title }: Props) => {
             {
               카테고리: categoryList.length != 0 && <Category />,
               디데이: ddayList.length != 0 && <Dday />,
-              루틴: routineList.length != 0 && <Routine />,
+              루틴: routineList.length != 0 && <Routine dayError={routineDayError} />,
             }[title]
           }
         </>
