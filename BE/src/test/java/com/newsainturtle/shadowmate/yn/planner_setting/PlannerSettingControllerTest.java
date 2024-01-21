@@ -1241,6 +1241,323 @@ class PlannerSettingControllerTest {
             }
 
         }
+
+        @Nested
+        class 루틴수정 {
+            final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                    .routineId(1L)
+                    .order(1)
+                    .routineContent("아침운동하기")
+                    .startDay("2024-01-01")
+                    .endDay("2024-01-31")
+                    .days(Arrays.asList(new String[]{"월", "월", "수"}))
+                    .categoryId(0L)
+                    .build();
+            @Test
+            void 실패_없는사용자() throws Exception {
+                //given
+
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isForbidden());
+            }
+
+            @Test
+            void 실패_루틴ID_Null() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(null)
+                        .order(1)
+                        .routineContent("아침운동하기")
+                        .startDay("2024-01-01")
+                        .endDay("2024-01-31")
+                        .days(Arrays.asList(new String[]{"월", "월", "수"}))
+                        .categoryId(0L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_order_Null() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(1L)
+                        .order(null)
+                        .routineContent("아침운동하기")
+                        .startDay("2024-01-01")
+                        .endDay("2024-01-31")
+                        .days(Arrays.asList(new String[]{"월", "월", "수"}))
+                        .categoryId(0L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_루틴내용_Null() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(1L)
+                        .order(1)
+                        .routineContent(null)
+                        .startDay("2024-01-01")
+                        .endDay("2024-01-31")
+                        .days(Arrays.asList(new String[]{"월", "월", "수"}))
+                        .categoryId(0L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_시작날짜_Null() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(1L)
+                        .order(1)
+                        .routineContent("아침운동하기")
+                        .startDay(null)
+                        .endDay("2024-01-31")
+                        .days(Arrays.asList(new String[]{"월", "월", "수"}))
+                        .categoryId(0L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_종료날짜_Null() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(1L)
+                        .order(1)
+                        .routineContent("아침운동하기")
+                        .startDay("2024-01-01")
+                        .endDay(null)
+                        .days(Arrays.asList(new String[]{"월", "월", "수"}))
+                        .categoryId(0L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_요일리스트_Null() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(1L)
+                        .order(1)
+                        .routineContent("아침운동하기")
+                        .startDay("2024-01-01")
+                        .endDay("2024-01-31")
+                        .days(null)
+                        .categoryId(0L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_빈요일리스트() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(1L)
+                        .order(1)
+                        .routineContent("아침운동하기")
+                        .startDay("2024-01-01")
+                        .endDay("2024-01-31")
+                        .days(new ArrayList<>())
+                        .categoryId(0L)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_카테고리ID_Null() throws Exception {
+                //given
+                final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
+                        .routineId(1L)
+                        .order(1)
+                        .routineContent("아침운동하기")
+                        .startDay("2024-01-01")
+                        .endDay("2024-01-31")
+                        .days(Arrays.asList(new String[]{"월", "월", "수"}))
+                        .categoryId(null)
+                        .build();
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은루틴() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_시작날짜보다_과거인종료날짜() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은카테고리() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_올바르지않은order값() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 실패_유효하지않은요일() throws Exception {
+                //given
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void 성공() throws Exception {
+                //given
+
+                //when
+                final ResultActions resultActions = mockMvc.perform(
+                        MockMvcRequestBuilders.put(url, userId)
+                                .content(gson.toJson(updateRoutineRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                );
+
+                //then
+                resultActions.andExpect(status().isOk());
+            }
+
+        }
     }
 
 }
