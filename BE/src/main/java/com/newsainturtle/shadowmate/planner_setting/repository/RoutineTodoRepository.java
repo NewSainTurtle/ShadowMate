@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface RoutineTodoRepository extends JpaRepository<RoutineTodo, Long> {
 
+    RoutineTodo findByTodo(final Todo todo);
     RoutineTodo[] findAllByRoutineAndDailyPlannerDayLessThanAndDay(final Routine routine, final String dailyPlannerDay, final String day);
     RoutineTodo[] findAllByRoutineAndTodoIsNull(final Routine routine);
     RoutineTodo[] findAllByRoutineAndTodoIsNullAndDay(final Routine routine, final String day);
