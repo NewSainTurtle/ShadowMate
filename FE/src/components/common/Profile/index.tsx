@@ -8,7 +8,7 @@ import { ProfileConfig } from "@components/common/FriendProfile";
 import { FollowingType } from "@util/friend.interface";
 import { persistor } from "@hooks/configStore";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectUserId, setLogout } from "@store/authSlice";
+import { selectType, selectUserId, setLogout } from "@store/authSlice";
 import {
   clearFollowingList,
   clearFriendInfo,
@@ -16,7 +16,7 @@ import {
   selectFriendId,
   setFollowingList,
 } from "@store/friendSlice";
-import { followApi, userApi } from "@api/Api";
+import { authApi, followApi, userApi } from "@api/Api";
 
 interface Props {
   types: "기본" | "로그아웃";
@@ -31,6 +31,7 @@ const Profile = ({ types, profile }: Props) => {
   const { profileImage, nickname, statusMessage } = profile;
   const [isFollow, setIsFollow] = useState<boolean>(false);
   const followingList = useAppSelector(selectFollowingList);
+  const type = useAppSelector(selectType);
 
   const followRequested = () => {
     followApi
@@ -51,12 +52,23 @@ const Profile = ({ types, profile }: Props) => {
   };
 
   const handleLogout = () => {
-    dispatch(setLogout());
-    dispatch(clearFriendInfo());
-    dispatch(clearFollowingList());
-    setTimeout(() => {
-      persistor.purge();
-    }, 200);
+    const autoLoginKey = localStorage.getItem("AL");
+    const headers = {
+      // 자동로그인 한 경우 header에 key값, 아닌 경우 "".
+      "Auto-Login": autoLoginKey ?? "",
+    };
+    authApi
+      .logout({ userId, type }, headers)
+      .then(() => {
+        dispatch(setLogout());
+        dispatch(clearFriendInfo());
+        dispatch(clearFollowingList());
+      })
+      .then(() => {
+        persistor.purge();
+        localStorage.removeItem("AL");
+      })
+      .catch((e) => console.log(e));
   };
 
   useEffect(() => {
@@ -92,7 +104,7 @@ const Profile = ({ types, profile }: Props) => {
               ),
               로그아웃: (
                 <div className={styles["profile_button"]}>
-                  <Button children="로그아웃" types="gray" onClick={() => handleLogout()} />
+                  <Button children="로그아웃" types="gray" onClick={handleLogout} />
                 </div>
               ),
             }[types]

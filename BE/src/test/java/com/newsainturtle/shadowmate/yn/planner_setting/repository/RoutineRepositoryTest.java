@@ -1,6 +1,10 @@
 package com.newsainturtle.shadowmate.yn.planner_setting.repository;
 
+import com.newsainturtle.shadowmate.planner_setting.entity.Category;
+import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
 import com.newsainturtle.shadowmate.planner_setting.entity.Routine;
+import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.RoutineRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -26,6 +30,12 @@ class RoutineRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private CategoryColorRepository categoryColorRepository;
 
     private User user;
     private final String startDay = "2023-12-25";
@@ -163,6 +173,58 @@ class RoutineRepositoryTest {
 
         //then
         assertThat(findRoutine).isNull();
+    }
+
+    @Nested
+    class 해당카테고리가있는루틴_카운트 {
+        @Test
+        void 루틴없음() {
+            //given
+            final CategoryColor categoryColor = categoryColorRepository.findById(1L).orElse(null);
+            final Category category = categoryRepository.save(Category.builder()
+                    .id(1L)
+                    .categoryColor(categoryColor)
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build());
+
+            //when
+            final long count = routineRepository.countByCategory(category);
+
+            //then
+            assertThat(count).isZero();
+        }
+
+        @Test
+        void 루틴있음() {
+            //given
+            final CategoryColor categoryColor = categoryColorRepository.findById(1L).orElse(null);
+            final Category category = categoryRepository.save(Category.builder()
+                    .id(1L)
+                    .categoryColor(categoryColor)
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build());
+            routineRepository.save(Routine.builder()
+                    .startDay(startDay)
+                    .endDay(endDay)
+                    .routineContent(routineContent)
+                    .category(category)
+                    .user(user)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
+                    .build());
+
+            //when
+            final long count = routineRepository.countByCategory(category);
+
+            //then
+            assertThat(count).isEqualTo(1);
+        }
     }
 
 }

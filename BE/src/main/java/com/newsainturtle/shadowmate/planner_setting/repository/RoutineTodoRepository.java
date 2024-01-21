@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner_setting.repository;
 
+import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner_setting.entity.Routine;
 import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import org.springframework.data.jpa.repository.JpaRepository;

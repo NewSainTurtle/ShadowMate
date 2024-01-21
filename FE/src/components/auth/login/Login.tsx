@@ -6,8 +6,8 @@ import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
-import { useAppDispatch } from "@hooks/hook";
-import { setIsGoogle, setLogin, setUserInfo } from "@store/authSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { setLogin, selectAutoLogin, setAutoLogin, setIsGoogle, setUserInfo } from "@store/authSlice";
 import { setPopupOpen } from "@store/modalSlice";
 
 const getCookie = (name: string) => {
@@ -27,12 +27,12 @@ const Login = () => {
     email: true,
     password: true,
   });
-  const [autoLogin, setAutoLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
   });
   const { email, password } = loginInfo;
+  const autoLogin = useAppSelector(selectAutoLogin);
 
   const handleGoogleLogin = () => {
     window.location.href = process.env.REACT_APP_API_URL + "/api/oauth/google";
@@ -44,6 +44,10 @@ const Login = () => {
       ...loginInfo,
       [name]: value,
     });
+  };
+
+  const handleAutoLogin = () => {
+    dispatch(setAutoLogin(!autoLogin));
   };
 
   const handleLogin = () => {
@@ -58,19 +62,16 @@ const Login = () => {
         const accessToken = res.headers["authorization"];
         const userId = res.headers["id"];
         const type = res.headers["type"];
-        const auto = res.headers["Auto-Login"] ?? ""; // 자동로그인 아닐 때는 header에 정보 없음.
-        dispatch(setLogin({ accessToken, userId, type, autoLogin: auto }));
-        // if (auto && auto === "true") {
-        //   localStorage.clear();
-        //   localStorage.setItem("accessToken", accessToken);
-        //   localStorage.setItem("id", userId);
-        // }
+        dispatch(setLogin({ accessToken, userId, type }));
+
+        // 자동로그인 auto-login 코드 저장
+        const auto = res.headers["auto-login"];
+        if (auto) localStorage.setItem("AL", auto);
 
         userApi.getProfiles(userId).then((res) => {
           dispatch(setUserInfo(res.data.data));
           navigator("/month");
         });
-
         dispatch(setPopupOpen());
       })
       .catch((err) => {
@@ -80,6 +81,7 @@ const Login = () => {
   };
 
   useEffect(() => {
+    // 소셜 로그인
     const token = getCookie("token");
     const id = getCookie("userId");
     const type = getCookie("type");
@@ -124,13 +126,13 @@ const Login = () => {
           />
         </div>
         <div className={styles.login_toolbox}>
-          {/* <div className={styles.login_checkbox}>
-            <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={() => setAutoLogin(!autoLogin)} />
+          <div className={styles.login_checkbox}>
+            <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={handleAutoLogin} />
             <label htmlFor="auto">
               <Text types="small">자동로그인</Text>
             </label>
           </div>
-          <Text types="small">비밀번호 찾기</Text> */}
+          {/* <Text types="small">비밀번호 찾기</Text> */}
         </div>
         <div className={styles.login_warning} style={{ visibility: showAlert ? "visible" : "hidden" }}>
           <Text types="small">아이디 또는 비밀번호를 잘못 입력했습니다.</Text>

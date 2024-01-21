@@ -47,6 +47,7 @@ const MyPage = ({ name }: Props) => {
               "다이어리 설정": <MyPageDiary />,
               "카테고리 설정": <MyPageFrame title="카테고리" />,
               "디데이 설정": <MyPageFrame title="디데이" />,
+              "루틴 설정": <MyPageFrame title="루틴" />,
               "팔로워 목록": <MyFriend title="팔로워" />,
               "팔로잉 목록": <MyFriend title="팔로잉" />,
               "친구 검색": <MyFriend title="친구검색" />,

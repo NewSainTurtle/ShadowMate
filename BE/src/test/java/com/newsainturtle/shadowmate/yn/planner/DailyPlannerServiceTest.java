@@ -18,7 +18,10 @@ import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.CategoryColor;
+import com.newsainturtle.shadowmate.planner_setting.entity.Routine;
+import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -65,6 +68,9 @@ class DailyPlannerServiceTest extends DateCommonService {
 
     @Mock
     private SocialRepository socialRepository;
+
+    @Mock
+    private RoutineTodoRepository routineTodoRepository;
 
     private final String email = "yntest@shadowmate.com";
     private final String password = "yntest1234";
@@ -414,10 +420,11 @@ class DailyPlannerServiceTest extends DateCommonService {
             }
 
             @Test
-            void 성공() {
+            void 성공_관련루틴없음() {
                 //given
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
                 doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+                doReturn(null).when(routineTodoRepository).findByTodo(todo);
 
                 //when
                 dailyPlannerServiceImpl.removeDailyTodo(user, removeDailyTodoRequest);
@@ -427,6 +434,44 @@ class DailyPlannerServiceTest extends DateCommonService {
                 //verify
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
                 verify(todoRepository, times(1)).deleteById(any(Long.class));
+                verify(routineTodoRepository, times(1)).findByTodo(any(Todo.class));
+            }
+
+            @Test
+            void 성공_관련루틴있음() {
+                //given
+                final Routine routine = Routine.builder()
+                        .id(1L)
+                        .startDay("2023-12-25")
+                        .endDay("2023-12-30")
+                        .routineContent("아침운동")
+                        .category(null)
+                        .user(user)
+                        .routineDays(new ArrayList<>())
+                        .routineTodos(new ArrayList<>())
+                        .build();
+                final RoutineTodo routineTodo = RoutineTodo.builder()
+                        .id(1L)
+                        .todo(todo)
+                        .dailyPlannerDay("2023-12-25")
+                        .day("월")
+                        .routine(routine)
+                        .build();
+
+                doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
+                doReturn(todo).when(todoRepository).findByIdAndDailyPlanner(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+                doReturn(routineTodo).when(routineTodoRepository).findByTodo(todo);
+
+                //when
+                dailyPlannerServiceImpl.removeDailyTodo(user, removeDailyTodoRequest);
+
+                //then
+
+                //verify
+                verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any());
+                verify(todoRepository, times(1)).deleteById(any(Long.class));
+                verify(routineTodoRepository, times(1)).findByTodo(any(Todo.class));
+                verify(routineTodoRepository, times(1)).deleteById(any(Long.class));
             }
 
         }

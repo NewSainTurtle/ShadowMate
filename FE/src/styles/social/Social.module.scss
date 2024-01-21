@@ -1,8 +1,10 @@
 @use "@styles/common/Profile.module.scss";
+@use "@styles/common/Input.module.scss";
 $color-background: var(--color-background);
 $color-text: var(--color-text);
 $color-gray_1: var(--color-gray-1);
 $color-gray_2: var(--color-gray-2);
+$color-gray_3: var(--color-gray-3);
 $color-gray_4: var(--color-gray-4);
 $color-gray_5: var(--color-gray-5);
 
@@ -25,12 +27,65 @@ $color-gray_5: var(--color-gray-5);
     box-sizing: border-box;
 
     &__search {
-      max-width: 26%;
-      display: grid;
-      grid-template-columns: 3fr 1fr;
-      grid-template-rows: 1fr;
-      align-items: center;
-      gap: 0.5em;
+      position: relative;
+      width: calc((100% - 6.5em) / 3);
+      max-width: 30%;
+
+      .searchInput {
+        @extend .input;
+
+        &__icon {
+          @extend .input__icon;
+        }
+
+        &__button {
+          @extend .input__icon;
+          margin: 0 0.1em;
+          padding: 0.2rem 0.5rem;
+          box-sizing: border-box;
+          border-radius: 0;
+          &:hover {
+            background-color: $color-gray_1;
+          }
+        }
+      }
+
+      .divider {
+        height: 1.3em;
+        background-color: $color-gray_3;
+      }
+
+      .date__picker {
+        position: absolute;
+        top: 2.5em;
+        left: calc(10em + 5em);
+        z-index: 3;
+        background-color: $color-gray_1;
+
+        > div {
+          position: relative;
+        }
+
+        &__button {
+          position: absolute;
+          left: 1em;
+          bottom: 1em;
+          color: $color-gray_5;
+          cursor: pointer;
+        }
+      }
+    }
+
+    &__box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1em;
+
+      > span {
+        display: block;
+        color: $color-gray_5;
+      }
     }
 
     &__sort {

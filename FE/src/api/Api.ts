@@ -5,7 +5,10 @@ import { MonthConfig } from "@store/planner/monthSlice";
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
   login: (data: { email: string; password: string }) => Axios.post(api.auth.login(), data),
+  autoLogin: () => Axios.post(api.auth.autoLogin()),
   googleLogin: () => Axios.post(api.auth.googleLogin()),
+  logout: (data: { userId: number; type: string }, headers: { "Auto-Login": string }) =>
+    Axios.post(api.auth.logout(), data, { headers }),
   nickname: (data: { nickname: string }) => Axios.post(api.auth.nickname(), data),
   deleteNickname: (data: { nickname: string }) => Axios.delete(api.auth.nickname(), { data }),
   emailAuthentication: (data: { email: string }) => Axios.post(api.auth.emailAuthentication(), data),
@@ -124,12 +127,19 @@ export const settingApi = {
   editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
+  routines: (userId: number) => Axios.get(api.setting.routines(userId)),
 };
 
 export const socialApi = {
-  getSocial: (userId: number, params: { sort: "latest" | "popularity"; pageNumber: number }) =>
-    Axios.get(api.social.getSocial(userId), { params: params }),
-  searches: (userId: number, data: { nickname: string; sort: "latest" | "popularity"; pageNumber: number }) =>
-    Axios.post(api.social.searches(userId), data),
+  getSocial: (
+    userId: number,
+    params: {
+      sort: "latest" | "popularity";
+      "page-number": number;
+      nickname: string;
+      "start-date": string;
+      "end-date": string;
+    },
+  ) => Axios.get(api.social.getSocial(userId), { params: params }),
   delete: (userId: number, socialId: number) => Axios.delete(api.social.delete(userId, socialId)),
 };

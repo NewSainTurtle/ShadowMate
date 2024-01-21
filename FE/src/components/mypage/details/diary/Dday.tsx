@@ -1,13 +1,16 @@
 import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
+import "@styles/common/DataRangePicker.css";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import dayjs from "dayjs";
 import { DdayItemConfig } from "@util/planner.interface";
 import { dateFormat } from "@util/getThisWeek";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Calendar } from "react-date-range";
+import ko from "date-fns/locale/ko";
+import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDdayClick, selectDdayInput, selectDdayList, setDdayInput } from "@store/mypage/ddaySlice";
 
@@ -80,12 +83,15 @@ const MyPageDday = () => {
       </div>
       {openCalendar && (
         <div ref={calendarRef} className={styles["date__picker"]}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              value={dayjs(ddayDate)}
-              onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
-            />
-          </LocalizationProvider>
+          <Calendar
+            locale={ko}
+            date={new Date(ddayDate)}
+            onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
+            dateDisplayFormat={"yyyy-mm-dd"}
+            minDate={new Date(dayjs().startOf("year").add(-25, "year").toDate())}
+            maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
+            fixedHeight
+          />
         </div>
       )}
     </div>

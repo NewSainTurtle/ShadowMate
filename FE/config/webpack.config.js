@@ -44,7 +44,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(sa|sc|c)ss$/,
+        test: /\.(sa|sc)ss$/,
         exclude: "/node_modules/",
         use: [
           isDevMode ? "style-loader" : MiniCssExtractPlugin.loader,
@@ -59,6 +59,11 @@ module.exports = {
           },
           "sass-loader",
         ],
+      },
+      {
+        test: /\.css$/,
+        exclude: "/node_modules/",
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
