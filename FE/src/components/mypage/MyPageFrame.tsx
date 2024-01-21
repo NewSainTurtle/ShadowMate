@@ -161,14 +161,9 @@ const MyPageFrame = ({ title }: Props) => {
       if (input.categoryTitle.length < 1 || input.categoryTitle.length > 10) return;
       settingApi
         .editCategories(userId, input)
-        .then((res) => {
+        .then(() => {
           let copyList: CategoryItemConfig[] = [...categoryList];
-          copyList[categoryClick] = {
-            categoryId: input.categoryId,
-            categoryTitle: input.categoryTitle,
-            categoryEmoticon: input.categoryEmoticon,
-            categoryColorCode: categoryColors[colorClick].categoryColorCode,
-          };
+          copyList[categoryClick] = { ...input, categoryColorCode: categoryColors[colorClick].categoryColorCode };
           dispatch(setCategoryList(copyList));
         })
         .catch((err) => console.log(err));
@@ -249,7 +244,7 @@ const MyPageFrame = ({ title }: Props) => {
         .then(() => {
           dispatch(
             setDdayList(
-              ddayList.filter((item: DdayItemConfig, idx: number) => {
+              ddayList.filter((_: DdayItemConfig, idx: number) => {
                 return idx !== ddayClick;
               }),
             ),
