@@ -127,4 +127,13 @@ public class PlannerSettingController {
         plannerSettingServiceImpl.removeRoutine(principalDetails.getUser(), removeRoutineRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_ROUTINE));
     }
+
+    @PutMapping("/{userId}/routines")
+    public ResponseEntity<BaseResponse> updateRoutine(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                      @PathVariable("userId") final Long userId,
+                                                      @RequestBody @Valid final UpdateRoutineRequest updateRoutineRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.updateRoutine(principalDetails.getUser(), updateRoutineRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_ROUTINE));
+    }
 }
