@@ -60,9 +60,12 @@ const App = () => {
       .catch((err) => console.log(err));
   };
 
-  const handleAutoLogin = async () => {
+  const handleAutoLogin = async (key: string) => {
     try {
-      const res = await authApi.autoLogin();
+      const headers = {
+        "Auto-Login": key,
+      };
+      const res = await authApi.autoLogin(null, headers);
       const accessToken = res.headers["authorization"];
       const userId = res.headers["id"];
       const type = res.headers["type"];
@@ -92,7 +95,7 @@ const App = () => {
 
   useEffect(() => {
     const key = localStorage.getItem("AL");
-    if (key) handleAutoLogin();
+    if (key) handleAutoLogin(key);
   }, []);
 
   return (
