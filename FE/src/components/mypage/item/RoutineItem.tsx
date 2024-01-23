@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectRoutineClick, setRoutineClick, RoutineItemConfig } from "@store/mypage/routineSlice";
+  selectRoutineIsInit,
 import { dateFormat } from "@util/getThisWeek";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 const RoutineItem = ({ idx, item }: Props) => {
   const dispatch = useAppDispatch();
   const click: number = useAppSelector(selectRoutineClick);
-  const clicked = click === idx ? "--clicked" : "";
+  const isInit = useAppSelector(selectRoutineIsInit);
   const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

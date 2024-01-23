@@ -37,7 +37,7 @@ export interface RoutineItemConfig {
   startDay: string | Date;
   endDay: string | Date;
   days: string[];
-  category: CategoryItemConfig;
+  category: CategoryItemConfig | null;
 }
 
 export interface InitRoutineItemConfig {
@@ -52,6 +52,7 @@ interface RoutineConfig {
   routineList: RoutineItemConfig[];
   routineClick: number;
   routineInput: RoutineItemConfig | InitRoutineItemConfig;
+  routineIsInit: boolean;
 }
 
 const initialState: RoutineConfig = {
@@ -69,6 +70,7 @@ const initialState: RoutineConfig = {
       categoryColorCode: BASIC_CATEGORY_ITEM.categoryColorCode,
     },
   },
+  routineIsInit: false,
 };
 
 const routineSlice = createSlice({
@@ -76,6 +78,7 @@ const routineSlice = createSlice({
   initialState,
   reducers: {
     setRoutineList: (state, { payload }: PayloadAction<RoutineItemConfig[]>) => {
+      // console.log(payload);
       state.routineList = payload;
     },
     setRoutineClick: (state, { payload }: PayloadAction<number>) => {
@@ -83,6 +86,9 @@ const routineSlice = createSlice({
     },
     setRoutineInput: (state, { payload }: PayloadAction<RoutineItemConfig | InitRoutineItemConfig>) => {
       state.routineInput = payload;
+    },
+    setRoutineIsInit: (state, { payload }: PayloadAction<boolean>) => {
+      state.routineIsInit = payload;
     },
   },
   extraReducers: (builder) => {
@@ -92,9 +98,10 @@ const routineSlice = createSlice({
 });
 
 export const BASIC_ROUTINE_INPUT = initialState.routineInput;
-export const { setRoutineList, setRoutineClick, setRoutineInput } = routineSlice.actions;
+export const { setRoutineList, setRoutineClick, setRoutineInput, setRoutineIsInit } = routineSlice.actions;
 export const selectRoutineList = (state: rootState) => state.routine.routineList;
 export const selectRoutineClick = (state: rootState) => state.routine.routineClick;
 export const selectRoutineInput = (state: rootState) => state.routine.routineInput;
+export const selectRoutineIsInit = (state: rootState) => state.routine.routineIsInit;
 
 export default routineSlice.reducer;

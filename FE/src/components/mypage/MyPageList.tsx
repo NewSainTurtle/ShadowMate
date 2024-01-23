@@ -2,19 +2,21 @@ import React, { ReactNode, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import AddIcon from "@mui/icons-material/Add";
+import { useAppSelector } from "@hooks/hook";
+import { selectRoutineIsInit } from "@store/mypage/routineSlice";
 
 interface Props {
   children: ReactNode;
   handleAdd: (title: string) => void;
   title: string;
-  isInit: boolean;
 }
 
 /**
  * MyPage - 다이어리, 디데이 설정 중 왼쪽 사이드
  */
 
-const MyPageList = ({ children, handleAdd, title, isInit }: Props) => {
+const MyPageList = ({ children, handleAdd, title }: Props) => {
+  const isInit = useAppSelector(selectRoutineIsInit);
   const disable = isInit ? "--disable" : "";
   return (
     <div className={styles["frame__container"]}>

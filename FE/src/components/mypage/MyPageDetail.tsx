@@ -3,6 +3,8 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import SaveIcon from "@mui/icons-material/Save";
 import { DeleteOutlined } from "@mui/icons-material";
+import { useAppSelector } from "@hooks/hook";
+import { selectRoutineIsInit } from "@store/mypage/routineSlice";
 
 interface Props {
   children: ReactNode;
@@ -10,14 +12,14 @@ interface Props {
   handleUpdate: (title: string) => void;
   handleDelete: () => void;
   isDisable: boolean;
-  isInit: boolean;
 }
 
 /**
  * MyPage - 다이어리, 디데이 설정 중 오른쪽 사이드
  */
 
-const MyPageDetail = ({ children, title, isDisable, isInit, handleUpdate, handleDelete }: Props) => {
+const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }: Props) => {
+  const isInit = useAppSelector(selectRoutineIsInit);
   const disable = () => {
     if (isInit) return "";
     return isDisable ? "--disable" : "";
