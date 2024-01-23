@@ -34,14 +34,15 @@ import {
   setDdayList,
 } from "@store/mypage/ddaySlice";
 import {
-  BASIC_ROUTINE_INPUT,
   InitRoutineItemConfig,
   RoutineItemConfig,
   selectRoutineClick,
   selectRoutineInput,
+  selectRoutineIsInit,
   selectRoutineList,
   setRoutineClick,
   setRoutineInput,
+  setRoutineIsInit,
   setRoutineList,
 } from "@store/mypage/routineSlice";
 import dayjs from "dayjs";
@@ -76,8 +77,8 @@ const MyPageFrame = ({ title }: Props) => {
   const routineList = useAppSelector(selectRoutineList);
   const routineClick = useAppSelector(selectRoutineClick);
   const routineInput: RoutineItemConfig = useAppSelector(selectRoutineInput);
+  const routineIsInit = useAppSelector(selectRoutineIsInit);
   const [routineDayError, setRoutineDayError] = useState<boolean>(false);
-  const [isInit, setIsInit] = useState<boolean>(false);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
@@ -89,13 +90,6 @@ const MyPageFrame = ({ title }: Props) => {
     setDeleteModalOpen(true);
   };
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
-
-  const getCategoryItem = (id: number) => {
-    categoryList.map((item: CategoryItemConfig) => {
-      if (item.categoryId == id) return item;
-    });
-    return BASIC_CATEGORY_ITEM;
-  };
 
   const handleAdd = (title: string) => {
     if (title === "카테고리") {
@@ -134,7 +128,8 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err));
     } else if (title === "루틴") {
-      if (isInit) return;
+      if (routineIsInit) return;
+      dispatch(setRoutineIsInit(true));
       const init: InitRoutineItemConfig = {
         routineContent: "새 루틴",
         startDay: new Date(),
@@ -142,14 +137,13 @@ const MyPageFrame = ({ title }: Props) => {
         category: null,
         days: [],
       };
-      dispatch(setRoutineList([...routineList, { ...init }]));
+      dispatch(setRoutineList([...routineList, init]));
       dispatch(setRoutineClick(routineList.length));
       dispatch(setRoutineInput({ ...init }));
-      setIsInit(true);
     }
   };
 
-  const handleUpdate = (title: string) => {
+  const handleUpdate = async (title: string) => {
     if (isDisable) return;
     if (title === "카테고리") {
       const input = {
@@ -196,22 +190,19 @@ const MyPageFrame = ({ title }: Props) => {
         routineContent,
         days,
       };
-
       // 등록과 수정 구분
-      if (isInit) {
+
+      if (routineIsInit) {
         settingApi
           .addRoutines(userId, input)
           .then((res) => {
             const routineId = res.data.data.routineId;
-            const category = input.categoryId === 0 ? BASIC_CATEGORY_ITEM : getCategoryItem(input.categoryId);
-            const newRoutine: RoutineItemConfig = { ...input, category, routineId };
-            let copyList = [...routineList];
-            copyList[routineClick] = newRoutine;
-            dispatch(setRoutineList(copyList));
+            const { categoryId, ...rest } = input;
+            let copyList = [...routineList].slice(0, routineList.length - 1);
+            dispatch(setRoutineList([...copyList, { ...rest, routineId, category }]));
+            dispatch(setRoutineClick(routineList.length - 1));
           })
-          .then(() => {
-            setIsInit(false);
-          })
+          .then(() => dispatch(setRoutineIsInit(false)))
           .catch((err) => console.log(err));
       }
     }
@@ -260,7 +251,6 @@ const MyPageFrame = ({ title }: Props) => {
   };
 
   const handleDeleteInit = () => {
-    const last = routineList.length - 2;
     dispatch(
       setRoutineList(
         routineList.filter((_: RoutineItemConfig, idx: number) => {
@@ -268,9 +258,8 @@ const MyPageFrame = ({ title }: Props) => {
         }),
       ),
     );
-    dispatch(setRoutineClick(routineClick === 0 ? routineClick : routineClick - 1));
-    dispatch(setRoutineInput(routineList.length > 0 ? routineList[last] : BASIC_ROUTINE_INPUT));
-    setIsInit(false);
+    dispatch(setRoutineClick(0));
+    dispatch(setRoutineIsInit(false));
     setRoutineDayError(false);
   };
 
@@ -282,20 +271,21 @@ const MyPageFrame = ({ title }: Props) => {
   }, [title, categoryList, ddayList, routineList]);
 
   useEffect(() => {
-    // 임의 생성한 루틴이 있는 경우에서(isInit), 카테고리/디데이 페이지로 이동하면 삭제.
-    if (isInit) handleDeleteInit();
+    // 임의 생성한 루틴이 있는 경우에서(routineIsInit), 카테고리/디데이 페이지로 이동하면 삭제.
+    if (routineIsInit) handleDeleteInit();
   }, [title]);
 
   useEffect(() => {
+    dispatch(setRoutineClick(0));
     return () => {
-      // 임의 생성한 루틴이 있는 경우에서(isInit), 다른 페이지로 이동하면 삭제.
-      if (isInit) handleDeleteInit();
+      // 임의 생성한 루틴이 있는 경우에서(routineIsInit), 다른 페이지로 이동하면 삭제.
+      if (routineIsInit) handleDeleteInit();
     };
-  }, [isInit]);
+  }, []);
 
   return (
     <div className={styles["frame"]}>
-      <MyPageList handleAdd={handleAdd} title={title} isInit={isInit}>
+      <MyPageList handleAdd={handleAdd} title={title}>
         {
           {
             카테고리: <CategoryList />,
@@ -307,7 +297,6 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
-        isInit={isInit}
         handleUpdate={handleUpdate}
         handleDelete={handleDeleteModalOpen}
       >
