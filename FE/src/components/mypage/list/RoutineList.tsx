@@ -12,7 +12,7 @@ const RoutineList = () => {
       {routineList.length != 0 ? (
         <>
           {routineList.map((item: RoutineItemConfig, idx: number) => (
-            <RoutineItem key={item.routineId} idx={idx} item={item} />
+            <RoutineItem key={item.routineId ?? "newRoutine"} idx={idx} item={item} />
           ))}
         </>
       ) : (
