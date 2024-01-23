@@ -91,18 +91,6 @@
   .rdrMonth {
     width: 27em;
   }
-
-  .rdrDay {
-    height: 3em;
-  }
-
-  .rdrDayToday .rdrDayNumber span:after {
-    bottom: 3px;
-  }
-
-  .rdrDayToday:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span:after {
-    background: "#fff";
-  }
 }
 
 .rdrDefinedRangesWrapper {
