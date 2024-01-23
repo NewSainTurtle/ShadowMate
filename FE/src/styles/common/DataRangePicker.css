@@ -1,4 +1,7 @@
 /* DataRangePicker */
+/* Calendar : 단일 달력, RangePicker : 범위 달력 */
+
+/* <Canlendar />와 <RangePicker /> 공통 적용됨. */
 .rdrCalendarWrapper {
   background-color: transparent;
 
@@ -37,6 +40,21 @@
       transform: translate(3px, 0px);
     }
   }
+}
+
+/* <Canlendar /> 만 적용됨. */
+.rdrCalendarWrapper:not(.rdrDateRangeWrapper) {
+  .rdrDayDisabled,
+  .rdrDayStartPreview,
+  .rdrDayEndPreview {
+    background-color: transparent;
+    border: none;
+  }
+
+  .rdrDayHovered .rdrDayNumber::after {
+    top: 0;
+    bottom: 0;
+  }
 
   .rdrMonth {
     padding: 0;
@@ -56,20 +74,7 @@
   }
 }
 
-.rdrCalendarWrapper:not(.rdrDateRangeWrapper) {
-  .rdrDayDisabled,
-  .rdrDayStartPreview,
-  .rdrDayEndPreview {
-    background-color: transparent;
-    border: none;
-  }
-
-  .rdrDayHovered .rdrDayNumber::after {
-    top: 0;
-    bottom: 0;
-  }
-}
-
+/* <RangePicker /> 만 적용됨. */
 .rdrDateRangeWrapper {
   .rdrStartEdgem,
   .rdrEndEdge,
