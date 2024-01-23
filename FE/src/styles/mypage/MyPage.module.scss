@@ -436,17 +436,18 @@ $color-warning: var(--color-warning);
     }
 
     &-item {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background-color: $color-gray-2;
-      cursor: pointer;
+      > label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: $color-gray-2;
+        cursor: pointer;
+      }
 
-      &--click {
-        @extend .routine__day-item;
+      > input:checked + label {
         background-color: $color-blue;
       }
     }

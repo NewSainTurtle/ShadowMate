@@ -33,7 +33,6 @@ const Routine = ({ dayError }: Props) => {
   const [length, setLength] = useState<number>(routineContent ? routineContent.length : 0);
 
   const dayList = ["월", "화", "수", "목", "금", "토", "일"];
-  const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const [openStartCalendar, setOpenStartCalendar] = useState<boolean>(false);
   const [openEndCalendar, setOpenEndCalendar] = useState<boolean>(false);
@@ -56,27 +55,17 @@ const Routine = ({ dayError }: Props) => {
     handleClose();
   };
 
-  const handleCheckedDay = (isChecked: boolean, day: string) => {
+  const handleRoutineDay = (e: ChangeEvent<HTMLInputElement>, day: string) => {
+    const isChecked = e.target.checked;
     if (isChecked) {
       dispatch(setRoutineInput({ ...routineInput, days: [...days, day] }));
       return;
     }
     if (!isChecked && days.includes(day)) {
       const filteredDays = days.filter((item: string) => item !== day);
-      dispatch(
-        setRoutineInput({
-          ...routineInput,
-          days: filteredDays,
-        }),
-      );
+      dispatch(setRoutineInput({ ...routineInput, days: filteredDays }));
       return;
     }
-    return;
-  };
-
-  const handleRoutineDay = (e: ChangeEvent<HTMLInputElement>, day: string) => {
-    setIsChecked(!isChecked);
-    handleCheckedDay(e.target.checked, day);
   };
 
   const handleStartCalendar = (date: Date) => {
@@ -101,8 +90,10 @@ const Routine = ({ dayError }: Props) => {
   };
 
   useEffect(() => {
-    dispatch(setRoutineInput(routineList[routineClick]));
-    setLength(routineList[routineClick].routineContent.length);
+    if (routineList.length > 0 && routineInput) {
+      dispatch(setRoutineInput(routineList[routineClick]));
+      setLength(routineList[routineClick].routineContent.length);
+    }
   }, [routineClick]);
 
   /* 캘린더 외부 영역 클릭 시 캘린더 닫힘. */
@@ -136,7 +127,6 @@ const Routine = ({ dayError }: Props) => {
             }
           />
         </div>
-
         <div className={styles["frame__line"]}>
           <Text>카테고리</Text>
           <Input
@@ -152,18 +142,15 @@ const Routine = ({ dayError }: Props) => {
           <Text>반복 요일</Text>
           <div className={styles["routine__day-list"]}>
             {dayList.map((day: string, i: number) => {
-              const clicked = days.includes(day) ? "--click" : "";
               return (
-                <div key={i}>
+                <div className={styles["routine__day-item"]} key={i}>
                   <input
                     type="checkbox"
                     id={day}
-                    defaultChecked={days.includes(day)}
+                    checked={days.includes(day)}
                     onChange={(e) => handleRoutineDay(e, day)}
                   />
-                  <label className={styles[`routine__day-item${clicked}`]} htmlFor={day}>
-                    {day}
-                  </label>
+                  <label htmlFor={day}>{day}</label>
                 </div>
               );
             })}
