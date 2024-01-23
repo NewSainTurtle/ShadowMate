@@ -8,6 +8,7 @@ import TodoItemChoice from "./TodoItemChoice";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
+import dragModule from "@util/DragModule";
 
 interface Props {
   clicked: boolean;
@@ -19,12 +20,11 @@ const TodoList = ({ clicked }: Props) => {
   let friendId = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
   const date = useAppSelector(selectDayDate);
-  const todoArr: TodoConfig[] = useAppSelector(selectTodoList);
+  const todoArr = useAppSelector(selectTodoList);
+  const [todos, setTodos] = useState<TodoConfig[]>(todoArr);
   const listSize = 11;
   const todoEndRef = useRef<HTMLDivElement>(null);
   const copyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
-  const dragTargetRef = useRef<number | null>(null);
-  const dragEndRef = useRef<number | null>(null);
   const draggablesRef = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
@@ -32,6 +32,10 @@ const TodoList = ({ clicked }: Props) => {
       todoEndRef.current.scrollTop = todoEndRef.current.scrollHeight;
     }
   }, [todoArr.length]);
+
+  useEffect(() => {
+    dispatch(setTodoList(todos));
+  }, [todos]);
 
   const todoModule = (() => {
     const insertTodo = async (props: TodoConfig) => {
@@ -95,78 +99,14 @@ const TodoList = ({ clicked }: Props) => {
     };
   })();
 
-  const dragModule = (() => {
-    /** 드래그 컴포넌트 스타일 */
-    const dragOverClass = styles["todo-draggable--over"];
-
-    /** 드래그 가까운 element 찾기 */
-    const getDragAfterElement = (y: number) => {
-      const draggableElements = Array.from(
-        draggablesRef.current.filter((ele) => !ele.classList.contains(`${dragOverClass}`)),
-      );
-
-      const initialObject = { offset: Number.NEGATIVE_INFINITY, element: null as null | Element };
-      const result = draggableElements.reduce((closest, element) => {
-        const box = element.getBoundingClientRect(); //해당 element top값, height값 담겨져 있는 메소드
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) return { offset: offset, element: element };
-        else return closest;
-      }, initialObject).element;
-
-      return result;
-    };
-
-    const dragTodo = async (todoId: number) => {
-      const drageTargetIdx = dragTargetRef.current as number;
-      const endTargetIdx = dragEndRef.current as number;
-      const upperTodoId = endTargetIdx > 0 ? copyTodos[endTargetIdx].todoId : null;
-      await plannerApi
-        .todoSequence(userId, {
-          date,
-          todoId,
-          upperTodoId,
-        })
-        .then(() => {
-          const dragItemConotent = copyTodos[drageTargetIdx];
-          copyTodos.splice(drageTargetIdx, 1);
-          copyTodos.splice(endTargetIdx, 0, dragItemConotent);
-          dragTargetRef.current = null;
-          dragEndRef.current = null;
-          dispatch(setTodoList(copyTodos));
-        });
-    };
-
-    const containerDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      const afterElement = getDragAfterElement(e.clientY);
-      const draggable = document.querySelector(`.${dragOverClass}`);
-      if (draggable) e.currentTarget.insertBefore(draggable, afterElement);
-    };
-
-    const dragStart = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
-      e.dataTransfer.setDragImage(new Image(), 0, 0);
-      e.currentTarget.classList.add(dragOverClass);
-      dragTargetRef.current = idx;
-    };
-
-    const dragLeave = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
-      e.preventDefault();
-      dragEndRef.current = idx;
-    };
-
-    const dragEnd = async (e: React.DragEvent<HTMLDivElement>, todoId: number) => {
-      e.preventDefault();
-      e.currentTarget.classList.remove(dragOverClass);
-      dragTodo(todoId);
-    };
-
-    return {
-      containerDragOver,
-      dragStart,
-      dragLeave,
-      dragEnd,
-    };
-  })();
+  const dragOverStyle = styles["todo-draggable--over"];
+  const { containerDragOver, dragStart, dragLeave, dragEnd } = dragModule({
+    date,
+    todos: copyTodos,
+    setTodos,
+    dragClassName: dragOverStyle,
+    draggablesRef,
+  });
 
   return (
     <div ref={todoEndRef} className={styles["todo-list"]}>
@@ -175,7 +115,7 @@ const TodoList = ({ clicked }: Props) => {
           <div
             className={`${styles["todo-list__box"]}`}
             style={{ height: `calc((100%/${listSize}) * ${todoArr.length})` }}
-            onDragOver={(e) => dragModule.containerDragOver(e)}
+            onDragOver={(e) => containerDragOver(e)}
           >
             {todoArr.map((item: TodoConfig, idx: number) => (
               <div
@@ -183,11 +123,11 @@ const TodoList = ({ clicked }: Props) => {
                 ref={(el: HTMLDivElement) => (draggablesRef.current[idx] = el)}
                 className={styles["todo-list__box--dragable"]}
                 draggable
-                onDragStart={(e) => dragModule.dragStart(e, idx)}
+                onDragStart={(e) => dragStart(e, idx)}
                 onDragEnter={(e) => e.preventDefault()}
                 onDragOver={(e) => e.preventDefault()}
-                onDragLeave={(e) => dragModule.dragLeave(e, idx)}
-                onDragEnd={(e) => dragModule.dragEnd(e, item.todoId)}
+                onDragLeave={(e) => dragLeave(e, idx)}
+                onDragEnd={(e) => dragEnd(e, item.todoId)}
               >
                 <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
               </div>
@@ -209,7 +149,7 @@ const TodoList = ({ clicked }: Props) => {
         </>
       ) : (
         <>
-          {todoArr.map((item: TodoConfig, idx: number) => (
+          {todos.map((item: TodoConfig, idx: number) => (
             <TodoItemChoice
               key={item.todoId}
               idx={idx}
