@@ -40,19 +40,19 @@ public class AuthServiceImpl implements AuthService {
     private final RedisService redisServiceImpl;
 
     @Value("${shadowmate.jwt.header}")
-    private String HEADER;
+    private String header;
 
     @Value("${shadowmate.jwt.prefix}")
-    private String PREFIX;
+    private String prefix;
 
     @Value("${shadowmate.jwt.secret}")
-    private String SECRETKEY;
+    private String secretKey;
 
     @Value("${shadowmate.jwt.access.expires}")
-    private long ACCESS_EXPIRES;
+    private long accessExpires;
 
     @Value("${shadowmate.jwt.refresh.expires}")
-    private long REFRESH_EXPIRES;
+    private long refreshExpires;
 
     @Value("${spring.mail.username}")
     private String serverEmail;
@@ -176,7 +176,7 @@ public class AuthServiceImpl implements AuthService {
         final String type = changeTokenRequest.getType();
         final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
 
-        if (user == null || !userId.toString().equals(JWT.decode(token.replace(PREFIX, "")).getClaim("id").toString())) {
+        if (user == null || !userId.toString().equals(JWT.decode(token.replace(prefix, "")).getClaim("id").toString())) {
             throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
         }
         final String refreshToken = redisServiceImpl.getRefreshTokenData(userId, type);
@@ -185,7 +185,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
+        headers.set(header, new StringBuilder().append(prefix).append(createAccessToken(user)).toString());
         return headers;
     }
 
@@ -204,7 +204,7 @@ public class AuthServiceImpl implements AuthService {
         if (RequestContextHolder.getRequestAttributes() != null) {
             final String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
             createRefreshToken(user, sessionId);
-            headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
+            headers.set(header, new StringBuilder().append(prefix).append(createAccessToken(user)).toString());
             headers.set("id", userId);
             headers.set("type", sessionId);
         }
@@ -215,22 +215,22 @@ public class AuthServiceImpl implements AuthService {
     private void createRefreshToken(final User user, final String type) {
         final String refreshToken = JWT.create()
                 .withSubject("ShadowMate 리프레시 토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRES))
+                .withExpiresAt(new Date(System.currentTimeMillis() + refreshExpires))
                 .withClaim("id", user.getId())
                 .withClaim("email", user.getEmail())
                 .withClaim("socialType", user.getSocialLogin().toString())
-                .sign(Algorithm.HMAC512(SECRETKEY));
-        redisServiceImpl.setRefreshTokenData(user.getId(), type, refreshToken, (int) REFRESH_EXPIRES);
+                .sign(Algorithm.HMAC512(secretKey));
+        redisServiceImpl.setRefreshTokenData(user.getId(), type, refreshToken, (int) refreshExpires);
     }
 
     private String createAccessToken(final User user) {
         return JWT.create()
                 .withSubject("ShadowMate 액세스 토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_EXPIRES))
+                .withExpiresAt(new Date(System.currentTimeMillis() + accessExpires))
                 .withClaim("id", user.getId())
                 .withClaim("email", user.getEmail())
                 .withClaim("socialType", user.getSocialLogin().toString())
-                .sign(Algorithm.HMAC512(SECRETKEY));
+                .sign(Algorithm.HMAC512(secretKey));
     }
 
     private void checkDuplicatedEmail(final String email) {

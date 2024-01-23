@@ -21,7 +21,7 @@ public class RedisServiceImpl implements RedisService {
     private final static String AUTOLOGIN = "autoLogin ";
 
     @Value("${shadowmate.autologin.expires}")
-    private int AUTOLOGIN_EXPIRES;
+    private int autologinExpires;
 
     @Override
     public EmailAuthentication getEmailData(final String key) {
@@ -63,7 +63,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void setAutoLoginData(final String key, final String userId) {
-        redisTemplate.opsForValue().set(AUTOLOGIN + key, userId, AUTOLOGIN_EXPIRES, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(AUTOLOGIN + key, userId, autologinExpires, TimeUnit.DAYS);
     }
 
     @Override
