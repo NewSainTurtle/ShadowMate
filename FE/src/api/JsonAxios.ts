@@ -18,7 +18,7 @@ Axios.interceptors.request.use(
   (config) => {
     const accessToken = store.getState().auth.accessToken;
     const isAutoLogin = store.getState().auth.autoLogin;
-    if (accessToken) config.headers.Authorization = accessToken ?? "";
+    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}` ?? "";
     if (isAutoLogin) {
       config.headers["Auto-Login"] = "true";
       store.dispatch(setAutoLogin(false));
