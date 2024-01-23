@@ -149,17 +149,19 @@ const TodoList = ({ clicked }: Props) => {
         </>
       ) : (
         <>
-          {todos.map((item: TodoConfig, idx: number) => (
-            <TodoItemChoice
-              key={item.todoId}
-              idx={idx}
-              todoItem={item}
-              possible={item.todoStatus === "완료" || item.todoStatus === "진행중"}
-            />
-          ))}
-          {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
-            <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} disable />
-          ))}
+          <div className={`${styles["todo-list__box"]}`}>
+            {todoArr.map((item: TodoConfig, idx: number) => (
+              <TodoItemChoice
+                key={item.todoId}
+                idx={idx}
+                todoItem={item}
+                possible={item.todoStatus === "완료" || item.todoStatus === "진행중"}
+              />
+            ))}
+            {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
+              <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} disable />
+            ))}
+          </div>
         </>
       )}
     </div>
