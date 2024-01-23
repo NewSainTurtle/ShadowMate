@@ -5,6 +5,8 @@ import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
+import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.dto.*;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -22,10 +24,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +55,12 @@ public class UserServiceTest {
 
     @Mock
     private FollowRequestRepository followRequestRepository;
+
+    @Mock
+    private SocialRepository socialRepository;
+
+    @Mock
+    private DailyPlannerRepository dailyPlannerRepository;
 
     final User user1 = User.builder()
             .id(1L)
@@ -327,6 +337,7 @@ public class UserServiceTest {
         @Test
         void 성공_회원탈퇴() {
             //given
+            doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
 
             //when
             userService.deleteUser(user1);
@@ -334,7 +345,9 @@ public class UserServiceTest {
             //then
             verify(followRepository, times(1)).deleteAllByFollowingIdOrFollowerId(any(User.class), any(User.class));
             verify(followRequestRepository, times(1)).deleteAllByRequesterIdOrReceiverId(any(User.class), any(User.class));
-            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class));
+            verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
+            verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
+            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class));
         }
 
     }
