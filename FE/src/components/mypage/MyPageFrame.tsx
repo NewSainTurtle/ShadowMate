@@ -1,15 +1,19 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
+import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
+import RoutineUpdateModal from "@components/common/Modal/RoutineUpdateModal";
+import RadioButton from "@components/common/RadioButton";
 import MyPageList from "@components/mypage/MyPageList";
 import MyPageDetail from "@components/mypage/MyPageDetail";
 import Category from "@components/mypage/details/diary/Category";
-import Dday from "@components/mypage/details/diary/Dday";
-import Routine from "@components/mypage/details/diary/Routine";
 import CategoryList from "@components/mypage/list/CategoryList";
+import Dday from "@components/mypage/details/diary/Dday";
 import DdayList from "@components/mypage/list/DdayList";
+import Routine from "@components/mypage/details/diary/Routine";
 import RoutineList from "@components/mypage/list/RoutineList";
+import { FormControlLabel, RadioGroup, Stack } from "@mui/material";
 import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -45,6 +49,10 @@ export interface EditInfoConfig {
   clicked: number;
 }
 
+interface RoutineUpdateSelectorConfig {
+  types: "수정" | "삭제";
+}
+
 const MyPageFrame = ({ title }: Props) => {
   /* 카테고리 관련 변수 */
   const dispatch = useAppDispatch();
@@ -65,6 +73,11 @@ const MyPageFrame = ({ title }: Props) => {
   const routineList = useAppSelector(selectRoutineList);
   const routineClick = useAppSelector(selectRoutineClick);
   const routineInput = useAppSelector(selectRoutineInput);
+
+  const [order, setOrder] = useState<"1" | "2" | "3">("1");
+  const [updateModal, setUpdateModal] = useState(false);
+  const handleUpdateModalOpen = () => setUpdateModal(true);
+  const handleUpdateModalClose = () => setUpdateModal(false);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
@@ -202,6 +215,33 @@ const MyPageFrame = ({ title }: Props) => {
     }
   };
 
+  const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
+    const order = e.target.value;
+    if (order === "1" || order === "2" || order === "3") {
+      setOrder(order);
+    }
+  };
+
+  const RoutineUpdateSelector = ({ types }: RoutineUpdateSelectorConfig) => {
+    return (
+      <div className={styles["radio"]}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <RadioGroup value={order} onChange={onChangeRadio}>
+            <FormControlLabel value="1" control={<RadioButton />} label={<Text types="small">모두 {types}하기</Text>} />
+            <FormControlLabel
+              value="2"
+              control={<RadioButton />}
+              label={<Text types="small">오늘 이후 루틴을 모두 {types}하기</Text>}
+            />
+            {types === "삭제" && (
+              <FormControlLabel value="3" control={<RadioButton />} label={<Text types="small">삭제하지 않기</Text>} />
+            )}
+          </RadioGroup>
+        </Stack>
+      </div>
+    );
+  };
+
   useEffect(() => {
     if (title === "카테고리" && categoryList.length < 1) setIsDisable(true);
     else if (title === "디데이" && ddayList.length < 1) setIsDisable(true);
@@ -223,7 +263,7 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
-        handleUpdate={handleUpdate}
+        handleUpdate={title === "루틴" ? handleUpdateModalOpen : handleUpdate}
         handleDelete={handleDeleteModalOpen}
       >
         <>
@@ -244,7 +284,24 @@ const MyPageFrame = ({ title }: Props) => {
         onClickMessage="삭제"
         warning
       >
-        <DeleteModal types={title} />
+        {title === "루틴" ? (
+          <RoutineUpdateModal types="삭제">
+            <RoutineUpdateSelector types="삭제" />
+          </RoutineUpdateModal>
+        ) : (
+          <DeleteModal types={title} />
+        )}
+      </Modal>
+      <Modal
+        types="twoBtn"
+        open={updateModal}
+        onClose={handleUpdateModalClose}
+        onClickMessage="저장"
+        onClick={() => handleUpdate(title)}
+      >
+        <RoutineUpdateModal types={"수정"}>
+          <RoutineUpdateSelector types="수정" />
+        </RoutineUpdateModal>
       </Modal>
     </div>
   );
