@@ -31,15 +31,6 @@ export interface DdayItemConfig {
   ddayTitle: string;
 }
 
-export interface RoutineItemConfig {
-  routineId: number;
-  routineContent: string;
-  startDay: string;
-  endDay: string;
-  days: string[];
-  category?: CategoryItemConfig;
-}
-
 export interface TimeTableConfig {
   timeTableId: number;
   startTime: string;

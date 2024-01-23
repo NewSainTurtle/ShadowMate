@@ -58,7 +58,7 @@ interface apiInterface {
     categories: (userId: number) => string; // 카테고리 목록 조회, 등록, 수정, 삭제
     categoriesColors: (userId: number) => string; // 카테고리 색상 목록 조회
     ddays: (userId: number) => string; // 디데이 목록 조회, 등록, 수정, 삭제
-    routines: (userId: number) => string;
+    routines: (userId: number) => string; // 루틴 조회, 등록, 수정, 삭제
   };
   social: {
     getSocial: (userId: number) => string; // 공개된 플래너 조회

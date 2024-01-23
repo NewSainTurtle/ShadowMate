@@ -80,20 +80,20 @@ const MyPageDday = () => {
         <Text>디데이 날짜</Text>
         <Input name="ddayDate" value={dateFormat(ddayDate)} disabled />
         <CalendarMonthIcon onClick={() => setOpenCalendar(!openCalendar)} />
+        {openCalendar && (
+          <div ref={calendarRef} className={styles["date__picker"]}>
+            <Calendar
+              locale={ko}
+              date={new Date(ddayDate)}
+              onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
+              dateDisplayFormat={"yyyy-mm-dd"}
+              minDate={new Date(dayjs().startOf("year").add(-25, "year").toDate())}
+              maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
+              fixedHeight
+            />
+          </div>
+        )}
       </div>
-      {openCalendar && (
-        <div ref={calendarRef} className={styles["date__picker"]}>
-          <Calendar
-            locale={ko}
-            date={new Date(ddayDate)}
-            onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
-            dateDisplayFormat={"yyyy-mm-dd"}
-            minDate={new Date(dayjs().startOf("year").add(-25, "year").toDate())}
-            maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
-            fixedHeight
-          />
-        </div>
-      )}
     </div>
   );
 };
