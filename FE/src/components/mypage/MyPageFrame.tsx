@@ -261,7 +261,6 @@ const MyPageFrame = ({ title }: Props) => {
     }
   };
 
-
   const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
     const order = e.target.value;
     if (order === "1" || order === "2" || order === "3") {
@@ -287,6 +286,7 @@ const MyPageFrame = ({ title }: Props) => {
         </Stack>
       </div>
     );
+  };
 
   const handleDeleteInit = () => {
     dispatch(
