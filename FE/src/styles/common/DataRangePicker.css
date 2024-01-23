@@ -1,9 +1,12 @@
 /* DataRangePicker */
+/* Calendar : 단일 달력, RangePicker : 범위 달력 */
+
+/* <Canlendar />와 <RangePicker /> 공통 적용됨. */
 .rdrCalendarWrapper {
   background-color: transparent;
 
   .rdrMonthAndYearWrapper {
-    height: 4em;
+    height: 3em;
     padding: 0;
 
     select {
@@ -22,7 +25,6 @@
       &:hover {
         background-color: transparent;
       }
-
     }
 
     .rdrPprevButton i {
@@ -38,15 +40,10 @@
       transform: translate(3px, 0px);
     }
   }
-
-  .rdrMonth {
-    padding: 0;
-    width: 27em;
-  }
 }
 
+/* <Canlendar /> 만 적용됨. */
 .rdrCalendarWrapper:not(.rdrDateRangeWrapper) {
-
   .rdrDayDisabled,
   .rdrDayStartPreview,
   .rdrDayEndPreview {
@@ -58,10 +55,27 @@
     top: 0;
     bottom: 0;
   }
+
+  .rdrMonth {
+    padding: 0;
+    width: 20em;
+  }
+
+  .rdrDay {
+    height: 2em;
+  }
+
+  .rdrDayToday .rdrDayNumber span:after {
+    bottom: -1px;
+  }
+
+  .rdrDayToday:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span:after {
+    background: none;
+  }
 }
 
+/* <RangePicker /> 만 적용됨. */
 .rdrDateRangeWrapper {
-
   .rdrStartEdgem,
   .rdrEndEdge,
   .rdrDayStartPreview,
@@ -74,6 +88,9 @@
     border: 1px solid var(--color-gray-4);
   }
 
+  .rdrMonth {
+    width: 27em;
+  }
 }
 
 .rdrDefinedRangesWrapper {
@@ -91,8 +108,7 @@
 }
 
 .--none {
-
-  .rdrDay:not(.rdrDayPassive) .rdrInRange~.rdrDayNumber span {
+  .rdrDay:not(.rdrDayPassive) .rdrInRange ~ .rdrDayNumber span {
     color: var(--color-text);
 
     ::after {
@@ -139,7 +155,7 @@
 
 .rdrSelected,
 .rdrDayHovered span,
-.rdrDayHovered>span {
+.rdrDayHovered > span {
   left: 8px;
   right: 8px;
   border: none;
@@ -151,9 +167,4 @@
 
 .rdrDayEndOfWeek .rdrInRange {
   right: 8px;
-}
-
-.rdrMonthAndYearWrapper option:hover,
-.rdrDayToday .rdrDayNumber span::after {
-  background: var(--color-btn-blue);
 }

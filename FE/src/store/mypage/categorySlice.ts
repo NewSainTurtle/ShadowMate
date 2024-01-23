@@ -1,4 +1,3 @@
-import React from "react";
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { CategoryColorConfig, CategoryItemConfig } from "@util/planner.interface";

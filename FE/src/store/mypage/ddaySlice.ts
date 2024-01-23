@@ -1,4 +1,3 @@
-import React from "react";
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DdayItemConfig } from "@util/planner.interface";
