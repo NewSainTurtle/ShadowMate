@@ -10,11 +10,22 @@ interface Props {
   item: RoutineItemConfig;
 }
 
+interface DaysSorterConfig {
+  [key: string]: number;
+}
+const DaysSorter: DaysSorterConfig = { 월: 1, 화: 2, 수: 3, 목: 4, 금: 5, 토: 6, 일: 7 };
+
 const RoutineItem = ({ idx, item }: Props) => {
   const dispatch = useAppDispatch();
   const click: number = useAppSelector(selectRoutineClick);
   const isInit = useAppSelector(selectRoutineIsInit);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const sortDays = () => {
+    let days = [...item.days];
+    return days?.sort((a: string, b: string) => {
+      return DaysSorter[a] - DaysSorter[b];
+    });
+  };
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -29,7 +40,7 @@ const RoutineItem = ({ idx, item }: Props) => {
       <div>
         <Text>{item.routineContent}</Text>
         <div>
-          {item.days?.map((day: string, i: number) => (
+          {sortDays()?.map((day: string, i: number) => (
             <Text types="small" key={i}>
               {i === item.days.length - 1 ? day : day + ", "}
             </Text>
