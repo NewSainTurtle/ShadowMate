@@ -290,19 +290,33 @@ $color-btn-blue: var(--color-btn-blue);
 .todo-list {
   width: 100%;
   height: 100%;
-  display: grid;
-  align-content: start;
   overflow-y: auto;
   scroll-behavior: smooth;
 
-  > div:last-child {
+  &__box,
+  &__box--dragable {
+    display: flex;
+    flex-direction: column;
+
+    > div {
+      height: 100%;
+    }
+  }
+
+  > div:last-child > .todo-item:last-child {
     border-bottom: none;
+  }
+}
+
+.todo-draggable {
+  &--over {
+    opacity: 0.5;
+    border: 2px dashed red;
   }
 }
 
 .todo-item {
   width: 100%;
-  height: 100%;
   display: grid;
   grid-template-columns: minmax(7em, 1.5fr) 8fr minmax(2em, 0.5fr);
   grid-template-rows: 1fr;
@@ -401,7 +415,7 @@ $color-btn-blue: var(--color-btn-blue);
     input {
       @extend %set-input;
       @extend .text-default;
-      width: calc(100% - (1em * 2) - 0.5em - 0.2em);
+      height: 100%;
       padding: 0;
 
       &::placeholder {

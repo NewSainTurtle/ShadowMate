@@ -21,13 +21,11 @@ const TodoList = ({ clicked }: Props) => {
   const date = useAppSelector(selectDayDate);
   const todoArr: TodoConfig[] = useAppSelector(selectTodoList);
   const listSize = 11;
-  const todoListSize = useMemo(() => {
-    return todoArr.length + 1 >= listSize ? todoArr.length + 1 : listSize;
-  }, [todoArr]);
   const todoEndRef = useRef<HTMLDivElement>(null);
   const copyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
-  const dragItem = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
+  const dragTargetRef = useRef<number | null>(null);
+  const dragEndRef = useRef<number | null>(null);
+  const draggablesRef = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     if (todoArr.length + 1 >= listSize && todoEndRef.current) {
@@ -89,10 +87,39 @@ const TodoList = ({ clicked }: Props) => {
         });
     };
 
+    return {
+      insertTodo,
+      updateTodo,
+      deleteTodo,
+      deleteTimeTable,
+    };
+  })();
+
+  const dragModule = (() => {
+    /** 드래그 컴포넌트 스타일 */
+    const dragOverClass = styles["todo-draggable--over"];
+
+    /** 드래그 가까운 element 찾기 */
+    const getDragAfterElement = (y: number) => {
+      const draggableElements = Array.from(
+        draggablesRef.current.filter((ele) => !ele.classList.contains(`${dragOverClass}`)),
+      );
+
+      const initialObject = { offset: Number.NEGATIVE_INFINITY, element: null as null | Element };
+      const result = draggableElements.reduce((closest, element) => {
+        const box = element.getBoundingClientRect(); //해당 element top값, height값 담겨져 있는 메소드
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) return { offset: offset, element: element };
+        else return closest;
+      }, initialObject).element;
+
+      return result;
+    };
+
     const dragTodo = async (todoId: number) => {
-      const drageTargetIdx = dragItem.current as number;
-      const endTargetIdx = dragOverItem.current as number;
-      const upperTodoId = endTargetIdx - 1 > 0 ? copyTodos[endTargetIdx - 1].todoId : null;
+      const drageTargetIdx = dragTargetRef.current as number;
+      const endTargetIdx = dragEndRef.current as number;
+      const upperTodoId = endTargetIdx > 0 ? copyTodos[endTargetIdx].todoId : null;
       await plannerApi
         .todoSequence(userId, {
           date,
@@ -103,79 +130,82 @@ const TodoList = ({ clicked }: Props) => {
           const dragItemConotent = copyTodos[drageTargetIdx];
           copyTodos.splice(drageTargetIdx, 1);
           copyTodos.splice(endTargetIdx, 0, dragItemConotent);
-          dragItem.current = null;
-          dragOverItem.current = null;
+          dragTargetRef.current = null;
+          dragEndRef.current = null;
           dispatch(setTodoList(copyTodos));
         });
     };
 
-    return {
-      insertTodo,
-      updateTodo,
-      deleteTodo,
-      deleteTimeTable,
-      dragTodo,
+    const containerDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const afterElement = getDragAfterElement(e.clientY);
+      const draggable = document.querySelector(`.${dragOverClass}`);
+      if (draggable) e.currentTarget.insertBefore(draggable, afterElement);
     };
-  })();
 
-  const dragModule = (() => {
-    const style = `border: 2px dashed red !important;`;
-    /** 드래그 시작할 때 */
     const dragStart = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
       e.dataTransfer.setDragImage(new Image(), 0, 0);
-      e.currentTarget.style.cssText = style;
-      dragItem.current = idx;
-    };
-    /** 드래그 객체 위로 진입 할 때 */
-    const dragEnter = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
-      e.preventDefault();
-      e.currentTarget.style.cssText = style;
-      dragOverItem.current = idx;
+      e.currentTarget.classList.add(dragOverClass);
+      dragTargetRef.current = idx;
     };
 
-    /** 드래그 끝났을 때 */
-    const dragLeaveAndDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    const dragLeave = (e: React.DragEvent<HTMLDivElement>, idx: number) => {
       e.preventDefault();
-      e.currentTarget.style.cssText = "";
+      dragEndRef.current = idx;
+    };
+
+    const dragEnd = async (e: React.DragEvent<HTMLDivElement>, todoId: number) => {
+      e.preventDefault();
+      e.currentTarget.classList.remove(dragOverClass);
+      dragTodo(todoId);
     };
 
     return {
+      containerDragOver,
       dragStart,
-      dragEnter,
-      dragLeaveAndDrop,
+      dragLeave,
+      dragEnd,
     };
   })();
 
   return (
-    <div
-      ref={todoEndRef}
-      className={styles["todo-list"]}
-      style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/${listSize})` }}
-    >
+    <div ref={todoEndRef} className={styles["todo-list"]}>
       {!clicked ? (
         <>
-          {todoArr.map((item: TodoConfig, idx: number) => (
-            <div
-              key={item.todoId}
-              draggable
-              className={styles["todo--draggable"]}
-              onDragStart={(e) => dragModule.dragStart(e, idx)}
-              onDragEnter={(e) => dragModule.dragEnter(e, idx)}
-              onDragOver={(e) => e.preventDefault()}
-              onDragLeave={(e) => dragModule.dragLeaveAndDrop(e)}
-              onDrop={(e) => dragModule.dragLeaveAndDrop(e)}
-              onDragEnd={(e) => {
-                dragModule.dragLeaveAndDrop(e);
-                todoModule.dragTodo(item.todoId);
-              }}
-            >
-              <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
-            </div>
-          ))}
-          <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} disable={userId != friendId} />
-          {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (
-            <TodoItem key={idx} disable todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
-          ))}
+          <div
+            className={`${styles["todo-list__box"]}`}
+            style={{ height: `calc((100%/${listSize}) * ${todoArr.length})` }}
+            onDragOver={(e) => dragModule.containerDragOver(e)}
+          >
+            {todoArr.map((item: TodoConfig, idx: number) => (
+              <div
+                key={item.todoId}
+                ref={(el: HTMLDivElement) => (draggablesRef.current[idx] = el)}
+                className={styles["todo-list__box--dragable"]}
+                draggable
+                onDragStart={(e) => dragModule.dragStart(e, idx)}
+                onDragEnter={(e) => e.preventDefault()}
+                onDragOver={(e) => e.preventDefault()}
+                onDragLeave={(e) => dragModule.dragLeave(e, idx)}
+                onDragEnd={(e) => dragModule.dragEnd(e, item.todoId)}
+              >
+                <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
+              </div>
+            ))}
+          </div>
+
+          <div className={styles["todo-list__box"]} style={{ height: `calc((100%/${listSize})` }}>
+            <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} disable={userId != friendId} />
+          </div>
+
+          <div
+            className={styles["todo-list__box"]}
+            style={{ height: `calc((100%/${listSize} * ${listSize - todoArr.length - 1})` }}
+          >
+            {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (
+              <TodoItem key={idx} disable todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
+            ))}
+          </div>
         </>
       ) : (
         <>
