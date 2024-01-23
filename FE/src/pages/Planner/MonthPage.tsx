@@ -69,24 +69,12 @@ const MonthPage = () => {
       .catch((err) => console.error(err));
   };
 
-  const getRoutines = () => {
-    settingApi
-      .routines(userId)
-      .then((res) => {
-        const response = res.data.data.routineList;
-        dispatch(setRoutineList(response));
-        dispatch(setRoutineInput(response[0]));
-      })
-      .catch((err) => console.log(err));
-  };
-
   useLayoutEffect(() => {
     getProfileInfo();
     getCategoryList();
     getCategoryColors();
     getDdayList();
     getFollowing();
-    getRoutines();
   }, []);
 
   return <Month />;

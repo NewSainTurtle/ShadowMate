@@ -191,7 +191,6 @@ const MyPageFrame = ({ title }: Props) => {
         days,
       };
       // 등록과 수정 구분
-
       if (routineIsInit) {
         settingApi
           .addRoutines(userId, input)
@@ -200,7 +199,6 @@ const MyPageFrame = ({ title }: Props) => {
             const { categoryId, ...rest } = input;
             let copyList = [...routineList].slice(0, routineList.length - 1);
             dispatch(setRoutineList([...copyList, { ...rest, routineId, category }]));
-            dispatch(setRoutineClick(routineList.length - 1));
           })
           .then(() => dispatch(setRoutineIsInit(false)))
           .catch((err) => console.log(err));
@@ -259,8 +257,21 @@ const MyPageFrame = ({ title }: Props) => {
       ),
     );
     dispatch(setRoutineClick(0));
+    dispatch(setRoutineInput(routineList[0]));
     dispatch(setRoutineIsInit(false));
     setRoutineDayError(false);
+  };
+
+  const getRoutines = () => {
+    settingApi
+      .routines(userId)
+      .then((res) => {
+        const response = res.data.data.routineList;
+        dispatch(setRoutineList(response));
+        dispatch(setRoutineClick(0));
+        dispatch(setRoutineInput(response[0]));
+      })
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -272,11 +283,12 @@ const MyPageFrame = ({ title }: Props) => {
 
   useEffect(() => {
     // 임의 생성한 루틴이 있는 경우에서(routineIsInit), 카테고리/디데이 페이지로 이동하면 삭제.
+    dispatch(setRoutineClick(0));
     if (routineIsInit) handleDeleteInit();
   }, [title]);
 
   useEffect(() => {
-    dispatch(setRoutineClick(0));
+    getRoutines();
     return () => {
       // 임의 생성한 루틴이 있는 경우에서(routineIsInit), 다른 페이지로 이동하면 삭제.
       if (routineIsInit) handleDeleteInit();
