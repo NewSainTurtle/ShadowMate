@@ -5,7 +5,7 @@ import { MonthConfig } from "@store/planner/monthSlice";
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
   login: (data: { email: string; password: string }) => Axios.post(api.auth.login(), data),
-  autoLogin: () => Axios.post(api.auth.autoLogin()),
+  autoLogin: (data: null, headers: { "Auto-Login": string }) => Axios.post(api.auth.autoLogin(), data, { headers }),
   googleLogin: () => Axios.post(api.auth.googleLogin()),
   logout: (data: { userId: number; type: string }, headers: { "Auto-Login": string }) =>
     Axios.post(api.auth.logout(), data, { headers }),
