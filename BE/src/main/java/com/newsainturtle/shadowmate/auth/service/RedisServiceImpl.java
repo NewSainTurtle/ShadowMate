@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 public class RedisServiceImpl implements RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final static String EMAIL = "email ";
-    private final static String NICKNAME = "nickname ";
-    private final static String REFRESH = "refresh ";
-    private final static String AUTOLOGIN = "autoLogin ";
+    private static final String EMAIL = "email ";
+    private static final String NICKNAME = "nickname ";
+    private static final String REFRESH = "refresh ";
+    private static final String AUTOLOGIN = "autoLogin ";
 
     @Value("${shadowmate.autologin.expires}")
     private int autologinExpires;
