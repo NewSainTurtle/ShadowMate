@@ -309,10 +309,8 @@ $color-btn-blue: var(--color-btn-blue);
 }
 
 .todo-draggable {
-  &--over {
-    opacity: 0.5;
-    border: 2px dashed red;
-  }
+  opacity: 0.5;
+  border: 2px dashed red;
 }
 
 .todo-item {

@@ -99,12 +99,12 @@ const TodoList = ({ clicked }: Props) => {
     };
   })();
 
-  const dragOverStyle = styles["todo-draggable--over"];
+  const dragHoverStyle = styles["todo-draggable"];
   const { containerDragOver, dragStart, dragLeave, dragEnd } = dragModule({
     date,
     todos: copyTodos,
     setTodos,
-    dragClassName: dragOverStyle,
+    dragClassName: dragHoverStyle,
     draggablesRef,
   });
 

@@ -46,8 +46,8 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
 
   const dragTodo = async (todoId: number) => {
     const copyTodos = [...todos];
-    const drageTargetIdx = dragTargetRef.current as number;
-    const endTargetIdx = dragEndRef.current as number;
+    const drageTargetIdx = dragTargetRef.current;
+    const endTargetIdx = dragEndRef.current;
     const upperTodoId = endTargetIdx > 0 ? copyTodos[endTargetIdx].todoId : null;
 
     await plannerApi
