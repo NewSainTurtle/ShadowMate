@@ -2,8 +2,14 @@ import React, { useEffect, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import {
+  selectRoutineClick,
+  setRoutineClick,
+  RoutineItemConfig,
   selectRoutineIsInit,
+} from "@store/mypage/routineSlice";
 import { dateFormat } from "@util/getThisWeek";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 
 interface Props {
   idx: number;
@@ -20,6 +26,12 @@ const RoutineItem = ({ idx, item }: Props) => {
   const click: number = useAppSelector(selectRoutineClick);
   const isInit = useAppSelector(selectRoutineIsInit);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const handleClicked = () => {
+    if (isInit && item.routineId) return "--disable";
+    return click === idx ? "--clicked" : "";
+  };
+  const clicked = handleClicked();
+  const disable = isInit && item.routineId ? "--disable" : "";
   const sortDays = () => {
     let days = [...item.days];
     return days?.sort((a: string, b: string) => {
@@ -35,9 +47,11 @@ const RoutineItem = ({ idx, item }: Props) => {
     <div
       ref={idx === click ? endRef : null}
       className={styles[`routine__item${clicked}`]}
-      onClick={() => dispatch(setRoutineClick(idx))}
+      onClick={() => {
+        if (!isInit) dispatch(setRoutineClick(idx));
+      }}
     >
-      <div>
+      <div className={styles[`routine__info${disable}`]}>
         <Text>{item.routineContent}</Text>
         <div>
           {sortDays()?.map((day: string, i: number) => (
@@ -51,7 +65,11 @@ const RoutineItem = ({ idx, item }: Props) => {
           <Text types="small">{dateFormat(item.endDay)}</Text>
         </div>
       </div>
-      <div style={{ backgroundColor: item.category?.categoryColorCode }}></div>
+      <div
+        style={{
+          backgroundColor: item.category ? item.category.categoryColorCode : BASIC_CATEGORY_ITEM.categoryColorCode,
+        }}
+      ></div>
     </div>
   );
 };

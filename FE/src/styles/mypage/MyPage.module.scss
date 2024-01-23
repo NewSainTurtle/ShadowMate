@@ -392,15 +392,6 @@ $color-warning: var(--color-warning);
     box-sizing: border-box;
     border-bottom: 0.5px solid $color-gray-2;
     cursor: pointer;
-    > div:nth-child(1) {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3em;
-
-      > div > span {
-        color: $color-gray-4;
-      }
-    }
 
     > div:nth-child(2) {
       height: 30px;
@@ -411,6 +402,27 @@ $color-warning: var(--color-warning);
     &--clicked {
       @extend .routine__item;
       background-color: $color-gray-1;
+    }
+
+    &--disable {
+      @extend .routine__item;
+      cursor: default;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    width: 100%;
+
+    > div > span {
+      color: $color-gray-4;
+    }
+
+    &--disable {
+      @extend .routine__info;
+      color: $color-gray-5;
     }
   }
   &__day {
