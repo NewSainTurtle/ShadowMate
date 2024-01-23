@@ -349,7 +349,7 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
-        handleUpdate={title === "루틴" ? handleUpdateModalOpen : handleUpdate}
+        handleUpdate={title === "루틴" && !routineIsInit ? handleUpdateModalOpen : handleUpdate}
         handleDelete={handleDeleteModalOpen}
       >
         <>
