@@ -18,4 +18,5 @@ public class PlannerSettingConstant {
     public static final String SUCCESS_ADD_ROUTINE = "루틴 등록이 완료되었습니다.";
     public static final String SUCCESS_GET_ROUTINE_LIST = "루틴 목록 조회가 완료되었습니다.";
     public static final String SUCCESS_REMOVE_ROUTINE = "루틴 삭제가 완료되었습니다.";
+    public static final String SUCCESS_UPDATE_ROUTINE = "루틴 수정이 완료되었습니다.";
 }

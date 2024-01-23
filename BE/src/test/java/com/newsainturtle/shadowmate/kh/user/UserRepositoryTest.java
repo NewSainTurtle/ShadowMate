@@ -172,28 +172,17 @@ public class UserRepositoryTest {
         @Test
         void 성공_회원탈퇴() {
             //given
-            final User deleteUser = User.builder()
-                    .id(user.getId())
-                    .email(user.getEmail())
-                    .password(user.getPassword())
-                    .socialLogin(user.getSocialLogin())
-                    .profileImage(user.getProfileImage())
-                    .nickname(user.getNickname())
-                    .statusMessage(user.getStatusMessage())
-                    .withdrawal(true)
-                    .plannerAccessScope(user.getPlannerAccessScope())
-                    .createTime(user.getCreateTime())
-                    .updateTime(user.getUpdateTime())
-                    .deleteTime(LocalDateTime.now())
-                    .build();
+            final User saveUser = userRepository.save(user);
 
             //when
-            userRepository.save(deleteUser);
-            final User result = userRepository.findByNickname(user.getNickname());
+            userRepository.deleteUser(LocalDateTime.now(), saveUser.getId(), PlannerAccessScope.PRIVATE);
+            final User findUser = userRepository.findByNickname(user.getNickname());
 
             //then
-            assertThat(result.getWithdrawal()).isTrue();
-            assertThat(result.getDeleteTime()).isNotNull();
+            assertThat(findUser).isNotNull();
+            assertThat(findUser.getDeleteTime()).isNotNull();
+            assertThat(findUser.getWithdrawal()).isTrue();
+            assertThat(findUser.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE);
         }
 
     }

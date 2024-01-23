@@ -12,17 +12,13 @@ import java.time.LocalDateTime;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByNickname(final String nickname);
-
     User findByIdAndNickname(final Long userId, final String nickname);
-  
     User findByEmailAndSocialLogin(final String email, final SocialType socialType);
-
+    User findByIdAndWithdrawalIsFalse(final Long userId);
+    User findByNicknameAndPlannerAccessScope(final String nickname, final PlannerAccessScope plannerAccessScope);
+    
     @Query("SELECT u FROM User u WHERE u.email = :email and u.socialLogin = :socialLogin and u.withdrawal = FALSE")
     User findByEmailAndSocialLoginAndWithdrawal(@Param("email") final String email, @Param("socialLogin") final SocialType socialType);
-
-    User findByIdAndWithdrawalIsFalse(final Long userId);
-
-    User findByNicknameAndPlannerAccessScope(final String nickname, final PlannerAccessScope plannerAccessScope);
 
     @Query("SELECT u.introduction FROM User u WHERE u.id = :userId")
     String findIntroduction(@Param("userId") final long userId);
@@ -40,8 +36,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateIntroduction(@Param("introduction") final String introduction, @Param("userId") final long userId);
 
     @Modifying(clearAutomatically = true)
-    @Query("update User u set u.withdrawal = TRUE, u.deleteTime = :deleteTime, u.password = 'shadowmate' WHERE u.id = :userId")
-    void deleteUser(@Param("deleteTime") final LocalDateTime deleteTime, @Param("userId") final long userId);
+    @Query("update User u set u.withdrawal = TRUE, u.deleteTime = :deleteTime, u.password = 'shadowmate' , u.plannerAccessScope = :plannerAccessScope WHERE u.id = :userId")
+    void deleteUser(@Param("deleteTime") final LocalDateTime deleteTime, @Param("userId") final long userId, @Param("plannerAccessScope") final PlannerAccessScope plannerAccessScope);
 
     @Modifying(clearAutomatically = true)
     @Query("update User u set u.plannerAccessScope = :plannerAccessScope where u.id = :userId")

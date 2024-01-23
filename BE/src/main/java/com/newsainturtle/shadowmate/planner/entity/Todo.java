@@ -48,4 +48,9 @@ public class Todo extends CommonEntity {
     public void clearTimeTables() {
         this.timeTables = new ArrayList<>();
     }
+
+    public void updateCategoryAndTodoContent(final Category category, final String todoContent) {
+        this.category = category;
+        this.todoContent = todoContent;
+    }
 }
