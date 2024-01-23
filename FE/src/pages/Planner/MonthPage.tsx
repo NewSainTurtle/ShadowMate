@@ -7,7 +7,6 @@ import { setCategoryColors, setCategoryInput, setCategoryList } from "@store/myp
 import { setDdayList } from "@store/mypage/ddaySlice";
 import { CategoryItemConfig } from "@util/planner.interface";
 import { setFollowingList } from "@store/friendSlice";
-import { setRoutineInput, setRoutineList } from "@store/mypage/routineSlice";
 
 const MonthPage = () => {
   const dispatch = useAppDispatch();
