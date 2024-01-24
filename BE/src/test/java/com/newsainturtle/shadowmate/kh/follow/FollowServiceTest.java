@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FollowServiceTest {
+class FollowServiceTest {
 
     @InjectMocks
     private FollowServiceImpl followService;
