@@ -17,8 +17,8 @@ interface Props {
 
 const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Props) => {
   const userId = useAppSelector(selectUserId);
-  const dragTargetRef = useRef<number>(0);
-  const dragEndRef = useRef<number>(0);
+  const dragTargetRef = useRef<number>(-1);
+  const dragEndRef = useRef<number>(-1);
   const [mouseOnChild, setMouseOnChild] = useState(false);
   const childMouseEnter = () => setMouseOnChild(true);
   const childMouseLeave = () => setMouseOnChild(false);
@@ -58,6 +58,7 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
     const drageTargetIdx = dragTargetRef.current;
     const endTargetIdx = dragEndRef.current;
     const upperTodoId = endTargetIdx > 0 ? copyTodos[endTargetIdx].todoId : null;
+    if (drageTargetIdx == endTargetIdx || endTargetIdx == -1) return;
 
     await plannerApi
       .todoSequence(userId, {
@@ -69,8 +70,8 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
         const dragItemContent = copyTodos[drageTargetIdx];
         copyTodos.splice(drageTargetIdx, 1);
         copyTodos.splice(endTargetIdx, 0, dragItemContent);
-        dragTargetRef.current = 0;
-        dragEndRef.current = 0;
+        dragTargetRef.current = -1;
+        dragEndRef.current = -1;
         setTodos(copyTodos);
       });
   };
