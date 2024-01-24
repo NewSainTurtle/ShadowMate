@@ -235,8 +235,8 @@ public class FollowRepositoryTest {
             List<Follow> result2 = followRepository.findAllByFollowingId(user1);
 
             // then
-            assertThat(result1).hasSize(0);
-            assertThat(result2).hasSize(0);
+            assertThat(result1).isEmpty();
+            assertThat(result2).isEmpty();;
         }
     }
 }

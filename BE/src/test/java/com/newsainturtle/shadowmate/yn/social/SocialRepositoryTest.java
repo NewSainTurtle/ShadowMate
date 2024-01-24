@@ -178,7 +178,7 @@ class SocialRepositoryTest {
             final List<Social> result = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortLatest("2000-09-23", "2000-09-24", PageRequest.of(0, 6));
 
             // then
-            assertThat(result).isNotNull().hasSize(0);
+            assertThat(result).isNotNull().isEmpty();;
         }
 
         @Test
@@ -321,7 +321,7 @@ class SocialRepositoryTest {
             final List<Social> result = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(user1.getId(),"2000-09-23", "2000-09-24", PageRequest.of(0, 6));
 
             // then
-            assertThat(result).isNotNull().hasSize(0);
+            assertThat(result).isNotNull().isEmpty();;
         }
 
         @Test
