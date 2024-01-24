@@ -1,4 +1,4 @@
-package com.newsainturtle.shadowmate.social.dto;
+package com.newsainturtle.shadowmate.social.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;

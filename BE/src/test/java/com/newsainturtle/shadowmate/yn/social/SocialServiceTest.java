@@ -2,7 +2,7 @@ package com.newsainturtle.shadowmate.yn.social;
 
 import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
-import com.newsainturtle.shadowmate.social.dto.SearchSocialPlannerResponse;
+import com.newsainturtle.shadowmate.social.dto.response.SearchSocialPlannerResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
 import com.newsainturtle.shadowmate.social.exception.SocialException;

@@ -1,7 +1,7 @@
 package com.newsainturtle.shadowmate.social.service;
 
-import com.newsainturtle.shadowmate.social.dto.SearchSocialPlannerResponse;
-import com.newsainturtle.shadowmate.social.dto.SearchSocialResponse;
+import com.newsainturtle.shadowmate.social.dto.response.SearchSocialPlannerResponse;
+import com.newsainturtle.shadowmate.social.dto.response.SearchSocialResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
 import com.newsainturtle.shadowmate.social.exception.SocialException;
