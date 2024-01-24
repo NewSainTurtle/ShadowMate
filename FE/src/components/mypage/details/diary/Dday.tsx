@@ -14,7 +14,11 @@ import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDdayClick, selectDdayInput, selectDdayList, setDdayInput } from "@store/mypage/ddaySlice";
 
-const MyPageDday = () => {
+interface Props {
+  newItem: boolean;
+}
+
+const Dday = ({ newItem }: Props) => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectDdayClick);
   const ddayList = useAppSelector(selectDdayList);
@@ -24,8 +28,9 @@ const MyPageDday = () => {
   const calendarRef = useRef<HTMLDivElement>(null);
   const minLength = 1;
   const maxLength = 20;
-  const { ddayTitle, ddayDate } = ddayInput ?? "";
+  const { ddayTitle, ddayDate } = ddayInput;
   const [length, setLength] = useState<number>(ddayTitle ? ddayTitle.length : 0);
+  const titleFocus = useRef<HTMLInputElement>(null);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -39,7 +44,7 @@ const MyPageDday = () => {
   };
 
   useEffect(() => {
-    if (ddayList.length > 0 && ddayInput) {
+    if (ddayList.length > 0 && !newItem) {
       dispatch(setDdayInput(ddayList[click]));
       setLength(ddayList[click].ddayTitle.length);
     }
@@ -61,11 +66,16 @@ const MyPageDday = () => {
     };
   }, [calendarRef]);
 
+  useEffect(() => {
+    if (titleFocus.current) titleFocus.current.focus();
+  }, []);
+
   return (
     <div className={styles["frame__contents"]}>
       <div className={styles["frame__line"]}>
         <Text>디데이 이름</Text>
         <Input
+          inputRef={titleFocus}
           name="ddayTitle"
           value={ddayTitle}
           placeholder="디데이 이름을 입력하세요."
@@ -98,4 +108,4 @@ const MyPageDday = () => {
   );
 };
 
-export default MyPageDday;
+export default Dday;

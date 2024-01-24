@@ -41,6 +41,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
   const startCalendarRef = useRef<HTMLDivElement>(null);
   const endCalendarRef = useRef<HTMLDivElement>(null);
   const isError = dayError ? "--error" : "";
+  const contentFocus = useRef<HTMLInputElement>(null);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -100,6 +101,10 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
     }
   }, [routineClick]);
 
+  useEffect(() => {
+    if (contentFocus.current) contentFocus.current.focus();
+  }, []);
+
   /* 캘린더 외부 영역 클릭 시 캘린더 닫힘. */
   useEffect(() => {
     // 이벤트 리스너에 handleFocus 함수 등록
@@ -121,6 +126,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
         <div className={styles["frame__line"]}>
           <Text>루틴 이름</Text>
           <Input
+            inputRef={contentFocus}
             name="routineContent"
             value={routineContent}
             placeholder="루틴 이름을 입력하세요."
