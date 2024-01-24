@@ -57,8 +57,12 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
     const copyTodos = [...todos];
     const drageTargetIdx = dragTargetRef.current;
     const endTargetIdx = dragEndRef.current;
-    const upperTodoId = endTargetIdx > 0 ? copyTodos[endTargetIdx].todoId : null;
     if (drageTargetIdx == endTargetIdx || endTargetIdx == -1) return;
+    const upperTodoId = (() => {
+      if (endTargetIdx == 0) return null;
+      if (drageTargetIdx > endTargetIdx) return copyTodos[endTargetIdx - 1].todoId;
+      return copyTodos[endTargetIdx].todoId;
+    })();
 
     await plannerApi
       .todoSequence(userId, {
