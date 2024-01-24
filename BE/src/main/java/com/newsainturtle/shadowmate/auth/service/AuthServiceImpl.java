@@ -29,6 +29,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.Date;
 
+import static com.newsainturtle.shadowmate.auth.constant.AuthConstant.*;
+import static com.newsainturtle.shadowmate.config.constant.ConfigConstant.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -205,8 +208,8 @@ public class AuthServiceImpl implements AuthService {
             final String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
             createRefreshToken(user, sessionId);
             headers.set(header, new StringBuilder().append(prefix).append(createAccessToken(user)).toString());
-            headers.set("id", userId);
-            headers.set("type", sessionId);
+            headers.set(KEY_ID, userId);
+            headers.set(KEY_TYPE, sessionId);
         }
         redisServiceImpl.setAutoLoginData(key, userId);
         return headers;
@@ -216,9 +219,9 @@ public class AuthServiceImpl implements AuthService {
         final String refreshToken = JWT.create()
                 .withSubject("ShadowMate 리프레시 토큰")
                 .withExpiresAt(new Date(System.currentTimeMillis() + refreshExpires))
-                .withClaim("id", user.getId())
-                .withClaim("email", user.getEmail())
-                .withClaim("socialType", user.getSocialLogin().toString())
+                .withClaim(KEY_ID, user.getId())
+                .withClaim(TOKEN_KEY_EMAIL, user.getEmail())
+                .withClaim(TOKEN_KEY_SOCIAL_TYPE, user.getSocialLogin().toString())
                 .sign(Algorithm.HMAC512(secretKey));
         redisServiceImpl.setRefreshTokenData(user.getId(), type, refreshToken, (int) refreshExpires);
     }
@@ -227,9 +230,9 @@ public class AuthServiceImpl implements AuthService {
         return JWT.create()
                 .withSubject("ShadowMate 액세스 토큰")
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessExpires))
-                .withClaim("id", user.getId())
-                .withClaim("email", user.getEmail())
-                .withClaim("socialType", user.getSocialLogin().toString())
+                .withClaim(KEY_ID, user.getId())
+                .withClaim(TOKEN_KEY_EMAIL, user.getEmail())
+                .withClaim(TOKEN_KEY_SOCIAL_TYPE, user.getSocialLogin().toString())
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -243,17 +246,8 @@ public class AuthServiceImpl implements AuthService {
     public MimeMessage createMessage(final String email, final String code) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(Message.RecipientType.TO, email);
-        message.setSubject("ShadowMate 회원가입 인증 코드");
-        String text = "";
-        text += "<div style='margin:10;'>";
-        text += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        text += "<h3 style='color:blue;'>회원가입 코드입니다.</h3>";
-        text += "<div style='font-size:130%'>";
-        text += "CODE : <strong>";
-        text += code;
-        text += "</strong><div><br/> ";
-        text += "</div>";
-        message.setText(text, "utf-8", "html");
+        message.setSubject(MESSAGE_SUBJECT);
+        message.setText(MESSAGE_FRONT + code + MESSAGE_BACK, "utf-8", "html");
         message.setFrom(new InternetAddress(serverEmail, "ShadowMate"));
         return message;
     }

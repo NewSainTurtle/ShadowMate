@@ -9,6 +9,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN;
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN_ERROR_MESSAGE;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateDdayRequest {
@@ -21,7 +24,7 @@ public class UpdateDdayRequest {
     private String ddayTitle;
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message = "yyyy-MM-dd 형식의 올바른 날짜값이 아닙니다.")
+    @Pattern(regexp = DATE_PATTERN, message = DATE_PATTERN_ERROR_MESSAGE)
     private String ddayDate;
 
     @Builder

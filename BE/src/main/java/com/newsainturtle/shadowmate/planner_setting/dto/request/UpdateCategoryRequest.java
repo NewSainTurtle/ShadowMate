@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static com.newsainturtle.shadowmate.planner_setting.constant.PlannerSettingConstant.EMOTICON_ERROR_MESSAGE;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateCategoryRequest {
@@ -22,7 +24,7 @@ public class UpdateCategoryRequest {
     @NotNull
     private Long categoryColorId;
 
-    @Size(max = 2, message = "이모티콘은 하나만 넣을 수 있습니다.")
+    @Size(max = 2, message = EMOTICON_ERROR_MESSAGE)
     private String categoryEmoticon;
 
     @Builder

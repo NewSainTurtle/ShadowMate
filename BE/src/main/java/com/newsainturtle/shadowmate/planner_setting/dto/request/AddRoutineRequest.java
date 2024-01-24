@@ -11,6 +11,9 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN;
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN_ERROR_MESSAGE;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AddRoutineRequest {
@@ -20,11 +23,11 @@ public class AddRoutineRequest {
     private String routineContent;
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message = "yyyy-MM-dd 형식의 올바른 날짜값이 아닙니다.")
+    @Pattern(regexp = DATE_PATTERN, message = DATE_PATTERN_ERROR_MESSAGE)
     private String startDay;
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message = "yyyy-MM-dd 형식의 올바른 날짜값이 아닙니다.")
+    @Pattern(regexp = DATE_PATTERN, message = DATE_PATTERN_ERROR_MESSAGE)
     private String endDay;
 
     @NotEmpty
