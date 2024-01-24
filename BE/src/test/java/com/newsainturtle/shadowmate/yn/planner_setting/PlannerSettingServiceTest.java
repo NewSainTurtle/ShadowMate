@@ -25,6 +25,9 @@ import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -289,61 +293,49 @@ class PlannerSettingServiceTest extends DateCommonService {
                 verify(routineRepository, times(1)).countByCategory(any(Category.class));
                 verify(categoryRepository, times(1)).deleteByUserAndId(any(), any(Long.class));
             }
-
-            @Test
-            void 성공_카테고리_할일에없음_루틴에있음() {
-                //given
-                doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
-                doReturn(0L).when(todoRepository).countByCategory(category);
-                doReturn(1L).when(routineRepository).countByCategory(category);
-
-                //when
-                plannerSettingService.removeCategory(user, removeCategoryRequest);
-
-                //then
-
-                //verify
-                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
-                verify(todoRepository, times(1)).countByCategory(any(Category.class));
-                verify(routineRepository, times(1)).countByCategory(any(Category.class));
-            }
-
-            @Test
-            void 성공_카테고리_할일에있음_루틴에없음() {
-                //given
-                doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
-                doReturn(1L).when(todoRepository).countByCategory(category);
-                doReturn(0L).when(routineRepository).countByCategory(category);
-
-                //when
-                plannerSettingService.removeCategory(user, removeCategoryRequest);
-
-                //then
-
-                //verify
-                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
-                verify(todoRepository, times(1)).countByCategory(any(Category.class));
-                verify(routineRepository, times(1)).countByCategory(any(Category.class));
-            }
-
-            @Test
-            void 성공_카테고리_할일에있음_루틴에있음() {
-                //given
-                doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
-                doReturn(1L).when(todoRepository).countByCategory(category);
-                doReturn(1L).when(routineRepository).countByCategory(category);
-
-                //when
-                plannerSettingService.removeCategory(user, removeCategoryRequest);
-
-                //then
-
-                //verify
-                verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
-                verify(todoRepository, times(1)).countByCategory(any(Category.class));
-                verify(routineRepository, times(1)).countByCategory(any(Category.class));
-            }
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("removeCategoryRequest")
+    void 카테고리삭제_성공(final long countCategoryTodo, final long countCategoryRoutine) throws Exception {
+        // given
+        final CategoryColor categoryColor = CategoryColor.builder()
+                .categoryColorCode("#D9B5D9")
+                .build();
+        final Category category = Category.builder()
+                .id(1L)
+                .categoryColor(categoryColor)
+                .user(user)
+                .categoryTitle("국어")
+                .categoryRemove(false)
+                .categoryEmoticon("🍅")
+                .build();
+        final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
+                .categoryId(1L)
+                .build();
+        doReturn(category).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
+        doReturn(countCategoryTodo).when(todoRepository).countByCategory(category);
+        doReturn(countCategoryRoutine).when(routineRepository).countByCategory(category);
+
+        //when
+        plannerSettingService.removeCategory(user, removeCategoryRequest);
+
+        //then
+        verify(categoryRepository, times(1)).findByUserAndId(any(), any(Long.class));
+        verify(todoRepository, times(1)).countByCategory(any(Category.class));
+        verify(routineRepository, times(1)).countByCategory(any(Category.class));
+    }
+
+    private static Stream<Arguments> removeCategoryRequest() {
+        return Stream.of(
+                // 성공_카테고리_할일에없음_루틴에있음
+                Arguments.of(0L, 1L),
+                // 성공_카테고리_할일에있음_루틴에없음
+                Arguments.of(1L, 0L),
+                // 성공_카테고리_할일에있음_루틴에있음
+                Arguments.of(1L, 1L)
+        );
     }
 
     @Nested
