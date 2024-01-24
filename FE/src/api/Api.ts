@@ -132,6 +132,18 @@ export const settingApi = {
     userId: number,
     data: { routineContent: string; startDay: string; endDay: string; categoryId: number; days: string[] },
   ) => Axios.post(api.setting.routines(userId), data),
+  editRoutines: (
+    userId: number,
+    data: {
+      routineId: number;
+      order: number;
+      startDay: string;
+      endDay: string;
+      routineContent: string;
+      categoryId: number;
+      days: string[];
+    },
+  ) => Axios.put(api.setting.routines(userId), data),
 };
 
 export const socialApi = {
