@@ -33,8 +33,9 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
     dragTargetRef.current = idx;
   };
 
-  const dragLeave = (e: DragEvent<HTMLDivElement>, idx: number) => {
+  const dragEnter = (e: DragEvent<HTMLDivElement>, idx: number) => {
     e.preventDefault();
+    if (dragTargetRef.current == idx) return;
     dragEndRef.current = idx;
   };
 
@@ -86,7 +87,7 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
   return {
     containerDragOver,
     dragStart,
-    dragLeave,
+    dragEnter,
     dragEnd,
   };
 };
