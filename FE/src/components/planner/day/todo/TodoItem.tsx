@@ -137,9 +137,9 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
   const isClickedStyle = clicked ? "--add" : "";
   const todoStatusView = {
     공백: " ",
-    완료: "O",
+    완료: "○",
     진행중: "△",
-    미완료: "X",
+    미완료: "⨉",
   };
 
   return (
