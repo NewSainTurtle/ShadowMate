@@ -436,14 +436,14 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         }
 
         if (!user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) && accessScope.equals(PlannerAccessScope.PUBLIC)) {
-            List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiverId(user);
+            List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiver(user);
             for (FollowRequest followRequest : followRequestList) {
                 followRepository.save(Follow.builder()
-                        .followerId(followRequest.getRequesterId())
-                        .followingId(user)
+                        .follower(followRequest.getRequester())
+                        .following(user)
                         .build());
             }
-            followRequestRepository.deleteAllByReceiverId(user.getId());
+            followRequestRepository.deleteAllByReceiver(user.getId());
             final List<DailyPlanner> dailyPlanners = dailyPlannerRepository.findAllByUser(user);
             socialRepository.updateDeleteTimeAll(null, dailyPlanners);
         } else if (user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) && !accessScope.equals(PlannerAccessScope.PUBLIC)) {

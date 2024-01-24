@@ -356,8 +356,8 @@ public class UserServiceTest {
             userService.deleteUser(user1);
 
             //then
-            verify(followRepository, times(1)).deleteAllByFollowingIdOrFollowerId(any(User.class), any(User.class));
-            verify(followRequestRepository, times(1)).deleteAllByRequesterIdOrReceiverId(any(User.class), any(User.class));
+            verify(followRepository, times(1)).deleteAllByFollowingOrFollower(any(User.class), any(User.class));
+            verify(followRequestRepository, times(1)).deleteAllByRequesterOrReceiver(any(User.class), any(User.class));
             verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
             verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class));

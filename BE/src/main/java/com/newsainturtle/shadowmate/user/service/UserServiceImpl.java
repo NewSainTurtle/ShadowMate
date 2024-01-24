@@ -120,8 +120,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(final User user) {
-        followRepository.deleteAllByFollowingIdOrFollowerId(user, user);
-        followRequestRepository.deleteAllByRequesterIdOrReceiverId(user, user);
+        followRepository.deleteAllByFollowingOrFollower(user, user);
+        followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
         socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
         userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE);
     }

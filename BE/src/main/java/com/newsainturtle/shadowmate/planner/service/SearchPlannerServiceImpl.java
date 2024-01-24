@@ -57,7 +57,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private boolean havePermissionToSearch(final User user, final User plannerWriter) {
         if (user.getId().equals(plannerWriter.getId()) ||
                 plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
-                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowingAndFollower(plannerWriter, user) != null)
         ) {
             return true;
         }

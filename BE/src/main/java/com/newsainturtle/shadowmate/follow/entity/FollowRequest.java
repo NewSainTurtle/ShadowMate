@@ -19,9 +19,9 @@ public class FollowRequest extends CommonEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id")
-    private User requesterId;
+    private User requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
-    private User receiverId;
+    private User receiver;
 }
