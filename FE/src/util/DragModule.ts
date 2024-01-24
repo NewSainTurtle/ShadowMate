@@ -69,7 +69,7 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
   /** 드래그 가까운 element 찾기 */
   const getDragAfterElement = (y: number) => {
     const draggableElements = Array.from(
-      draggablesRef.current.filter((ele) => !ele.classList.contains(`${dragClassName}`)),
+      draggablesRef.current.filter((ele) => ele && !ele.classList.contains(`${dragClassName}`)),
     );
 
     const initialObject = { offset: Number.NEGATIVE_INFINITY, element: null as null | Element };
