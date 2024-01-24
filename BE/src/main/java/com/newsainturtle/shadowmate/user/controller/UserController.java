@@ -3,10 +3,10 @@ package com.newsainturtle.shadowmate.user.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
+import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +60,7 @@ public class UserController {
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final UpdatePasswordRequest updatePasswordRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.updatePassword(userId, updatePasswordRequest.getOldPassword(), updatePasswordRequest.getNewPassword());
+        userService.updatePassword(userId, updatePasswordRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_PASSWORD));
     }
 
@@ -77,7 +77,7 @@ public class UserController {
                                                            @PathVariable("userId") final Long userId,
                                                            @RequestBody @Valid final UpdateIntroductionRequest updateIntroductionRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.updateIntroduction(updateIntroductionRequest, userId);
+        userService.updateIntroduction(userId, updateIntroductionRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_INTRODUCTION));
     }
 }
