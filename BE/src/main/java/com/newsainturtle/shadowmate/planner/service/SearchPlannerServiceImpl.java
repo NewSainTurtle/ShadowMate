@@ -287,7 +287,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             return SearchDailyPlannerResponse.builder()
                     .date(date)
                     .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                    .dday(dday == null ? null : dday.getDdayDate().toString())
+                    .dday(dday == null ? null : dday.getDdayDate())
                     .ddayTitle(dday == null ? null : dday.getDdayTitle())
                     .todayGoal(dailyPlanner.getTodayGoal())
                     .retrospection(dailyPlanner.getRetrospection())
