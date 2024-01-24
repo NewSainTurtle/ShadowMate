@@ -5,7 +5,7 @@ import { MonthConfig } from "@store/planner/monthSlice";
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
   login: (data: { email: string; password: string }) => Axios.post(api.auth.login(), data),
-  autoLogin: () => Axios.post(api.auth.autoLogin()),
+  autoLogin: (data: null, headers: { "Auto-Login": string }) => Axios.post(api.auth.autoLogin(), data, { headers }),
   googleLogin: () => Axios.post(api.auth.googleLogin()),
   logout: (data: { userId: number; type: string }, headers: { "Auto-Login": string }) =>
     Axios.post(api.auth.logout(), data, { headers }),
@@ -128,6 +128,24 @@ export const settingApi = {
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
   routines: (userId: number) => Axios.get(api.setting.routines(userId)),
+  addRoutines: (
+    userId: number,
+    data: { routineContent: string; startDay: string; endDay: string; categoryId: number; days: string[] },
+  ) => Axios.post(api.setting.routines(userId), data),
+  editRoutines: (
+    userId: number,
+    data: {
+      routineId: number;
+      order: number;
+      startDay: string;
+      endDay: string;
+      routineContent: string;
+      categoryId: number;
+      days: string[];
+    },
+  ) => Axios.put(api.setting.routines(userId), data),
+  deleteRoutines: (userId: number, data: { routineId: number; order: number }) =>
+    Axios.delete(api.setting.routines(userId), { data }),
 };
 
 export const socialApi = {

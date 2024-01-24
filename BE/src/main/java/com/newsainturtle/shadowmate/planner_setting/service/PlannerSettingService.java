@@ -18,4 +18,5 @@ public interface PlannerSettingService {
     AddRoutineResponse addRoutine(final User user, final AddRoutineRequest addRoutineRequest);
     GetRoutineListResponse getRoutineList(final User user);
     void removeRoutine(final User user, final RemoveRoutineRequest removeRoutineRequest);
+    void updateRoutine(final User user, final UpdateRoutineRequest updateRoutineRequest);
 }

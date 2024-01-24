@@ -1,19 +1,24 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
+import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
+import RoutineUpdateModal from "@components/common/Modal/RoutineUpdateModal";
+import RadioButton from "@components/common/RadioButton";
 import MyPageList from "@components/mypage/MyPageList";
 import MyPageDetail from "@components/mypage/MyPageDetail";
 import Category from "@components/mypage/details/diary/Category";
-import Dday from "@components/mypage/details/diary/Dday";
-import Routine from "@components/mypage/details/diary/Routine";
 import CategoryList from "@components/mypage/list/CategoryList";
+import Dday from "@components/mypage/details/diary/Dday";
 import DdayList from "@components/mypage/list/DdayList";
+import Routine from "@components/mypage/details/diary/Routine";
 import RoutineList from "@components/mypage/list/RoutineList";
-import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
+import { FormControlLabel, RadioGroup, Stack } from "@mui/material";
 import { settingApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
+import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
+import { CategoryItemConfig, DdayItemConfig } from "@util/planner.interface";
 import {
   selectCategoryClick,
   selectCategoryColorClick,
@@ -32,7 +37,18 @@ import {
   setDdayInput,
   setDdayList,
 } from "@store/mypage/ddaySlice";
-import { selectRoutineClick, selectRoutineInput, selectRoutineList } from "@store/mypage/routineSlice";
+import {
+  InitRoutineItemConfig,
+  RoutineItemConfig,
+  selectRoutineClick,
+  selectRoutineInput,
+  selectRoutineIsInit,
+  selectRoutineList,
+  setRoutineClick,
+  setRoutineInput,
+  setRoutineIsInit,
+  setRoutineList,
+} from "@store/mypage/routineSlice";
 import dayjs from "dayjs";
 
 interface Props {
@@ -43,6 +59,10 @@ export interface EditInfoConfig {
   type: string;
   info: CategoryItemConfig | DdayItemConfig | null;
   clicked: number;
+}
+
+interface RoutineUpdateSelectorConfig {
+  types: "수정" | "삭제";
 }
 
 const MyPageFrame = ({ title }: Props) => {
@@ -64,7 +84,14 @@ const MyPageFrame = ({ title }: Props) => {
   /* 루틴 관련 변수 */
   const routineList = useAppSelector(selectRoutineList);
   const routineClick = useAppSelector(selectRoutineClick);
-  const routineInput = useAppSelector(selectRoutineInput);
+  const routineInput: RoutineItemConfig = useAppSelector(selectRoutineInput);
+  const routineIsInit = useAppSelector(selectRoutineIsInit);
+  const [routineDayError, setRoutineDayError] = useState<boolean>(false);
+
+  const [order, setOrder] = useState<"1" | "2" | "3">("1");
+  const [updateModal, setUpdateModal] = useState(false);
+  const handleUpdateModalOpen = () => setUpdateModal(true);
+  const handleUpdateModalClose = () => setUpdateModal(false);
 
   /* 공통 사용 변수 */
   const [isDisable, setIsDisable] = useState<boolean>(false);
@@ -114,11 +141,22 @@ const MyPageFrame = ({ title }: Props) => {
         })
         .catch((err) => console.log(err));
     } else if (title === "루틴") {
-      // 작성 예정
+      if (routineIsInit) return;
+      dispatch(setRoutineIsInit(true));
+      const init: InitRoutineItemConfig = {
+        routineContent: "새 루틴",
+        startDay: new Date(),
+        endDay: new Date(),
+        category: null,
+        days: [],
+      };
+      dispatch(setRoutineList([...routineList, init]));
+      dispatch(setRoutineClick(routineList.length));
+      dispatch(setRoutineInput({ ...init }));
     }
   };
 
-  const handleUpdate = (title: string) => {
+  const handleUpdate = async (title: string) => {
     if (isDisable) return;
     if (title === "카테고리") {
       const input = {
@@ -130,14 +168,9 @@ const MyPageFrame = ({ title }: Props) => {
       if (input.categoryTitle.length < 1 || input.categoryTitle.length > 10) return;
       settingApi
         .editCategories(userId, input)
-        .then((res) => {
+        .then(() => {
           let copyList: CategoryItemConfig[] = [...categoryList];
-          copyList[categoryClick] = {
-            categoryId: input.categoryId,
-            categoryTitle: input.categoryTitle,
-            categoryEmoticon: input.categoryEmoticon,
-            categoryColorCode: categoryColors[colorClick].categoryColorCode,
-          };
+          copyList[categoryClick] = { ...input, categoryColorCode: categoryColors[colorClick].categoryColorCode };
           dispatch(setCategoryList(copyList));
         })
         .catch((err) => console.log(err));
@@ -150,14 +183,63 @@ const MyPageFrame = ({ title }: Props) => {
       if (input.ddayTitle.length < 1 || input.ddayTitle.length > 20) return;
       settingApi
         .editDdays(userId, input)
-        .then((res) => {
+        .then(() => {
           copyDdays[ddayClick] = { ...input };
           dispatch(setDdayList(copyDdays));
         })
         .catch((err) => console.log(err));
     } else if (title === "루틴") {
-      // 작성 예정
+      const { routineContent, category, startDay, endDay, days } = routineInput;
+      if (days.length < 1) {
+        setRoutineDayError(true);
+        return;
+      } else setRoutineDayError(false);
+      if (routineContent.length < 1 || routineContent.length > 50) return;
+
+      // 등록과 수정 구분
+      if (routineIsInit) {
+        const input = {
+          startDay: dayjs(startDay).format("YYYY-MM-DD"),
+          endDay: dayjs(endDay).format("YYYY-MM-DD"),
+          categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
+          routineContent,
+          days,
+        };
+        settingApi
+          .addRoutines(userId, input)
+          .then((res) => {
+            const routineId = res.data.data.routineId;
+            const { categoryId, ...rest } = input;
+            let copyList = [...routineList].slice(0, routineList.length - 1);
+            dispatch(setRoutineList([...copyList, { ...rest, routineId, category }]));
+            dispatch(setRoutineInput({ ...routineInput, routineId }));
+          })
+          .then(() => dispatch(setRoutineIsInit(false)))
+          .catch((err) => console.log(err));
+      } else handleUpdateModalOpen();
     }
+  };
+
+  const handleUpdateRoutine = () => {
+    const { routineContent, category, startDay, endDay, days } = routineInput;
+    const updateInput = {
+      routineId: routineInput.routineId,
+      order: parseInt(order),
+      startDay: dayjs(startDay).format("YYYY-MM-DD"),
+      endDay: dayjs(endDay).format("YYYY-MM-DD"),
+      categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
+      routineContent,
+      days,
+    };
+    settingApi
+      .editRoutines(userId, updateInput)
+      .then(() => {
+        let copyList: RoutineItemConfig[] = [...routineList];
+        copyList[routineClick] = { ...routineInput };
+        dispatch(setRoutineList(copyList));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => handleUpdateModalClose());
   };
 
   const handleDelete = (title: string) => {
@@ -187,7 +269,7 @@ const MyPageFrame = ({ title }: Props) => {
         .then(() => {
           dispatch(
             setDdayList(
-              ddayList.filter((item: DdayItemConfig, idx: number) => {
+              ddayList.filter((_: DdayItemConfig, idx: number) => {
                 return idx !== ddayClick;
               }),
             ),
@@ -198,8 +280,82 @@ const MyPageFrame = ({ title }: Props) => {
         .catch((err) => console.log(err))
         .finally(() => handleDeleteModalClose());
     } else if (title === "루틴") {
-      // 작성 예정
+      if (routineIsInit) handleDeleteInit();
+      else handleDeleteModalOpen();
     }
+  };
+
+  const handleDeleteRoutine = () => {
+    const { routineId } = routineInput;
+    settingApi
+      .deleteRoutines(userId, { routineId, order: parseInt(order) })
+      .then(() => {
+        dispatch(
+          setRoutineList(
+            routineList.filter((_: RoutineItemConfig, idx: number) => {
+              return idx != routineClick;
+            }),
+          ),
+        );
+        const nextClick = routineClick === 0 ? routineClick : routineClick - 1;
+        dispatch(setRoutineClick(nextClick));
+        dispatch(setRoutineInput(routineList[nextClick]));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => handleDeleteModalClose());
+  };
+
+  const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
+    const order = e.target.value;
+    if (order === "1" || order === "2" || order === "3") {
+      setOrder(order);
+    }
+  };
+
+  const RoutineUpdateSelector = ({ types }: RoutineUpdateSelectorConfig) => {
+    return (
+      <div className={styles["radio"]}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <RadioGroup value={order} onChange={onChangeRadio}>
+            <FormControlLabel value="1" control={<RadioButton />} label={<Text types="small">모두 {types}하기</Text>} />
+            <FormControlLabel
+              value="2"
+              control={<RadioButton />}
+              label={<Text types="small">오늘 이후 루틴을 모두 {types}하기</Text>}
+            />
+            {types === "삭제" && (
+              <FormControlLabel value="3" control={<RadioButton />} label={<Text types="small">삭제하지 않기</Text>} />
+            )}
+          </RadioGroup>
+        </Stack>
+      </div>
+    );
+  };
+
+  const handleDeleteInit = () => {
+    dispatch(
+      setRoutineList(
+        routineList.filter((_: RoutineItemConfig, idx: number) => {
+          return idx !== routineClick;
+        }),
+      ),
+    );
+    dispatch(setRoutineClick(0));
+    dispatch(setRoutineInput(routineList[0]));
+    dispatch(setRoutineIsInit(false));
+    setRoutineDayError(false);
+  };
+
+  const getRoutines = () => {
+    settingApi
+      .routines(userId)
+      .then((res) => {
+        const response = res.data.data.routineList;
+        dispatch(setRoutineList(response));
+        dispatch(setRoutineClick(0));
+        dispatch(setRoutineInput(response[0]));
+      })
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -208,6 +364,20 @@ const MyPageFrame = ({ title }: Props) => {
     else if (title === "루틴" && routineList.length < 1) setIsDisable(true);
     else setIsDisable(false);
   }, [title, categoryList, ddayList, routineList]);
+
+  useEffect(() => {
+    // 임의 생성한 루틴이 있는 경우에서(routineIsInit), 카테고리/디데이 페이지로 이동하면 삭제.
+    dispatch(setRoutineClick(0));
+    if (routineIsInit) handleDeleteInit();
+  }, [title]);
+
+  useEffect(() => {
+    getRoutines();
+    return () => {
+      // 임의 생성한 루틴이 있는 경우에서(routineIsInit), 다른 페이지로 이동하면 삭제.
+      if (routineIsInit) handleDeleteInit();
+    };
+  }, []);
 
   return (
     <div className={styles["frame"]}>
@@ -223,15 +393,15 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
-        handleUpdate={handleUpdate}
-        handleDelete={handleDeleteModalOpen}
+        handleUpdate={() => handleUpdate(title)}
+        handleDelete={() => handleDelete(title)}
       >
         <>
           {
             {
               카테고리: categoryList.length != 0 && <Category />,
               디데이: ddayList.length != 0 && <Dday />,
-              루틴: routineList.length != 0 && <Routine />,
+              루틴: routineList.length != 0 && <Routine dayError={routineDayError} />,
             }[title]
           }
         </>
@@ -240,11 +410,28 @@ const MyPageFrame = ({ title }: Props) => {
         types="twoBtn"
         open={deleteModalOpen}
         onClose={handleDeleteModalClose}
-        onClick={() => handleDelete(title)}
+        onClick={handleDeleteRoutine}
         onClickMessage="삭제"
         warning
       >
-        <DeleteModal types={title} />
+        {title === "루틴" ? (
+          <RoutineUpdateModal types="삭제">
+            <RoutineUpdateSelector types="삭제" />
+          </RoutineUpdateModal>
+        ) : (
+          <DeleteModal types={title} />
+        )}
+      </Modal>
+      <Modal
+        types="twoBtn"
+        open={updateModal}
+        onClose={handleUpdateModalClose}
+        onClickMessage="저장"
+        onClick={handleUpdateRoutine}
+      >
+        <RoutineUpdateModal types={"수정"}>
+          <RoutineUpdateSelector types="수정" />
+        </RoutineUpdateModal>
       </Modal>
     </div>
   );

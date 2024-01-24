@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
 
     private Weekly getOrCreateWeeklyPlanner(final User user, final String startDateStr, final String endDateStr) {
         checkValidWeek(startDateStr, endDateStr);
-        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() != 6) {
+        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1 || ChronoUnit.DAYS.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)) != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
         Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(user, startDateStr, endDateStr);
@@ -54,7 +55,7 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
 
     private void checkValidWeek(final String startDateStr, final String endDateStr) {
         if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1
-                || Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() != 6) {
+                || ChronoUnit.DAYS.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)) != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
     }

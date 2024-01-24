@@ -120,11 +120,16 @@ $color-warning: var(--color-warning);
   }
 }
 
+#date {
+  position: relative;
+}
+
 .date {
   &__picker {
     position: absolute;
-    right: 3em;
-    top: 11em;
+    right: 0;
+    top: 40;
+    z-index: 1000;
 
     > svg,
     span,
@@ -364,6 +369,19 @@ $color-warning: var(--color-warning);
   }
 }
 
+#routine {
+  &__days {
+    margin-bottom: 0;
+  }
+  &__error {
+    width: 100%;
+    margin: 0.5em 0 2em 0;
+    > span {
+      color: $color-warning;
+    }
+  }
+}
+
 .routine {
   &__item {
     display: grid;
@@ -374,15 +392,6 @@ $color-warning: var(--color-warning);
     box-sizing: border-box;
     border-bottom: 0.5px solid $color-gray-2;
     cursor: pointer;
-    > div:nth-child(1) {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3em;
-
-      > div > span {
-        color: $color-gray-4;
-      }
-    }
 
     > div:nth-child(2) {
       height: 30px;
@@ -394,11 +403,32 @@ $color-warning: var(--color-warning);
       @extend .routine__item;
       background-color: $color-gray-1;
     }
+
+    &--disable {
+      @extend .routine__item;
+      cursor: default;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    width: 100%;
+
+    > div > span {
+      color: $color-gray-4;
+    }
+
+    &--disable {
+      @extend .routine__info;
+      color: $color-gray-5;
+    }
   }
   &__day {
     &-list {
       display: flex;
-      justify-content: space-evenly;
+      justify-content: space-between;
       width: 100%;
       > div > input {
         display: none;
@@ -406,17 +436,18 @@ $color-warning: var(--color-warning);
     }
 
     &-item {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background-color: $color-gray-2;
-      cursor: pointer;
+      > label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: $color-gray-2;
+        cursor: pointer;
+      }
 
-      &--click {
-        @extend .routine__day-item;
+      > input:checked + label {
         background-color: $color-blue;
       }
     }
@@ -444,6 +475,10 @@ $color-warning: var(--color-warning);
         font-size: medium;
         cursor: pointer;
       }
+    }
+    > .start,
+    .end {
+      position: relative;
     }
   }
 }

@@ -3,6 +3,8 @@ import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import SaveIcon from "@mui/icons-material/Save";
 import { DeleteOutlined } from "@mui/icons-material";
+import { useAppSelector } from "@hooks/hook";
+import { selectRoutineIsInit } from "@store/mypage/routineSlice";
 
 interface Props {
   children: ReactNode;
@@ -17,7 +19,11 @@ interface Props {
  */
 
 const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }: Props) => {
-  const disable = isDisable ? "--disable" : "";
+  const isInit = useAppSelector(selectRoutineIsInit);
+  const disable = () => {
+    return isDisable ? "--disable" : "";
+  };
+
   return (
     <div className={styles["frame__container"]}>
       <div className={styles["frame__title"]}>
@@ -25,11 +31,11 @@ const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }
       </div>
       {children}
       <div className={styles["frame__button"]}>
-        <div className={styles[`frame__button--delete${disable}`]} onClick={handleDelete}>
+        <div className={styles[`frame__button--delete${disable()}`]} onClick={handleDelete}>
           <DeleteOutlined />
           <Text>삭제</Text>
         </div>
-        <div className={styles[`frame__button--save${disable}`]} onClick={() => handleUpdate(title)}>
+        <div className={styles[`frame__button--save${disable()}`]} onClick={() => handleUpdate(title)}>
           <SaveIcon />
           <Text>저장</Text>
         </div>

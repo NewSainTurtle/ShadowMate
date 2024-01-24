@@ -77,7 +77,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
 
     private void checkValidWeek(final String startDateStr, final String endDateStr) {
         if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1
-                || Period.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)).getDays() != 6) {
+                || ChronoUnit.DAYS.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)) != 6) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE);
         }
     }
