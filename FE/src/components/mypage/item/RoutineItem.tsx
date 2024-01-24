@@ -2,12 +2,7 @@ import React, { useEffect, useRef } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import {
-  selectRoutineClick,
-  setRoutineClick,
-  RoutineItemConfig,
-  selectRoutineIsInit,
-} from "@store/mypage/routineSlice";
+import { selectRoutineClick, setRoutineClick, RoutineItemConfig } from "@store/mypage/routineSlice";
 import { dateFormat } from "@util/getThisWeek";
 import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 
@@ -24,14 +19,8 @@ const DaysSorter: DaysSorterConfig = { 월: 1, 화: 2, 수: 3, 목: 4, 금: 5, �
 const RoutineItem = ({ idx, item }: Props) => {
   const dispatch = useAppDispatch();
   const click: number = useAppSelector(selectRoutineClick);
-  const isInit = useAppSelector(selectRoutineIsInit);
   const endRef = useRef<HTMLDivElement | null>(null);
-  const handleClicked = () => {
-    if (isInit && item.routineId) return "--disable";
-    return click === idx ? "--clicked" : "";
-  };
-  const clicked = handleClicked();
-  const disable = isInit && item.routineId ? "--disable" : "";
+  const clicked = click === idx ? "--clicked" : "";
   const sortDays = () => {
     let days = [...item.days];
     return days?.sort((a: string, b: string) => {
@@ -48,10 +37,10 @@ const RoutineItem = ({ idx, item }: Props) => {
       ref={idx === click ? endRef : null}
       className={styles[`routine__item${clicked}`]}
       onClick={() => {
-        if (!isInit) dispatch(setRoutineClick(idx));
+        dispatch(setRoutineClick(idx));
       }}
     >
-      <div className={styles[`routine__info${disable}`]}>
+      <div className={styles["routine__info"]}>
         <Text>{item.routineContent}</Text>
         <div>
           {sortDays()?.map((day: string, i: number) => (

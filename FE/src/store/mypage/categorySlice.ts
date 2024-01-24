@@ -53,6 +53,7 @@ const categorySlice = createSlice({
 export const { setCategoryList, setCategoryColors, setCategoryClick, setCategoryInput, setCategoryColorClick } =
   categorySlice.actions;
 
+export const BASIC_CATEGORY_INPUT = initialState.categoryInput;
 export const selectCategoryList = (state: rootState) => state.category.categoryList;
 export const selectCategoryColors = (state: rootState) => state.category.categoryColors;
 export const selectCategoryClick = (state: rootState) => state.category.categoryClick;
