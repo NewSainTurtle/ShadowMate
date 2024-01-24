@@ -35,7 +35,7 @@ public class SocialServiceImpl implements SocialService {
     private final UserRepository userRepository;
 
     private void checkValidDate(final String startDate, final String endDate) {
-        if (!Pattern.matches(DATE_PATTERN, startDate) || !Pattern.matches(DATE_PATTERN, endDate)) {
+        if (startDate == null || endDate == null || !Pattern.matches(DATE_PATTERN, startDate) || !Pattern.matches(DATE_PATTERN, endDate)) {
             throw new SocialException(SocialErrorResult.INVALID_DATE_FORMAT);
         }
         if (startDate.compareTo(endDate) > 0) {
