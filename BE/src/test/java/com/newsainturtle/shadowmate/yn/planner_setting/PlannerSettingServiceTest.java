@@ -389,25 +389,25 @@ class PlannerSettingServiceTest extends DateCommonService {
             final List<FollowRequest> followRequestList = new ArrayList<>();
             followRequestList.add(FollowRequest.builder()
                     .id(1L)
-                    .receiverId(user2)
-                    .requesterId(user)
+                    .receiver(user2)
+                    .requester(user)
                     .build());
             followRequestList.add(FollowRequest.builder()
                     .id(2L)
-                    .receiverId(user2)
-                    .requesterId(user3)
+                    .receiver(user2)
+                    .requester(user3)
                     .build());
 
-            doReturn(followRequestList).when(followRequestRepository).findAllByReceiverId(any(User.class));
+            doReturn(followRequestList).when(followRequestRepository).findAllByReceiver(any(User.class));
             doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
 
             //when
             plannerSettingService.setAccessScope(user2, setAccessScopeRequest);
 
             //then
-            verify(followRequestRepository, times(1)).findAllByReceiverId(any(User.class));
+            verify(followRequestRepository, times(1)).findAllByReceiver(any(User.class));
             verify(followRepository, times(2)).save(any(Follow.class));
-            verify(followRequestRepository, times(1)).deleteAllByReceiverId(any(Long.class));
+            verify(followRequestRepository, times(1)).deleteAllByReceiver(any(Long.class));
             verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(), any(List.class));
             verify(userRepository, times(1)).updatePlannerAccessScope(any(PlannerAccessScope.class), any(Long.class));

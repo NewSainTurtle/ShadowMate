@@ -328,19 +328,19 @@ class FollowControllerTest {
             //given
             final FollowRequest followRequest = FollowRequest.builder()
                     .id(1L)
-                    .requesterId(user1)
-                    .receiverId(user2)
+                    .requester(user1)
+                    .receiver(user2)
                     .build();
             final String url = "/api/follow/{userId}/receive-lists";
             final List<FollowRequestResponse> followRequestResponseList = new ArrayList<>();
             followRequestResponseList.add(FollowRequestResponse.builder()
                     .followRequestId(followRequest.getId())
-                    .requesterId(followRequest.getRequesterId().getId())
-                    .email(followRequest.getRequesterId().getEmail())
-                    .nickname(followRequest.getRequesterId().getNickname())
-                    .profileImage(followRequest.getRequesterId().getProfileImage())
-                    .statusMessage(followRequest.getRequesterId().getStatusMessage())
-                    .plannerAccessScope(followRequest.getRequesterId().getPlannerAccessScope())
+                    .requesterId(followRequest.getRequester().getId())
+                    .email(followRequest.getRequester().getEmail())
+                    .nickname(followRequest.getRequester().getNickname())
+                    .profileImage(followRequest.getRequester().getProfileImage())
+                    .statusMessage(followRequest.getRequester().getStatusMessage())
+                    .plannerAccessScope(followRequest.getRequester().getPlannerAccessScope())
                     .build());
             doReturn(followRequestResponseList).when(followService).getFollowRequestList(any());
 

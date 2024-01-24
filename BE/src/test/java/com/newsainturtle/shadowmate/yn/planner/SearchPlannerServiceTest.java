@@ -225,7 +225,7 @@ class SearchPlannerServiceTest extends DateCommonService {
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-            doReturn(null).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(null).when(followRepository).findByFollowingAndFollower(any(), any());
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(String.class));
 
@@ -262,8 +262,8 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .build();
             final Follow follow = Follow.builder()
                     .id(1L)
-                    .followerId(user)
-                    .followingId(plannerWriter)
+                    .follower(user)
+                    .following(plannerWriter)
                     .build();
             final DailyPlanner dailyPlanner2 = DailyPlanner.builder()
                     .id(plannerWriterId)
@@ -308,7 +308,7 @@ class SearchPlannerServiceTest extends DateCommonService {
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(dailyPlanner2).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-            doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(follow).when(followRepository).findByFollowingAndFollower(any(), any());
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
             doReturn(null).when(socialRepository).findByDailyPlannerAndDeleteTimeIsNull(any(DailyPlanner.class));
             doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
@@ -535,8 +535,8 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .build();
             final Follow follow = Follow.builder()
                     .id(1L)
-                    .followerId(user)
-                    .followingId(plannerWriter)
+                    .follower(user)
+                    .following(plannerWriter)
                     .build();
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .id(2L)
@@ -545,7 +545,7 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .build();
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
-            doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(follow).when(followRepository).findByFollowingAndFollower(any(), any());
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
             doReturn(0).when(routineTodoRepository).countByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(0).when(todoRepository).countByDailyPlanner(any(DailyPlanner.class));
@@ -836,7 +836,7 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .build();
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
-            doReturn(null).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(null).when(followRepository).findByFollowingAndFollower(any(), any());
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(String.class), any(String.class));
             doReturn(new ArrayList<>()).when(weeklyTodoRepository).findAllByWeekly(any(Weekly.class));
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
@@ -869,8 +869,8 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .build();
             final Follow follow = Follow.builder()
                     .id(1L)
-                    .followerId(user)
-                    .followingId(plannerWriter)
+                    .follower(user)
+                    .following(plannerWriter)
                     .build();
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .id(2L)
@@ -892,7 +892,7 @@ class SearchPlannerServiceTest extends DateCommonService {
                     .build());
 
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
-            doReturn(follow).when(followRepository).findByFollowerIdAndFollowingId(any(), any());
+            doReturn(follow).when(followRepository).findByFollowingAndFollower(any(), any());
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(String.class), any(String.class));
             doReturn(weeklyTodoList).when(weeklyTodoRepository).findAllByWeekly(any(Weekly.class));
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
