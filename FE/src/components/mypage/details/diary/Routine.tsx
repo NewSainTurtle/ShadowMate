@@ -69,7 +69,7 @@ const Routine = ({ dayError }: Props) => {
   };
 
   const handleStartCalendar = (date: Date) => {
-    if (date > endDay) dispatch(setRoutineInput({ ...routineInput, startDay: date, endDay: date }));
+    if (date > dayjs(endDay).toDate()) dispatch(setRoutineInput({ ...routineInput, startDay: date, endDay: date }));
     else dispatch(setRoutineInput({ ...routineInput, startDay: date }));
   };
 
