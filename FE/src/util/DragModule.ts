@@ -1,4 +1,4 @@
-import { DragEvent, MutableRefObject } from "react";
+import { DragEvent, MutableRefObject, useState } from "react";
 import { plannerApi } from "@api/Api";
 import { Dispatch, SetStateAction, useRef } from "react";
 import { TodoConfig } from "./planner.interface";
@@ -19,6 +19,9 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
   const userId = useAppSelector(selectUserId);
   const dragTargetRef = useRef<number>(0);
   const dragEndRef = useRef<number>(0);
+  const [mouseOnChild, setMouseOnChild] = useState(false);
+  const childMouseEnter = () => setMouseOnChild(true);
+  const childMouseLeave = () => setMouseOnChild(false);
 
   const containerDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -28,6 +31,11 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
   };
 
   const dragStart = (e: DragEvent<HTMLDivElement>, idx: number) => {
+    if (!mouseOnChild) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     e.dataTransfer.setDragImage(new Image(), 0, 0);
     e.currentTarget.classList.add(dragClassName);
     dragTargetRef.current = idx;
@@ -85,6 +93,8 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
   };
 
   return {
+    childMouseEnter,
+    childMouseLeave,
     containerDragOver,
     dragStart,
     dragEnter,
