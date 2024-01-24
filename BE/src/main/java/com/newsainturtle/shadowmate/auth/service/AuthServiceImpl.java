@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.mail.Message;
@@ -204,8 +205,9 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
         }
         HttpHeaders headers = new HttpHeaders();
-        if (RequestContextHolder.getRequestAttributes() != null) {
-            final String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes != null) {
+            final String sessionId = requestAttributes.getSessionId();
             createRefreshToken(user, sessionId);
             headers.set(header, new StringBuilder().append(prefix).append(createAccessToken(user)).toString());
             headers.set(KEY_ID, userId);

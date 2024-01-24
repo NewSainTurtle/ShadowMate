@@ -53,7 +53,7 @@ public class SocialServiceImpl implements SocialService {
     @Override
     public SearchSocialPlannerResponse getSocial(final String sort, final int pageNumber, final String nickname, final String startDate, final String endDate) {
         checkSortFormat(sort);
-        if ((startDate == null && endDate == null) || (startDate.isEmpty() && endDate.isEmpty())) {
+        if ((startDate == null || startDate.isEmpty()) && (endDate == null || endDate.isEmpty())) {
             if (nickname == null || nickname.isEmpty()) return getSocialList(sort, pageNumber);
             else return getSocialList(sort, pageNumber, nickname);
         } else {
