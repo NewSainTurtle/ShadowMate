@@ -104,6 +104,17 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         return weeklyTodos;
     }
 
+    private int getDayStatus(final double percent) {
+        if (percent == 100) {
+            return 3;
+        } else if (percent >= 60) {
+            return 2;
+        } else if (percent >= 0) {
+            return 1;
+        }
+        return 0;
+    }
+
     private CalendarDayTotalResponse getDayList(final User user, final User plannerWriter, final LocalDate date) {
         final List<CalendarDayResponse> dayList = new ArrayList<>();
         final List<Long> dailyPlannerIdList = new ArrayList<>();
@@ -113,10 +124,11 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         if (havePermissionToSearch(user, plannerWriter)) {
             final int lastDay = YearMonth.from(date).lengthOfMonth();
             for (int i = 0; i < lastDay; i++) {
-                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
+                final String targetDate = localDateToString(date.plusDays(i));
+                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, targetDate);
                 int todoCount = 0;
                 int dayStatus = 0;
-                final int routineCount = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(plannerWriter.getId(), String.valueOf(date.plusDays(i)));
+                final int routineCount = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(plannerWriter.getId(), targetDate);
                 if (dailyPlanner != null) {
                     dailyPlannerIdList.add(dailyPlanner.getId());
                     final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner) + routineCount;
@@ -124,14 +136,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                         todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE) + routineCount;
                         todoTotal += totalCount;
                         todoIncomplete += todoCount;
-                        final double percent = ((totalCount - todoCount) / (double) totalCount) * 100;
-                        if (percent == 100) {
-                            dayStatus = 3;
-                        } else if (percent >= 60) {
-                            dayStatus = 2;
-                        } else if (percent >= 0) {
-                            dayStatus = 1;
-                        }
+                        dayStatus = getDayStatus(((totalCount - todoCount) / (double) totalCount) * 100);
                     }
                 } else if (routineCount > 0) {
                     todoCount = routineCount;
@@ -140,7 +145,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
 
                 dayList.add(
                         CalendarDayResponse.builder()
-                                .date(localDateToString(date.plusDays(i)))
+                                .date(targetDate)
                                 .todoCount(todoCount)
                                 .dayStatus(dayStatus)
                                 .build()
