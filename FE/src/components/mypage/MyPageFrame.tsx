@@ -280,23 +280,29 @@ const MyPageFrame = ({ title }: Props) => {
         .catch((err) => console.log(err))
         .finally(() => handleDeleteModalClose());
     } else if (title === "루틴") {
-      const { routineId } = routineInput;
-      settingApi
-        .deleteRoutines(userId, { routineId, order: parseInt(order) })
-        .then((res) => {
-          console.log(res);
-          dispatch(
-            setRoutineList(
-              routineList.filter((_: RoutineItemConfig, idx: number) => {
-                return idx != routineClick;
-              }),
-            ),
-          );
-          dispatch(setRoutineClick(routineClick === 0 ? routineClick : routineClick - 1));
-        })
-        .catch((err) => console.log(err))
-        .finally(() => handleDeleteModalClose());
+      if (routineIsInit) return;
+      handleDeleteModalOpen();
     }
+  };
+
+  const handleDeleteRoutine = () => {
+    const { routineId } = routineInput;
+    settingApi
+      .deleteRoutines(userId, { routineId, order: parseInt(order) })
+      .then(() => {
+        dispatch(
+          setRoutineList(
+            routineList.filter((_: RoutineItemConfig, idx: number) => {
+              return idx != routineClick;
+            }),
+          ),
+        );
+        const nextClick = routineClick === 0 ? routineClick : routineClick - 1;
+        dispatch(setRoutineClick(nextClick));
+        dispatch(setRoutineInput(routineList[nextClick]));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => handleDeleteModalClose());
   };
 
   const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
@@ -387,8 +393,8 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
-        handleUpdate={handleUpdate}
-        handleDelete={handleDeleteModalOpen}
+        handleUpdate={() => handleUpdate(title)}
+        handleDelete={() => handleDelete(title)}
       >
         <>
           {
@@ -404,7 +410,7 @@ const MyPageFrame = ({ title }: Props) => {
         types="twoBtn"
         open={deleteModalOpen}
         onClose={handleDeleteModalClose}
-        onClick={() => handleDelete(title)}
+        onClick={handleDeleteRoutine}
         onClickMessage="삭제"
         warning
       >

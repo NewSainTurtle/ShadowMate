@@ -21,7 +21,6 @@ interface Props {
 const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }: Props) => {
   const isInit = useAppSelector(selectRoutineIsInit);
   const disable = () => {
-    if (isInit) return "";
     return isDisable ? "--disable" : "";
   };
 
@@ -32,7 +31,7 @@ const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }
       </div>
       {children}
       <div className={styles["frame__button"]}>
-        <div className={styles[`frame__button--delete${disable()}`]} onClick={handleDelete}>
+        <div className={styles[`frame__button--delete${isInit ? "--disable" : disable()}`]} onClick={handleDelete}>
           <DeleteOutlined />
           <Text>삭제</Text>
         </div>
