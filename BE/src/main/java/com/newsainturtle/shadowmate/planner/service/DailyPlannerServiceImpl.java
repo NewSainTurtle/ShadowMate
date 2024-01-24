@@ -153,7 +153,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
         final Todo todo = getTodo(removeDailyTodoRequest.getTodoId(), dailyPlanner);
         final RoutineTodo routineTodo = routineTodoRepository.findByTodo(todo);
-        if(routineTodo != null){
+        if (routineTodo != null) {
             routineTodo.setRoutine(null);
             routineTodoRepository.deleteById(routineTodo.getId());
         }
@@ -256,7 +256,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     }
 
     @Override
-    public void changeDailyTodoSequence(User user, ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest) {
+    public void changeDailyTodoSequence(final User user, final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, changeDailyTodoSequenceRequest.getDate());
         final Todo todo = getTodo(changeDailyTodoSequenceRequest.getTodoId(), dailyPlanner);
 

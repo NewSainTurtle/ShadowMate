@@ -4,12 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class ShareSocialResponse {
 
     private Long socialId;
 
-    @Builder
-    public ShareSocialResponse(Long socialId) {
-        this.socialId = socialId;
-    }
 }

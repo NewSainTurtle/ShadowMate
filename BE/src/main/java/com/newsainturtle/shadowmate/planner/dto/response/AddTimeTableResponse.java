@@ -4,12 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class AddTimeTableResponse {
 
     private Long timeTableId;
 
-    @Builder
-    public AddTimeTableResponse(Long timeTableId) {
-        this.timeTableId = timeTableId;
-    }
 }
