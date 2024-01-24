@@ -207,6 +207,7 @@ class SocialServiceTest extends DateCommonService {
 
     @Nested
     class 닉네임검색_소셜조회 {
+        private final String nickname = user.getNickname();
 
         @Test
         void 실패_잘못된날짜형식() {
@@ -215,7 +216,7 @@ class SocialServiceTest extends DateCommonService {
             final int pageNumber = 3;
 
             // when
-            final SocialException result = assertThrows(SocialException.class, () -> socialService.getSocial(sort, pageNumber, user.getNickname(), "2023.12.25", "2023.12.26"));
+            final SocialException result = assertThrows(SocialException.class, () -> socialService.getSocial(sort, pageNumber, nickname, "2023.12.25", "2023.12.26"));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(SocialErrorResult.BAD_REQUEST_SORT);
@@ -228,7 +229,7 @@ class SocialServiceTest extends DateCommonService {
             final int pageNumber = 3;
 
             // when
-            final SocialException result = assertThrows(SocialException.class, () -> socialService.getSocial(sort, pageNumber, user.getNickname(), "2023-12-25", "2023-12-24"));
+            final SocialException result = assertThrows(SocialException.class, () -> socialService.getSocial(sort, pageNumber, nickname, "2023-12-25", "2023-12-24"));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(SocialErrorResult.BAD_REQUEST_SORT);
@@ -245,7 +246,7 @@ class SocialServiceTest extends DateCommonService {
             doReturn(new ArrayList<>()).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortLatest(any(Long.class), any(Pageable.class));
 
             // when
-            final SearchSocialPlannerResponse searchPublicDailyPlannerResponse = socialService.getSocial(sort, pageNumber, user.getNickname(), "", "");
+            final SearchSocialPlannerResponse searchPublicDailyPlannerResponse = socialService.getSocial(sort, pageNumber, nickname, "", "");
 
             // then
             assertThat(searchPublicDailyPlannerResponse.getSocialList()).isEmpty();
@@ -263,7 +264,7 @@ class SocialServiceTest extends DateCommonService {
             doReturn(new ArrayList<>()).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortLatest(any(Long.class), any(Pageable.class));
 
             // when
-            final SearchSocialPlannerResponse searchPublicDailyPlannerResponse = socialService.getSocial(sort, pageNumber, user.getNickname(), "", "");
+            final SearchSocialPlannerResponse searchPublicDailyPlannerResponse = socialService.getSocial(sort, pageNumber, nickname, "", "");
 
             // then
             assertThat(searchPublicDailyPlannerResponse.getSocialList()).isEmpty();
@@ -284,7 +285,7 @@ class SocialServiceTest extends DateCommonService {
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortLatest(any(Long.class), any(Pageable.class));
 
             // when
-            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, user.getNickname(), "", "");
+            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, nickname, "", "");
 
             // then
             assertThat(result.getSocialList()).hasSize(count);
@@ -307,7 +308,7 @@ class SocialServiceTest extends DateCommonService {
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortPopularity(any(Long.class), any(Pageable.class));
 
             // when
-            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, user.getNickname(), "", "");
+            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, nickname, "", "");
 
             // then
             assertThat(result.getSocialList()).hasSize(count);
@@ -330,7 +331,7 @@ class SocialServiceTest extends DateCommonService {
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(any(Long.class), any(String.class), any(String.class), any(Pageable.class));
 
             // when
-            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, user.getNickname(), "2023-12-25", "2023-12-26");
+            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, nickname, "2023-12-25", "2023-12-26");
 
             // then
             assertThat(result.getSocialList()).hasSize(count);
@@ -353,7 +354,7 @@ class SocialServiceTest extends DateCommonService {
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortPopularity(any(Long.class), any(String.class), any(String.class), any(Pageable.class));
 
             // when
-            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, user.getNickname(), "2023-12-25", "2023-12-26");
+            final SearchSocialPlannerResponse result = socialService.getSocial(sort, pageNumber, nickname, "2023-12-25", "2023-12-26");
 
             // then
             assertThat(result.getSocialList()).hasSize(count);
