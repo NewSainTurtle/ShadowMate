@@ -144,6 +144,8 @@ export const settingApi = {
       days: string[];
     },
   ) => Axios.put(api.setting.routines(userId), data),
+  deleteRoutines: (userId: number, data: { routineId: number; order: number }) =>
+    Axios.delete(api.setting.routines(userId), { data }),
 };
 
 export const socialApi = {
