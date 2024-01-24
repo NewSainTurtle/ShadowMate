@@ -280,8 +280,8 @@ const MyPageFrame = ({ title }: Props) => {
         .catch((err) => console.log(err))
         .finally(() => handleDeleteModalClose());
     } else if (title === "루틴") {
-      if (routineIsInit) return;
-      handleDeleteModalOpen();
+      if (routineIsInit) handleDeleteInit();
+      else handleDeleteModalOpen();
     }
   };
 
