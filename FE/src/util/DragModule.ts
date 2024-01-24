@@ -58,9 +58,9 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
         upperTodoId,
       })
       .then(() => {
-        const dragItemConotent = copyTodos[drageTargetIdx];
+        const dragItemContent = copyTodos[drageTargetIdx];
         copyTodos.splice(drageTargetIdx, 1);
-        copyTodos.splice(endTargetIdx, 0, dragItemConotent);
+        copyTodos.splice(endTargetIdx, 0, dragItemContent);
         dragTargetRef.current = 0;
         dragEndRef.current = 0;
         setTodos(copyTodos);
