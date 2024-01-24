@@ -6,11 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
+@Builder
 public class GetDdayListResponse {
     private List<GetDdayResponse> ddayList;
-
-    @Builder
-    public GetDdayListResponse(List<GetDdayResponse> ddayList) {
-        this.ddayList = ddayList;
-    }
 }

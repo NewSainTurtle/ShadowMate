@@ -4,12 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class AddRoutineResponse {
-
     private Long routineId;
-
-    @Builder
-    public AddRoutineResponse(Long routineId) {
-        this.routineId = routineId;
-    }
 }

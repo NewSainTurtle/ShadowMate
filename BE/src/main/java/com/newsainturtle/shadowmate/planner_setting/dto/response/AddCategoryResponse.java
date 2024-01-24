@@ -4,12 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class AddCategoryResponse {
-
     private Long categoryId;
-
-    @Builder
-    public AddCategoryResponse(Long categoryId) {
-        this.categoryId = categoryId;
-    }
 }
