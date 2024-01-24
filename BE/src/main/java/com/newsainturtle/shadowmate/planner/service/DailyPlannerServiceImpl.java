@@ -187,11 +187,11 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     @Override
     public void addDailyLike(final User user, final Long plannerWriterId, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
         final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, plannerWriterId, addDailyPlannerLikeRequest.getDate());
-        DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner);
-        if (dailyPlannerLike != null) {
+        final boolean like = dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user, dailyPlanner);
+        if (like) {
             throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE);
         }
-        dailyPlannerLike = DailyPlannerLike.builder()
+        final DailyPlannerLike dailyPlannerLike = DailyPlannerLike.builder()
                 .dailyPlanner(dailyPlanner)
                 .user(user)
                 .build();

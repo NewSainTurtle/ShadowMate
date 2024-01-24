@@ -87,10 +87,10 @@ class DailyPlannerLikeRepositoryTest {
         //given
 
         //when
-        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, dailyPlanner);
+        final boolean dailyPlannerLike = dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user2, dailyPlanner);
 
         //then
-        assertThat(dailyPlannerLike).isNull();
+        assertThat(dailyPlannerLike).isFalse();
     }
 
     @Test
@@ -102,13 +102,10 @@ class DailyPlannerLikeRepositoryTest {
                 .build());
 
         //when
-        final DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, dailyPlanner);
+        final boolean dailyPlannerLike = dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user2, dailyPlanner);
 
         //then
-        assertThat(dailyPlannerLike).isNotNull();
-        assertThat(dailyPlannerLike.getDailyPlanner()).isEqualTo(dailyPlanner);
-        assertThat(dailyPlannerLike.getUser()).isEqualTo(user2);
-
+        assertThat(dailyPlannerLike).isTrue();
     }
 
     @Test
@@ -121,10 +118,10 @@ class DailyPlannerLikeRepositoryTest {
 
         //when
         dailyPlannerLikeRepository.deleteByUserAndDailyPlanner(user2, dailyPlanner);
-        final DailyPlannerLike findDailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user2, dailyPlanner);
+        final boolean findDailyPlannerLike = dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user2, dailyPlanner);
 
         //then
-        assertThat(findDailyPlannerLike).isNull();
+        assertThat(findDailyPlannerLike).isFalse();
     }
 
     @Nested
