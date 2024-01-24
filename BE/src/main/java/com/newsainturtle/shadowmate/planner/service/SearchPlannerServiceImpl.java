@@ -11,7 +11,6 @@ import com.newsainturtle.shadowmate.planner.repository.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
-import com.newsainturtle.shadowmate.planner_setting.repository.RoutineRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
@@ -40,13 +39,11 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private final DailyPlannerRepository dailyPlannerRepository;
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
     private final TodoRepository todoRepository;
-    private final TimeTableRepository timeTableRepository;
     private final DdayRepository ddayRepository;
     private final FollowRepository followRepository;
     private final WeeklyRepository weeklyRepository;
     private final WeeklyTodoRepository weeklyTodoRepository;
     private final SocialRepository socialRepository;
-    private final RoutineRepository routineRepository;
     private final RoutineTodoRepository routineTodoRepository;
     private int totalMinutes;
 
