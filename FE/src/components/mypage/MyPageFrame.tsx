@@ -280,7 +280,22 @@ const MyPageFrame = ({ title }: Props) => {
         .catch((err) => console.log(err))
         .finally(() => handleDeleteModalClose());
     } else if (title === "루틴") {
-      // 작성 예정
+      const { routineId } = routineInput;
+      settingApi
+        .deleteRoutines(userId, { routineId, order: parseInt(order) })
+        .then((res) => {
+          console.log(res);
+          dispatch(
+            setRoutineList(
+              routineList.filter((_: RoutineItemConfig, idx: number) => {
+                return idx != routineClick;
+              }),
+            ),
+          );
+          dispatch(setRoutineClick(routineClick === 0 ? routineClick : routineClick - 1));
+        })
+        .catch((err) => console.log(err))
+        .finally(() => handleDeleteModalClose());
     }
   };
 
