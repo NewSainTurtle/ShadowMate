@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.user.dto;
 
-import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
