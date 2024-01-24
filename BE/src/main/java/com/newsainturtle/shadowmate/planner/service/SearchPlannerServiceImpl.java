@@ -60,9 +60,8 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                 (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
         ) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     private void checkValidDate(final String date) {
