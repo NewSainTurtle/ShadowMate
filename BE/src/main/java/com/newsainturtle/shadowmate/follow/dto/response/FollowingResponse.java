@@ -1,4 +1,4 @@
-package com.newsainturtle.shadowmate.follow.dto;
+package com.newsainturtle.shadowmate.follow.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,16 +6,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class FollowingResponse {
-
     private Long followId;
-
     private Long followingId;
-
     private String email;
-
     private String nickname;
-
     private String profileImage;
-
     private String statusMessage;
 }

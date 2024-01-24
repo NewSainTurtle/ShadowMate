@@ -1,7 +1,7 @@
 package com.newsainturtle.shadowmate.kh.follow;
 
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
-import com.newsainturtle.shadowmate.follow.dto.*;
+import com.newsainturtle.shadowmate.follow.dto.response.*;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
