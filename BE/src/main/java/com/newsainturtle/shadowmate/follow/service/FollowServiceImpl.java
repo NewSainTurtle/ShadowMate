@@ -185,7 +185,7 @@ public class FollowServiceImpl implements FollowService {
 
     private User certifyFollowUser(final Long userId) {
         Optional<User> result = userRepository.findById(userId);
-        if(!result.isPresent() || result.get().getWithdrawal()) {
+        if(!result.isPresent() || result.get().getWithdrawal().booleanValue()) {
             throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER);
         }
         return result.get();

@@ -20,6 +20,9 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN;
+import static com.newsainturtle.shadowmate.social.constant.SocialConstant.SORT_LATEST;
+import static com.newsainturtle.shadowmate.social.constant.SocialConstant.SORT_POPULARITY;
 import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.NOT_FOUND_SOCIAL;
 
 @Service
@@ -32,8 +35,7 @@ public class SocialServiceImpl implements SocialService {
     private final UserRepository userRepository;
 
     private void checkValidDate(final String startDate, final String endDate) {
-        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$";
-        if (!Pattern.matches(datePattern, startDate) || !Pattern.matches(datePattern, endDate)) {
+        if (!Pattern.matches(DATE_PATTERN, startDate) || !Pattern.matches(DATE_PATTERN, endDate)) {
             throw new SocialException(SocialErrorResult.INVALID_DATE_FORMAT);
         }
         if (startDate.compareTo(endDate) > 0) {
@@ -43,7 +45,7 @@ public class SocialServiceImpl implements SocialService {
     }
 
     private void checkSortFormat(String sort) {
-        if (!sort.equals("latest") && !sort.equals("popularity")) {
+        if (!sort.equals(SORT_LATEST) && !sort.equals(SORT_POPULARITY)) {
             throw new SocialException(SocialErrorResult.BAD_REQUEST_SORT);
         }
     }
@@ -51,7 +53,7 @@ public class SocialServiceImpl implements SocialService {
     @Override
     public SearchSocialPlannerResponse getSocial(final String sort, final int pageNumber, final String nickname, final String startDate, final String endDate) {
         checkSortFormat(sort);
-        if ((startDate == null && endDate == null) || (startDate.isEmpty() && endDate.isEmpty())) {
+        if ((startDate == null || startDate.isEmpty()) && (endDate == null || endDate.isEmpty())) {
             if (nickname == null || nickname.isEmpty()) return getSocialList(sort, pageNumber);
             else return getSocialList(sort, pageNumber, nickname);
         } else {
@@ -73,7 +75,7 @@ public class SocialServiceImpl implements SocialService {
                     .socialList(new ArrayList<>())
                     .build();
         }
-        if (sort.equals("latest")) {
+        if (sort.equals(SORT_LATEST)) {
             socialList = socialRepository.findAllByDeleteTimeIsNullSortLatest(PageRequest.of(pageNumber - 1, 6));
         } else {
             socialList = socialRepository.findAllByDeleteTimeIsNullSortPopularity(PageRequest.of(pageNumber - 1, 6));
@@ -105,7 +107,7 @@ public class SocialServiceImpl implements SocialService {
                     .build();
         }
 
-        if (sort.equals("latest")) {
+        if (sort.equals(SORT_LATEST)) {
             socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullSortLatest(owner.getId(), PageRequest.of(pageNumber - 1, 6));
         } else {
             socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullSortPopularity(owner.getId(), PageRequest.of(pageNumber - 1, 6));
@@ -134,7 +136,7 @@ public class SocialServiceImpl implements SocialService {
                     .socialList(new ArrayList<>())
                     .build();
         }
-        if (sort.equals("latest")) {
+        if (sort.equals(SORT_LATEST)) {
             socialList = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortLatest(startDate, endDate, PageRequest.of(pageNumber - 1, 6));
         } else {
             socialList = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortPopularity(startDate, endDate, PageRequest.of(pageNumber - 1, 6));
@@ -164,7 +166,7 @@ public class SocialServiceImpl implements SocialService {
                     .socialList(new ArrayList<>())
                     .build();
         }
-        if (sort.equals("latest")) {
+        if (sort.equals(SORT_LATEST)) {
             socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(owner.getId(), startDate, endDate, PageRequest.of(pageNumber - 1, 6));
         } else {
             socialList = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortPopularity(owner.getId(), startDate, endDate, PageRequest.of(pageNumber - 1, 6));

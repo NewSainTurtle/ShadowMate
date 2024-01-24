@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.mail.Message;
@@ -28,6 +29,9 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.Date;
+
+import static com.newsainturtle.shadowmate.auth.constant.AuthConstant.*;
+import static com.newsainturtle.shadowmate.config.constant.ConfigConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,19 +44,19 @@ public class AuthServiceImpl implements AuthService {
     private final RedisService redisServiceImpl;
 
     @Value("${shadowmate.jwt.header}")
-    private String HEADER;
+    private String header;
 
     @Value("${shadowmate.jwt.prefix}")
-    private String PREFIX;
+    private String prefix;
 
     @Value("${shadowmate.jwt.secret}")
-    private String SECRETKEY;
+    private String secretKey;
 
     @Value("${shadowmate.jwt.access.expires}")
-    private long ACCESS_EXPIRES;
+    private long accessExpires;
 
     @Value("${shadowmate.jwt.refresh.expires}")
-    private long REFRESH_EXPIRES;
+    private long refreshExpires;
 
     @Value("${spring.mail.username}")
     private String serverEmail;
@@ -176,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
         final String type = changeTokenRequest.getType();
         final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
 
-        if (user == null || !userId.toString().equals(JWT.decode(token.replace(PREFIX, "")).getClaim("id").toString())) {
+        if (user == null || !userId.toString().equals(JWT.decode(token.replace(prefix, "")).getClaim("id").toString())) {
             throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
         }
         final String refreshToken = redisServiceImpl.getRefreshTokenData(userId, type);
@@ -185,7 +189,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
+        headers.set(header, new StringBuilder().append(prefix).append(createAccessToken(user)).toString());
         return headers;
     }
 
@@ -201,12 +205,13 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
         }
         HttpHeaders headers = new HttpHeaders();
-        if (RequestContextHolder.getRequestAttributes() != null) {
-            final String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes != null) {
+            final String sessionId = requestAttributes.getSessionId();
             createRefreshToken(user, sessionId);
-            headers.set(HEADER, new StringBuilder().append(PREFIX).append(createAccessToken(user)).toString());
-            headers.set("id", userId);
-            headers.set("type", sessionId);
+            headers.set(header, new StringBuilder().append(prefix).append(createAccessToken(user)).toString());
+            headers.set(KEY_ID, userId);
+            headers.set(KEY_TYPE, sessionId);
         }
         redisServiceImpl.setAutoLoginData(key, userId);
         return headers;
@@ -215,22 +220,22 @@ public class AuthServiceImpl implements AuthService {
     private void createRefreshToken(final User user, final String type) {
         final String refreshToken = JWT.create()
                 .withSubject("ShadowMate 리프레시 토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRES))
-                .withClaim("id", user.getId())
-                .withClaim("email", user.getEmail())
-                .withClaim("socialType", user.getSocialLogin().toString())
-                .sign(Algorithm.HMAC512(SECRETKEY));
-        redisServiceImpl.setRefreshTokenData(user.getId(), type, refreshToken, (int) REFRESH_EXPIRES);
+                .withExpiresAt(new Date(System.currentTimeMillis() + refreshExpires))
+                .withClaim(KEY_ID, user.getId())
+                .withClaim(TOKEN_KEY_EMAIL, user.getEmail())
+                .withClaim(TOKEN_KEY_SOCIAL_TYPE, user.getSocialLogin().toString())
+                .sign(Algorithm.HMAC512(secretKey));
+        redisServiceImpl.setRefreshTokenData(user.getId(), type, refreshToken, (int) refreshExpires);
     }
 
     private String createAccessToken(final User user) {
         return JWT.create()
                 .withSubject("ShadowMate 액세스 토큰")
-                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_EXPIRES))
-                .withClaim("id", user.getId())
-                .withClaim("email", user.getEmail())
-                .withClaim("socialType", user.getSocialLogin().toString())
-                .sign(Algorithm.HMAC512(SECRETKEY));
+                .withExpiresAt(new Date(System.currentTimeMillis() + accessExpires))
+                .withClaim(KEY_ID, user.getId())
+                .withClaim(TOKEN_KEY_EMAIL, user.getEmail())
+                .withClaim(TOKEN_KEY_SOCIAL_TYPE, user.getSocialLogin().toString())
+                .sign(Algorithm.HMAC512(secretKey));
     }
 
     private void checkDuplicatedEmail(final String email) {
@@ -243,17 +248,8 @@ public class AuthServiceImpl implements AuthService {
     public MimeMessage createMessage(final String email, final String code) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(Message.RecipientType.TO, email);
-        message.setSubject("ShadowMate 회원가입 인증 코드");
-        String text = "";
-        text += "<div style='margin:10;'>";
-        text += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        text += "<h3 style='color:blue;'>회원가입 코드입니다.</h3>";
-        text += "<div style='font-size:130%'>";
-        text += "CODE : <strong>";
-        text += code;
-        text += "</strong><div><br/> ";
-        text += "</div>";
-        message.setText(text, "utf-8", "html");
+        message.setSubject(MESSAGE_SUBJECT);
+        message.setText(MESSAGE_FRONT + code + MESSAGE_BACK, "utf-8", "html");
         message.setFrom(new InternetAddress(serverEmail, "ShadowMate"));
         return message;
     }

@@ -8,23 +8,25 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.*;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AddTimeTableRequest {
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message = "yyyy-MM-dd 형식의 올바른 날짜값이 아닙니다.")
+    @Pattern(regexp = DATE_PATTERN, message = DATE_PATTERN_ERROR_MESSAGE)
     private String date;
 
     @NotNull
     private Long todoId;
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) ([01]\\d|2[0-3]):([0-5]0)$", message = "yyyy-MM-dd HH:mm 형식의 올바른값이 아닙니다.")
+    @Pattern(regexp = DATETIME_PATTERN, message = DATETIME_PATTERN_ERROR_MESSAGE)
     private String startTime;
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])) ([01]\\d|2[0-3]):([0-5]0)$", message = "yyyy-MM-dd HH:mm 형식의 올바른값이 아닙니다.")
+    @Pattern(regexp = DATETIME_PATTERN, message = DATETIME_PATTERN_ERROR_MESSAGE)
     private String endTime;
 
     @Builder

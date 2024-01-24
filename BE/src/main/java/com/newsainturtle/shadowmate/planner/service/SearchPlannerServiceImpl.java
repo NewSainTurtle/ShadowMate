@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -68,8 +70,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     }
 
     private void checkValidDate(final String date) {
-        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$";
-        if (!Pattern.matches(datePattern, date)) {
+        if (!Pattern.matches(DATE_PATTERN, date)) {
             throw new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT);
         }
     }

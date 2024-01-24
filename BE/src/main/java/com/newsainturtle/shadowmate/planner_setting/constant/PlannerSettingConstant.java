@@ -19,4 +19,6 @@ public class PlannerSettingConstant {
     public static final String SUCCESS_GET_ROUTINE_LIST = "루틴 목록 조회가 완료되었습니다.";
     public static final String SUCCESS_REMOVE_ROUTINE = "루틴 삭제가 완료되었습니다.";
     public static final String SUCCESS_UPDATE_ROUTINE = "루틴 수정이 완료되었습니다.";
+
+    public static final String EMOTICON_ERROR_MESSAGE = "이모티콘은 하나만 넣을 수 있습니다.";
 }

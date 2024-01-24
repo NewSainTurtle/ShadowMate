@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.newsainturtle.shadowmate.config.constant.ConfigConstant.*;
+
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -45,14 +47,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
-        String jwtToken = jwtProvider.createToken(principalDetails, request.getSession().getId());
+        final PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        final String jwtToken = jwtProvider.createToken(principalDetails, request.getSession().getId());
+
         jwtProvider.addTokenHeader(response, jwtToken);
-        response.setHeader("id", principalDetails.getUser().getId().toString());
-        response.setHeader("type", request.getSession().getId());
-        if (request.getHeader("Auto-Login") != null && request.getHeader("Auto-Login").equals("true")) {
+        response.setHeader(KEY_ID, principalDetails.getUser().getId().toString());
+        response.setHeader(KEY_TYPE, request.getSession().getId());
+        if (request.getHeader(KEY_AUTO_LOGIN) != null && request.getHeader(KEY_AUTO_LOGIN).equals("true")) {
             final String key = request.getSession().getId() + " " + principalDetails.getUser().getId().toString();
-            response.setHeader("Auto-Login", key);
+            response.setHeader(KEY_AUTO_LOGIN, key);
             redisService.setAutoLoginData(key, principalDetails.getUser().getId().toString());
         }
         chain.doFilter(request, response);

@@ -12,12 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.newsainturtle.shadowmate.config.constant.ConfigConstant.KEY_EXCEPTION;
+
 @Component
 public class JwtExceptionHandler implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        AuthErrorResult exception = (AuthErrorResult) request.getAttribute("exception");
+        AuthErrorResult exception = (AuthErrorResult) request.getAttribute(KEY_EXCEPTION);
         setResponse(response,exception);
     }
 
