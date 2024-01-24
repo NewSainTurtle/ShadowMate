@@ -196,15 +196,15 @@ const MyPageFrame = ({ title }: Props) => {
       } else setRoutineDayError(false);
       if (routineContent.length < 1 || routineContent.length > 50) return;
 
-      const input = {
-        startDay: dayjs(startDay).format("YYYY-MM-DD"),
-        endDay: dayjs(endDay).format("YYYY-MM-DD"),
-        categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
-        routineContent,
-        days,
-      };
       // 등록과 수정 구분
       if (routineIsInit) {
+        const input = {
+          startDay: dayjs(startDay).format("YYYY-MM-DD"),
+          endDay: dayjs(endDay).format("YYYY-MM-DD"),
+          categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
+          routineContent,
+          days,
+        };
         settingApi
           .addRoutines(userId, input)
           .then((res) => {
@@ -212,11 +212,34 @@ const MyPageFrame = ({ title }: Props) => {
             const { categoryId, ...rest } = input;
             let copyList = [...routineList].slice(0, routineList.length - 1);
             dispatch(setRoutineList([...copyList, { ...rest, routineId, category }]));
+            dispatch(setRoutineInput({ ...routineInput, routineId }));
           })
           .then(() => dispatch(setRoutineIsInit(false)))
           .catch((err) => console.log(err));
-      }
+      } else handleUpdateModalOpen();
     }
+  };
+
+  const handleUpdateRoutine = () => {
+    const { routineContent, category, startDay, endDay, days } = routineInput;
+    const updateInput = {
+      routineId: routineInput.routineId,
+      order: parseInt(order),
+      startDay: dayjs(startDay).format("YYYY-MM-DD"),
+      endDay: dayjs(endDay).format("YYYY-MM-DD"),
+      categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
+      routineContent,
+      days,
+    };
+    settingApi
+      .editRoutines(userId, updateInput)
+      .then(() => {
+        let copyList: RoutineItemConfig[] = [...routineList];
+        copyList[routineClick] = { ...routineInput };
+        dispatch(setRoutineList(copyList));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => handleUpdateModalClose());
   };
 
   const handleDelete = (title: string) => {
@@ -349,7 +372,7 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
-        handleUpdate={title === "루틴" && !routineIsInit ? handleUpdateModalOpen : handleUpdate}
+        handleUpdate={handleUpdate}
         handleDelete={handleDeleteModalOpen}
       >
         <>
@@ -383,7 +406,7 @@ const MyPageFrame = ({ title }: Props) => {
         open={updateModal}
         onClose={handleUpdateModalClose}
         onClickMessage="저장"
-        onClick={() => handleUpdate(title)}
+        onClick={handleUpdateRoutine}
       >
         <RoutineUpdateModal types={"수정"}>
           <RoutineUpdateSelector types="수정" />
