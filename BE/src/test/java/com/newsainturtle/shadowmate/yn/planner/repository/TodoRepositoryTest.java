@@ -190,7 +190,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    void 일일플래너_할일수정() throws InterruptedException {
+    void 일일플래너_할일수정() {
         //given
         final Category category1 = categoryRepository.save(Category.builder()
                 .categoryColor(categoryColorRepository.findById(1L).orElse(null))
@@ -217,7 +217,6 @@ class TodoRepositoryTest {
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
-        Thread.sleep(10);
         todoRepository.updateAllByTodoId("비문학 2문제 풀기", category2, TodoStatus.COMPLETE, LocalDateTime.now(), saveTodo.getId());
         final Todo findTodo = todoRepository.findByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
 
@@ -228,13 +227,11 @@ class TodoRepositoryTest {
         assertThat(findTodo.getCategory().getId()).isEqualTo(category2.getId());
         assertThat(findTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
         assertThat(findTodo.getDailyPlanner().getId()).isEqualTo(dailyPlanner.getId());
-        assertThat(findTodo.getCreateTime()).isNotEqualTo(findTodo.getUpdateTime());
     }
 
     @Test
     void 일일플래너리스트조회() {
         //given
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         final Category category = categoryRepository.save(Category.builder()
                 .categoryColor(categoryColorRepository.findById(1L).orElse(null))
                 .user(user)

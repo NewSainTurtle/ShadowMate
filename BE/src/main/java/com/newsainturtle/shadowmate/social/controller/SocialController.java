@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static com.newsainturtle.shadowmate.social.constant.SocialConstant.*;
+import static com.newsainturtle.shadowmate.social.constant.SocialConstant.SUCCESS_DELETE_SOCIAL;
+import static com.newsainturtle.shadowmate.social.constant.SocialConstant.SUCCESS_SEARCH_SOCIAL;
 
 @RestController
 @RequestMapping("/api/social")

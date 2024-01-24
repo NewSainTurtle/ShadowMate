@@ -84,7 +84,7 @@ class TimeTableRepositoryTest {
         final Optional<TimeTable> findTimeTable = timeTableRepository.findById(timeTable.getId());
 
         //then
-        assertThat(findTimeTable.isPresent()).isTrue();
+        assertThat(findTimeTable).isPresent();
         assertThat(findTimeTable.get()).isNotNull();
         assertThat(findTimeTable.get().getStartTime()).isEqualTo(startTime);
         assertThat(findTimeTable.get().getEndTime()).isEqualTo(endTime);
@@ -128,7 +128,7 @@ class TimeTableRepositoryTest {
         final Optional<TimeTable> findTimeTable = timeTableRepository.findById(timeTable.getId());
 
         //then
-        assertThat(findTimeTable.isPresent()).isFalse();
+        assertThat(findTimeTable).isNotPresent();
     }
 
     @Test
@@ -149,10 +149,10 @@ class TimeTableRepositoryTest {
         timeTableRepository.deleteAllByTodoId(todo.getId());
         todo.clearTimeTables();
 
-        final Optional<TimeTable> findTimeTables = timeTableRepository.findById(timeTable.getId());
+        final Optional<TimeTable> findTimeTable = timeTableRepository.findById(timeTable.getId());
 
         //then
-        assertThat(findTimeTables.isPresent()).isFalse();
+        assertThat(findTimeTable).isNotPresent();
     }
 
 }

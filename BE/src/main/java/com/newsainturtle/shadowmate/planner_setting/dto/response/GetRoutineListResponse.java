@@ -6,12 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
+@Builder
 public class GetRoutineListResponse {
-
     private List<GetRoutineResponse> routineList;
-
-    @Builder
-    public GetRoutineListResponse(List<GetRoutineResponse> routineList) {
-        this.routineList = routineList;
-    }
 }

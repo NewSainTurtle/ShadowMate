@@ -7,7 +7,12 @@ import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
-import com.newsainturtle.shadowmate.user.dto.*;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
+import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
+import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -208,11 +213,15 @@ public class UserServiceTest {
         void 실패_비밀번호수정_비밀번호다름() {
             // given
             final String newPassword = "NewPassword";
+            final UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                    .newPassword(newPassword)
+                    .oldPassword(user1.getPassword())
+                    .build();
             doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
             doReturn(false).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(userId1, user1.getPassword(), newPassword));
+            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(userId1, updatePasswordRequest));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DIFFERENT_PASSWORD);
@@ -222,11 +231,15 @@ public class UserServiceTest {
         void 성공_비밀번호수정() {
             // given
             final String newPassword = "NewPassword";
+            final UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                    .newPassword(newPassword)
+                    .oldPassword(user1.getPassword())
+                    .build();
             doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
             doReturn(true).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            userService.updatePassword(userId1, user1.getPassword(), newPassword);
+            userService.updatePassword(userId1, updatePasswordRequest);
 
             // then
             verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
@@ -267,7 +280,7 @@ public class UserServiceTest {
                     .build();
 
             // when
-            userService.updateIntroduction(updateIntroductionRequest, userId1);
+            userService.updateIntroduction(userId1, updateIntroductionRequest);
 
             // then
             verify(userRepository, times(1)).updateIntroduction(any(), any(Long.class));

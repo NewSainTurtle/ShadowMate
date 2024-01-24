@@ -12,15 +12,12 @@ import java.util.List;
 public interface FollowRequestRepository extends JpaRepository<FollowRequest, Long> {
 
     FollowRequest findByRequesterIdAndReceiverId(final User requester, final User receiver);
-
     List<FollowRequest> findAllByReceiverId(final User receiver);
-
     void deleteByRequesterIdAndReceiverId(final User requester, final User receiver);
 
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM FollowRequest f WHERE f.requesterId = :requesterId OR f.receiverId = :receiverId")
     void deleteAllByRequesterIdOrReceiverId(@Param("requesterId") final User requesterId, @Param("receiverId") final User receiverId);
-
 
     @Modifying(clearAutomatically = true)
     @Query("delete from FollowRequest f where f.receiverId.id = :receiverId")

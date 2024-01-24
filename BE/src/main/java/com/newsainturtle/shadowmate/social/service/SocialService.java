@@ -1,6 +1,6 @@
 package com.newsainturtle.shadowmate.social.service;
 
-import com.newsainturtle.shadowmate.social.dto.SearchSocialPlannerResponse;
+import com.newsainturtle.shadowmate.social.dto.response.SearchSocialPlannerResponse;
 
 public interface SocialService {
 

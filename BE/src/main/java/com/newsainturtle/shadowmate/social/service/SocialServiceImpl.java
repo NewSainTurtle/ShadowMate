@@ -1,7 +1,7 @@
 package com.newsainturtle.shadowmate.social.service;
 
-import com.newsainturtle.shadowmate.social.dto.SearchSocialPlannerResponse;
-import com.newsainturtle.shadowmate.social.dto.SearchSocialResponse;
+import com.newsainturtle.shadowmate.social.dto.response.SearchSocialPlannerResponse;
+import com.newsainturtle.shadowmate.social.dto.response.SearchSocialResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
 import com.newsainturtle.shadowmate.social.exception.SocialException;
@@ -35,7 +35,7 @@ public class SocialServiceImpl implements SocialService {
     private final UserRepository userRepository;
 
     private void checkValidDate(final String startDate, final String endDate) {
-        if (!Pattern.matches(DATE_PATTERN, startDate) || !Pattern.matches(DATE_PATTERN, endDate)) {
+        if (startDate == null || endDate == null || !Pattern.matches(DATE_PATTERN, startDate) || !Pattern.matches(DATE_PATTERN, endDate)) {
             throw new SocialException(SocialErrorResult.INVALID_DATE_FORMAT);
         }
         if (startDate.compareTo(endDate) > 0) {

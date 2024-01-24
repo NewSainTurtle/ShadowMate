@@ -6,7 +6,12 @@ import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
-import com.newsainturtle.shadowmate.user.dto.*;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
+import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
+import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
@@ -94,13 +99,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updatePassword(final Long userId, final String oldPassword, final String newPassword) {
+    public void updatePassword(final Long userId, final UpdatePasswordRequest updatePasswordRequest) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
         }
-        if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
-            userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
+        if (bCryptPasswordEncoder.matches(updatePasswordRequest.getOldPassword(), user.getPassword())) {
+            userRepository.updatePassword(bCryptPasswordEncoder.encode(updatePasswordRequest.getNewPassword()), userId);
         } else {
             throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
         }
@@ -108,7 +113,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateIntroduction(final UpdateIntroductionRequest updateIntroductionRequest, final Long userId) {
+    public void updateIntroduction(final Long userId, final UpdateIntroductionRequest updateIntroductionRequest) {
         userRepository.updateIntroduction(updateIntroductionRequest.getIntroduction(), userId);
     }
 

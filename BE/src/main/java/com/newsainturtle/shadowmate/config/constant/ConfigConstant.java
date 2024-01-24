@@ -1,5 +1,9 @@
 package com.newsainturtle.shadowmate.config.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigConstant {
     public static final String KEY_ID = "id";
     public static final String TOKEN_KEY_EMAIL = "email";

@@ -3,10 +3,10 @@ package com.newsainturtle.shadowmate.user.controller;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
-import com.newsainturtle.shadowmate.user.dto.ProfileResponse;
-import com.newsainturtle.shadowmate.user.dto.UpdateIntroductionRequest;
-import com.newsainturtle.shadowmate.user.dto.UpdatePasswordRequest;
-import com.newsainturtle.shadowmate.user.dto.UpdateUserRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
+import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +23,10 @@ import static com.newsainturtle.shadowmate.user.constant.UserConstant.*;
 public class UserController {
 
     private final UserService userService;
-
     private final AuthService authService;
 
     @GetMapping("/{userId}/profiles")
-    public ResponseEntity<BaseResponse> getProfile(@PathVariable Long userId) {
+    public ResponseEntity<BaseResponse> getProfile(@PathVariable final Long userId) {
         ProfileResponse profileResponse = userService.getProfile(userId);
         return ResponseEntity.ok(BaseResponse.from(
                 SUCCESS_PROFILE, profileResponse));
@@ -49,8 +48,8 @@ public class UserController {
 
     @PutMapping("/{userId}/mypages")
     public ResponseEntity<BaseResponse> updateUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                           @PathVariable("userId") final Long userId,
-                                                           @RequestBody @Valid final UpdateUserRequest updateUserRequest) {
+                                                   @PathVariable("userId") final Long userId,
+                                                   @RequestBody @Valid final UpdateUserRequest updateUserRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
         userService.updateUser(userId, updateUserRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_USER));
@@ -58,16 +57,16 @@ public class UserController {
 
     @PutMapping("/{userId}/password")
     public ResponseEntity<BaseResponse> updatePassword(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                   @PathVariable("userId") final Long userId,
-                                                   @RequestBody @Valid final UpdatePasswordRequest updatePasswordRequest) {
+                                                       @PathVariable("userId") final Long userId,
+                                                       @RequestBody @Valid final UpdatePasswordRequest updatePasswordRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.updatePassword(userId, updatePasswordRequest.getOldPassword(), updatePasswordRequest.getNewPassword());
+        userService.updatePassword(userId, updatePasswordRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_PASSWORD));
     }
-  
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<BaseResponse> deleteUser(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                       @PathVariable("userId") final Long userId) {
+                                                   @PathVariable("userId") final Long userId) {
         authService.certifyUser(userId, principalDetails.getUser());
         userService.deleteUser(principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_USER));
@@ -78,7 +77,7 @@ public class UserController {
                                                            @PathVariable("userId") final Long userId,
                                                            @RequestBody @Valid final UpdateIntroductionRequest updateIntroductionRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.updateIntroduction(updateIntroductionRequest, userId);
+        userService.updateIntroduction(userId, updateIntroductionRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_INTRODUCTION));
     }
 }

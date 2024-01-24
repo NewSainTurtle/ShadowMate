@@ -168,7 +168,7 @@ class FollowRequestRepositoryTest {
         final FollowRequest result2 = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
 
         // then
-        assertThat(result1).hasSize(0);
+        assertThat(result1).isEmpty();;
         assertThat(result2).isNull();
     }
 }

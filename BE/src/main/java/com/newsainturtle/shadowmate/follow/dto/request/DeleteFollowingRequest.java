@@ -1,4 +1,4 @@
-package com.newsainturtle.shadowmate.follow.dto;
+package com.newsainturtle.shadowmate.follow.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,13 +9,13 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DeleteFollowRequestRequest {
+public class DeleteFollowingRequest {
 
     @NotNull
-    private Long receiverId;
+    private Long followingId;
 
     @Builder
-    public DeleteFollowRequestRequest(Long receiverId) {
-        this.receiverId = receiverId;
+    public DeleteFollowingRequest(Long followingId) {
+        this.followingId = followingId;
     }
 }

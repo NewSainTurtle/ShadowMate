@@ -12,15 +12,10 @@ import java.util.List;
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     List<Follow> findAllByFollowerId(final User user);
-
     List<Follow> findAllByFollowingId(final User user);
-
     Follow findByFollowerIdAndFollowingId(final User follower, final User following);
-
     void deleteByFollowingIdAndFollowerId(final User user, final User target);
-
     Long countByFollowerId(final User user);
-
     Long countByFollowingId(final User user);
 
     @Modifying(clearAutomatically = true)

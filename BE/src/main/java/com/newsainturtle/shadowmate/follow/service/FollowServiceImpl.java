@@ -1,7 +1,7 @@
 package com.newsainturtle.shadowmate.follow.service;
 
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
-import com.newsainturtle.shadowmate.follow.dto.*;
+import com.newsainturtle.shadowmate.follow.dto.response.*;
 import com.newsainturtle.shadowmate.follow.entity.Follow;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
@@ -28,9 +28,7 @@ import java.util.stream.Collectors;
 public class FollowServiceImpl implements FollowService {
 
     private final FollowRepository followRepository;
-
     private final FollowRequestRepository followRequestRepository;
-
     private final UserRepository userRepository;
 
     @Override
@@ -81,10 +79,9 @@ public class FollowServiceImpl implements FollowService {
     @Transactional
     public AddFollowResponse addFollow(final User user, final Long targetUserId) {
         User targetUser = certifyFollowUser(targetUserId);
-        if(targetUser.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
+        if (targetUser.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
             return addFollowPublic(user, targetUser);
-        }
-        else {
+        } else {
             return addFollowNonPublic(user, targetUser);
         }
     }
@@ -115,11 +112,11 @@ public class FollowServiceImpl implements FollowService {
     public String receiveFollow(final User user, final Long targetUserId, final boolean followReceive) {
         User targetUser = certifyFollowUser(targetUserId);
         FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(targetUser, user);
-        if(followRequest == null) {
+        if (followRequest == null) {
             throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST);
         }
         followRequestRepository.deleteByRequesterIdAndReceiverId(targetUser, user);
-        if(followReceive) {
+        if (followReceive) {
             followRepository.save(Follow.builder()
                     .followerId(targetUser)
                     .followingId(user)
@@ -134,7 +131,7 @@ public class FollowServiceImpl implements FollowService {
         Follow follow = followRepository.findByFollowerIdAndFollowingId(user, searchUser);
         if (follow == null) {
             FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user, searchUser);
-            if(followRequest == null) {
+            if (followRequest == null) {
                 return FollowStatus.EMPTY;
             }
             return FollowStatus.REQUESTED;
@@ -145,7 +142,7 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public CountFollowResponse countFollow(final Long userId) {
         Optional<User> result = userRepository.findById(userId);
-        if(!result.isPresent()) {
+        if (!result.isPresent()) {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
         }
         final User user = result.get();
@@ -156,7 +153,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     private AddFollowResponse addFollowPublic(final User follower, final User following) {
-        if(followRepository.findByFollowerIdAndFollowingId(follower, following) != null) {
+        if (followRepository.findByFollowerIdAndFollowingId(follower, following) != null) {
             throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
         }
         Follow result = followRepository.save(Follow.builder()
@@ -185,7 +182,7 @@ public class FollowServiceImpl implements FollowService {
 
     private User certifyFollowUser(final Long userId) {
         Optional<User> result = userRepository.findById(userId);
-        if(!result.isPresent() || result.get().getWithdrawal().booleanValue()) {
+        if (!result.isPresent() || result.get().getWithdrawal().booleanValue()) {
             throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER);
         }
         return result.get();

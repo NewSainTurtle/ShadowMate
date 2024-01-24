@@ -11,7 +11,6 @@ import com.newsainturtle.shadowmate.planner.repository.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.DdayRepository;
-import com.newsainturtle.shadowmate.planner_setting.repository.RoutineRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -41,13 +39,11 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private final DailyPlannerRepository dailyPlannerRepository;
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
     private final TodoRepository todoRepository;
-    private final TimeTableRepository timeTableRepository;
     private final DdayRepository ddayRepository;
     private final FollowRepository followRepository;
     private final WeeklyRepository weeklyRepository;
     private final WeeklyTodoRepository weeklyTodoRepository;
     private final SocialRepository socialRepository;
-    private final RoutineRepository routineRepository;
     private final RoutineTodoRepository routineTodoRepository;
     private int totalMinutes;
 
@@ -64,9 +60,8 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                 (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowerIdAndFollowingId(user, plannerWriter) != null)
         ) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     private void checkValidDate(final String date) {
@@ -168,7 +163,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
             final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
 
-            if (plannerWriter.getId() == user.getId()) {
+            if (plannerWriter.getId().equals(user.getId())) {
                 dailyPlanner = makeRoutineTodo(user, String.valueOf(date.plusDays(i)), dailyPlanner);
             }
 
@@ -252,7 +247,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
         final Dday dday = getDday(user);
 
-        if (plannerWriter.getId() == user.getId()) {
+        if (plannerWriter.getId().equals(user.getId())) {
             dailyPlanner = makeRoutineTodo(user, date, dailyPlanner);
         }
 
@@ -288,7 +283,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             return SearchDailyPlannerResponse.builder()
                     .date(date)
                     .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                    .dday(dday == null ? null : dday.getDdayDate().toString())
+                    .dday(dday == null ? null : dday.getDdayDate())
                     .ddayTitle(dday == null ? null : dday.getDdayTitle())
                     .todayGoal(dailyPlanner.getTodayGoal())
                     .retrospection(dailyPlanner.getRetrospection())
