@@ -45,6 +45,7 @@ interface apiInterface {
     weeklyTodosStatus: (userId: number) => string; // 주차별 할일 상태 수정
     daily: (userId: number) => string; // 일일 플래너 조회
     dailyTodos: (userId: number) => string; // 일별 할일 등록, 수정, 삭제
+    dailyTodoSequence: (userId: number) => string; // 일별 할일 순서 변경
     likes: (userId: number) => string; // 좋아요 누르기, 취소
     timetables: (userId: number) => string; // 타임 테이블 표시, 삭제
     retrospections: (userId: number) => string; // 오늘의 회고 편집
@@ -103,6 +104,7 @@ const api: apiInterface = {
     weeklyTodosStatus: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos-status",
     daily: (userId: number) => HOST + PLANNERS + userId + "/daily",
     dailyTodos: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todos",
+    dailyTodoSequence: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todo-sequence",
     likes: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/likes",
     timetables: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/timetables",
     retrospections: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/retrospections",

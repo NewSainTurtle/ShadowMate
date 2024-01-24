@@ -87,6 +87,8 @@ export const plannerApi = {
   ) => Axios.put(api.planners.dailyTodos(userId), data),
   deleteDailyTodos: (userId: number, data: { date: string; todoId: number }) =>
     Axios.delete(api.planners.dailyTodos(userId), { data: data }),
+  todoSequence: (userId: number, data: { date: string; todoId: number; upperTodoId: number | null }) =>
+    Axios.put(api.planners.dailyTodoSequence(userId), data),
 
   timetables: (userId: number, data: { date: string; todoId: number; startTime: string; endTime: string }) =>
     Axios.post(api.planners.timetables(userId), data),

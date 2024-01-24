@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -8,6 +8,7 @@ import TodoItemChoice from "./TodoItemChoice";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
+import dragModule from "@util/DragModule";
 
 interface Props {
   clicked: boolean;
@@ -20,18 +21,21 @@ const TodoList = ({ clicked }: Props) => {
   friendId = friendId != 0 ? friendId : userId;
   const date = useAppSelector(selectDayDate);
   const todoArr = useAppSelector(selectTodoList);
+  const [todos, setTodos] = useState<TodoConfig[]>(todoArr);
   const listSize = 11;
-  const todoListSize = useMemo(() => {
-    return todoArr.length + 1 >= listSize ? todoArr.length + 1 : listSize;
-  }, [todoArr]);
   const todoEndRef = useRef<HTMLDivElement>(null);
-  const copyTodos = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
+  const copyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(todoArr)), [todoArr]);
+  const draggablesRef = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     if (todoArr.length + 1 >= listSize && todoEndRef.current) {
       todoEndRef.current.scrollTop = todoEndRef.current.scrollHeight;
     }
   }, [todoArr.length]);
+
+  useEffect(() => {
+    dispatch(setTodoList(todos));
+  }, [todos]);
 
   const todoModule = (() => {
     const insertTodo = async (props: TodoConfig) => {
@@ -95,35 +99,69 @@ const TodoList = ({ clicked }: Props) => {
     };
   })();
 
+  const dragHoverStyle = styles["todo-draggable"];
+  const { containerDragOver, dragStart, dragEnter, dragEnd } = dragModule({
+    date,
+    todos: copyTodos,
+    setTodos,
+    dragClassName: dragHoverStyle,
+    draggablesRef,
+  });
+
   return (
-    <div
-      ref={todoEndRef}
-      className={styles["todo-list"]}
-      style={{ gridTemplateRows: `repeat(${todoListSize}, calc(100%/${listSize})` }}
-    >
+    <div ref={todoEndRef} className={styles["todo-list"]}>
       {!clicked ? (
         <>
-          {todoArr.map((item: TodoConfig, idx: number) => (
-            <TodoItem key={item.todoId} idx={idx} todoItem={item} todoModule={todoModule} />
-          ))}
-          <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} disable={userId != friendId} />
-          {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (
-            <TodoItem key={idx} disable todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
-          ))}
+          <div
+            className={`${styles["todo-list__box"]}`}
+            style={{ height: `calc((100%/${listSize}) * ${todoArr.length})` }}
+            onDragOver={(e) => containerDragOver(e)}
+          >
+            {todoArr.map((item: TodoConfig, idx: number) => (
+              <div
+                key={item.todoId}
+                ref={(el: HTMLDivElement) => (draggablesRef.current[idx] = el)}
+                className={styles["todo-list__box--dragable"]}
+                draggable
+                onDragStart={(e) => dragStart(e, idx)}
+                onDragEnter={(e) => dragEnter(e, idx)}
+                onDragOver={(e) => e.preventDefault()}
+                onDragLeave={(e) => e.preventDefault()}
+                onDragEnd={(e) => dragEnd(e, item.todoId)}
+              >
+                <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
+              </div>
+            ))}
+          </div>
+
+          <div className={styles["todo-list__box"]} style={{ height: `calc((100%/${listSize})` }}>
+            <TodoItem addTodo todoItem={BASIC_TODO_ITEM} todoModule={todoModule} disable={userId != friendId} />
+          </div>
+
+          <div
+            className={styles["todo-list__box"]}
+            style={{ height: `calc((100%/${listSize} * ${listSize - todoArr.length - 1})` }}
+          >
+            {Array.from({ length: listSize - todoArr.length - 1 }).map((_, idx) => (
+              <TodoItem key={idx} disable todoItem={BASIC_TODO_ITEM} todoModule={todoModule} />
+            ))}
+          </div>
         </>
       ) : (
         <>
-          {todoArr.map((item: TodoConfig, idx: number) => (
-            <TodoItemChoice
-              key={item.todoId}
-              idx={idx}
-              todoItem={item}
-              possible={item.todoStatus === "완료" || item.todoStatus === "진행중"}
-            />
-          ))}
-          {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
-            <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} disable />
-          ))}
+          <div className={`${styles["todo-list__box"]}`}>
+            {todoArr.map((item: TodoConfig, idx: number) => (
+              <TodoItemChoice
+                key={item.todoId}
+                idx={idx}
+                todoItem={item}
+                possible={item.todoStatus === "완료" || item.todoStatus === "진행중"}
+              />
+            ))}
+            {Array.from({ length: listSize - todoArr.length }).map((_, idx) => (
+              <TodoItemChoice key={idx} todoItem={BASIC_TODO_ITEM} possible={false} disable />
+            ))}
+          </div>
         </>
       )}
     </div>

@@ -44,9 +44,9 @@ const TodoItemChoice = ({ todoItem, possible, disable }: Props) => {
   const isDisableStyle = disable ? "--disable" : "";
   const todoStatusView = {
     공백: " ",
-    완료: "O",
+    완료: "○",
     진행중: "△",
-    미완료: "X",
+    미완료: "⨉",
   };
 
   return (
