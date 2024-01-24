@@ -41,6 +41,7 @@ $color-warning: var(--color-warning);
   &__container {
     position: relative;
     height: 100%;
+    width: 100%;
   }
 
   &__title {
@@ -101,6 +102,10 @@ $color-warning: var(--color-warning);
     grid-template-columns: 2fr 8fr;
     align-items: center;
     margin-bottom: 2em;
+    > span {
+      margin-right: max(2em);
+      word-break: keep-all;
+    }
 
     > input {
       height: 100%;
@@ -371,14 +376,7 @@ $color-warning: var(--color-warning);
 
 #routine {
   &__days {
-    margin-bottom: 0;
-  }
-  &__error {
-    width: 100%;
-    margin: 0.5em 0 2em 0;
-    > span {
-      color: $color-warning;
-    }
+    margin: 0.5em 0 1em 0;
   }
 }
 
@@ -442,6 +440,7 @@ $color-warning: var(--color-warning);
         align-items: center;
         width: 45px;
         height: 45px;
+        margin-top: 0.5em;
         border-radius: 50%;
         background-color: $color-gray-2;
         cursor: pointer;
@@ -449,6 +448,22 @@ $color-warning: var(--color-warning);
 
       > input:checked + label {
         background-color: $color-blue;
+      }
+    }
+    &-text {
+      width: 100%;
+      margin: 0.5em 0 0 0.2em;
+      > span {
+        visibility: hidden;
+        font-size: 0.75rem;
+        color: $color-gray-4;
+      }
+      &--error {
+        @extend .routine__day-text;
+        > span {
+          visibility: visible;
+          color: #d32f2f;
+        }
       }
     }
   }

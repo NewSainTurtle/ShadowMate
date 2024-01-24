@@ -150,7 +150,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
             autoComplete="off"
           />
         </div>
-        <div id={dayError ? styles["routine__days"] : ""} className={styles["frame__line"]}>
+        <div id={styles["routine__days"]} className={styles["frame__line"]}>
           <Text>반복 요일</Text>
           <div className={styles["routine__day-list"]}>
             {dayList.map((day: string, i: number) => {
@@ -167,12 +167,12 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
               );
             })}
           </div>
+          {/* 줄 맞춤을 위한 <div/> */}
           <div />
-          {dayError && (
-            <div id={styles["routine__error"]}>
-              <Text types="small">반복할 요일을 선택하세요.</Text>
-            </div>
-          )}
+          <div className={styles[`routine__day-text${isError}`]}>
+            <div />
+            <Text types="small">반복할 요일을 선택하세요.</Text>
+          </div>
         </div>
         <div>
           <div className={styles["frame__line"]}>
