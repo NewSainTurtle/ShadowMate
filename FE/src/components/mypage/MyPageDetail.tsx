@@ -21,7 +21,6 @@ interface Props {
 const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }: Props) => {
   const isInit = useAppSelector(selectRoutineIsInit);
   const disable = () => {
-    if (isInit) return "";
     return isDisable ? "--disable" : "";
   };
 

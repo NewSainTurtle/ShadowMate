@@ -196,15 +196,15 @@ const MyPageFrame = ({ title }: Props) => {
       } else setRoutineDayError(false);
       if (routineContent.length < 1 || routineContent.length > 50) return;
 
-      const input = {
-        startDay: dayjs(startDay).format("YYYY-MM-DD"),
-        endDay: dayjs(endDay).format("YYYY-MM-DD"),
-        categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
-        routineContent,
-        days,
-      };
       // 등록과 수정 구분
       if (routineIsInit) {
+        const input = {
+          startDay: dayjs(startDay).format("YYYY-MM-DD"),
+          endDay: dayjs(endDay).format("YYYY-MM-DD"),
+          categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
+          routineContent,
+          days,
+        };
         settingApi
           .addRoutines(userId, input)
           .then((res) => {
@@ -212,11 +212,34 @@ const MyPageFrame = ({ title }: Props) => {
             const { categoryId, ...rest } = input;
             let copyList = [...routineList].slice(0, routineList.length - 1);
             dispatch(setRoutineList([...copyList, { ...rest, routineId, category }]));
+            dispatch(setRoutineInput({ ...routineInput, routineId }));
           })
           .then(() => dispatch(setRoutineIsInit(false)))
           .catch((err) => console.log(err));
-      }
+      } else handleUpdateModalOpen();
     }
+  };
+
+  const handleUpdateRoutine = () => {
+    const { routineContent, category, startDay, endDay, days } = routineInput;
+    const updateInput = {
+      routineId: routineInput.routineId,
+      order: parseInt(order),
+      startDay: dayjs(startDay).format("YYYY-MM-DD"),
+      endDay: dayjs(endDay).format("YYYY-MM-DD"),
+      categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
+      routineContent,
+      days,
+    };
+    settingApi
+      .editRoutines(userId, updateInput)
+      .then(() => {
+        let copyList: RoutineItemConfig[] = [...routineList];
+        copyList[routineClick] = { ...routineInput };
+        dispatch(setRoutineList(copyList));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => handleUpdateModalClose());
   };
 
   const handleDelete = (title: string) => {
@@ -257,8 +280,29 @@ const MyPageFrame = ({ title }: Props) => {
         .catch((err) => console.log(err))
         .finally(() => handleDeleteModalClose());
     } else if (title === "루틴") {
-      // 작성 예정
+      if (routineIsInit) handleDeleteInit();
+      else handleDeleteModalOpen();
     }
+  };
+
+  const handleDeleteRoutine = () => {
+    const { routineId } = routineInput;
+    settingApi
+      .deleteRoutines(userId, { routineId, order: parseInt(order) })
+      .then(() => {
+        dispatch(
+          setRoutineList(
+            routineList.filter((_: RoutineItemConfig, idx: number) => {
+              return idx != routineClick;
+            }),
+          ),
+        );
+        const nextClick = routineClick === 0 ? routineClick : routineClick - 1;
+        dispatch(setRoutineClick(nextClick));
+        dispatch(setRoutineInput(routineList[nextClick]));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => handleDeleteModalClose());
   };
 
   const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
@@ -349,8 +393,8 @@ const MyPageFrame = ({ title }: Props) => {
       <MyPageDetail
         title={title}
         isDisable={isDisable}
-        handleUpdate={title === "루틴" && !routineIsInit ? handleUpdateModalOpen : handleUpdate}
-        handleDelete={handleDeleteModalOpen}
+        handleUpdate={() => handleUpdate(title)}
+        handleDelete={() => handleDelete(title)}
       >
         <>
           {
@@ -366,7 +410,7 @@ const MyPageFrame = ({ title }: Props) => {
         types="twoBtn"
         open={deleteModalOpen}
         onClose={handleDeleteModalClose}
-        onClick={() => handleDelete(title)}
+        onClick={handleDeleteRoutine}
         onClickMessage="삭제"
         warning
       >
@@ -383,7 +427,7 @@ const MyPageFrame = ({ title }: Props) => {
         open={updateModal}
         onClose={handleUpdateModalClose}
         onClickMessage="저장"
-        onClick={() => handleUpdate(title)}
+        onClick={handleUpdateRoutine}
       >
         <RoutineUpdateModal types={"수정"}>
           <RoutineUpdateSelector types="수정" />
