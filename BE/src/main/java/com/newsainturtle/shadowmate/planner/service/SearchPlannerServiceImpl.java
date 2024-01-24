@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -168,7 +167,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
             final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
 
-            if (plannerWriter.getId() == user.getId()) {
+            if (plannerWriter.getId().equals(user.getId())) {
                 dailyPlanner = makeRoutineTodo(user, String.valueOf(date.plusDays(i)), dailyPlanner);
             }
 
@@ -252,7 +251,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
         final Dday dday = getDday(user);
 
-        if (plannerWriter.getId() == user.getId()) {
+        if (plannerWriter.getId().equals(user.getId())) {
             dailyPlanner = makeRoutineTodo(user, date, dailyPlanner);
         }
 
