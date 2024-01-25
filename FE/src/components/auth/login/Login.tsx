@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import styles from "@styles/auth/Login.module.scss";
 import Input from "@components/common/Input";
 import AuthButton from "../AuthButton";
@@ -44,6 +44,12 @@ const Login = () => {
       ...loginInfo,
       [name]: value,
     });
+  };
+
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
   };
 
   const handleAutoLogin = () => {
@@ -114,6 +120,7 @@ const Login = () => {
             onChange={onChange}
             error={!error.email} // false일 시 error
             helperText={!error.email && "이메일을 입력해주세요."}
+            onKeyDown={handleOnKeyPress}
           />
           <Input
             name="password"
@@ -123,6 +130,7 @@ const Login = () => {
             onChange={onChange}
             error={!error.password}
             helperText={!error.password && "비밀번호를 입력해주세요."}
+            onKeyDown={handleOnKeyPress}
           />
         </div>
         <div className={styles.login_toolbox}>
@@ -135,7 +143,7 @@ const Login = () => {
           {/* <Text types="small">비밀번호 찾기</Text> */}
         </div>
         <div className={styles.login_warning} style={{ visibility: showAlert ? "visible" : "hidden" }}>
-          <Text types="small">아이디 또는 비밀번호를 잘못 입력했습니다.</Text>
+          <Text types="small">이메일 또는 비밀번호를 잘못 입력했습니다.</Text>
           <Text types="small">입력하신 내용을 다시 확인해주세요</Text>
         </div>
         <AuthButton onClick={handleLogin}>Login</AuthButton>
