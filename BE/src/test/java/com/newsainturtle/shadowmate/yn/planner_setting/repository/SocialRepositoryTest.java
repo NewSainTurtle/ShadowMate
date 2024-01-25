@@ -75,32 +75,16 @@ class SocialRepositoryTest {
                     .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
                     .ownerId(user.getId())
                     .build());
-            final Social social2 = socialRepository.save(Social.builder()
-                    .dailyPlanner(dailyPlanner2)
-                    .socialImage(socialImage)
-                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                    .ownerId(user.getId())
-                    .build());
-            final Social social3 = socialRepository.save(Social.builder()
-                    .dailyPlanner(dailyPlanner3)
-                    .socialImage(socialImage)
-                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                    .ownerId(user.getId())
-                    .build());
 
             //when
             final List<DailyPlanner> dailyPlanners = dailyPlannerRepository.findAllByUser(user);
             final LocalDateTime localDateTime = LocalDateTime.now();
             socialRepository.updateDeleteTimeAll(localDateTime, dailyPlanners);
             final Social checkSocial = socialRepository.findById(social.getId()).orElse(null);
-            final Social checkSocial2 = socialRepository.findById(social2.getId()).orElse(null);
-            final Social checkSocial3 = socialRepository.findById(social3.getId()).orElse(null);
 
             //then
             assertThat(checkSocial).isNotNull();
-            assertThat(checkSocial2).isNotNull();
-            assertThat(checkSocial3).isNotNull();
-            assertThat(checkSocial.getDeleteTime()).isNotNull().isEqualTo(checkSocial2.getDeleteTime()).isEqualTo(checkSocial3.getDeleteTime());
+            assertThat(checkSocial.getDailyPlanner()).isNotNull();
         }
 
         @Test

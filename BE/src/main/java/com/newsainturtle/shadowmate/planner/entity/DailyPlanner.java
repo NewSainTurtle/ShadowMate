@@ -13,7 +13,12 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "daily_planner")
+@Table(name = "daily_planner",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"daily_planner_day", "user_id"}
+                )
+        })
 @AttributeOverride(name = "id", column = @Column(name = "daily_planner_id"))
 public class DailyPlanner extends CommonEntity {
 
@@ -33,7 +38,7 @@ public class DailyPlanner extends CommonEntity {
     private String tomorrowGoal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public void updateTodayGoal(final String todayGoal) {

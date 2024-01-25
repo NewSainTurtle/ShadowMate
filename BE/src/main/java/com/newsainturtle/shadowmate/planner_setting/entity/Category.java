@@ -27,11 +27,11 @@ public class Category extends CommonEntity {
     private String categoryEmoticon;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_color_id")
+    @JoinColumn(name = "category_color_id", nullable = false)
     private CategoryColor categoryColor;
 
     public void updateCategoryTitleAndEmoticonAndColor(final String categoryTitle,

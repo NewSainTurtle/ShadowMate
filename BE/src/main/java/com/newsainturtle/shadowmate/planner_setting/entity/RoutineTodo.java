@@ -13,7 +13,12 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "routine_todo")
+@Table(name = "routine_todo",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"routine_id", "daily_planner_day"}
+                )
+        })
 @AttributeOverride(name = "id", column = @Column(name = "routine_todo_id"))
 public class RoutineTodo extends CommonEntity {
 

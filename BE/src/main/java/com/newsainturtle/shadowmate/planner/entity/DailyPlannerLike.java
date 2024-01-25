@@ -13,16 +13,21 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "daily_planner_like")
+@Table(name = "daily_planner_like",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"user_id", "daily_planner_id"}
+                )
+        })
 @AttributeOverride(name = "id", column = @Column(name = "daily_planner_like_id"))
 public class DailyPlannerLike extends CommonEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "daily_planner_id")
+    @JoinColumn(name = "daily_planner_id", nullable = false)
     private DailyPlanner dailyPlanner;
 
 }

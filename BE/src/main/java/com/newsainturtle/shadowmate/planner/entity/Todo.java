@@ -31,7 +31,7 @@ public class Todo extends CommonEntity {
     private Double todoIndex;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "daily_planner_id")
+    @JoinColumn(name = "daily_planner_id", nullable = false)
     private DailyPlanner dailyPlanner;
 
     @ManyToOne(fetch = FetchType.LAZY)
