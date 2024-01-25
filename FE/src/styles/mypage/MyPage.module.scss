@@ -6,6 +6,7 @@ $color-gray-4: var(--color-gray-4);
 $color-gray-5: var(--color-gray-5);
 $color-blue: var(--color-btn-blue);
 $color-warning: var(--color-warning);
+$border: 1px;
 
 .mypage {
   &__container {
@@ -21,12 +22,10 @@ $color-warning: var(--color-warning);
   &__setting {
     display: inline-flex;
     margin: 0 1em 1em 1em;
-    overflow: auto;
   }
 
   &__contents {
     width: 100%;
-    overflow: auto;
   }
 }
 
@@ -92,9 +91,11 @@ $color-warning: var(--color-warning);
   }
 
   &__contents {
+    height: calc(100% - 120px - 2 * $border);
     position: relative;
     padding: 3em;
     box-sizing: border-box;
+    overflow-y: auto;
   }
 
   &__line {
