@@ -79,6 +79,10 @@ $border: 1px;
   width: calc(100% / 4 - $border);
   border-right: $border solid $color-text;
 
+  &__list {
+    display: grid;
+  }
+
   &__item {
     @extend %flex_row;
     gap: $border;
@@ -293,6 +297,7 @@ $border: 1px;
       padding: 1em;
       box-sizing: border-box;
       color: $color-text;
+      @extend .text-small;
       &:focus {
         outline: none;
       }
