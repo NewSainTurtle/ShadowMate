@@ -8,7 +8,7 @@ import { NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import { clearFriendInfo } from "@store/friendSlice";
-import { Assignment, HelpOutline, SupportAgent } from "@mui/icons-material";
+import { SupportAgent } from "@mui/icons-material";
 const Header = () => {
   const dispatch = useAppDispatch();
   const handleClear = () => dispatch(clearFriendInfo());
@@ -28,7 +28,6 @@ const Header = () => {
         onClick={() => window.open("https://forms.gle/KVwQ9gUodp1K5pyR8")}
       >
         <SupportAgent />
-        {/* <Assignment /> */}
         <Text types="small">문의</Text>
       </div>
 
