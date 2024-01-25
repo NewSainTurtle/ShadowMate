@@ -119,12 +119,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void duplicatedCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest) {
-        final User user = userRepository.findByNickname(duplicatedNicknameRequest.getNickname());
-        if (user != null) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
-        }
-        final Boolean checkNickname = redisServiceImpl.getNicknameData(duplicatedNicknameRequest.getNickname());
-        if (checkNickname != null) {
+        if (userRepository.existsByNickname(duplicatedNicknameRequest.getNickname()) ||
+                redisServiceImpl.getNicknameData(duplicatedNicknameRequest.getNickname()) != null) {
             throw new AuthException(AuthErrorResult.DUPLICATED_NICKNAME);
         }
         redisServiceImpl.setNicknameData(duplicatedNicknameRequest.getNickname(), true, 10);

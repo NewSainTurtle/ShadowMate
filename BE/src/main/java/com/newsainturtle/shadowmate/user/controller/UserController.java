@@ -51,7 +51,7 @@ public class UserController {
                                                    @PathVariable("userId") final Long userId,
                                                    @RequestBody @Valid final UpdateUserRequest updateUserRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.updateUser(userId, updateUserRequest);
+        userService.updateUser(principalDetails.getUser(), updateUserRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_USER));
     }
 
@@ -60,7 +60,7 @@ public class UserController {
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final UpdatePasswordRequest updatePasswordRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        userService.updatePassword(userId, updatePasswordRequest);
+        userService.updatePassword(principalDetails.getUser(), updatePasswordRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_PASSWORD));
     }
 

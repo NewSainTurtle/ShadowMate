@@ -25,7 +25,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String userEmail = oAuth2User.getAttribute("email");
         User user = findByEmailAndSocialLogin(userEmail);
-        if(user == null) {
+        if (user == null) {
             user = User.builder()
                     .email(userEmail)
                     .password("INTP")
@@ -43,22 +43,21 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     private User findByEmailAndSocialLogin(final String email) {
         return userRepository.findByEmailAndSocialLogin(email, SocialType.GOOGLE);
     }
-    private String createNicknameRandomCode(String name) {
+
+    private String createNicknameRandomCode(final String name) {
         final String temp = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        int length = name.length() > 3 ? 4 : name.length();
+        final StringBuilder sb = new StringBuilder();
+        final SecureRandom random = new SecureRandom();
 
-        StringBuilder sb = new StringBuilder();
         sb.append(name);
-        SecureRandom random = new SecureRandom();
+        do {
+            sb.setLength(length);
+            for (int i = 0; i < 10 - length; i++) {
+                sb.append(temp.charAt(random.nextInt(temp.length())));
+            }
+        } while (userRepository.existsByNickname(sb.toString()));
 
-        for (int i = 0; i < 10; i++) {
-            sb.append(temp.charAt(random.nextInt(temp.length())));
-        }
-        String nickname = sb.toString();
-        User user = userRepository.findByNickname(nickname);
-        if(user!=null) {
-            nickname = createNicknameRandomCode(name);
-        }
-
-        return nickname;
+        return sb.toString();
     }
 }

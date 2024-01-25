@@ -73,19 +73,6 @@ public class UserRepositoryTest {
         }
 
         @Test
-        void 성공_내정보수정시_닉네임조회() {
-            //given
-            final String nickname = user.getNickname();
-
-            //when
-            final User result = userRepository.findByIdAndNickname(userId, nickname);
-
-            //then
-            assertThat(result.getNickname()).isEqualTo(nickname);
-
-        }
-
-        @Test
         void 성공_내정보수정() {
             //given
             final String newNickname = "NewNickName";
@@ -94,7 +81,7 @@ public class UserRepositoryTest {
 
             //when
             userRepository.updateUser(newNickname, newProfileImage, newStatusMessage, userId);
-            final User result = userRepository.findByNickname(newNickname);
+            final User result = userRepository.findByNicknameAndWithdrawalIsFalse(newNickname);
 
             //then
             assertThat(result.getNickname()).isEqualTo(newNickname);
@@ -110,7 +97,7 @@ public class UserRepositoryTest {
 
             // when
             userRepository.updatePassword(newPassword, userId);
-            final User result = userRepository.findByNickname(user.getNickname());
+            final User result = userRepository.findByNicknameAndWithdrawalIsFalse(user.getNickname());
 
             // then
             assertThat(result.getPassword()).isEqualTo(newPassword);
@@ -152,7 +139,7 @@ public class UserRepositoryTest {
             // given
 
             // when
-            final User result = userRepository.findByNickname("거북이234567");
+            final User result = userRepository.findByNicknameAndWithdrawalIsFalse("거북이234567");
 
             // then
             assertThat(result).isNull();
@@ -163,7 +150,7 @@ public class UserRepositoryTest {
             // given
 
             // when
-            final User result = userRepository.findByNickname(user.getNickname());
+            final User result = userRepository.findByNicknameAndWithdrawalIsFalse(user.getNickname());
 
             // then
             assertThat(result.getNickname()).isEqualTo(user.getNickname());
@@ -175,14 +162,15 @@ public class UserRepositoryTest {
             final User saveUser = userRepository.save(user);
 
             //when
-            userRepository.deleteUser(LocalDateTime.now(), saveUser.getId(), PlannerAccessScope.PRIVATE);
-            final User findUser = userRepository.findByNickname(user.getNickname());
+            userRepository.deleteUser(LocalDateTime.now(), saveUser.getId(), PlannerAccessScope.PRIVATE, "ABC");
+            final Optional<User> findUser = userRepository.findById(saveUser.getId());
 
             //then
-            assertThat(findUser).isNotNull();
-            assertThat(findUser.getDeleteTime()).isNotNull();
-            assertThat(findUser.getWithdrawal()).isTrue();
-            assertThat(findUser.getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE);
+            assertThat(findUser).isPresent();
+            assertThat(findUser.get().getDeleteTime()).isNotNull();
+            assertThat(findUser.get().getWithdrawal()).isTrue();
+            assertThat(findUser.get().getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE);
+            assertThat(findUser.get().getNickname()).isEqualTo("ABC");
         }
 
     }

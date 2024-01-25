@@ -23,10 +23,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.mail.internet.MimeMessage;
-
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -67,7 +66,7 @@ public class AuthServiceTest {
 
         @Test
         void 랜덤숫자생성() {
-            for(int i=0; i<10; i++) {
+            for (int i = 0; i < 10; i++) {
                 String code = createRandomCode();
                 assertThat(code).hasSize(6);
             }
@@ -78,6 +77,7 @@ public class AuthServiceTest {
         }
 
     }
+
     @Nested
     class 회원가입 {
 
@@ -128,6 +128,7 @@ public class AuthServiceTest {
             //then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
         }
+
         @Test
         void 성공_회원가입() {
             //given
@@ -173,10 +174,10 @@ public class AuthServiceTest {
         @Test
         void 실패_닉네임중복_DB사용중() {
             // given
-            doReturn(user).when(userRepository).findByNickname(nickname);
+            doReturn(true).when(userRepository).existsByNickname(duplicatedNicknameRequest.getNickname());
 
             // when
-            final AuthException authException = assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
+            final AuthException authException = assertThrows(AuthException.class, () -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
 
             // then
             assertThat(authException.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_NICKNAME);
@@ -185,11 +186,11 @@ public class AuthServiceTest {
         @Test
         void 실패_닉네임중복_Redis사용중() {
             // given
-            doReturn(null).when(userRepository).findByNickname(nickname);
+            doReturn(false).when(userRepository).existsByNickname(duplicatedNicknameRequest.getNickname());
             doReturn(true).when(redisService).getNicknameData(duplicatedNicknameRequest.getNickname());
 
             // when
-            final AuthException authException = assertThrows(AuthException.class,() -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
+            final AuthException authException = assertThrows(AuthException.class, () -> authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest));
 
             // then
             assertThat(authException.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_NICKNAME);
@@ -198,13 +199,15 @@ public class AuthServiceTest {
         @Test
         void 성공_닉네임중복아님() {
             // given
-            doReturn(null).when(userRepository).findByNickname(duplicatedNicknameRequest.getNickname());
+            doReturn(false).when(userRepository).existsByNickname(duplicatedNicknameRequest.getNickname());
             doReturn(null).when(redisService).getNicknameData(duplicatedNicknameRequest.getNickname());
 
             // when
             authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
 
             // then
+            verify(userRepository, times(1)).existsByNickname(any(String.class));
+            verify(redisService, times(1)).getNicknameData(any(String.class));
             verify(redisService, times(1)).setNicknameData(any(String.class), any(boolean.class), any(int.class));
 
         }
