@@ -20,9 +20,13 @@ interface Props {
     deleteTodo: (idx: number, todoId: number) => void;
     deleteTimeTable: (todoId: number, timeTables: TimeTableConfig[], todoStatus: TodoConfig["todoStatus"]) => void;
   };
+  dragModule?: {
+    childMouseEnter: () => void;
+    childMouseLeave: () => void;
+  };
 }
 
-const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) => {
+const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule, dragModule }: Props) => {
   const { todoContent, todoStatus } = todoItem;
   const category = (() => todoItem.category ?? BASIC_CATEGORY_ITEM)();
   const { categoryTitle, categoryColorCode } = category;
@@ -176,7 +180,10 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
 
             {!addTodo && (
               <div className={styles["todo-item__content__icons"]}>
-                <div onClick={(e) => e.stopPropagation()}>
+                <div
+                  onMouseEnter={() => dragModule?.childMouseEnter()}
+                  onMouseLeave={() => dragModule?.childMouseLeave()}
+                >
                   <DragHandle />
                 </div>
                 <div

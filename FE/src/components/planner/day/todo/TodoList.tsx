@@ -100,7 +100,7 @@ const TodoList = ({ clicked }: Props) => {
   })();
 
   const dragHoverStyle = styles["todo-draggable"];
-  const { containerDragOver, dragStart, dragEnter, dragEnd } = dragModule({
+  const { containerDragOver, dragStart, dragEnter, dragEnd, ...childMouseEvent } = dragModule({
     date,
     todos: copyTodos,
     setTodos,
@@ -129,7 +129,7 @@ const TodoList = ({ clicked }: Props) => {
                 onDragLeave={(e) => e.preventDefault()}
                 onDragEnd={(e) => dragEnd(e, item.todoId)}
               >
-                <TodoItem idx={idx} todoItem={item} todoModule={todoModule} />
+                <TodoItem idx={idx} todoItem={item} todoModule={todoModule} dragModule={childMouseEvent} />
               </div>
             ))}
           </div>
