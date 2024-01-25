@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final FollowRequestRepository followRequestRepository;
     private final SocialRepository socialRepository;
     private final DailyPlannerRepository dailyPlannerRepository;
+    private final VisitorBookRepository visitorBookRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisServiceImpl redisService;
@@ -118,6 +120,7 @@ public class UserServiceImpl implements UserService {
         followRepository.deleteAllByFollowingOrFollower(user, user);
         followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
         socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
+        visitorBookRepository.deleteAllByVisitorId(user.getId());
         userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE);
     }
 
