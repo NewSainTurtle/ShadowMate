@@ -81,9 +81,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(final Long userId, final UpdateUserRequest updateUserRequest) {
-        final User user = userRepository.findByIdAndNickname(userId, updateUserRequest.getNewNickname());
-        if (user == null) {
+    public void updateUser(final User user, final UpdateUserRequest updateUserRequest) {
+        if (!user.getNickname().equals(updateUserRequest.getNewNickname())) {
             final Boolean getHashNickname = redisService.getNicknameData(updateUserRequest.getNewNickname());
             if (getHashNickname == null || !getHashNickname) {
                 throw new UserException(UserErrorResult.RETRY_NICKNAME);
@@ -94,18 +93,14 @@ public class UserServiceImpl implements UserService {
         userRepository.updateUser(updateUserRequest.getNewNickname(),
                 updateUserRequest.getNewProfileImage(),
                 updateUserRequest.getNewStatusMessage(),
-                userId);
+                user.getId());
     }
 
     @Override
     @Transactional
-    public void updatePassword(final Long userId, final UpdatePasswordRequest updatePasswordRequest) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+    public void updatePassword(final User user, final UpdatePasswordRequest updatePasswordRequest) {
         if (bCryptPasswordEncoder.matches(updatePasswordRequest.getOldPassword(), user.getPassword())) {
-            userRepository.updatePassword(bCryptPasswordEncoder.encode(updatePasswordRequest.getNewPassword()), userId);
+            userRepository.updatePassword(bCryptPasswordEncoder.encode(updatePasswordRequest.getNewPassword()), user.getId());
         } else {
             throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
         }
@@ -127,7 +122,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void findUser(final Long userId) {
-        if (!userRepository.findById(userId).isPresent()) {
+        if (userRepository.findByIdAndWithdrawalIsFalse(userId) == null) {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
         }
     }

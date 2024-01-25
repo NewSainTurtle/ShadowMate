@@ -14,8 +14,8 @@ public interface UserService {
     ProfileResponse getProfile(final Long userId);
     UserResponse searchNickname(final User user, final String nickname);
     SearchIntroductionResponse searchIntroduction(final Long userId);
-    void updateUser(final Long userId, final UpdateUserRequest updateUserRequest);
-    void updatePassword(final Long userId, final UpdatePasswordRequest updatePasswordRequest);
+    void updateUser(final User user, final UpdateUserRequest updateUserRequest);
+    void updatePassword(final User user, final UpdatePasswordRequest updatePasswordRequest);
     void updateIntroduction(final Long userId, final UpdateIntroductionRequest updateIntroductionRequest);
     void deleteUser(final User user);
 }

@@ -131,11 +131,10 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
-            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
             doReturn(null).when(redisService).getNicknameData(newNickname);
 
             //when
-            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(user1, updateUserRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
@@ -153,11 +152,10 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
-            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
             doReturn(false).when(redisService).getNicknameData(newNickname);
 
             //when
-            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(user1, updateUserRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
@@ -167,19 +165,16 @@ public class UserServiceTest {
         @Test
         void 성공_내정보수정_닉네임수정안함() {
             //given
-            final String nickname = user1.getNickname();
             final String newProfileImage = "NewProfileImage";
             final String newStatusMessage = "NewStatusMessage";
             final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
-                    .newNickname(nickname)
+                    .newNickname(user1.getNickname())
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
 
-            doReturn(user1).when(userRepository).findByIdAndNickname(userId1, nickname);
-
             //when
-            userService.updateUser(userId1, updateUserRequest);
+            userService.updateUser(user1, updateUserRequest);
 
             //then
             verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
@@ -197,11 +192,10 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
-            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
             doReturn(true).when(redisService).getNicknameData(newNickname);
 
             //when
-            userService.updateUser(userId1, updateUserRequest);
+            userService.updateUser(user1, updateUserRequest);
 
             //then
             verify(redisService, times(1)).deleteNicknameData(any());
@@ -217,11 +211,10 @@ public class UserServiceTest {
                     .newPassword(newPassword)
                     .oldPassword(user1.getPassword())
                     .build();
-            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
             doReturn(false).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(userId1, updatePasswordRequest));
+            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(user1, updatePasswordRequest));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DIFFERENT_PASSWORD);
@@ -235,33 +228,20 @@ public class UserServiceTest {
                     .newPassword(newPassword)
                     .oldPassword(user1.getPassword())
                     .build();
-            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
             doReturn(true).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            userService.updatePassword(userId1, updatePasswordRequest);
+            userService.updatePassword(user1, updatePasswordRequest);
 
             // then
             verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
         }
 
         @Test
-        void 실패_소개글조회_찾을수없는유저() {
-            // given
-            doReturn(Optional.empty()).when(userRepository).findById(userId1);
-
-            // when
-            final UserException result = assertThrows(UserException.class, () -> userService.searchIntroduction(userId1));
-
-            // then
-            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
-        }
-
-        @Test
         void 성공_소개글조회() {
             // given
             final String newIntroduction = "새로운소개글";
-            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
+            doReturn(user1).when(userRepository).findByIdAndWithdrawalIsFalse(userId1);
             doReturn(newIntroduction).when(userRepository).findIntroduction(userId1);
 
             // when
