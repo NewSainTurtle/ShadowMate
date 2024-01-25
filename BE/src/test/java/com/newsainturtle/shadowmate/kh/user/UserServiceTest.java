@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
@@ -66,6 +67,9 @@ public class UserServiceTest {
 
     @Mock
     private DailyPlannerRepository dailyPlannerRepository;
+
+    @Mock
+    private VisitorBookRepository visitorBookRepository;
 
     final User user1 = User.builder()
             .id(1L)
@@ -340,6 +344,7 @@ public class UserServiceTest {
             verify(followRequestRepository, times(1)).deleteAllByRequesterOrReceiver(any(User.class), any(User.class));
             verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
+            verify(visitorBookRepository, times(1)).deleteAllByVisitorId(any(Long.class));
             verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class));
         }
 
