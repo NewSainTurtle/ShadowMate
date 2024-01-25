@@ -271,9 +271,9 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         }
     }
 
-    private boolean[] updateOriginalDayOrder1(final Routine routine,
-                                              final UpdateRoutineRequest updateRoutineRequest,
-                                              final Category category, boolean[] checkDays) {
+    private void updateOriginalDayOrder1(final Routine routine,
+                                         final UpdateRoutineRequest updateRoutineRequest,
+                                         final Category category, boolean[] checkDays) {
         final RoutineDay[] routineDays = routineDayRepository.findAllByRoutine(routine);
 
         final List<String> updateDays = new ArrayList<>();
@@ -291,13 +291,11 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
 
         updateUnchangingDayOrder1(routine, stringToLocalDate(updateRoutineRequest.getStartDay()), stringToLocalDate(updateRoutineRequest.getEndDay()),
                 category, updateRoutineRequest.getRoutineContent(), updateDays);
-
-        return checkDays;
     }
 
-    private boolean[] updateOriginalDayOrder2(final User user, final Routine routine,
-                                              final UpdateRoutineRequest updateRoutineRequest,
-                                              final Category category, final String today, boolean[] checkDays) {
+    private void updateOriginalDayOrder2(final User user, final Routine routine,
+                                         final UpdateRoutineRequest updateRoutineRequest,
+                                         final Category category, final String today, boolean[] checkDays) {
         final RoutineDay[] routineDays = routineDayRepository.findAllByRoutine(routine);
         final RoutineTodo[] routineTodoList = routineTodoRepository.findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanAndDayIn(routine, today,
                 Arrays.stream(routineDays)
@@ -321,8 +319,6 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
 
         updateUnchangingDayOrder2(routine, stringToLocalDate(updateRoutineRequest.getStartDay()), stringToLocalDate(updateRoutineRequest.getEndDay()),
                 category, updateRoutineRequest.getRoutineContent(), today, updateDays);
-
-        return checkDays;
     }
 
     private void updateNewDay(final Routine routine,
@@ -634,9 +630,9 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
         boolean[] checkDays = checkDays(updateRoutineRequest.getDays());
 
         if (updateRoutineRequest.getOrder().equals(1)) {
-            checkDays = updateOriginalDayOrder1(routine, updateRoutineRequest, category, checkDays);
+            updateOriginalDayOrder1(routine, updateRoutineRequest, category, checkDays);
         } else if (updateRoutineRequest.getOrder().equals(2)) {
-            checkDays = updateOriginalDayOrder2(user, routine, updateRoutineRequest, category, today, checkDays);
+            updateOriginalDayOrder2(user, routine, updateRoutineRequest, category, today, checkDays);
         }
 
         updateNewDay(routine, updateRoutineRequest.getStartDay(), updateRoutineRequest.getEndDay(),
