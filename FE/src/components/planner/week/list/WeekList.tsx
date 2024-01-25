@@ -39,6 +39,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
 
   const draggablesRef = useRef<HTMLDivElement[]>([]);
   const copyDailyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(dailyTodos)), [dailyTodos]);
+  const [clicked, setClicked] = useState<number>(-1);
 
   const handleSaveRetrospection = () => {
     if (dayList[idx].retrospection === null && retrospection === "") return;
@@ -84,21 +85,32 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
         <Dday nearDate={nearDate} comparedDate={date} />
       </div>
       <div className={styles["item__todo-list"]}>
-        <div onDragOver={(e) => containerDragOver(e)}>
-          {dailyTodos.map((item: TodoConfig, idx: number) => (
+        <div
+          onDragOver={(e) => {
+            if (clicked !== idx) return false;
+            containerDragOver(e);
+          }}
+        >
+          {dailyTodos.map((item: TodoConfig, key: number) => (
             <div
               key={item.todoId}
-              ref={(el: HTMLDivElement) => (draggablesRef.current[idx] = el)}
+              ref={(el: HTMLDivElement) => (draggablesRef.current[key] = el)}
               style={{ height: dailyTodos.length < 1 ? 0 : `calc(100% / ${listMaxLength})` }}
               draggable
-              onDragStart={(e) => dragStart(e, idx)}
-              onDragEnter={(e) => dragEnter(e, idx)}
+              onDragStart={(e) => {
+                setClicked(idx);
+                dragStart(e, key);
+              }}
+              onDragEnter={(e) => dragEnter(e, key)}
               onDragOver={(e) => e.preventDefault()}
               onDragLeave={(e) => e.preventDefault()}
-              onDragEnd={(e) => dragEnd(e, item.todoId)}
+              onDragEnd={(e) => {
+                setClicked(-1);
+                dragEnd(e, item.todoId);
+              }}
             >
               <WeekItem
-                idx={idx}
+                idx={key}
                 item={item}
                 isMine={isMine}
                 date={date}
