@@ -95,7 +95,7 @@ public class SocialServiceImpl implements SocialService {
 
     private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String nickname) {
         List<Social> socialList;
-        User owner = userRepository.findByNicknameAndPlannerAccessScope(nickname, PlannerAccessScope.PUBLIC);
+        User owner = userRepository.findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(nickname, PlannerAccessScope.PUBLIC);
         int totalCount = owner == null ? 0 : socialRepository.countByOwnerIdAndDeleteTimeIsNull(owner.getId());
         int totalPage = totalCount / 6 + 1;
         if (totalCount == 0) {
@@ -155,7 +155,7 @@ public class SocialServiceImpl implements SocialService {
 
     private SearchSocialPlannerResponse getSocialList(final String sort, final int pageNumber, final String nickname, final String startDate, final String endDate) {
         List<Social> socialList;
-        User owner = userRepository.findByNicknameAndPlannerAccessScope(nickname, PlannerAccessScope.PUBLIC);
+        User owner = userRepository.findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(nickname, PlannerAccessScope.PUBLIC);
         int totalCount = owner == null ? 0 : socialRepository.countByOwnerIdAndDeleteTimeIsNullAndPeriod(owner.getId(), startDate, endDate);
         int totalPage = totalCount / 6 + 1;
         if (totalCount == 0) {

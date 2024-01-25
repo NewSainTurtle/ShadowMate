@@ -241,7 +241,7 @@ class SocialServiceTest extends DateCommonService {
             final String sort = "latest";
             final int pageNumber = 1;
 
-            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScope(any(String.class), any(PlannerAccessScope.class));
+            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
             doReturn(1).when(socialRepository).countByOwnerIdAndDeleteTimeIsNull(any(Long.class));
             doReturn(new ArrayList<>()).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortLatest(any(Long.class), any(Pageable.class));
 
@@ -259,7 +259,7 @@ class SocialServiceTest extends DateCommonService {
             final int pageNumber = 3;
             final int count = 3;
 
-            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScope(any(String.class), any(PlannerAccessScope.class));
+            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
             doReturn(count).when(socialRepository).countByOwnerIdAndDeleteTimeIsNull(any(Long.class));
             doReturn(new ArrayList<>()).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortLatest(any(Long.class), any(Pageable.class));
 
@@ -280,7 +280,7 @@ class SocialServiceTest extends DateCommonService {
             socialList.add(social);
             socialList.add(social);
 
-            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScope(any(String.class), any(PlannerAccessScope.class));
+            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
             doReturn(count).when(socialRepository).countByOwnerIdAndDeleteTimeIsNull(any(Long.class));
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortLatest(any(Long.class), any(Pageable.class));
 
@@ -303,7 +303,7 @@ class SocialServiceTest extends DateCommonService {
             socialList.add(social);
             socialList.add(social);
 
-            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScope(any(String.class), any(PlannerAccessScope.class));
+            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
             doReturn(count).when(socialRepository).countByOwnerIdAndDeleteTimeIsNull(any(Long.class));
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullSortPopularity(any(Long.class), any(Pageable.class));
 
@@ -326,7 +326,7 @@ class SocialServiceTest extends DateCommonService {
             socialList.add(social);
             socialList.add(social);
 
-            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScope(any(String.class), any(PlannerAccessScope.class));
+            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
             doReturn(count).when(socialRepository).countByOwnerIdAndDeleteTimeIsNullAndPeriod(any(Long.class), any(String.class), any(String.class));
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(any(Long.class), any(String.class), any(String.class), any(Pageable.class));
 
@@ -349,7 +349,7 @@ class SocialServiceTest extends DateCommonService {
             socialList.add(social);
             socialList.add(social);
 
-            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScope(any(String.class), any(PlannerAccessScope.class));
+            doReturn(user).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
             doReturn(count).when(socialRepository).countByOwnerIdAndDeleteTimeIsNullAndPeriod(any(Long.class), any(String.class), any(String.class));
             doReturn(socialList).when(socialRepository).findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortPopularity(any(Long.class), any(String.class), any(String.class), any(Pageable.class));
 
