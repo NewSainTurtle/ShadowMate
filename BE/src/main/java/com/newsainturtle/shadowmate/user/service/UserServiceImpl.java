@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse searchNickname(final User user, final String nickname) {
-        User searchUser = userRepository.findByNickname(nickname);
+        final User searchUser = userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
         if (searchUser == null) {
             return UserResponse.builder().build();
         }

@@ -309,7 +309,7 @@ public class UserServiceTest {
         void 성공_회원검색_친구요청상태() {
             // given
             doReturn(FollowStatus.REQUESTED).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNickname(any());
+            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
 
             // when
             final UserResponse result = userService.searchNickname(user1, user2.getNickname());
@@ -323,7 +323,7 @@ public class UserServiceTest {
         void 성공_회원검색_팔로우아닌상태() {
             // given
             doReturn(FollowStatus.EMPTY).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNickname(any());
+            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
 
             // when
             final UserResponse result = userService.searchNickname(user1, user2.getNickname());
@@ -337,7 +337,7 @@ public class UserServiceTest {
         void 성공_회원검색_FOLLOW상태() {
             // given
             doReturn(FollowStatus.FOLLOW).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNickname(any());
+            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
 
             // when
             final UserResponse result = userService.searchNickname(user1, user2.getNickname());
