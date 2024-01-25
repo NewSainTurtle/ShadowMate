@@ -13,7 +13,12 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "weekly")
+@Table(name = "weekly",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"start_day", "end_day", "user_id"}
+                )
+        })
 @AttributeOverride(name = "id", column = @Column(name = "weekly_id"))
 public class Weekly extends CommonEntity {
 
@@ -24,6 +29,6 @@ public class Weekly extends CommonEntity {
     private String endDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

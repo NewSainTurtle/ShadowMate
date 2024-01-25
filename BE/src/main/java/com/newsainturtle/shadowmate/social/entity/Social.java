@@ -13,15 +13,20 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "social")
+@Table(name = "social",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"owner_id", "daily_planner_day"}
+                )
+        })
 @AttributeOverride(name = "id", column = @Column(name = "social_id"))
 public class Social extends CommonEntity {
 
     @OneToOne
-    @JoinColumn(name = "daily_planner_id")
+    @JoinColumn(name = "daily_planner_id", nullable = false)
     private DailyPlanner dailyPlanner;
 
-    @Column(name = "social_image")
+    @Column(name = "social_image", nullable = false)
     private String socialImage;
 
     @Column(name = "daily_planner_day", length = 10, nullable = false)

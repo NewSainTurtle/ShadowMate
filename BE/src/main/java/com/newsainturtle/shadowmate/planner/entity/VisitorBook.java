@@ -18,13 +18,13 @@ import javax.persistence.*;
 public class VisitorBook extends CommonEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "visitor_id")
+    @JoinColumn(name = "visitor_id", nullable = false)
     private User visitor;
 
-    @Column(name = "visitor_book_content", length = 30)
+    @Column(name = "visitor_book_content", length = 30, nullable = false)
     private String visitorBookContent;
 }

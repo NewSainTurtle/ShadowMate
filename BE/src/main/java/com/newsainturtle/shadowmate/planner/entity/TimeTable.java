@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 @AttributeOverride(name = "id", column = @Column(name = "time_table_id"))
 public class TimeTable extends CommonEntity {
 
-    @Column(name = "start_time")
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "end_time")
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

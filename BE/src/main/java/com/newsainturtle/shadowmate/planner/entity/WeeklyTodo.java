@@ -23,7 +23,7 @@ public class WeeklyTodo extends CommonEntity {
     private Boolean weeklyTodoStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "weekly_id")
+    @JoinColumn(name = "weekly_id", nullable = false)
     private Weekly weekly;
 
     public void updateWeeklyTodoContent(final String weeklyTodoContent) {
