@@ -95,7 +95,7 @@ const App = () => {
 
   useEffect(() => {
     const key = localStorage.getItem("AL");
-    if (key) handleAutoLogin(key);
+    if (key && !isLogin) handleAutoLogin(key);
   }, []);
 
   return (
