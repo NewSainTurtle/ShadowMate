@@ -162,7 +162,7 @@ public class UserRepositoryTest {
             final User saveUser = userRepository.save(user);
 
             //when
-            userRepository.deleteUser(LocalDateTime.now(), saveUser.getId(), PlannerAccessScope.PRIVATE);
+            userRepository.deleteUser(LocalDateTime.now(), saveUser.getId(), PlannerAccessScope.PRIVATE, "ABC");
             final Optional<User> findUser = userRepository.findById(saveUser.getId());
 
             //then
@@ -170,6 +170,7 @@ public class UserRepositoryTest {
             assertThat(findUser.get().getDeleteTime()).isNotNull();
             assertThat(findUser.get().getWithdrawal()).isTrue();
             assertThat(findUser.get().getPlannerAccessScope()).isEqualTo(PlannerAccessScope.PRIVATE);
+            assertThat(findUser.get().getNickname()).isEqualTo("ABC");
         }
 
     }

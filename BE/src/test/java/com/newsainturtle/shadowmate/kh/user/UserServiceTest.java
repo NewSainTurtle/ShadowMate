@@ -335,6 +335,7 @@ public class UserServiceTest {
         void 성공_회원탈퇴() {
             //given
             doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
+            doReturn(false).when(userRepository).existsByNickname(any(String.class));
 
             //when
             userService.deleteUser(user1);
@@ -345,7 +346,7 @@ public class UserServiceTest {
             verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
             verify(visitorBookRepository, times(1)).deleteAllByVisitorId(any(Long.class));
-            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class));
+            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class), any(String.class));
         }
 
     }

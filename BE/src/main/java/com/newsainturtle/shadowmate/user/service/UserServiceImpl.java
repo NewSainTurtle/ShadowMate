@@ -23,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -75,7 +76,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SearchIntroductionResponse searchIntroduction(final Long userId) {
-        findUser(userId);
+        if (userRepository.findByIdAndWithdrawalIsFalse(userId) == null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
         return SearchIntroductionResponse.builder()
                 .introduction(userRepository.findIntroduction(userId))
                 .build();
@@ -121,12 +124,20 @@ public class UserServiceImpl implements UserService {
         followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
         socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
         visitorBookRepository.deleteAllByVisitorId(user.getId());
-        userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE);
+        userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE, createNicknameRandomCode());
     }
 
-    private void findUser(final Long userId) {
-        if (userRepository.findByIdAndWithdrawalIsFalse(userId) == null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+    private String createNicknameRandomCode() {
+        final String temp = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        final StringBuilder sb = new StringBuilder();
+        final SecureRandom random = new SecureRandom();
+        do {
+            int length = random.nextInt(9) + 11;
+            for (int i = 0; i < length; i++) {
+                sb.append(temp.charAt(random.nextInt(temp.length())));
+            }
+        } while (userRepository.existsByNickname(sb.toString()));
+
+        return sb.toString();
     }
 }
