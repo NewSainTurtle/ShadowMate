@@ -119,6 +119,41 @@ class VisitorBookRepositoryTest {
     }
 
     @Test
+    void 방명록일괄삭제() {
+        //given
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+        visitorBookRepository.save(VisitorBook.builder()
+                .owner(owner)
+                .visitor(visitor)
+                .visitorBookContent(visitorBookContent)
+                .build());
+
+        //when
+        final List<VisitorBook> beforeVisitorBooks = visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner);
+        visitorBookRepository.deleteAllByVisitorId(visitor.getId());
+        final List<VisitorBook> afterVisitorBooks = visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner);
+
+
+        //then
+        assertThat(beforeVisitorBooks).hasSize(4);
+        assertThat(afterVisitorBooks).isEmpty();
+    }
+
+    @Test
     void 방명록리스트조회_처음_0개() {
         //given
 
