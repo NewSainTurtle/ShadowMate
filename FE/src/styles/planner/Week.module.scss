@@ -3,6 +3,7 @@ $color-text: var(--color-text);
 $color-white: var(--color-white);
 $color-black: var(--color-black);
 $color-gray-1: var(--color-gray-1);
+$color-gray-3: var(--color-gray-3);
 $color-gray-4: var(--color-gray-4);
 $color-gray-5: var(--color-gray-5);
 $border: 1px;
@@ -218,7 +219,7 @@ $border: 1px;
       // 카테고리 (이모지)
       > div:nth-child(1) {
         width: 100%;
-        border-right: $border solid $color-text;
+        border-right: $border dashed $color-text;
         cursor: pointer;
       }
       // 할 일 내용
@@ -248,7 +249,7 @@ $border: 1px;
       }
       // 완료 여부
       > div:nth-child(5) {
-        border-left: $border solid $color-text;
+        border-left: $border dashed $color-text;
         cursor: pointer;
       }
 
@@ -288,6 +289,7 @@ $border: 1px;
   &__memo {
     height: 100%;
     position: relative;
+    @extend .top_border;
     > textarea {
       background: transparent;
       height: 100%;
@@ -322,4 +324,9 @@ $border: 1px;
       }
     }
   }
+}
+
+#underbar--gray {
+  @extend .item__todo-item;
+  border-bottom: 1px solid $color-gray-3;
 }

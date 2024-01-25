@@ -126,8 +126,26 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
             <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />
           </div>
         )}
+        {dailyTodos.length < listMaxLength && (
+          <>
+            {Array.from({
+              length: isMine ? listMaxLength - dailyTodos.length - 1 : listMaxLength - dailyTodos.length,
+            }).map((_, idx) => (
+              <div key={idx} style={{ height: `calc(100% / ${listMaxLength})` }}>
+                <WeekItem
+                  idx={idx}
+                  item={BASIC_TODO_ITEM}
+                  disable
+                  date={date}
+                  dailyTodos={dailyTodos}
+                  setDailyTodos={setDailyTodos}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </div>
-      <div className={`${styles[`item__memo${friend}`]} ${dailyTodos?.length < listMaxLength && styles["top_border"]}`}>
+      <div className={`${styles[`item__memo${friend}`]} `}>
         <textarea
           disabled={!isMine}
           value={retrospection}
