@@ -139,7 +139,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
             }
           />
         </div>
-        <div className={styles["frame__line"]}>
+        <div className={`${styles["frame__line"]} ${styles["routine__category"]}`}>
           <Text>카테고리</Text>
           <Input
             name="routineCategory"

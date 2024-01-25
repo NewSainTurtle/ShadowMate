@@ -467,6 +467,13 @@ $color-warning: var(--color-warning);
       }
     }
   }
+
+  &__category {
+    > div > div > input {
+      cursor: pointer;
+    }
+  }
+
   &__period {
     width: 100%;
     display: flex;
