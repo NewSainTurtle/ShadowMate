@@ -23,7 +23,6 @@ const TodoList = ({ clicked }: Props) => {
   const [todos, setTodos] = useState<TodoConfig[]>([...dailyTodos]);
   const listSize = 11;
   const todoEndRef = useRef<HTMLDivElement>(null);
-  const copyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(dailyTodos)), [dailyTodos]);
   const draggablesRef = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
@@ -39,7 +38,7 @@ const TodoList = ({ clicked }: Props) => {
   const dragHoverStyle = styles["todo-draggable"];
   const { containerDragOver, dragStart, dragEnter, dragEnd, ...childMouseEvent } = dragModule({
     date,
-    todos: copyTodos,
+    todos: dailyTodos,
     setTodos,
     dragClassName: dragHoverStyle,
     draggablesRef,
