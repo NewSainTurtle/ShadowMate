@@ -1,9 +1,7 @@
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import AddIcon from "@mui/icons-material/Add";
-import { useAppSelector } from "@hooks/hook";
-import { selectRoutineIsInit } from "@store/mypage/routineSlice";
 
 interface Props {
   children: ReactNode;
@@ -16,8 +14,6 @@ interface Props {
  */
 
 const MyPageList = ({ children, handleAdd, title }: Props) => {
-  const isInit = useAppSelector(selectRoutineIsInit);
-  const disable = isInit ? "--disable" : "";
   return (
     <div className={styles["frame__container"]}>
       <div className={styles["frame__title"]}>
@@ -25,7 +21,7 @@ const MyPageList = ({ children, handleAdd, title }: Props) => {
       </div>
       <div className={styles["frame__list"]}>{children}</div>
       <div className={styles["frame__button"]}>
-        <div className={styles[`frame__button--add${disable}`]} onClick={() => handleAdd(title)}>
+        <div className={styles["frame__button--add"]} onClick={() => handleAdd(title)}>
           <AddIcon />
           <Text>새 {title}</Text>
         </div>

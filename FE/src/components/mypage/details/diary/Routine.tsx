@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
@@ -6,6 +6,7 @@ import Modal from "@components/common/Modal";
 import CategorySelector from "@components/common/CategorySelector";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { CategoryItemConfig } from "@util/planner.interface";
+import { RoutineErrorConfig } from "@components/mypage/MyPageFrame";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectRoutineClick, selectRoutineInput, selectRoutineList, setRoutineInput } from "@store/mypage/routineSlice";
 import { Calendar } from "react-date-range";
@@ -14,10 +15,12 @@ import dayjs from "dayjs";
 import ko from "date-fns/locale/ko";
 
 interface Props {
-  dayError: boolean;
+  newItem: boolean;
+  routineError: RoutineErrorConfig;
+  setRoutineError: Dispatch<SetStateAction<RoutineErrorConfig>>;
 }
 
-const Routine = ({ dayError }: Props) => {
+const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
   const dispatch = useAppDispatch();
   const routineList = useAppSelector(selectRoutineList);
   const routineInput = useAppSelector(selectRoutineInput);
@@ -29,23 +32,24 @@ const Routine = ({ dayError }: Props) => {
 
   const minLength = 1;
   const maxLength = 50;
-  const [error, setError] = useState<boolean>(false);
   const [length, setLength] = useState<number>(routineContent ? routineContent.length : 0);
-
+  const { lengthError, dayError } = routineError;
   const dayList = ["월", "화", "수", "목", "금", "토", "일"];
 
   const [openStartCalendar, setOpenStartCalendar] = useState<boolean>(false);
   const [openEndCalendar, setOpenEndCalendar] = useState<boolean>(false);
   const startCalendarRef = useRef<HTMLDivElement>(null);
   const endCalendarRef = useRef<HTMLDivElement>(null);
+  const isError = dayError ? "--error" : "";
+  const contentFocus = useRef<HTMLInputElement>(null);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     if (name === "routineContent") {
       setLength(value.length);
       if (value.length < minLength || value.length > maxLength) {
-        setError(true);
-      } else setError(false);
+        setRoutineError({ ...routineError, lengthError: true });
+      } else setRoutineError({ ...routineError, lengthError: false });
     }
     dispatch(setRoutineInput({ ...routineInput, [name]: value }));
   };
@@ -57,6 +61,7 @@ const Routine = ({ dayError }: Props) => {
 
   const handleRoutineDay = (e: ChangeEvent<HTMLInputElement>, day: string) => {
     const isChecked = e.target.checked;
+    if (dayError && isChecked) setRoutineError({ ...routineError, dayError: false });
     if (isChecked) {
       dispatch(setRoutineInput({ ...routineInput, days: [...days, day] }));
       return;
@@ -90,11 +95,15 @@ const Routine = ({ dayError }: Props) => {
   };
 
   useEffect(() => {
-    if (routineList.length > 0 && routineInput) {
+    if (routineList.length > 0 && !newItem) {
       dispatch(setRoutineInput(routineList[routineClick]));
       setLength(routineList[routineClick].routineContent.length);
     }
   }, [routineClick]);
+
+  useEffect(() => {
+    if (contentFocus.current) contentFocus.current.focus();
+  }, []);
 
   /* 캘린더 외부 영역 클릭 시 캘린더 닫힘. */
   useEffect(() => {
@@ -117,13 +126,16 @@ const Routine = ({ dayError }: Props) => {
         <div className={styles["frame__line"]}>
           <Text>루틴 이름</Text>
           <Input
+            inputRef={contentFocus}
             name="routineContent"
             value={routineContent}
             placeholder="루틴 이름을 입력하세요."
             onChange={onChangeInput}
-            error={error}
+            error={lengthError}
             helperText={
-              error ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.` : `글자 수: ${length}/${maxLength}`
+              lengthError
+                ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.`
+                : `글자 수: ${length}/${maxLength}`
             }
           />
         </div>
@@ -138,7 +150,7 @@ const Routine = ({ dayError }: Props) => {
             autoComplete="off"
           />
         </div>
-        <div id={dayError ? styles["routine__days"] : ""} className={styles["frame__line"]}>
+        <div id={styles["routine__days"]} className={styles["frame__line"]}>
           <Text>반복 요일</Text>
           <div className={styles["routine__day-list"]}>
             {dayList.map((day: string, i: number) => {
@@ -155,12 +167,12 @@ const Routine = ({ dayError }: Props) => {
               );
             })}
           </div>
+          {/* 줄 맞춤을 위한 <div/> */}
           <div />
-          {dayError && (
-            <div id={styles["routine__error"]}>
-              <Text types="small">반복할 요일을 선택하세요.</Text>
-            </div>
-          )}
+          <div className={styles[`routine__day-text${isError}`]}>
+            <div />
+            <Text types="small">반복할 요일을 선택하세요.</Text>
+          </div>
         </div>
         <div>
           <div className={styles["frame__line"]}>
@@ -205,7 +217,7 @@ const Routine = ({ dayError }: Props) => {
         </div>
       </div>
       <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
-        <CategorySelector type="day" handleClick={handleClickCategory} />
+        <CategorySelector type="day" handleClick={handleClickCategory} addBtn={false} />
       </Modal>
     </>
   );

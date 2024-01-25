@@ -1,6 +1,5 @@
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { BASIC_CATEGORY_ITEM } from "@store/planner/daySlice";
 import { CategoryItemConfig } from "@util/planner.interface";
 import { PURGE } from "redux-persist";
 
@@ -25,7 +24,6 @@ interface RoutineConfig {
   routineList: RoutineItemConfig[];
   routineClick: number;
   routineInput: RoutineItemConfig | InitRoutineItemConfig;
-  routineIsInit: boolean;
 }
 
 const initialState: RoutineConfig = {
@@ -34,16 +32,11 @@ const initialState: RoutineConfig = {
   routineInput: {
     routineId: 0,
     routineContent: "",
-    startDay: "",
-    endDay: "",
+    startDay: new Date(),
+    endDay: new Date(),
     days: [],
-    category: {
-      categoryId: BASIC_CATEGORY_ITEM.categoryId,
-      categoryTitle: BASIC_CATEGORY_ITEM.categoryTitle,
-      categoryColorCode: BASIC_CATEGORY_ITEM.categoryColorCode,
-    },
+    category: null,
   },
-  routineIsInit: false,
 };
 
 const routineSlice = createSlice({
@@ -60,9 +53,6 @@ const routineSlice = createSlice({
     setRoutineInput: (state, { payload }: PayloadAction<RoutineItemConfig | InitRoutineItemConfig>) => {
       state.routineInput = payload;
     },
-    setRoutineIsInit: (state, { payload }: PayloadAction<boolean>) => {
-      state.routineIsInit = payload;
-    },
   },
   extraReducers: (builder) => {
     // redux-persist 초기화
@@ -71,10 +61,9 @@ const routineSlice = createSlice({
 });
 
 export const BASIC_ROUTINE_INPUT = initialState.routineInput;
-export const { setRoutineList, setRoutineClick, setRoutineInput, setRoutineIsInit } = routineSlice.actions;
+export const { setRoutineList, setRoutineClick, setRoutineInput } = routineSlice.actions;
 export const selectRoutineList = (state: rootState) => state.routine.routineList;
 export const selectRoutineClick = (state: rootState) => state.routine.routineClick;
 export const selectRoutineInput = (state: rootState) => state.routine.routineInput;
-export const selectRoutineIsInit = (state: rootState) => state.routine.routineIsInit;
 
 export default routineSlice.reducer;

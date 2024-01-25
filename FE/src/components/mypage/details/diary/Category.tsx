@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
@@ -16,7 +16,11 @@ import {
   setCategoryInput,
 } from "@store/mypage/categorySlice";
 
-const Category = () => {
+interface Props {
+  newItem: boolean;
+}
+
+const Category = ({ newItem }: Props) => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectCategoryClick);
   const categoryList = useAppSelector(selectCategoryList);
@@ -27,6 +31,7 @@ const Category = () => {
   const maxLength = 10;
   const { categoryTitle, categoryEmoticon } = categoryInput ?? "";
   const [length, setLength] = useState<number>(categoryTitle ? categoryTitle.length : 0);
+  const titleFocus = useRef<HTMLInputElement>(null);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -52,16 +57,24 @@ const Category = () => {
         if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;
       });
       dispatch(setCategoryColorClick(currentColor));
-      dispatch(setCategoryInput(categoryList[click]));
-      setLength(categoryList[click].categoryTitle.length);
+      if (!newItem) {
+        dispatch(setCategoryInput(categoryList[click]));
+        setLength(categoryList[click].categoryTitle.length);
+      }
     }
   }, [click]);
+
+  useEffect(() => {
+    if (newItem) dispatch(setCategoryColorClick(0));
+    if (titleFocus.current) titleFocus.current.focus();
+  }, []);
 
   return (
     <div className={styles["frame__contents"]}>
       <div className={styles["frame__line"]}>
-        <Text>카테고리 이름</Text>
+        <Text>카테고리</Text>
         <Input
+          inputRef={titleFocus}
           name="categoryTitle"
           value={categoryTitle ?? ""}
           placeholder="카테고리 이름을 입력하세요."

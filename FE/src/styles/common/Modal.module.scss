@@ -10,7 +10,7 @@ $color-warning: var(--color-warning);
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 25em;
+  min-width: 25em;
   background-color: $color-background;
 }
 
