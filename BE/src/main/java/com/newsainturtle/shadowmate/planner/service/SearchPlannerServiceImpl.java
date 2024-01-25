@@ -50,18 +50,19 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
     private Dday getDday(final User user) {
         final String today = String.valueOf(LocalDate.now());
         Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
-        if (dday == null) dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+        if (dday == null) {
+            dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+            if (dday == null) {
+                dday = Dday.builder().build();
+            }
+        }
         return dday;
     }
 
     private boolean havePermissionToSearch(final User user, final User plannerWriter) {
-        if (user.getId().equals(plannerWriter.getId()) ||
+        return user.getId().equals(plannerWriter.getId()) ||
                 plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
-                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowingAndFollower(plannerWriter, user) != null)
-        ) {
-            return true;
-        }
-        return false;
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowingAndFollower(plannerWriter, user) != null);
     }
 
     private void checkValidDate(final String date) {
@@ -104,6 +105,17 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         return weeklyTodos;
     }
 
+    private int getDayStatus(final double percent) {
+        if (percent == 100) {
+            return 3;
+        } else if (percent >= 60) {
+            return 2;
+        } else if (percent >= 0) {
+            return 1;
+        }
+        return 0;
+    }
+
     private CalendarDayTotalResponse getDayList(final User user, final User plannerWriter, final LocalDate date) {
         final List<CalendarDayResponse> dayList = new ArrayList<>();
         final List<Long> dailyPlannerIdList = new ArrayList<>();
@@ -113,10 +125,11 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         if (havePermissionToSearch(user, plannerWriter)) {
             final int lastDay = YearMonth.from(date).lengthOfMonth();
             for (int i = 0; i < lastDay; i++) {
-                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
+                final String targetDate = localDateToString(date.plusDays(i));
+                final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, targetDate);
                 int todoCount = 0;
                 int dayStatus = 0;
-                final int routineCount = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(plannerWriter.getId(), String.valueOf(date.plusDays(i)));
+                final int routineCount = routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(plannerWriter.getId(), targetDate);
                 if (dailyPlanner != null) {
                     dailyPlannerIdList.add(dailyPlanner.getId());
                     final int totalCount = todoRepository.countByDailyPlanner(dailyPlanner) + routineCount;
@@ -124,14 +137,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                         todoCount = todoRepository.countByDailyPlannerAndTodoStatusNot(dailyPlanner, TodoStatus.COMPLETE) + routineCount;
                         todoTotal += totalCount;
                         todoIncomplete += todoCount;
-                        final double percent = ((totalCount - todoCount) / (double) totalCount) * 100;
-                        if (percent == 100) {
-                            dayStatus = 3;
-                        } else if (percent >= 60) {
-                            dayStatus = 2;
-                        } else if (percent >= 0) {
-                            dayStatus = 1;
-                        }
+                        dayStatus = getDayStatus(((totalCount - todoCount) / (double) totalCount) * 100);
                     }
                 } else if (routineCount > 0) {
                     todoCount = routineCount;
@@ -140,14 +146,13 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
 
                 dayList.add(
                         CalendarDayResponse.builder()
-                                .date(localDateToString(date.plusDays(i)))
+                                .date(targetDate)
                                 .todoCount(todoCount)
                                 .dayStatus(dayStatus)
                                 .build()
                 );
 
             }
-
         }
         return CalendarDayTotalResponse.builder()
                 .calendarDayResponseList(dayList)
@@ -157,42 +162,51 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
                 .build();
     }
 
-    private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final User user, final LocalDate date, final boolean permission) {
+    private List<WeeklyPlannerDailyTodoResponse> getDay(final DailyPlanner dailyPlanner) {
+        final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
+        final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
+        for (Todo todo : todoList) {
+            dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
+                    .todoId(todo.getId())
+                    .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
+                            .categoryId(todo.getCategory().getId())
+                            .categoryTitle(todo.getCategory().getCategoryTitle())
+                            .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
+                            .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
+                            .build() : null)
+                    .todoContent(todo.getTodoContent())
+                    .todoStatus(todo.getTodoStatus().getStatus())
+                    .build());
+        }
+        return dailyTodos;
+    }
+
+    private List<WeeklyPlannerDailyResponse> getDayList(final User plannerWriter, final LocalDate date, final boolean permission) {
         final List<WeeklyPlannerDailyResponse> dayList = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, String.valueOf(date.plusDays(i)));
-            final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
-
-            if (plannerWriter.getId().equals(user.getId())) {
-                dailyPlanner = makeRoutineTodo(user, String.valueOf(date.plusDays(i)), dailyPlanner);
-            }
-
-            if (dailyPlanner == null || !permission) {
+            final String targetDate = localDateToString(date.plusDays(i));
+            if (!permission) {
                 dayList.add(WeeklyPlannerDailyResponse.builder()
-                        .date(localDateToString(date.plusDays(i)))
+                        .date(targetDate)
                         .retrospection(null)
-                        .dailyTodos(dailyTodos)
+                        .dailyTodos(new ArrayList<>())
                         .build());
             } else {
-                final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
-                for (Todo todo : todoList) {
-                    dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
-                            .todoId(todo.getId())
-                            .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
-                                    .categoryId(todo.getCategory().getId())
-                                    .categoryTitle(todo.getCategory().getCategoryTitle())
-                                    .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
-                                    .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
-                                    .build() : null)
-                            .todoContent(todo.getTodoContent())
-                            .todoStatus(todo.getTodoStatus().getStatus())
+                DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, targetDate);
+                dailyPlanner = makeRoutineTodo(plannerWriter, targetDate, dailyPlanner);
+                if (dailyPlanner == null) {
+                    dayList.add(WeeklyPlannerDailyResponse.builder()
+                            .date(targetDate)
+                            .retrospection(null)
+                            .dailyTodos(new ArrayList<>())
+                            .build());
+                } else {
+                    dayList.add(WeeklyPlannerDailyResponse.builder()
+                            .date(targetDate)
+                            .retrospection(dailyPlanner.getRetrospection())
+                            .dailyTodos(getDay(dailyPlanner))
                             .build());
                 }
-                dayList.add(WeeklyPlannerDailyResponse.builder()
-                        .date(localDateToString(date.plusDays(i)))
-                        .retrospection(dailyPlanner.getRetrospection())
-                        .dailyTodos(dailyTodos)
-                        .build());
             }
         }
         return dayList;
@@ -214,7 +228,7 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
 
     private DailyPlanner makeRoutineTodo(final User user, final String date, DailyPlanner dailyPlanner) {
         final RoutineTodo[] routineTodoList = routineTodoRepository.findAllByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), date);
-        if (routineTodoList.length > 0) {
+        if (routineTodoList != null && routineTodoList.length > 0) {
             if (dailyPlanner == null) {
                 dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
                         .dailyPlannerDay(date)
@@ -247,19 +261,25 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
         final Dday dday = getDday(user);
 
-        if (plannerWriter.getId().equals(user.getId())) {
-            dailyPlanner = makeRoutineTodo(user, date, dailyPlanner);
-        }
-
-        if (dailyPlanner == null || !havePermissionToSearch(user, plannerWriter)) {
+        if (!havePermissionToSearch(user, plannerWriter)) {
             return SearchDailyPlannerResponse.builder()
                     .date(date)
                     .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                    .dday(dday == null ? null : dday.getDdayDate())
-                    .ddayTitle(dday == null ? null : dday.getDdayTitle())
+                    .dday(dday.getDdayDate())
+                    .ddayTitle(dday.getDdayTitle())
+                    .build();
+        }
+
+        dailyPlanner = makeRoutineTodo(plannerWriter, date, dailyPlanner);
+        if (dailyPlanner == null) {
+            return SearchDailyPlannerResponse.builder()
+                    .date(date)
+                    .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
+                    .dday(dday.getDdayDate())
+                    .ddayTitle(dday.getDdayTitle())
                     .build();
         } else {
-            final boolean like = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner) != null;
+            final boolean like = dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user, dailyPlanner);
             final Social shareSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
             final long likeCount = dailyPlannerLikeRepository.countByDailyPlanner(dailyPlanner);
             final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
@@ -283,8 +303,8 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
             return SearchDailyPlannerResponse.builder()
                     .date(date)
                     .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                    .dday(dday == null ? null : dday.getDdayDate())
-                    .ddayTitle(dday == null ? null : dday.getDdayTitle())
+                    .dday(dday.getDdayDate())
+                    .ddayTitle(dday.getDdayTitle())
                     .todayGoal(dailyPlanner.getTodayGoal())
                     .retrospection(dailyPlanner.getRetrospection())
                     .retrospectionImage(dailyPlanner.getRetrospectionImage())
@@ -328,12 +348,12 @@ public class SearchPlannerServiceImpl extends DateCommonService implements Searc
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
         final boolean permission = havePermissionToSearch(user, plannerWriter);
         final List<WeeklyPlannerTodoResponse> weeklyTodos = getWeeklyTodos(plannerWriter, startDate, endDate, permission);
-        final List<WeeklyPlannerDailyResponse> dayList = getDayList(plannerWriter, user, stringToLocalDate(startDate), permission);
+        final List<WeeklyPlannerDailyResponse> dayList = getDayList(plannerWriter, stringToLocalDate(startDate), permission);
         final Dday dday = getDday(user);
 
         return SearchWeeklyPlannerResponse.builder()
                 .plannerAccessScope(plannerWriter.getPlannerAccessScope().getScope())
-                .dday(dday == null ? null : dday.getDdayDate())
+                .dday(dday.getDdayDate())
                 .weeklyTodos(weeklyTodos)
                 .dayList(dayList)
                 .build();

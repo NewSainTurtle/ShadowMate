@@ -679,14 +679,9 @@ class DailyPlannerServiceTest extends DateCommonService {
             @Test
             void 실패_이전에좋아요를이미누름() {
                 //given
-                final DailyPlannerLike dailyPlannerLike = DailyPlannerLike.builder()
-                        .id(1L)
-                        .dailyPlanner(dailyPlanner)
-                        .user(user2)
-                        .build();
                 doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-                doReturn(dailyPlannerLike).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+                doReturn(true).when(dailyPlannerLikeRepository).existsByUserAndDailyPlanner(any(), any(DailyPlanner.class));
 
                 //when
                 final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.addDailyLike(user2, plannerWriterId, addDailyLikeRequest));
@@ -700,7 +695,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 //given
                 doReturn(user2).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
                 doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-                doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+                doReturn(false).when(dailyPlannerLikeRepository).existsByUserAndDailyPlanner(any(), any(DailyPlanner.class));
 
                 //when
                 dailyPlannerServiceImpl.addDailyLike(user2, plannerWriterId, addDailyLikeRequest);
@@ -710,7 +705,7 @@ class DailyPlannerServiceTest extends DateCommonService {
                 //verify
                 verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
                 verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
-                verify(dailyPlannerLikeRepository, times(1)).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+                verify(dailyPlannerLikeRepository, times(1)).existsByUserAndDailyPlanner(any(), any(DailyPlanner.class));
                 verify(dailyPlannerLikeRepository, times(1)).save(any(DailyPlannerLike.class));
 
             }

@@ -311,7 +311,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(follow).when(followRepository).findByFollowingAndFollower(any(), any());
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
             doReturn(null).when(socialRepository).findByDailyPlannerAndDeleteTimeIsNull(any(DailyPlanner.class));
-            doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+            doReturn(false).when(dailyPlannerLikeRepository).existsByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(todoList).when(todoRepository).findAllByDailyPlannerOrderByTodoIndex(any(DailyPlanner.class));
 
@@ -385,7 +385,7 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(dday).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
             doReturn(new RoutineTodo[0]).when(routineTodoRepository).findAllByUserAndDailyPlannerDayAndTodoIsNull(any(), any(String.class));
             doReturn(null).when(socialRepository).findByDailyPlannerAndDeleteTimeIsNull(any(DailyPlanner.class));
-            doReturn(null).when(dailyPlannerLikeRepository).findByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+            doReturn(false).when(dailyPlannerLikeRepository).existsByUserAndDailyPlanner(any(), any(DailyPlanner.class));
             doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
             doReturn(todoList).when(todoRepository).findAllByDailyPlannerOrderByTodoIndex(any(DailyPlanner.class));
 
@@ -801,7 +801,6 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(plannerWriter).when(userRepository).findByIdAndWithdrawalIsFalse(plannerWriterId);
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(String.class), any(String.class));
             doReturn(new ArrayList<>()).when(weeklyTodoRepository).findAllByWeekly(any(Weekly.class));
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(String.class));
 
@@ -839,7 +838,6 @@ class SearchPlannerServiceTest extends DateCommonService {
             doReturn(null).when(followRepository).findByFollowingAndFollower(any(), any());
             doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(any(), any(String.class), any(String.class));
             doReturn(new ArrayList<>()).when(weeklyTodoRepository).findAllByWeekly(any(Weekly.class));
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(any(), any(String.class));
             doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(any(), any(String.class));
 
