@@ -13,13 +13,10 @@ import java.time.LocalDateTime;
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByNickname(final String nickname);
     User findByNicknameAndWithdrawalIsFalse(final String nickname);
-    User findByIdAndNickname(final Long userId, final String nickname);
     User findByEmailAndSocialLogin(final String email, final SocialType socialType);
     User findByIdAndWithdrawalIsFalse(final Long userId);
-    User findByNicknameAndPlannerAccessScope(final String nickname, final PlannerAccessScope plannerAccessScope);
-
-    @Query("SELECT u FROM User u WHERE u.email = :email and u.socialLogin = :socialLogin and u.withdrawal = FALSE")
-    User findByEmailAndSocialLoginAndWithdrawal(@Param("email") final String email, @Param("socialLogin") final SocialType socialType);
+    User findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(final String nickname, final PlannerAccessScope plannerAccessScope);
+    User findByEmailAndSocialLoginAndWithdrawalIsFalse(final String email, final SocialType socialType);
 
     @Query("SELECT u.introduction FROM User u WHERE u.id = :userId")
     String findIntroduction(@Param("userId") final long userId);
