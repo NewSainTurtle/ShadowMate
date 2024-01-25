@@ -477,7 +477,8 @@ $color-warning: var(--color-warning);
   &__period {
     width: 100%;
     display: flex;
-    gap: 2em;
+    align-items: center;
+    gap: 1em;
 
     > div > div > input {
       caret-color: transparent;

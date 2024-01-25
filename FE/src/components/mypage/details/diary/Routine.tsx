@@ -195,6 +195,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
                   </div>
                 )}
               </div>
+              <Text>~</Text>
               <div className={styles["end"]}>
                 <Input name="endDay" value={dateFormat(endDay)} placeholder="종료 일자" disabled />
                 <CalendarMonthIcon onClick={() => setOpenEndCalendar(!openEndCalendar)} />
