@@ -217,7 +217,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
         </div>
       </div>
       <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
-        <CategorySelector type="day" handleClick={handleClickCategory} />
+        <CategorySelector type="day" handleClick={handleClickCategory} addBtn={false} />
       </Modal>
     </>
   );

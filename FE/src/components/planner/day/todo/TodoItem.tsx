@@ -180,7 +180,7 @@ const TodoItem = ({ idx = -1, todoItem, addTodo, disable, todoModule }: Props) =
       </div>
 
       <Modal types="noBtn" open={ModalOpen} onClose={handleClose}>
-        <CategorySelector type="day" handleClick={handleClickCategory} />
+        <CategorySelector type="day" handleClick={handleClickCategory} addBtn />
       </Modal>
       <Modal
         types="twoBtn"

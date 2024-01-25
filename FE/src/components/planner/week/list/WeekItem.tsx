@@ -162,7 +162,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
         </div>
       </div>
       <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
-        <CategorySelector type="week" handleClick={handleClickCategory} />
+        <CategorySelector type="week" handleClick={handleClickCategory} addBtn />
       </Modal>
       <Modal
         types="twoBtn"
