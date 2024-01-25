@@ -10,7 +10,7 @@ import { useAppSelector } from "@hooks/hook";
 import { CategoryItemConfig, TodoConfig } from "@util/planner.interface";
 import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
-import { DeleteOutlined } from "@mui/icons-material";
+import { DeleteOutlined, DragHandle } from "@mui/icons-material";
 
 interface Props {
   idx: number;
@@ -19,9 +19,13 @@ interface Props {
   date: string;
   dailyTodos: TodoConfig[];
   setDailyTodos: Dispatch<SetStateAction<TodoConfig[]>>;
+  dragModule?: {
+    childMouseEnter: () => void;
+    childMouseLeave: () => void;
+  };
 }
 
-const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props) => {
+const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos, dragModule }: Props) => {
   const userId = useAppSelector(selectUserId);
   const [Modalopen, setModalOpen] = useState(false);
   const handleClose = () => setModalOpen(false);
@@ -156,7 +160,16 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
             <Text types="small">{item?.todoContent}</Text>
           </div>
         )}
-        <DeleteOutlined onClick={handleDeleteModalOpen} />
+        <DragHandle
+          onMouseEnter={() => dragModule?.childMouseEnter()}
+          onMouseLeave={() => dragModule?.childMouseLeave()}
+        />
+        <DeleteOutlined
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteModalOpen();
+          }}
+        />
         <div onClick={handleStatusSave}>
           <Text>{setStatus(item.todoStatus)}</Text>
         </div>

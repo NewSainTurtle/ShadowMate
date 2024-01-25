@@ -1,5 +1,6 @@
-import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
+import React, { useState, Dispatch, SetStateAction, useRef, useMemo, useLayoutEffect } from "react";
 import styles from "@styles/planner/Week.module.scss";
+import dayStyles from "@styles/planner/day.module.scss";
 import Text from "@components/common/Text";
 import Dday from "@components/common/Dday";
 import WeekItem from "@components/planner/week/list/WeekItem";
@@ -9,9 +10,10 @@ import { TodoConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { useNavigate } from "react-router-dom";
 import { DayListConfig, selectDayList, selectWeekDday, setDayList } from "@store/planner/weekSlice";
-import { setDayDate } from "@store/planner/daySlice";
-import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
+import { BASIC_TODO_ITEM, setDayDate } from "@store/planner/daySlice";
+import { plannerApi } from "@api/Api";
+import dragModule from "@util/DragModule";
 import dayjs from "dayjs";
 
 interface Props {
@@ -31,10 +33,12 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
   const date = dayList[idx].date;
   const [dailyTodos, setDailyTodos] = useState<TodoConfig[]>(dayList[idx].dailyTodos ?? []);
   const [retrospection, setRetrospection] = useState<string>(dayList[idx].retrospection ?? "");
-  const itemMaxLength = isMine ? 4 : 5;
-  const rowMaxLength = isMine ? dailyTodos.length + 1 : dailyTodos.length;
+  const listMaxLength = 5;
   const retroMaxLength = 100;
   const friend = isMine ? "" : "--friend";
+
+  const draggablesRef = useRef<HTMLDivElement[]>([]);
+  const copyDailyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(dailyTodos)), [dailyTodos]);
 
   const handleSaveRetrospection = () => {
     if (dayList[idx].retrospection === null && retrospection === "") return;
@@ -57,10 +61,19 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
     navigator("/day");
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setDailyTodos(dayList[idx].dailyTodos ?? []);
     setRetrospection(dayList[idx].retrospection ?? "");
   }, [dayList]);
+
+  const dragHoverStyle = dayStyles["todo-draggable"];
+  const { containerDragOver, dragStart, dragEnter, dragEnd, ...childMouseEvent } = dragModule({
+    date,
+    todos: copyDailyTodos,
+    setTodos: setDailyTodos,
+    dragClassName: dragHoverStyle,
+    draggablesRef,
+  });
 
   return (
     <div className={styles["item"]}>
@@ -70,21 +83,39 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
         </div>
         <Dday nearDate={nearDate} comparedDate={date} />
       </div>
-      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, 20%` }}>
-        {dailyTodos.map((item: TodoConfig, key: number) => (
-          <WeekItem
-            key={item.todoId}
-            idx={key}
-            item={item}
-            isMine={isMine}
-            date={date}
-            dailyTodos={dailyTodos}
-            setDailyTodos={setDailyTodos}
-          />
-        ))}
-        {isMine && <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />}
+      <div className={styles["item__todo-list"]}>
+        <div onDragOver={(e) => containerDragOver(e)}>
+          {dailyTodos.map((item: TodoConfig, idx: number) => (
+            <div
+              key={item.todoId}
+              ref={(el: HTMLDivElement) => (draggablesRef.current[idx] = el)}
+              style={{ height: dailyTodos.length < 1 ? 0 : `calc(100% / ${listMaxLength})` }}
+              draggable
+              onDragStart={(e) => dragStart(e, idx)}
+              onDragEnter={(e) => dragEnter(e, idx)}
+              onDragOver={(e) => e.preventDefault()}
+              onDragLeave={(e) => e.preventDefault()}
+              onDragEnd={(e) => dragEnd(e, item.todoId)}
+            >
+              <WeekItem
+                idx={idx}
+                item={item}
+                isMine={isMine}
+                date={date}
+                dailyTodos={dailyTodos}
+                setDailyTodos={setDailyTodos}
+                dragModule={childMouseEvent}
+              />
+            </div>
+          ))}
+        </div>
+        {isMine && (
+          <div style={{ height: `calc((100% / ${listMaxLength}))` }}>
+            <WeekItemInput date={date} dailyTodos={dailyTodos} setDailyTodos={setDailyTodos} />
+          </div>
+        )}
       </div>
-      <div className={`${styles[`item__memo${friend}`]} ${dailyTodos?.length < itemMaxLength && styles["top_border"]}`}>
+      <div className={`${styles[`item__memo${friend}`]} ${dailyTodos?.length < listMaxLength && styles["top_border"]}`}>
         <textarea
           disabled={!isMine}
           value={retrospection}
