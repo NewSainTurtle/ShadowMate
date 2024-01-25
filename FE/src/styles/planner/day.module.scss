@@ -435,7 +435,7 @@ $color-btn-blue: var(--color-btn-blue);
       display: flex;
       gap: 0.5em;
       > div:first-child {
-        cursor: s-resize;
+        cursor: grab;
       }
     }
   }
