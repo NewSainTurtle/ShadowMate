@@ -333,6 +333,10 @@ $border: 1px;
   }
 }
 
+#dday {
+  min-height: 50vh;
+}
+
 .dday {
   &__item {
     display: grid;

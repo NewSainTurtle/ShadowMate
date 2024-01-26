@@ -71,7 +71,7 @@ const Dday = ({ newItem }: Props) => {
   }, []);
 
   return (
-    <div className={styles["frame__contents"]}>
+    <div id={styles["dday"]} className={styles["frame__contents"]}>
       <div className={styles["frame__line"]}>
         <Text>디데이 이름</Text>
         <Input
