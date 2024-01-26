@@ -48,8 +48,8 @@ class FollowRequestRepositoryTest {
         //given
 
         //when
-        followRequestRepository.deleteAllByReceiverId(user.getId());
-        final List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiverId(user);
+        followRequestRepository.deleteAllByReceiver(user.getId());
+        final List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiver(user);
 
         //then
         assertThat(followRequestList).isEmpty();
@@ -75,17 +75,17 @@ class FollowRequestRepositoryTest {
                 .withdrawal(false)
                 .build());
         followRequestRepository.save(FollowRequest.builder()
-                .receiverId(user)
-                .requesterId(user2)
+                .receiver(user)
+                .requester(user2)
                 .build());
         followRequestRepository.save(FollowRequest.builder()
-                .receiverId(user)
-                .requesterId(user3)
+                .receiver(user)
+                .requester(user3)
                 .build());
 
         //when
-        followRequestRepository.deleteAllByReceiverId(user.getId());
-        final List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiverId(user);
+        followRequestRepository.deleteAllByReceiver(user.getId());
+        final List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiver(user);
 
         //then
         assertThat(followRequestList).isEmpty();

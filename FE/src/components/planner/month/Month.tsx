@@ -3,6 +3,7 @@ import styles from "@styles/planner/Month.module.scss";
 import w_styles from "@styles/planner/Week.module.scss";
 import MonthCalendar from "@components/planner/month/MonthCalendar";
 import MonthDetail from "@components/planner/month/MonthDetail";
+import MonthGraph from "@components/planner/month/MonthGraph";
 import Text from "@components/common/Text";
 import Loading from "@components/common/Loading";
 import dayjs from "dayjs";
@@ -92,24 +93,27 @@ const Month = () => {
         <div className={styles["month__title"]}>
           <div>
             <div>
-              <Text types="semi-large" title>
-                {year}년
-              </Text>
-              <Text types="semi-large" title>
-                {month.toString().length > 1 ? month : "0" + month.toString()}월
-              </Text>
+              <div>
+                <Text types="semi-large" title>
+                  {year}년
+                </Text>
+                <Text types="semi-large" title>
+                  {month.toString().length > 1 ? month : "0" + month.toString()}월
+                </Text>
+              </div>
+              <div>
+                <div className={w_styles["week__button"]} onClick={handlePrevMonth}>
+                  <NavigateBefore />
+                </div>
+                <div className={w_styles["week__today"]} onClick={handleToday}>
+                  <Text bold>today</Text>
+                </div>
+                <div className={w_styles["week__button"]} onClick={handleNextMonth}>
+                  <NavigateNext />
+                </div>
+              </div>
             </div>
-            <div>
-              <div className={w_styles["week__button"]} onClick={handlePrevMonth}>
-                <NavigateBefore />
-              </div>
-              <div className={w_styles["week__today"]} onClick={handleToday}>
-                <Text bold>today</Text>
-              </div>
-              <div className={w_styles["week__button"]} onClick={handleNextMonth}>
-                <NavigateNext />
-              </div>
-            </div>
+            {isOpen && <MonthGraph />}
           </div>
         </div>
         {loading ? <Loading /> : <MonthCalendar selectedDay={selectedDay} isOpen={isOpen} />}

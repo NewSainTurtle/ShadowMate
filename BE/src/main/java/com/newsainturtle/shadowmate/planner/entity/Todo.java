@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuperBuilder
 @Entity
@@ -18,38 +20,37 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "todo_id"))
 public class Todo extends CommonEntity {
 
-    @Column(name = "todo_content", length = 100, nullable = false)
+    @Column(name = "todo_content", length = 50, nullable = false)
     private String todoContent;
 
     @Column(name = "todo_status")
     @Enumerated(EnumType.STRING)
     private TodoStatus todoStatus;
 
+    @Column(name = "todo_index", nullable = false)
+    private Double todoIndex;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "daily_planner_id")
+    @JoinColumn(name = "daily_planner_id", nullable = false)
     private DailyPlanner dailyPlanner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "timeTable_id")
-    private TimeTable timeTable;
+    @OneToMany(mappedBy = "todo", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TimeTable> timeTables = new ArrayList<>();
 
-    public void setTimeTable(TimeTable timeTable) {
-        this.timeTable = timeTable;
-        if (timeTable != null) {
-            timeTable.setTodo(this);
-        }
+    public void updateTodoIndex(final Double todoIndex) {
+        this.todoIndex = todoIndex;
     }
 
-    public void updateTodoContentAndCategoryAndStatus(final String todoContent,
-                                                      final Category category,
-                                                      final TodoStatus todoStatus) {
-        this.todoContent = todoContent;
-        this.category = category;
-        this.todoStatus = todoStatus;
+    public void clearTimeTables() {
+        this.timeTables = new ArrayList<>();
+    }
 
+    public void updateCategoryAndTodoContent(final Category category, final String todoContent) {
+        this.category = category;
+        this.todoContent = todoContent;
     }
 }

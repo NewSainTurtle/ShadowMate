@@ -11,25 +11,25 @@ import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { selectDayDate } from "@store/planner/daySlice";
 
-interface fileImgProps {
+interface FileImgProps {
   retrospectionImage: string | null;
   setRetrospectionImage: Dispatch<SetStateAction<string | null>>;
 }
 
 interface Props {
   title: string;
-  maxLength: 50 | 100;
+  maxLength: 50 | 100 | 250;
   name: string;
   value: string;
   isFile?: boolean;
   rows?: number;
-  retrospectionImage?: string;
+  retrospectionImage?: string | null;
   setRetrospectionImage?: Dispatch<SetStateAction<string | null>>;
   onBlur: React.FocusEventHandler;
   onChange: React.ChangeEventHandler;
 }
 
-const FileImg = ({ retrospectionImage, setRetrospectionImage }: fileImgProps) => {
+const FileImg = ({ retrospectionImage, setRetrospectionImage }: FileImgProps) => {
   const userId = useAppSelector(selectUserId);
   const date = useAppSelector(selectDayDate);
 
@@ -110,7 +110,12 @@ const Ment = ({ title, rows, isFile, retrospectionImage, setRetrospectionImage, 
           ({inputCount}/{maxLength}자)
         </Text>
       </div>
-      {isFile && <FileImg retrospectionImage={retrospectionImage!} setRetrospectionImage={setRetrospectionImage!} />}
+      {isFile && (
+        <FileImg
+          retrospectionImage={retrospectionImage ?? ""}
+          setRetrospectionImage={setRetrospectionImage as FileImgProps["setRetrospectionImage"]}
+        />
+      )}
     </div>
   );
 };

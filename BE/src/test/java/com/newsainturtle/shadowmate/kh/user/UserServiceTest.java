@@ -5,7 +5,15 @@ import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
-import com.newsainturtle.shadowmate.user.dto.*;
+import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
+import com.newsainturtle.shadowmate.social.repository.SocialRepository;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
+import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
+import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -22,10 +30,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +61,15 @@ public class UserServiceTest {
 
     @Mock
     private FollowRequestRepository followRequestRepository;
+
+    @Mock
+    private SocialRepository socialRepository;
+
+    @Mock
+    private DailyPlannerRepository dailyPlannerRepository;
+
+    @Mock
+    private VisitorBookRepository visitorBookRepository;
 
     final User user1 = User.builder()
             .id(1L)
@@ -116,11 +135,10 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
-            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
-            doReturn(null).when(redisService).getHashNicknameData(newNickname);
+            doReturn(null).when(redisService).getNicknameData(newNickname);
 
             //when
-            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(user1, updateUserRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
@@ -138,11 +156,10 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
-            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
-            doReturn(false).when(redisService).getHashNicknameData(newNickname);
+            doReturn(false).when(redisService).getNicknameData(newNickname);
 
             //when
-            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(userId1, updateUserRequest));
+            final UserException result = assertThrows(UserException.class, () -> userService.updateUser(user1, updateUserRequest));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.RETRY_NICKNAME);
@@ -152,19 +169,16 @@ public class UserServiceTest {
         @Test
         void 성공_내정보수정_닉네임수정안함() {
             //given
-            final String nickname = user1.getNickname();
             final String newProfileImage = "NewProfileImage";
             final String newStatusMessage = "NewStatusMessage";
             final UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
-                    .newNickname(nickname)
+                    .newNickname(user1.getNickname())
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
 
-            doReturn(user1).when(userRepository).findByIdAndNickname(userId1, nickname);
-
             //when
-            userService.updateUser(userId1, updateUserRequest);
+            userService.updateUser(user1, updateUserRequest);
 
             //then
             verify(userRepository, times(1)).updateUser(any(), any(), any(), any(Long.class));
@@ -182,11 +196,10 @@ public class UserServiceTest {
                     .newProfileImage(newProfileImage)
                     .newStatusMessage(newStatusMessage)
                     .build();
-            doReturn(null).when(userRepository).findByIdAndNickname(userId1, newNickname);
-            doReturn(true).when(redisService).getHashNicknameData(newNickname);
+            doReturn(true).when(redisService).getNicknameData(newNickname);
 
             //when
-            userService.updateUser(userId1, updateUserRequest);
+            userService.updateUser(user1, updateUserRequest);
 
             //then
             verify(redisService, times(1)).deleteNicknameData(any());
@@ -198,11 +211,14 @@ public class UserServiceTest {
         void 실패_비밀번호수정_비밀번호다름() {
             // given
             final String newPassword = "NewPassword";
-            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
+            final UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                    .newPassword(newPassword)
+                    .oldPassword(user1.getPassword())
+                    .build();
             doReturn(false).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(userId1, user1.getPassword(), newPassword));
+            final UserException result = assertThrows(UserException.class, () -> userService.updatePassword(user1, updatePasswordRequest));
 
             // then
             assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DIFFERENT_PASSWORD);
@@ -212,33 +228,24 @@ public class UserServiceTest {
         void 성공_비밀번호수정() {
             // given
             final String newPassword = "NewPassword";
-            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
+            final UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest.builder()
+                    .newPassword(newPassword)
+                    .oldPassword(user1.getPassword())
+                    .build();
             doReturn(true).when(bCryptPasswordEncoder).matches(any(), any());
 
             // when
-            userService.updatePassword(userId1, user1.getPassword(), newPassword);
+            userService.updatePassword(user1, updatePasswordRequest);
 
             // then
             verify(userRepository, times(1)).updatePassword(any(), any(Long.class));
         }
 
         @Test
-        void 실패_소개글조회_찾을수없는유저() {
-            // given
-            doReturn(Optional.empty()).when(userRepository).findById(userId1);
-
-            // when
-            final UserException result = assertThrows(UserException.class, () -> userService.searchIntroduction(userId1));
-
-            // then
-            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
-        }
-
-        @Test
         void 성공_소개글조회() {
             // given
             final String newIntroduction = "새로운소개글";
-            doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
+            doReturn(user1).when(userRepository).findByIdAndWithdrawalIsFalse(userId1);
             doReturn(newIntroduction).when(userRepository).findIntroduction(userId1);
 
             // when
@@ -257,7 +264,7 @@ public class UserServiceTest {
                     .build();
 
             // when
-            userService.updateIntroduction(updateIntroductionRequest, userId1);
+            userService.updateIntroduction(userId1, updateIntroductionRequest);
 
             // then
             verify(userRepository, times(1)).updateIntroduction(any(), any(Long.class));
@@ -286,7 +293,7 @@ public class UserServiceTest {
         void 성공_회원검색_친구요청상태() {
             // given
             doReturn(FollowStatus.REQUESTED).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNickname(any());
+            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
 
             // when
             final UserResponse result = userService.searchNickname(user1, user2.getNickname());
@@ -300,7 +307,7 @@ public class UserServiceTest {
         void 성공_회원검색_팔로우아닌상태() {
             // given
             doReturn(FollowStatus.EMPTY).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNickname(any());
+            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
 
             // when
             final UserResponse result = userService.searchNickname(user1, user2.getNickname());
@@ -314,7 +321,7 @@ public class UserServiceTest {
         void 성공_회원검색_FOLLOW상태() {
             // given
             doReturn(FollowStatus.FOLLOW).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNickname(any());
+            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
 
             // when
             final UserResponse result = userService.searchNickname(user1, user2.getNickname());
@@ -327,14 +334,19 @@ public class UserServiceTest {
         @Test
         void 성공_회원탈퇴() {
             //given
+            doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
+            doReturn(false).when(userRepository).existsByNickname(any(String.class));
 
             //when
             userService.deleteUser(user1);
 
             //then
-            verify(followRepository, times(1)).deleteAllByFollowingIdOrFollowerId(any(User.class), any(User.class));
-            verify(followRequestRepository, times(1)).deleteAllByRequesterIdOrReceiverId(any(User.class), any(User.class));
-            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class));
+            verify(followRepository, times(1)).deleteAllByFollowingOrFollower(any(User.class), any(User.class));
+            verify(followRequestRepository, times(1)).deleteAllByRequesterOrReceiver(any(User.class), any(User.class));
+            verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
+            verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
+            verify(visitorBookRepository, times(1)).deleteAllByVisitorId(any(Long.class));
+            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class), any(String.class));
         }
 
     }

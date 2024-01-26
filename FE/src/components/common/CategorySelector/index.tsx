@@ -11,9 +11,10 @@ import { selectCategoryList } from "@store/mypage/categorySlice";
 interface Props {
   type: "week" | "day";
   handleClick: (props: CategoryItemConfig) => void;
+  addBtn: boolean;
 }
 
-const CategorySelector = ({ type, handleClick }: Props) => {
+const CategorySelector = ({ type, handleClick, addBtn }: Props) => {
   const navigator = useNavigate();
   const categoryList: CategoryItemConfig[] = useAppSelector(selectCategoryList);
   return (
@@ -23,7 +24,7 @@ const CategorySelector = ({ type, handleClick }: Props) => {
       </div>
       <div>
         {categoryList.map((item, idx) => (
-          <div key={idx} className={styles["category__item--hover"]} onClick={() => handleClick(item)}>
+          <div key={item.categoryId} className={styles["category__item--hover"]} onClick={() => handleClick(item)}>
             {
               {
                 week: <div>{item.categoryEmoticon}</div>,
@@ -43,10 +44,12 @@ const CategorySelector = ({ type, handleClick }: Props) => {
         }
         <div>카테고리 없음</div>
       </div>
-      <div onClick={() => navigator("/category")}>
-        <AddIcon />
-        <Text>새 카테고리 추가</Text>
-      </div>
+      {addBtn && (
+        <div className={styles["category__selector--add"]} onClick={() => navigator("/category")}>
+          <AddIcon />
+          <Text>새 카테고리 추가</Text>
+        </div>
+      )}
     </div>
   );
 };

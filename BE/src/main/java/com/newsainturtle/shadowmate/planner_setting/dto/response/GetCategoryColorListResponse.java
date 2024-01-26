@@ -7,11 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
+@Builder
 public class GetCategoryColorListResponse {
     private List<CategoryColor> categoryColorList;
-
-    @Builder
-    public GetCategoryColorListResponse(List<CategoryColor> categoryColorList) {
-        this.categoryColorList = categoryColorList;
-    }
 }

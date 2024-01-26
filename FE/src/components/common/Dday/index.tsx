@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Text from "@components/common/Text";
 import colors from "@util/colors";
 import dayjs from "dayjs";
@@ -21,7 +21,9 @@ const Dday = ({ nearDate, comparedDate }: Props) => {
     if (isVisible) {
       let date = dayjs(comparedDate).format("YYYY-MM-DD");
       let cacl = dayjs(date).diff(dayjs(nearDate), "day");
-      return cacl == 0 ? "-DAY" : cacl < 0 ? cacl : "+" + cacl;
+
+      if (cacl == 0) return "-DAY";
+      return cacl < 0 ? cacl : "+" + cacl;
     }
   })();
 

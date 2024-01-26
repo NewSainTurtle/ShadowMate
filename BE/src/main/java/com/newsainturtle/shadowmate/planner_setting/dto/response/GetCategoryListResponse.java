@@ -6,11 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
+@Builder
 public class GetCategoryListResponse {
     private List<GetCategoryResponse> categoryList;
-
-    @Builder
-    public GetCategoryListResponse(List<GetCategoryResponse> categoryList) {
-        this.categoryList = categoryList;
-    }
 }

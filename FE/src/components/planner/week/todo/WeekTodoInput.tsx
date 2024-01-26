@@ -15,6 +15,7 @@ const WeekTodoInput = () => {
   const todoEndRef = useRef<HTMLDivElement | null>(null);
   const [todo, setTodo] = useState<string>("");
   const dates = getThisWeek(thisWeek);
+  const maxLength = 50;
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (todo === "") return;
@@ -68,6 +69,7 @@ const WeekTodoInput = () => {
           type="text"
           width={"100%"}
           value={todo}
+          maxLength={maxLength}
           onChange={(e) => setTodo(e.target.value)}
           onKeyDown={(e) => handleOnKeyPress(e)}
           onBlur={handleOnBlur}

@@ -17,10 +17,12 @@ import Alert from "@components/common/Alert";
 import Modal from "@components/common/Modal";
 import TokenExpiration from "@components/common/Modal/TokenExpiration";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
-import { selectLoginState, setLogin, setLogout } from "@store/authSlice";
+import { selectLoginState, selectType, selectUserId, setLogin, setLogout } from "@store/authSlice";
 import { selectModal, setModalClose } from "@store/modalSlice";
 import { selectAlertInfo, setAlertClose } from "@store/alertSlice";
 import { persistor } from "@hooks/configStore";
+import { authApi } from "@api/Api";
+import { AxiosError } from "axios";
 
 const theme = createTheme({
   typography: {
@@ -33,20 +35,54 @@ const App = () => {
   const navigator = useNavigate();
   const location = useLocation();
   const [pathName, setPathName] = useState(false);
+  const userId = useAppSelector(selectUserId);
+  const loginType = useAppSelector(selectType);
   const isLogin = useAppSelector(selectLoginState);
   const { isOpen } = useAppSelector(selectModal);
   const { type, message, open } = useAppSelector(selectAlertInfo);
 
   const handleTokenExpiration = () => {
-    dispatch(setModalClose());
-    dispatch(setLogout());
-    persistor.purge(); // 리덕스 초기화
-    navigator("/login");
+    const autoLoginKey = localStorage.getItem("AL");
+    const headers = {
+      "Auto-Login": autoLoginKey ?? "",
+    };
+    authApi
+      .logout({ userId, type: loginType }, headers)
+      .then(() => {
+        dispatch(setModalClose());
+        dispatch(setLogout());
+      })
+      .then(() => {
+        persistor.purge();
+        localStorage.removeItem("AL");
+        navigator("/login");
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleAutoLogin = async (key: string) => {
+    try {
+      const headers = {
+        "Auto-Login": key,
+      };
+      const res = await authApi.autoLogin(null, headers);
+      const accessToken = res.headers["authorization"];
+      const userId = res.headers["id"];
+      const type = res.headers["type"];
+      dispatch(setLogin({ accessToken, userId, type }));
+      navigator("/month");
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 403) {
+          localStorage.removeItem("AL");
+        }
+      }
+    }
   };
 
   useEffect(() => {
     const theme = localStorage.getItem("theme");
-    let isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    let isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     if (!theme) localStorage.setItem("theme", isDarkMode);
     else isDarkMode = theme;
 
@@ -58,12 +94,8 @@ const App = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    // 자동 로그인 확인 시
-    const accessToken = localStorage.getItem("accessToken") || "";
-    const id = localStorage.getItem("id");
-    let userId = 0;
-    if (id) userId = parseInt(id);
-    if (accessToken && id) dispatch(setLogin({ accessToken: accessToken, userId: userId }));
+    const key = localStorage.getItem("AL");
+    if (key && !isLogin) handleAutoLogin(key);
   }, []);
 
   return (

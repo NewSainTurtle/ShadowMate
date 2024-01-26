@@ -50,8 +50,8 @@ class FollowRequestRepositoryTest {
             .build();
 
     final FollowRequest followRequest = FollowRequest.builder()
-            .requesterId(user1)
-            .receiverId(user2)
+            .requester(user1)
+            .receiver(user2)
             .build();
 
     @BeforeEach
@@ -66,10 +66,10 @@ class FollowRequestRepositoryTest {
 
         //when
         followRequestRepository.save(followRequest);
-        final FollowRequest result = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
+        final FollowRequest result = followRequestRepository.findByRequesterAndReceiver(user1, user2);
 
         //then
-        assertThat(result.getReceiverId().getNickname()).isEqualTo(user2.getNickname());
+        assertThat(result.getReceiver().getNickname()).isEqualTo(user2.getNickname());
     }
     
     @Test
@@ -78,10 +78,10 @@ class FollowRequestRepositoryTest {
         
         //when
         followRequestRepository.save(followRequest);
-        List<FollowRequest> followRequests = followRequestRepository.findAllByReceiverId(user2);
+        List<FollowRequest> followRequests = followRequestRepository.findAllByReceiver(user2);
         
         //then
-        assertThat(followRequests.get(0).getRequesterId()).isEqualTo(user1);
+        assertThat(followRequests.get(0).getRequester()).isEqualTo(user1);
     }
     
 
@@ -93,8 +93,8 @@ class FollowRequestRepositoryTest {
         FollowRequest result = followRequestRepository.save(followRequest);
 
         //then
-        assertThat(result.getRequesterId()).isEqualTo(user1);
-        assertThat(result.getReceiverId()).isEqualTo(user2);
+        assertThat(result.getRequester()).isEqualTo(user1);
+        assertThat(result.getReceiver()).isEqualTo(user2);
     }
 
     @Test
@@ -103,8 +103,8 @@ class FollowRequestRepositoryTest {
         followRequestRepository.save(followRequest);
 
         // when
-        followRequestRepository.deleteByRequesterIdAndReceiverId(user1, user2);
-        final FollowRequest result = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
+        followRequestRepository.deleteByRequesterAndReceiver(user1, user2);
+        final FollowRequest result = followRequestRepository.findByRequesterAndReceiver(user1, user2);
 
         // then
         assertThat(result).isNull();
@@ -114,13 +114,13 @@ class FollowRequestRepositoryTest {
     void 성공_친구신청거절() {
         //given
         followRequestRepository.save(FollowRequest.builder()
-                .requesterId(user1)
-                .receiverId(user2)
+                .requester(user1)
+                .receiver(user2)
                 .build());
 
         //when
-        followRequestRepository.deleteByRequesterIdAndReceiverId(user1, user2);
-        final FollowRequest result = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
+        followRequestRepository.deleteByRequesterAndReceiver(user1, user2);
+        final FollowRequest result = followRequestRepository.findByRequesterAndReceiver(user1, user2);
 
         //then
         assertThat(result).isNull();
@@ -130,23 +130,23 @@ class FollowRequestRepositoryTest {
     void 성공_친구신청수락() {
         //given
         followRequestRepository.save(FollowRequest.builder()
-                .requesterId(user1)
-                .receiverId(user2)
+                .requester(user1)
+                .receiver(user2)
                 .build());
 
         //when
-        final FollowRequest followRequest = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
-        followRequestRepository.deleteByRequesterIdAndReceiverId(user1, user2);
+        final FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(user1, user2);
+        followRequestRepository.deleteByRequesterAndReceiver(user1, user2);
         final Follow follow = Follow.builder()
-                .followerId(followRequest.getRequesterId())
-                .followingId(followRequest.getReceiverId())
+                .follower(followRequest.getRequester())
+                .following(followRequest.getReceiver())
                 .build();
         followRepository.save(follow);
-        final Follow result = followRepository.findByFollowerIdAndFollowingId(user1, user2);
+        final Follow result = followRepository.findByFollowingAndFollower(user2, user1);
 
         //then
-        assertThat(result.getFollowerId().getNickname()).isEqualTo(user1.getNickname());
-        assertThat(result.getFollowingId().getNickname()).isEqualTo(user2.getNickname());
+        assertThat(result.getFollower().getNickname()).isEqualTo(user1.getNickname());
+        assertThat(result.getFollowing().getNickname()).isEqualTo(user2.getNickname());
 
     }
 
@@ -154,21 +154,21 @@ class FollowRequestRepositoryTest {
     void 유저와관련된팔로우신청삭제() {
         // given
         followRequestRepository.save(FollowRequest.builder()
-                .requesterId(user1)
-                .receiverId(user2)
+                .requester(user1)
+                .receiver(user2)
                 .build());
         followRequestRepository.save(FollowRequest.builder()
-                .requesterId(user2)
-                .receiverId(user1)
+                .requester(user2)
+                .receiver(user1)
                 .build());
 
         // when
-        followRequestRepository.deleteAllByRequesterIdOrReceiverId(user1, user1);
-        final List<FollowRequest> result1 = followRequestRepository.findAllByReceiverId(user1);
-        final FollowRequest result2 = followRequestRepository.findByRequesterIdAndReceiverId(user1, user2);
+        followRequestRepository.deleteAllByRequesterOrReceiver(user1, user1);
+        final List<FollowRequest> result1 = followRequestRepository.findAllByReceiver(user1);
+        final FollowRequest result2 = followRequestRepository.findByRequesterAndReceiver(user1, user2);
 
         // then
-        assertThat(result1).hasSize(0);
+        assertThat(result1).isEmpty();;
         assertThat(result2).isNull();
     }
 }

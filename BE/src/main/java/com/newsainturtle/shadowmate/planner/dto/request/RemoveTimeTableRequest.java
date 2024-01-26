@@ -8,20 +8,27 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN;
+import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN_ERROR_MESSAGE;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RemoveTimeTableRequest {
 
     @NotNull
-    @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message = "yyyy-MM-dd 형식의 올바른 날짜값이 아닙니다.")
+    @Pattern(regexp = DATE_PATTERN, message = DATE_PATTERN_ERROR_MESSAGE)
     private String date;
 
     @NotNull
     private Long todoId;
 
+    @NotNull
+    private Long timeTableId;
+
     @Builder
-    public RemoveTimeTableRequest(String date, Long todoId) {
+    public RemoveTimeTableRequest(String date, Long todoId, Long timeTableId) {
         this.date = date;
         this.todoId = todoId;
+        this.timeTableId = timeTableId;
     }
 }

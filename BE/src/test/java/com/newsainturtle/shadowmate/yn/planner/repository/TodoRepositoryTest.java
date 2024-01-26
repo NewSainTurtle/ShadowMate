@@ -1,10 +1,12 @@
 package com.newsainturtle.shadowmate.yn.planner.repository;
 
+import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryColorRepository;
@@ -22,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +47,9 @@ class TodoRepositoryTest {
 
     @Autowired
     private CategoryColorRepository categoryColorRepository;
+
+    @Autowired
+    private TimeTableRepository timeTableRepository;
 
     private User user;
     private DailyPlanner dailyPlanner;
@@ -75,6 +81,8 @@ class TodoRepositoryTest {
                     .todoContent("수능완성 수학 과목별 10문제")
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build();
             //when
             final Todo saveTodo = todoRepository.save(todo);
@@ -102,6 +110,8 @@ class TodoRepositoryTest {
                     .todoContent("수능완성 수학 과목별 10문제")
                     .todoStatus(TodoStatus.EMPTY)
                     .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
                     .build();
             //when
             final Todo saveTodo = todoRepository.save(todo);
@@ -130,11 +140,13 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
-        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        todoRepository.deleteById(saveTodo.getId());
         final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
@@ -159,16 +171,18 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
-        final TimeTable timeTable = TimeTable.builder()
+        timeTableRepository.save(TimeTable.builder()
                 .startTime(startTime)
                 .endTime(endTime)
-                .build();
-        saveTodo.setTimeTable(timeTable);
+                .todo(todo)
+                .build());
 
         //when
-        todoRepository.deleteByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
+        todoRepository.deleteById(saveTodo.getId());
         final Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then
@@ -197,34 +211,27 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
 
         //when
+        todoRepository.updateAllByTodoId("비문학 2문제 풀기", category2, TodoStatus.COMPLETE, LocalDateTime.now(), saveTodo.getId());
         final Todo findTodo = todoRepository.findByIdAndDailyPlanner(saveTodo.getId(), dailyPlanner);
-        final Todo changeTodo = todoRepository.save(Todo.builder()
-                .id(findTodo.getId())
-                .createTime(findTodo.getCreateTime())
-                .todoContent("비문학 2문제 풀기")
-                .category(category2)
-                .todoStatus(TodoStatus.COMPLETE)
-                .dailyPlanner(findTodo.getDailyPlanner())
-                .build());
 
         //then
-        assertThat(changeTodo).isNotNull();
-        assertThat(changeTodo.getId()).isEqualTo(findTodo.getId());
-        assertThat(changeTodo.getTodoContent()).isEqualTo("비문학 2문제 풀기");
-        assertThat(changeTodo.getCategory()).isEqualTo(category2);
-        assertThat(changeTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
-        assertThat(changeTodo.getDailyPlanner()).isEqualTo(dailyPlanner);
-        assertThat(changeTodo.getCreateTime()).isNotEqualTo(changeTodo.getUpdateTime());
+        assertThat(findTodo).isNotNull();
+        assertThat(findTodo.getId()).isEqualTo(findTodo.getId());
+        assertThat(findTodo.getTodoContent()).isEqualTo("비문학 2문제 풀기");
+        assertThat(findTodo.getCategory().getId()).isEqualTo(category2.getId());
+        assertThat(findTodo.getTodoStatus()).isEqualTo(TodoStatus.COMPLETE);
+        assertThat(findTodo.getDailyPlanner().getId()).isEqualTo(dailyPlanner.getId());
     }
 
     @Test
     void 일일플래너리스트조회() {
         //given
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         final Category category = categoryRepository.save(Category.builder()
                 .categoryColor(categoryColorRepository.findById(1L).orElse(null))
                 .user(user)
@@ -233,46 +240,45 @@ class TodoRepositoryTest {
                 .categoryEmoticon("🍅")
                 .build());
 
-        final Todo saveTodo1 = todoRepository.save(Todo.builder()
+        todoRepository.save(Todo.builder()
                 .category(category)
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
-        saveTodo1.setTimeTable(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-10-06 16:10", formatter))
-                .endTime(LocalDateTime.parse("2023-10-06 18:30", formatter))
-                .build());
-
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("국어")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(category)
                 .todoContent("개념원리 1단원 문제 풀기")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(300000D)
+                .timeTables(new ArrayList<>())
                 .build());
-
-        final Todo saveTodo4 = todoRepository.save(Todo.builder()
+        todoRepository.save(Todo.builder()
                 .category(category)
                 .todoContent("개념원리 1단원 문제 풀기")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
-                .build());
-        saveTodo4.setTimeTable(TimeTable.builder()
-                .startTime(LocalDateTime.parse("2023-10-06 23:40", formatter))
-                .endTime(LocalDateTime.parse("2023-10-07 01:10", formatter))
+                .todoIndex(400000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
-        final List<Todo> todoList = todoRepository.findAllByDailyPlanner(dailyPlanner);
+        final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
 
         //then
         assertThat(todoList).isNotNull().hasSize(4);
+        assertThat(todoList.get(0).getTodoContent()).isEqualTo("수능완성 수학 과목별 10문제");
     }
 
     @Test
@@ -283,30 +289,40 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 10문제")
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("국어")
-                .todoStatus(TodoStatus.EMPTY)
+                .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("개념원리 1단원 문제 풀기")
                 .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(300000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("쎈 1단원 문제 풀기")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(400000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("수능완성 과학 10문제")
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(500000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
@@ -324,30 +340,40 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 10문제")
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("국어")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("개념원리 1단원 문제 풀기")
                 .todoStatus(TodoStatus.INCOMPLETE)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(300000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("쎈 1단원 문제 풀기")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(400000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(null)
                 .todoContent("수능완성 과학 10문제")
                 .todoStatus(TodoStatus.COMPLETE)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(500000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
@@ -355,5 +381,106 @@ class TodoRepositoryTest {
 
         //then
         assertThat(todoCount).isEqualTo(3);
+    }
+
+    @Nested
+    class 일일플래너_해당플래너_할일인덱스가장큰값가져오기 {
+
+        @Test
+        void 할일없음() {
+            //given
+
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
+
+            //then
+            assertThat(todoIndexResponse).isNull();
+        }
+
+        @Test
+        void 할일있음() {
+            //given
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(200000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
+
+            //then
+            assertThat(todoIndexResponse).isNotNull();
+            assertThat(todoIndexResponse.getTodoIndex()).isEqualTo(200000D);
+        }
+    }
+
+    @Nested
+    class 일일플래너_해당할일인덱스_다음순서의할일인덱스값가져오기 {
+
+        @Test
+        void 할일없음() {
+            //given
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 100000D);
+
+            //then
+            assertThat(todoIndexResponse).isNull();
+        }
+
+        @Test
+        void 할일있음() {
+            //given
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(300000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+            todoRepository.save(Todo.builder()
+                    .category(null)
+                    .todoContent("수능완성 수학 과목별 10문제")
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(200000D)
+                    .timeTables(new ArrayList<>())
+                    .build());
+
+            //when
+            final TodoIndexResponse todoIndexResponse = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 100000D);
+
+            //then
+            assertThat(todoIndexResponse).isNotNull();
+            assertThat(todoIndexResponse.getTodoIndex()).isEqualTo(200000D);
+        }
     }
 }

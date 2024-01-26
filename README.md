@@ -12,7 +12,8 @@
 
 ## 🗓️ 프로젝트 기간
 
-**2023.07.10 ~ 2023.12.13 (총 22주)**
+- **`Ver.1.0`: 2023.07.10 ~ 2023.12.13 (총 22주)**
+- **`Ver.2.0`: 2024.01.02 ~ 2024.01.26 (총 4주)**
 
 <br>
 
@@ -143,6 +144,22 @@ ex) develop
 
 <br>
 
+## ⚡️ 업데이트 (2024.01.26)
+
+1. **자동로그인**
+   - 로그인 시 체크박스를 통해 자동로그인 설정이 가능합니다.
+2. **할 일**
+   - 할 일을 끝내지 못했을 때, 세모(△)를 사용해 표시할 수 있습니다.
+   - 주별 및 일별 플래너에서 할 일의 순서를 변경할 수 있습니다.
+3. **타임테이블**
+   - 타임테이블 등록 시, 하나의 할 일에 여러 개의 시간을 입력할 수 있습니다.
+4. **루틴**
+   - 루틴을 통해 할 일을 일괄적으로 등록할 수 있습니다.
+5. **소셜 검색 필터**
+   - 소셜 검색 시 기간 필터를 통해 특정 기간의 게시물을 검색할 수 있습니다.
+  
+<br>
+
 ## 📺 화면 소개
 
 #### 1. 랜딩
@@ -157,19 +174,19 @@ ex) develop
 
 <div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/fa8dfae6-1be7-4410-9687-0062b9ce86bf" width="70%"/></div>
 
-<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/9c578677-472d-4a70-a944-b902c9ce4fbe" width="70%"/></div>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/c736b4bd-ce37-4fd2-8b96-554e235128e8" width="70%"/></div>
 
 <br>
 
 #### 3. 월별(메인)
 
-<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/83412032/b0dc4674-4ec6-4e59-b13a-118ddc5ace5d" width="70%"/></div>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/3e869417-4db7-4c92-9bd6-93c329f9437f" width="70%"/></div>
 
 <br>
 
 #### 4. 주별 플래너
 
-<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/cb1ea0ad-89ea-4cc8-b9ef-020192ab75cc" width="70%"/></div>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/f61696a7-7274-405f-91e7-796d461c7994" width="70%"/></div>
 
 <br>
 
@@ -185,9 +202,10 @@ ex) develop
       
 #### 6. 소셜
 
-<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/1c4dc287-1bac-444b-99c2-132608762ee2" width="70%"/></div>
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2235a658-056f-4e4a-8f7e-fb095a6800f4" width="70%"/></div>
 
 <br>
+
 
 #### **7. 마이페이지**
 
@@ -209,10 +227,14 @@ ex) develop
 - 팔로우/팔로워 목록
 <div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/2978e2f2-756f-4eab-8d03-4ef570103a41" width="70%"/></div>
 
+- 루틴
+<div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/26339069/9a0965d9-1c18-42cb-92c9-9d1deb401954" width="70%"/></div>
+
 <br>
 
 #### 8. 다크모드 지원
 
 <div align="center"><img src="https://github.com/NewSainTurtle/ShadowMate/assets/83412032/bb935308-8336-4fe8-a06c-390a3b6ce8b8" width="70%"/></div>
+
 
 <br>

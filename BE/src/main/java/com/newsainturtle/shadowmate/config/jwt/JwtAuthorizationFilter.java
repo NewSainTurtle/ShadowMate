@@ -34,9 +34,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String[] excludePath = {
                 "/api/auth/join",
                 "/api/auth/login",
+                "/api/auth/logout",
+                "/api/auth/auto-login",
                 "/api/auth/email-authentication",
                 "/api/auth/email-authentication/check",
                 "/api/auth/nickname-duplicated",
+                "/api/auth/token",
         };
         String path = request.getRequestURI();
         return Arrays.stream(excludePath).anyMatch(path::startsWith);
@@ -44,10 +47,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if(request.getRequestURI().equals("/favicon.ico")) {
+        if (request.getRequestURI().equals("/favicon.ico")) {
             return;
         }
-        if(!jwtProvider.validateHeader(request)) {
+        if (!jwtProvider.validateHeader(request)) {
             chain.doFilter(request, response);
             return;
         }

@@ -1,6 +1,6 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
-import { followerType, followingType, followRequestType } from "@util/friend.interface";
+import { FollowerType, FollowingType, FollowRequestType } from "@util/friend.interface";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { selectFollowState } from "@store/friendSlice";
@@ -9,9 +9,9 @@ import MyFriendFrame from "./MyFriendFrame";
 
 const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색" }) => {
   const userId: number = useAppSelector(selectUserId);
-  const [followRequestData, setFollowRequestData] = useState<followRequestType[]>([]); // 팔로우 요청
-  const [followerData, setFolloweData] = useState<followerType[]>([]); // 내 팔로워
-  const [followingData, setFollowingData] = useState<followingType[]>([]); // 내 팔로잉
+  const [followRequestData, setFollowRequestData] = useState<FollowRequestType[]>([]); // 팔로우 요청
+  const [followerData, setFolloweData] = useState<FollowerType[]>([]); // 내 팔로워
+  const [followingData, setFollowingData] = useState<FollowingType[]>([]); // 내 팔로잉
   const followState: boolean = useAppSelector(selectFollowState);
 
   useLayoutEffect(() => {

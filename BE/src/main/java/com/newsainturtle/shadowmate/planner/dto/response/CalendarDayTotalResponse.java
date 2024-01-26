@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
+@Builder
 public class CalendarDayTotalResponse {
 
     private List<CalendarDayResponse> calendarDayResponseList;
@@ -13,11 +14,4 @@ public class CalendarDayTotalResponse {
     private int todoIncomplete;
     private long plannerLikeCount;
 
-    @Builder
-    public CalendarDayTotalResponse(final List<CalendarDayResponse> calendarDayResponseList, final int todoTotal, final int todoIncomplete, final long plannerLikeCount) {
-        this.calendarDayResponseList = calendarDayResponseList;
-        this.todoTotal = todoTotal;
-        this.todoIncomplete = todoIncomplete;
-        this.plannerLikeCount = plannerLikeCount;
-    }
 }

@@ -4,8 +4,17 @@ import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
-import com.newsainturtle.shadowmate.user.dto.*;
+import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
+import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
+import com.newsainturtle.shadowmate.social.repository.SocialRepository;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
+import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
+import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
+import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
+import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
 import com.newsainturtle.shadowmate.user.exception.UserException;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
@@ -14,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -23,21 +33,20 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
     private final FollowRepository followRepository;
-
     private final FollowRequestRepository followRequestRepository;
+    private final SocialRepository socialRepository;
+    private final DailyPlannerRepository dailyPlannerRepository;
+    private final VisitorBookRepository visitorBookRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private final RedisServiceImpl redisService;
-
     private final FollowServiceImpl followService;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        if(!optionalUser.isPresent()) throw new UserException(UserErrorResult.NOT_FOUND_PROFILE);
+        if (!optionalUser.isPresent()) throw new UserException(UserErrorResult.NOT_FOUND_PROFILE);
         User user = optionalUser.get();
         return ProfileResponse.builder()
                 .email(user.getEmail())
@@ -50,8 +59,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse searchNickname(final User user, final String nickname) {
-        User searchUser = userRepository.findByNickname(nickname);
-        if(searchUser == null) {
+        final User searchUser = userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
+        if (searchUser == null) {
             return UserResponse.builder().build();
         }
         return UserResponse.builder()
@@ -67,7 +76,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SearchIntroductionResponse searchIntroduction(final Long userId) {
-        findUser(userId);
+        if (userRepository.findByIdAndWithdrawalIsFalse(userId) == null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
         return SearchIntroductionResponse.builder()
                 .introduction(userRepository.findIntroduction(userId))
                 .build();
@@ -75,55 +86,58 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(final Long userId, final UpdateUserRequest updateUserRequest) {
-        final User user = userRepository.findByIdAndNickname(userId, updateUserRequest.getNewNickname());
-        if(user == null) {
-            final Boolean getHashNickname = redisService.getHashNicknameData(updateUserRequest.getNewNickname());
-            if(getHashNickname == null || !getHashNickname) {
+    public void updateUser(final User user, final UpdateUserRequest updateUserRequest) {
+        if (!user.getNickname().equals(updateUserRequest.getNewNickname())) {
+            final Boolean getHashNickname = redisService.getNicknameData(updateUserRequest.getNewNickname());
+            if (getHashNickname == null || !getHashNickname) {
                 throw new UserException(UserErrorResult.RETRY_NICKNAME);
-            }
-            else {
+            } else {
                 redisService.deleteNicknameData(updateUserRequest.getNewNickname());
             }
         }
         userRepository.updateUser(updateUserRequest.getNewNickname(),
                 updateUserRequest.getNewProfileImage(),
                 updateUserRequest.getNewStatusMessage(),
-                userId);
+                user.getId());
     }
 
     @Override
     @Transactional
-    public void updatePassword(final Long userId, final String oldPassword, final String newPassword) {
-        User user = userRepository.findById(userId).orElse(null);
-        if(user == null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
-        if(bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
-            userRepository.updatePassword(bCryptPasswordEncoder.encode(newPassword), userId);
-        }
-        else {
+    public void updatePassword(final User user, final UpdatePasswordRequest updatePasswordRequest) {
+        if (bCryptPasswordEncoder.matches(updatePasswordRequest.getOldPassword(), user.getPassword())) {
+            userRepository.updatePassword(bCryptPasswordEncoder.encode(updatePasswordRequest.getNewPassword()), user.getId());
+        } else {
             throw new UserException(UserErrorResult.DIFFERENT_PASSWORD);
         }
     }
 
     @Override
     @Transactional
-    public void updateIntroduction(final UpdateIntroductionRequest updateIntroductionRequest, final Long userId) {
+    public void updateIntroduction(final Long userId, final UpdateIntroductionRequest updateIntroductionRequest) {
         userRepository.updateIntroduction(updateIntroductionRequest.getIntroduction(), userId);
     }
 
     @Override
     @Transactional
     public void deleteUser(final User user) {
-        followRepository.deleteAllByFollowingIdOrFollowerId(user, user);
-        followRequestRepository.deleteAllByRequesterIdOrReceiverId(user, user);
-        userRepository.deleteUser(LocalDateTime.now(), user.getId());
+        followRepository.deleteAllByFollowingOrFollower(user, user);
+        followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
+        socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
+        visitorBookRepository.deleteAllByVisitorId(user.getId());
+        userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE, createNicknameRandomCode());
     }
 
-    private void findUser(final Long userId) {
-        if(!userRepository.findById(userId).isPresent()) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+    private String createNicknameRandomCode() {
+        final String temp = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        final StringBuilder sb = new StringBuilder();
+        final SecureRandom random = new SecureRandom();
+        do {
+            int length = random.nextInt(9) + 11;
+            for (int i = 0; i < length; i++) {
+                sb.append(temp.charAt(random.nextInt(temp.length())));
+            }
+        } while (userRepository.existsByNickname(sb.toString()));
+
+        return sb.toString();
     }
 }

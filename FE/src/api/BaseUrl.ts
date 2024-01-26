@@ -13,10 +13,13 @@ interface apiInterface {
   auth: {
     join: () => string; // 회원가입
     login: () => string; // 로그인
+    autoLogin: () => string; // 자동로그인
     googleLogin: () => string; // 구글 로그인
+    logout: () => string; // 로그아웃
     nickname: () => string; // 닉네임 중복검사, 삭제
     emailAuthentication: () => string; // 이메일 인증 (+중복검사)
     emailAuthenticationCheck: () => string; // 이메일 인증 - 응답
+    token: (userId: number) => string; // 토큰 재발급
   };
   users: {
     getProfiles: (userId: number) => string; // 프로필 조회
@@ -42,6 +45,7 @@ interface apiInterface {
     weeklyTodosStatus: (userId: number) => string; // 주차별 할일 상태 수정
     daily: (userId: number) => string; // 일일 플래너 조회
     dailyTodos: (userId: number) => string; // 일별 할일 등록, 수정, 삭제
+    dailyTodoSequence: (userId: number) => string; // 일별 할일 순서 변경
     likes: (userId: number) => string; // 좋아요 누르기, 취소
     timetables: (userId: number) => string; // 타임 테이블 표시, 삭제
     retrospections: (userId: number) => string; // 오늘의 회고 편집
@@ -55,6 +59,7 @@ interface apiInterface {
     categories: (userId: number) => string; // 카테고리 목록 조회, 등록, 수정, 삭제
     categoriesColors: (userId: number) => string; // 카테고리 색상 목록 조회
     ddays: (userId: number) => string; // 디데이 목록 조회, 등록, 수정, 삭제
+    routines: (userId: number) => string; // 루틴 조회, 등록, 수정, 삭제
   };
   social: {
     getSocial: (userId: number) => string; // 공개된 플래너 조회
@@ -67,10 +72,13 @@ const api: apiInterface = {
   auth: {
     join: () => HOST + AUTH + "join",
     login: () => HOST + AUTH + "login",
+    autoLogin: () => HOST + AUTH + "auto-login",
     googleLogin: () => HOST + AUTH + "social-login",
+    logout: () => HOST + AUTH + "logout",
     nickname: () => HOST + AUTH + "nickname-duplicated",
     emailAuthentication: () => HOST + AUTH + "email-authentication",
     emailAuthenticationCheck: () => HOST + AUTH + "email-authentication" + "/check",
+    token: (userId: number) => HOST + AUTH + "token/" + userId,
   },
   users: {
     getProfiles: (userId: number) => HOST + USERS + userId + "/profiles",
@@ -96,6 +104,7 @@ const api: apiInterface = {
     weeklyTodosStatus: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos-status",
     daily: (userId: number) => HOST + PLANNERS + userId + "/daily",
     dailyTodos: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todos",
+    dailyTodoSequence: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todo-sequence",
     likes: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/likes",
     timetables: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/timetables",
     retrospections: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/retrospections",
@@ -109,6 +118,7 @@ const api: apiInterface = {
     categories: (userId: number) => HOST + SETTINGS + userId + "/categories",
     categoriesColors: (userId: number) => HOST + SETTINGS + userId + "/categories" + "/colors",
     ddays: (userId: number) => HOST + SETTINGS + userId + "/d-days",
+    routines: (userId: number) => HOST + SETTINGS + userId + "/routines",
   },
   social: {
     getSocial: (userId: number) => HOST + SOCIAL + userId,

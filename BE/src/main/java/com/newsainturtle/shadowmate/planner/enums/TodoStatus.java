@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 public enum TodoStatus {
     EMPTY("공백"),
     COMPLETE("완료"),
+    INPROGRESS("진행중"),
     INCOMPLETE("미완료"),
     ;
 

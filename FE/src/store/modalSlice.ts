@@ -1,6 +1,6 @@
 import React from "react";
 import { rootState } from "@hooks/configStore";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface ModalConfig {
   isOpen: boolean;

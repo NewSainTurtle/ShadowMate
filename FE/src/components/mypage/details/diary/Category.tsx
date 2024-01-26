@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
@@ -16,16 +16,22 @@ import {
   setCategoryInput,
 } from "@store/mypage/categorySlice";
 
-const MyPageCategory = () => {
+interface Props {
+  newItem: boolean;
+}
+
+const Category = ({ newItem }: Props) => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectCategoryClick);
   const categoryList = useAppSelector(selectCategoryList);
   const categoryColors = useAppSelector(selectCategoryColors);
-  const categoryInput: CategoryItemConfig = useAppSelector(selectCategoryInput);
+  const categoryInput = useAppSelector(selectCategoryInput);
   const [error, setError] = useState<boolean>(false);
-
-  const { categoryTitle, categoryEmoticon } = categoryInput || "";
+  const minLength = 1;
+  const maxLength = 10;
+  const { categoryTitle, categoryEmoticon } = categoryInput ?? "";
   const [length, setLength] = useState<number>(categoryTitle ? categoryTitle.length : 0);
+  const titleFocus = useRef<HTMLInputElement>(null);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -37,7 +43,7 @@ const MyPageCategory = () => {
     }
     if (name === "categoryTitle") {
       setLength(value.length);
-      if (value.length < 2 || value.length > 10) {
+      if (value.length < minLength || value.length > maxLength) {
         setError(true);
       } else setError(false);
     }
@@ -51,29 +57,40 @@ const MyPageCategory = () => {
         if (item.categoryColorCode === categoryList[click].categoryColorCode) currentColor = idx;
       });
       dispatch(setCategoryColorClick(currentColor));
-      dispatch(setCategoryInput(categoryList[click]));
-      setLength(categoryList[click].categoryTitle.length);
+      if (!newItem) {
+        dispatch(setCategoryInput(categoryList[click]));
+        setLength(categoryList[click].categoryTitle.length);
+      }
     }
-  }, [click]);
+  }, [categoryList, click]);
+
+  useEffect(() => {
+    if (newItem) dispatch(setCategoryColorClick(0));
+    if (titleFocus.current) titleFocus.current.focus();
+  }, []);
 
   return (
     <div className={styles["frame__contents"]}>
       <div className={styles["frame__line"]}>
-        <Text>카테고리 이름</Text>
+        <Text>카테고리</Text>
         <Input
+          inputRef={titleFocus}
           name="categoryTitle"
-          value={categoryTitle || ""}
+          value={categoryTitle ?? ""}
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
-          helperText={error ? "2 ~ 10자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/10`}
+          helperText={
+            error ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.` : `글자 수: ${length}/${maxLength}`
+          }
+          maxLength={maxLength}
         />
       </div>
       <div className={styles["frame__line"]}>
         <Text>카테고리 이모지</Text>
         <Input
           name="categoryEmoticon"
-          value={categoryEmoticon || ""}
+          value={categoryEmoticon ?? ""}
           placeholder="카테고리 이모지"
           onChange={onChangeInput}
           helperText={"이모지 외 사용이 불가능합니다."}
@@ -110,4 +127,4 @@ const MyPageCategory = () => {
   );
 };
 
-export default MyPageCategory;
+export default Category;

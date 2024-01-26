@@ -7,7 +7,8 @@ import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.follow.constant.FollowConstant;
 import com.newsainturtle.shadowmate.follow.controller.FollowController;
-import com.newsainturtle.shadowmate.follow.dto.*;
+import com.newsainturtle.shadowmate.follow.dto.request.*;
+import com.newsainturtle.shadowmate.follow.dto.response.*;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
@@ -327,19 +328,19 @@ class FollowControllerTest {
             //given
             final FollowRequest followRequest = FollowRequest.builder()
                     .id(1L)
-                    .requesterId(user1)
-                    .receiverId(user2)
+                    .requester(user1)
+                    .receiver(user2)
                     .build();
             final String url = "/api/follow/{userId}/receive-lists";
             final List<FollowRequestResponse> followRequestResponseList = new ArrayList<>();
             followRequestResponseList.add(FollowRequestResponse.builder()
                     .followRequestId(followRequest.getId())
-                    .requesterId(followRequest.getRequesterId().getId())
-                    .email(followRequest.getRequesterId().getEmail())
-                    .nickname(followRequest.getRequesterId().getNickname())
-                    .profileImage(followRequest.getRequesterId().getProfileImage())
-                    .statusMessage(followRequest.getRequesterId().getStatusMessage())
-                    .plannerAccessScope(followRequest.getRequesterId().getPlannerAccessScope())
+                    .requesterId(followRequest.getRequester().getId())
+                    .email(followRequest.getRequester().getEmail())
+                    .nickname(followRequest.getRequester().getNickname())
+                    .profileImage(followRequest.getRequester().getProfileImage())
+                    .statusMessage(followRequest.getRequester().getStatusMessage())
+                    .plannerAccessScope(followRequest.getRequester().getPlannerAccessScope())
                     .build());
             doReturn(followRequestResponseList).when(followService).getFollowRequestList(any());
 

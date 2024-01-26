@@ -4,9 +4,6 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
-import com.newsainturtle.shadowmate.planner.dto.request.UpdateRetrospectionRequest;
-import com.newsainturtle.shadowmate.planner.dto.request.UpdateTodayGoalRequest;
-import com.newsainturtle.shadowmate.planner.dto.request.UpdateTomorrowGoalRequest;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
 import com.newsainturtle.shadowmate.planner.service.MonthlyPlannerService;
 import com.newsainturtle.shadowmate.planner.service.SearchPlannerService;
@@ -46,6 +43,15 @@ public class PlannerController {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
         dailyPlannerServiceImpl.updateDailyTodo(principalDetails.getUser(), updateDailyTodoRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_DAILY_TODO));
+    }
+
+    @PutMapping("/{userId}/daily/todo-sequence")
+    public ResponseEntity<BaseResponse> changeDailyTodoSequence(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                                @PathVariable("userId") final Long userId,
+                                                                @RequestBody @Valid final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        dailyPlannerServiceImpl.changeDailyTodoSequence(principalDetails.getUser(), changeDailyTodoSequenceRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_CHANGE_DAILY_TODO_SEQUENCE));
     }
 
     @DeleteMapping("/{userId}/daily/todos")
@@ -116,8 +122,8 @@ public class PlannerController {
                                                      @PathVariable("userId") final Long userId,
                                                      @RequestBody @Valid final AddTimeTableRequest addTimeTableRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest);
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE));
+
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_TIME_TABLE, dailyPlannerServiceImpl.addTimeTable(principalDetails.getUser(), addTimeTableRequest)));
     }
 
     @DeleteMapping("/{userId}/daily/timetables")

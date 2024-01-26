@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface DailyPlannerLikeRepository extends JpaRepository<DailyPlannerLike, Long> {
-    DailyPlannerLike findByUserAndDailyPlanner(final User user, final DailyPlanner dailyPlanner);
+    boolean existsByUserAndDailyPlanner(final User user, final DailyPlanner dailyPlanner);
     void deleteByUserAndDailyPlanner(final User user, final DailyPlanner dailyPlanner);
     long countByDailyPlanner(final DailyPlanner dailyPlanner);
     long countByDailyPlannerIdIn(final List<Long> dailyPlannerIdList);

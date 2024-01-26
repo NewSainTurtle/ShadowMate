@@ -18,6 +18,7 @@ interface Props {
 
 const MyPageDetail = ({ children, title, isDisable, handleUpdate, handleDelete }: Props) => {
   const disable = isDisable ? "--disable" : "";
+
   return (
     <div className={styles["frame__container"]}>
       <div className={styles["frame__title"]}>

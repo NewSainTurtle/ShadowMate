@@ -80,11 +80,10 @@ public class UserRepositoryTest {
             userRepository.save(user);
 
             //when
-            final User userEntity = userRepository.findByNickname(user.getNickname());
+            final boolean existsUser = userRepository.existsByNickname(user.getNickname());
 
             //then
-            assertThat(userEntity).isNotNull();
-            assertThat(userEntity.getNickname()).isEqualTo(user.getNickname());
+            assertThat(existsUser).isTrue();
         }
 
         @Test
@@ -93,10 +92,10 @@ public class UserRepositoryTest {
             // given
 
             // when
-            final User userEntity = userRepository.findByNickname(user.getNickname());
+            final boolean existsUser = userRepository.existsByNickname(user.getNickname());
 
             // then
-            assertThat(userEntity).isNull();
+            assertThat(existsUser).isFalse();
         }
     }
 }

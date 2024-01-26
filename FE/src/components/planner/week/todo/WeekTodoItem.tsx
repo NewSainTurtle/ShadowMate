@@ -7,7 +7,7 @@ import { WeekTodoItemConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
 import { DeleteOutlined } from "@mui/icons-material";
-import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { selectUserId } from "@store/authSlice";
 import { getThisWeek } from "@util/getThisWeek";
 import { plannerApi } from "@api/Api";
 
@@ -30,6 +30,8 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
   });
   const [checked, setChecked] = useState<boolean>(item.weeklyTodoStatus);
   const friend = isMine ? "" : "--friend";
+  const maxLength = 50;
+
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
@@ -120,6 +122,7 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
             <input
               autoFocus
               type="text"
+              maxLength={maxLength}
               defaultValue={item.weeklyTodoContent}
               onChange={(e) => setTodo({ ...todo, newTodo: e.target.value })}
               onKeyDown={(e) => handleEnter(e)}

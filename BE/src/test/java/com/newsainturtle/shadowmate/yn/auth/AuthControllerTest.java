@@ -2,6 +2,7 @@ package com.newsainturtle.shadowmate.yn.auth;
 
 import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.controller.AuthController;
+import com.newsainturtle.shadowmate.auth.dto.RemoveTokenRequest;
 import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
 import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
@@ -529,6 +530,111 @@ class AuthControllerTest {
 
             //then
             resultActions.andExpect(status().isAccepted());
+        }
+
+    }
+
+    @Nested
+    class 자동로그인 {
+        final String url = "/api/auth/auto-login";
+
+        @Test
+        void 실패_유저없음() throws Exception {
+            //given
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).checkAutoLogin(any(String.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .header("Auto-Login", "key")
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .header("Auto-Login", "key")
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+
+    }
+
+    @Nested
+    class 로그아웃 {
+        final String url = "/api/auth/logout";
+        final String type = "0123456789 1";
+        final long userId = 1L;
+
+        @Test
+        void 실패_유저ID_null() throws Exception {
+            //given
+            final RemoveTokenRequest removeTokenRequest = RemoveTokenRequest.builder()
+                    .userId(null)
+                    .type(type)
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .header("Auto-Login", "key")
+                            .content(gson.toJson(removeTokenRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+
+        }
+
+        @Test
+        void 실패_type_null() throws Exception {
+            //given
+            final RemoveTokenRequest removeTokenRequest = RemoveTokenRequest.builder()
+                    .userId(userId)
+                    .type(null)
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .header("Auto-Login", "key")
+                            .content(gson.toJson(removeTokenRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+
+        }
+
+        @Test
+        void 성공() throws Exception {
+            //given
+            final RemoveTokenRequest removeTokenRequest = RemoveTokenRequest.builder()
+                    .userId(userId)
+                    .type(type)
+                    .build();
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .header("Auto-Login", "key")
+                            .content(gson.toJson(removeTokenRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isOk());
         }
 
     }

@@ -62,7 +62,7 @@ public class FollowRepositoryTest {
             final User user = userRepository.findByEmailAndSocialLogin("test1@test.com", user1.getSocialLogin());
 
             //when
-            final List<Follow> followingList = followRepository.findAllByFollowerId(user);
+            final List<Follow> followingList = followRepository.findAllByFollower(user);
 
             //then
             assertThat(followingList).isEmpty();
@@ -74,27 +74,27 @@ public class FollowRepositoryTest {
             final User user1 = userRepository.findByEmailAndSocialLogin("test1@test.com", SocialType.BASIC);
             final User user2 = userRepository.findByEmailAndSocialLogin("test2@test.com", SocialType.BASIC);
             followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
 
             //when
-            final List<Follow> followingList = followRepository.findAllByFollowerId(user1);
+            final List<Follow> followingList = followRepository.findAllByFollower(user1);
 
             //then
-            assertThat(followingList.get(0).getFollowingId().getId()).isEqualTo(user2.getId());
+            assertThat(followingList.get(0).getFollowing().getId()).isEqualTo(user2.getId());
 
         }
 
         @Test
         void 성공_팔로잉삭제() {
             //given
-            final Follow follow = Follow.builder().followerId(user1).followingId(user2).build();
+            final Follow follow = Follow.builder().follower(user1).following(user2).build();
             followRepository.save(follow);
 
             //when
-            followRepository.deleteByFollowingIdAndFollowerId(user2, user1);
-            final Follow result = followRepository.findByFollowerIdAndFollowingId(user1, user2);
+            followRepository.deleteByFollowingAndFollower(user2, user1);
+            final Follow result = followRepository.findByFollowingAndFollower(user2, user1);
 
             //then
             assertThat(result).isNull();
@@ -105,13 +105,13 @@ public class FollowRepositoryTest {
         void 팔로잉개수조회() {
             // given
             followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
 
             // when
-            final List<Follow> resultFollow = followRepository.findAllByFollowingId(user2);
-            final Long result = followRepository.countByFollowingId(user2);
+            final List<Follow> resultFollow = followRepository.findAllByFollowing(user2);
+            final Long result = followRepository.countByFollowing(user2);
 
             // then
             assertThat(resultFollow).hasSize(1);
@@ -126,31 +126,31 @@ public class FollowRepositoryTest {
         void 성공_팔로우신청_조회() {
             //given
             followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
 
             //when
-            final Follow result = followRepository.findByFollowerIdAndFollowingId(user1, user2);
+            final Follow result = followRepository.findByFollowingAndFollower(user2, user1);
             //then
-            assertThat(result.getFollowingId().getNickname()).isEqualTo(user2.getNickname());
+            assertThat(result.getFollowing().getNickname()).isEqualTo(user2.getNickname());
         }
 
         @Test
         void 성공_팔로우신청_전체공개() {
             //given
             followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
 
             //when
-            final List<Follow> followingList = followRepository.findAllByFollowerId(user1);
+            final List<Follow> followingList = followRepository.findAllByFollower(user1);
 
             //then
-            System.out.println(followingList.get(0).getFollowerId().getNickname());
-            assertThat(followingList.get(0).getFollowerId()).isEqualTo(user1);
-            assertThat(followingList.get(0).getFollowingId()).isEqualTo(user2);
+            System.out.println(followingList.get(0).getFollower().getNickname());
+            assertThat(followingList.get(0).getFollower()).isEqualTo(user1);
+            assertThat(followingList.get(0).getFollowing()).isEqualTo(user2);
         }
 
     }
@@ -163,7 +163,7 @@ public class FollowRepositoryTest {
             final User user2 = userRepository.findByEmailAndSocialLogin("test2@test.com", SocialType.BASIC);
 
             //when
-            final List<Follow> followList = followRepository.findAllByFollowingId(user2);
+            final List<Follow> followList = followRepository.findAllByFollowing(user2);
 
             //then
             assertThat(followList).isEmpty();
@@ -173,28 +173,28 @@ public class FollowRepositoryTest {
         void 성공_팔로워조회() {
             //given
             Follow follow = followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
 
             //when
-            final List<Follow> followList = followRepository.findAllByFollowingId(user2);
+            final List<Follow> followList = followRepository.findAllByFollowing(user2);
 
             //then
-            assertThat(followList.get(0).getFollowerId().getNickname()).isEqualTo(user1.getNickname());
+            assertThat(followList.get(0).getFollower().getNickname()).isEqualTo(user1.getNickname());
         }
 
         @Test
         void 성공_팔로워삭제() {
             // given
             followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
 
             // when
-            followRepository.deleteByFollowingIdAndFollowerId(user2, user1);
-            final Follow result = followRepository.findByFollowerIdAndFollowingId(user1, user2);
+            followRepository.deleteByFollowingAndFollower(user2, user1);
+            final Follow result = followRepository.findByFollowingAndFollower(user2, user1);
 
             // then
             assertThat(result).isNull();
@@ -204,13 +204,13 @@ public class FollowRepositoryTest {
         void 팔로워개수조회() {
             // given
             followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
 
             // when
-            final List<Follow> resultFollow = followRepository.findAllByFollowerId(user1);
-            final Long result = followRepository.countByFollowerId(user1);
+            final List<Follow> resultFollow = followRepository.findAllByFollower(user1);
+            final Long result = followRepository.countByFollower(user1);
 
             // then
             assertThat(resultFollow).hasSize(1);
@@ -221,22 +221,22 @@ public class FollowRepositoryTest {
         void 유저와관련된팔로우삭제() {
             // given
             followRepository.save(Follow.builder()
-                    .followerId(user1)
-                    .followingId(user2)
+                    .follower(user1)
+                    .following(user2)
                     .build());
             followRepository.save(Follow.builder()
-                    .followerId(user2)
-                    .followingId(user1)
+                    .follower(user2)
+                    .following(user1)
                     .build());
 
             // when
-            followRepository.deleteAllByFollowingIdOrFollowerId(user1, user1);
-            List<Follow> result1 = followRepository.findAllByFollowerId(user1);
-            List<Follow> result2 = followRepository.findAllByFollowingId(user1);
+            followRepository.deleteAllByFollowingOrFollower(user1, user1);
+            List<Follow> result1 = followRepository.findAllByFollower(user1);
+            List<Follow> result2 = followRepository.findAllByFollowing(user1);
 
             // then
-            assertThat(result1).hasSize(0);
-            assertThat(result2).hasSize(0);
+            assertThat(result1).isEmpty();
+            assertThat(result2).isEmpty();;
         }
     }
 }

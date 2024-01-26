@@ -1,0 +1,171 @@
+/* DataRangePicker */
+/* Calendar : 단일 달력, RangePicker : 범위 달력 */
+
+/* <Canlendar />와 <RangePicker /> 공통 적용됨. */
+.rdrCalendarWrapper {
+  background-color: transparent;
+
+  .rdrMonthAndYearWrapper {
+    height: 3em;
+    padding: 0;
+
+    select {
+      padding: 5px 15px;
+      background: none;
+
+      option {
+        padding: 5px 30px 5px 10px;
+      }
+    }
+
+    .rdrNextButton,
+    .rdrPprevButton {
+      background-color: transparent;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
+    .rdrPprevButton i {
+      border-width: 4px 6px 4px 4px;
+      border-color: transparent var(--color-text) transparent transparent;
+      transform: translate(-3px, 0px);
+    }
+
+    .rdrNextButton i {
+      margin: 0 0 0 7px;
+      border-width: 4px 4px 4px 6px;
+      border-color: transparent transparent transparent var(--color-text);
+      transform: translate(3px, 0px);
+    }
+  }
+}
+
+/* <Canlendar /> 만 적용됨. */
+.rdrCalendarWrapper:not(.rdrDateRangeWrapper) {
+  .rdrDayDisabled,
+  .rdrDayStartPreview,
+  .rdrDayEndPreview {
+    background-color: transparent;
+    border: none;
+  }
+
+  .rdrDayHovered .rdrDayNumber::after {
+    top: 0;
+    bottom: 0;
+  }
+
+  .rdrMonth {
+    padding: 0;
+    width: 20em;
+  }
+
+  .rdrDay {
+    height: 2em;
+  }
+
+  .rdrDayToday .rdrDayNumber span:after {
+    bottom: -1px;
+  }
+
+  .rdrDayToday:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span:after {
+    background: none;
+  }
+}
+
+/* <RangePicker /> 만 적용됨. */
+.rdrDateRangeWrapper {
+  .rdrStartEdgem,
+  .rdrEndEdge,
+  .rdrDayStartPreview,
+  .rdrDayEndPreview {
+    left: 8px;
+    right: 8px;
+  }
+
+  .rdrDateDisplayItemActive {
+    border: 1px solid var(--color-gray-4);
+  }
+
+  .rdrMonth {
+    padding: 0;
+    width: 27em;
+  }
+}
+
+.rdrDefinedRangesWrapper {
+  width: 10em;
+  border-right: 1px solid var(--color-gray-2);
+
+  .rdrStaticRange {
+    border-bottom: 1px solid var(--color-gray-2);
+  }
+
+  .rdrInputRange * {
+    display: none;
+    padding: 0;
+  }
+}
+
+.--none {
+  .rdrDay:not(.rdrDayPassive) .rdrInRange ~ .rdrDayNumber span {
+    color: var(--color-text);
+
+    ::after {
+      background-color: var(--color-btn-blue);
+    }
+  }
+
+  .rdrDay {
+    .rdrInRange {
+      background-color: transparent;
+    }
+  }
+}
+
+.rdrMonthAndYearWrapper,
+.rdrMonthAndYearWrapper select option,
+.rdrDateDisplayWrapper,
+.rdrDefinedRangesWrapper,
+.rdrStaticRange,
+.rdrMonth {
+  background-color: var(--color-gray-1);
+}
+
+.rdrDateDisplayItem,
+.rdrStaticRange:hover .rdrStaticRangeLabel,
+.rdrStaticRange:focus .rdrStaticRangeLabel {
+  background-color: var(--color-gray-2);
+  color: black;
+}
+
+.rdrDayPassive .rdrDayNumber span {
+  color: var(--color-gray-3) !important;
+}
+
+.rdrWeekDay,
+.rdrStaticRange,
+.rdrStaticRange:hover .rdrStaticRangeLabel,
+.rdrStaticRange:focus .rdrStaticRangeLabel,
+.rdrDayNumber span,
+.rdrMonthAndYearWrapper select,
+.rdrMonthAndYearWrapper option {
+  color: var(--color-text);
+}
+
+.rdrSelected,
+.rdrDayHovered span,
+.rdrDayHovered > span {
+  left: 8px;
+  right: 8px;
+  border: none;
+}
+
+.rdrDayStartOfWeek .rdrInRange {
+  left: 8px;
+}
+
+.rdrDayEndOfWeek .rdrInRange {
+  right: 8px;
+}

@@ -8,7 +8,7 @@ import { NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserInfo } from "@store/authSlice";
 import { clearFriendInfo } from "@store/friendSlice";
-import { Assignment } from "@mui/icons-material";
+import { SupportAgent } from "@mui/icons-material";
 const Header = () => {
   const dispatch = useAppDispatch();
   const handleClear = () => dispatch(clearFriendInfo());
@@ -25,18 +25,16 @@ const Header = () => {
       </NavLink>
       <div
         className={styles["header_questionnaire"]}
-        onClick={() => window.open("https://forms.gle/UAztt4dsGeqKWkHy9")}
+        onClick={() => window.open("https://forms.gle/KVwQ9gUodp1K5pyR8")}
       >
-        <Assignment />
-        <Text types="small">설문</Text>
+        <SupportAgent />
+        <Text types="small">문의</Text>
       </div>
 
       <Menu />
       <div className={styles["header_profile"]}>
         <Toggle />
-        <NavLink to="/mypage">
-          <Avatar src={profileImage} />
-        </NavLink>
+        <Avatar src={profileImage} />
       </div>
     </div>
   );

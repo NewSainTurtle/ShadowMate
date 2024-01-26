@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 import { PURGE } from "redux-persist";
 
-export interface userInfoConfig {
+export interface UserInfoConfig {
   email: string;
   nickname: string;
   profileImage: string;
@@ -10,15 +10,17 @@ export interface userInfoConfig {
   plannerAccessScope: string;
 }
 
-interface authConfig {
+interface AuthConfig {
   accessToken: string;
   userId: number;
   login: boolean;
   isGoogle: boolean;
-  userInfo: userInfoConfig;
+  userInfo: UserInfoConfig;
+  type: string;
+  autoLogin?: boolean;
 }
 
-const initialState: authConfig = {
+const initialState: AuthConfig = {
   accessToken: "",
   userId: 0,
   login: false,
@@ -30,28 +32,35 @@ const initialState: authConfig = {
     statusMessage: "",
     plannerAccessScope: "",
   },
+  type: "",
+  autoLogin: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setLogin: (state, { payload }: PayloadAction<{ accessToken: string; userId: number }>) => {
+    setLogin: (state, { payload }: PayloadAction<{ accessToken: string; userId: number; type: string }>) => {
       state.login = true;
       state.userId = payload.userId;
       state.accessToken = payload.accessToken;
+      state.type = payload.type;
+    },
+    setAutoLogin: (state, { payload }: PayloadAction<boolean>) => {
+      state.autoLogin = payload;
     },
     setIsGoogle: (state, { payload }: PayloadAction<boolean>) => {
       state.isGoogle = payload;
     },
     setLogout: (state) => {
       state.login = false;
-      localStorage.removeItem("id");
-      localStorage.removeItem("accessToken");
     },
-    setUserInfo: (state, { payload }: PayloadAction<userInfoConfig>) => {
+    setUserInfo: (state, { payload }: PayloadAction<UserInfoConfig>) => {
       const [statusMessage, profileImage] = [payload.statusMessage || "", payload.profileImage || ""];
       state.userInfo = { ...payload, statusMessage, profileImage };
+    },
+    setAccessToken: (state, { payload }: PayloadAction<string>) => {
+      state.accessToken = payload;
     },
   },
   extraReducers: (builder) => {
@@ -60,12 +69,14 @@ const authSlice = createSlice({
   },
 });
 
-export const { setLogin, setLogout, setUserInfo, setIsGoogle } = authSlice.actions;
+export const { setLogin, setAutoLogin, setLogout, setUserInfo, setIsGoogle, setAccessToken } = authSlice.actions;
 export const selectUserInfo = (state: rootState) => state.auth.userInfo;
 export const selectLoginState = (state: rootState) => state.auth.login;
+export const selectAutoLogin = (state: rootState) => state.auth.autoLogin;
 export const selectAccessToken = (state: rootState) => state.auth.accessToken;
 export const selectUserId = (state: rootState) => state.auth.userId;
 export const selectIsGoogle = (state: rootState) => state.auth.isGoogle;
 export const selectPlannerAccessScope = (state: rootState) => state.auth.userInfo.plannerAccessScope;
+export const selectType = (state: rootState) => state.auth.type;
 
 export default authSlice.reducer;

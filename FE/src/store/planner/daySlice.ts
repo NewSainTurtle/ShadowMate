@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
-import { TodoConfig, TimeTableConfig } from "@util/planner.interface";
+import { TimeTableConfig, TodoConfig } from "@util/planner.interface";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-interface dayInfoConfig {
+interface DayInfoConfig {
   plannerAccessScope: "전체공개" | "친구공개" | "비공개";
   dday: string | null;
   ddayTitle: string;
@@ -17,13 +17,13 @@ interface dayInfoConfig {
   dailyTodos: TodoConfig[];
 }
 
-interface dayConfig {
+interface DayConfig {
   date: string;
-  info: dayInfoConfig;
-  todoItem: TodoConfig; // 내가 선택한 todo
+  info: DayInfoConfig;
+  todoItem: TodoConfig;
 }
 
-const initialState: dayConfig = {
+const initialState: DayConfig = {
   date: dayjs().format("YYYY-MM-DD"),
   info: {
     plannerAccessScope: "전체공개",
@@ -44,11 +44,7 @@ const initialState: dayConfig = {
       categoryColorCode: "#E9E9EB",
       categoryEmoticon: "",
     },
-    timeTable: {
-      timeTableId: 0,
-      startTime: "",
-      endTime: "",
-    },
+    timeTables: [],
   },
 };
 
@@ -56,10 +52,10 @@ const daySlice = createSlice({
   name: "plannerDay",
   initialState,
   reducers: {
-    setDayDate: (state, action: PayloadAction<dayConfig["date"]>) => {
+    setDayDate: (state, action: PayloadAction<DayConfig["date"]>) => {
       state.date = action.payload;
     },
-    setDayInfo: (state, action: PayloadAction<dayConfig["info"]>) => {
+    setDayInfo: (state, action: PayloadAction<DayConfig["info"]>) => {
       state.info = action.payload;
     },
     setDayLike: (state, action: PayloadAction<boolean>) => {
@@ -68,31 +64,42 @@ const daySlice = createSlice({
       else state.info.likeCount -= 1;
       state.info.like = isLike;
     },
-    setTodoItem: (state, action: PayloadAction<dayConfig["todoItem"]>) => {
+    setTodoItem: (state, action: PayloadAction<DayConfig["todoItem"]>) => {
       state.todoItem = action.payload;
     },
-    setTodoList: (state, action: PayloadAction<dayInfoConfig["dailyTodos"]>) => {
+    setTodoList: (state, action: PayloadAction<DayInfoConfig["dailyTodos"]>) => {
       state.info.dailyTodos = action.payload;
     },
     setTimeTable: (
       state,
       action: PayloadAction<{
         todoId: number;
-        startTime: string;
-        endTime: string;
+        timeTableId: number;
+        startTime?: string;
+        endTime?: string;
         todoStatus?: TodoConfig["todoStatus"];
       }>,
     ) => {
-      const { todoId, startTime, endTime } = action.payload;
+      const { todoId, timeTableId, startTime, endTime } = action.payload;
 
       const tempArr = state.info.dailyTodos;
-      const findIndex = tempArr.findIndex((item) => item.todoId == todoId);
-      const todoInfo = tempArr[findIndex] as TodoConfig;
+      const findTodoIndex = tempArr.findIndex((item) => item.todoId == todoId);
+      const todoInfo = tempArr[findTodoIndex] as TodoConfig;
       const todoStatus = action.payload.todoStatus || todoInfo.todoStatus;
-      tempArr[findIndex] = {
+      const todoTimetable = (() => {
+        let tempTimeTable = todoInfo.timeTables ?? [];
+        if (startTime) return [...tempTimeTable, { timeTableId, startTime, endTime }];
+        else {
+          const findTimeIndex = tempTimeTable?.findIndex((item) => item.timeTableId === timeTableId) as number;
+          tempTimeTable?.splice(findTimeIndex, 1);
+          return tempTimeTable;
+        }
+      })() as TimeTableConfig[];
+
+      tempArr[findTodoIndex] = {
         ...todoInfo,
         todoStatus,
-        timeTable: { ...todoInfo.timeTable!, startTime, endTime },
+        timeTables: todoTimetable,
       };
 
       state.info.dailyTodos = tempArr;
@@ -101,7 +108,7 @@ const daySlice = createSlice({
   },
 });
 
-export const BASIC_TODO_ITEM = initialState.todoItem!;
+export const BASIC_TODO_ITEM = initialState.todoItem;
 export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
 export const { setDayDate, setDayInfo, setDayLike, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
 export const selectDayDate = (state: rootState) => state.day.date;

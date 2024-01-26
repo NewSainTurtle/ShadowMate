@@ -1,17 +1,24 @@
-import React, { ChangeEvent, Dispatch, MouseEvent, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
+import "@styles/common/DataRangePicker.css";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { DdayItemConfig } from "@util/planner.interface";
 import { dateFormat } from "@util/getThisWeek";
+import { Calendar } from "react-date-range";
+import ko from "date-fns/locale/ko";
 import dayjs from "dayjs";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDdayClick, selectDdayInput, selectDdayList, setDdayInput } from "@store/mypage/ddaySlice";
 
-const MyPageDday = () => {
+interface Props {
+  newItem: boolean;
+}
+
+const Dday = ({ newItem }: Props) => {
   const dispatch = useAppDispatch();
   const click = useAppSelector(selectDdayClick);
   const ddayList = useAppSelector(selectDdayList);
@@ -19,15 +26,17 @@ const MyPageDday = () => {
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const calendarRef = useRef<HTMLDivElement>(null);
-
-  const { ddayTitle, ddayDate } = ddayInput || "";
+  const minLength = 1;
+  const maxLength = 20;
+  const { ddayTitle, ddayDate } = ddayInput;
   const [length, setLength] = useState<number>(ddayTitle ? ddayTitle.length : 0);
+  const titleFocus = useRef<HTMLInputElement>(null);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     if (name === "ddayTitle") {
       setLength(value.length);
-      if (value.length < 2 || value.length > 20) {
+      if (value.length < minLength || value.length > maxLength) {
         setError(true);
       } else setError(false);
     }
@@ -35,11 +44,11 @@ const MyPageDday = () => {
   };
 
   useEffect(() => {
-    if (ddayList.length > 0 && ddayInput) {
+    if (ddayList.length > 0 && !newItem) {
       dispatch(setDdayInput(ddayList[click]));
       setLength(ddayList[click].ddayTitle.length);
     }
-  }, [click]);
+  }, [ddayList, click]);
 
   /* 캘린더 외부 영역 클릭 시 캘린더 닫힘. */
   useEffect(() => {
@@ -57,36 +66,47 @@ const MyPageDday = () => {
     };
   }, [calendarRef]);
 
+  useEffect(() => {
+    if (titleFocus.current) titleFocus.current.focus();
+  }, []);
+
   return (
-    <div className={styles["frame__contents"]}>
+    <div id={styles["dday"]} className={styles["frame__contents"]}>
       <div className={styles["frame__line"]}>
         <Text>디데이 이름</Text>
         <Input
+          inputRef={titleFocus}
           name="ddayTitle"
           value={ddayTitle}
           placeholder="디데이 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
-          helperText={error ? "2 ~ 20자의 이름을 입력할 수 있습니다." : `글자 수: ${length}/20`}
+          helperText={
+            error ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.` : `글자 수: ${length}/${maxLength}`
+          }
+          maxLength={maxLength}
         />
       </div>
       <div id={styles["date"]} className={styles["frame__line"]}>
         <Text>디데이 날짜</Text>
-        <Input name="ddayDate" value={dateFormat(ddayDate)} disabled />
+        <Input name="ddayDate" value={dateFormat(ddayDate)} disabled maxLength={maxLength} />
         <CalendarMonthIcon onClick={() => setOpenCalendar(!openCalendar)} />
-      </div>
-      {openCalendar && (
-        <div ref={calendarRef} className={styles["date__picker"]}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              value={dayjs(ddayDate)}
+        {openCalendar && (
+          <div ref={calendarRef} className={styles["date__picker"]}>
+            <Calendar
+              locale={ko}
+              date={new Date(ddayDate)}
               onChange={(value) => dispatch(setDdayInput({ ...ddayInput, ddayDate: dayjs(value).toDate() }))}
+              dateDisplayFormat={"yyyy-mm-dd"}
+              minDate={new Date(dayjs().startOf("year").add(-25, "year").toDate())}
+              maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
+              fixedHeight
             />
-          </LocalizationProvider>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default MyPageDday;
+export default Dday;

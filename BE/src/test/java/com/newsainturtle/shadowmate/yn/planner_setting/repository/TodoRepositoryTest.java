@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -76,6 +78,8 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when
@@ -93,12 +97,16 @@ class TodoRepositoryTest {
                 .todoContent("수능완성 수학 과목별 10문제")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .timeTables(new ArrayList<>())
                 .build());
         todoRepository.save(Todo.builder()
                 .category(category)
                 .todoContent("비문학 2문제 풀기")
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(200000D)
+                .timeTables(new ArrayList<>())
                 .build());
 
         //when

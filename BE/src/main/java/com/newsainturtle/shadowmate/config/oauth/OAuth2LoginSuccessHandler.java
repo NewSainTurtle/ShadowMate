@@ -9,11 +9,12 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.newsainturtle.shadowmate.config.constant.ConfigConstant.*;
 
 @Component
 @RequiredArgsConstructor
@@ -33,17 +34,18 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String target = "/api/auth/social-login";
         return UriComponentsBuilder.fromUriString(target)
-                .queryParam("token", response.getHeader("Authorization"))
+                .queryParam(KEY_TOKEN, response.getHeader("Authorization"))
                 .build().toUriString();
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        String jwtToken = jwtProvider.createToken(principalDetails);
-        response.addCookie(addCookie("userId", principalDetails.getUser().getId().toString()));
-        response.addCookie(addCookie("token", jwtToken));
-        this.handle(request,response,authentication);
+        String jwtToken = jwtProvider.createToken(principalDetails, principalDetails.getAttribute("sub"));
+        response.addCookie(addCookie(KEY_USER_ID, principalDetails.getUser().getId().toString()));
+        response.addCookie(addCookie(KEY_TOKEN, jwtToken));
+        response.addCookie(addCookie(KEY_TYPE, principalDetails.getAttribute("sub")));
+        this.handle(request, response, authentication);
     }
 
     private Cookie addCookie(String key, String value) {

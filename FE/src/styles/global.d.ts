@@ -9,3 +9,8 @@ declare module "*.svg" {
   const src: string;
   export default src;
 }
+
+declare module "*.webp" {
+  const ref: string;
+  export default ref;
+}

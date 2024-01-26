@@ -10,18 +10,23 @@ import { useAppSelector } from "@hooks/hook";
 import { CategoryItemConfig, TodoConfig } from "@util/planner.interface";
 import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
-import { DeleteOutlined } from "@mui/icons-material";
+import { DeleteOutlined, DragHandle } from "@mui/icons-material";
 
 interface Props {
   idx: number;
   item: TodoConfig;
-  isMine: boolean;
+  isMine?: boolean;
+  disable?: boolean;
   date: string;
   dailyTodos: TodoConfig[];
   setDailyTodos: Dispatch<SetStateAction<TodoConfig[]>>;
+  dragModule?: {
+    childMouseEnter: () => void;
+    childMouseLeave: () => void;
+  };
 }
 
-const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props) => {
+const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos, dragModule }: Props) => {
   const userId = useAppSelector(selectUserId);
   const [Modalopen, setModalOpen] = useState(false);
   const handleClose = () => setModalOpen(false);
@@ -31,6 +36,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
   });
   const { updateTodo, deleteTodo } = todoModule(dailyTodos, setDailyTodos);
   const friend = isMine ? "" : "--friend";
+  const maxLength = 50;
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -56,7 +62,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
       date: dayjs(date).format("YYYY-MM-DD"),
       todoId: item.todoId,
       todoContent: e.target.value,
-      categoryId: item.category?.categoryId || 0,
+      categoryId: item.category?.categoryId ?? 0,
       todoStatus: item.todoStatus,
     };
     plannerApi
@@ -100,17 +106,24 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
   };
 
   const setStatus = (status: string) => {
-    return status === "공백" ? " " : status === "완료" ? "O" : "X";
+    if (status === "공백") return " ";
+    if (status === "완료") return "○";
+    return status === "진행중" ? "△" : "⨉";
+  };
+
+  const setNewTodoStatus = (status: string) => {
+    if (status === "공백") return "진행중";
+    if (status === "진행중") return "완료";
+    return status === "완료" ? "미완료" : "공백";
   };
 
   const handleStatusSave = () => {
-    const newStatus: TodoConfig["todoStatus"] =
-      item.todoStatus === "공백" ? "완료" : item.todoStatus === "완료" ? "미완료" : "공백";
+    const newStatus: TodoConfig["todoStatus"] = setNewTodoStatus(item.todoStatus);
     const data = {
       date: dayjs(date).format("YYYY-MM-DD"),
       todoId: item.todoId,
       todoContent: item.todoContent,
-      categoryId: item.category?.categoryId || 0,
+      categoryId: item.category?.categoryId ?? 0,
       todoStatus: newStatus,
     };
     plannerApi
@@ -126,15 +139,16 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
 
   return (
     <>
-      <div className={styles[`item__todo-item${friend}`]}>
+      <div className={styles[`item__todo-item${friend}`]} id={styles["underbar--gray"]}>
         <div onClick={() => setModalOpen(!Modalopen)}>
-          <span>{item.category?.categoryEmoticon || ""}</span>
+          <span>{item.category?.categoryEmoticon ?? ""}</span>
         </div>
         {item.todoUpdate ? (
           <input
             className={styles["item__edit-input"]}
             autoFocus
             type="text"
+            maxLength={maxLength}
             defaultValue={item.todoContent}
             onChange={(e) =>
               setTodo((prev) => {
@@ -149,13 +163,26 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
             <Text types="small">{item?.todoContent}</Text>
           </div>
         )}
-        <DeleteOutlined onClick={handleDeleteModalOpen} />
-        <div onClick={handleStatusSave}>
-          <Text>{setStatus(item.todoStatus)}</Text>
-        </div>
+        {!disable && (
+          <>
+            <DragHandle
+              onMouseEnter={() => dragModule?.childMouseEnter()}
+              onMouseLeave={() => dragModule?.childMouseLeave()}
+            />
+            <DeleteOutlined
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteModalOpen();
+              }}
+            />
+            <div onClick={handleStatusSave}>
+              <Text>{setStatus(item.todoStatus)}</Text>
+            </div>
+          </>
+        )}
       </div>
       <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
-        <CategorySelector type="week" handleClick={handleClickCategory} />
+        <CategorySelector type="week" handleClick={handleClickCategory} addBtn />
       </Modal>
       <Modal
         types="twoBtn"

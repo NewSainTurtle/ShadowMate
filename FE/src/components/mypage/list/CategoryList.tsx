@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
-import MyPageCategoryItem from "@components/mypage/item/MyPageCategoryItem";
+import MyPageCategoryItem from "@components/mypage/item/CategoryItem";
 import { useAppSelector } from "@hooks/hook";
 import { CategoryItemConfig } from "@util/planner.interface";
 import { selectCategoryList } from "@store/mypage/categorySlice";

@@ -16,14 +16,14 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "weekly_todo_id"))
 public class WeeklyTodo extends CommonEntity {
 
-    @Column(name = "weekly_todo_content", nullable = false, length = 100)
+    @Column(name = "weekly_todo_content", nullable = false, length = 50)
     private String weeklyTodoContent;
 
     @Column(name = "weekly_todo_status", nullable = false)
     private Boolean weeklyTodoStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "weekly_id")
+    @JoinColumn(name = "weekly_id", nullable = false)
     private Weekly weekly;
 
     public void updateWeeklyTodoContent(final String weeklyTodoContent) {

@@ -17,7 +17,7 @@ import javax.persistence.*;
 @AttributeOverride(name = "id", column = @Column(name = "category_id"))
 public class Category extends CommonEntity {
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 10, nullable = false)
     private String categoryTitle;
 
     @Column
@@ -27,11 +27,11 @@ public class Category extends CommonEntity {
     private String categoryEmoticon;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_color_id")
+    @JoinColumn(name = "category_color_id", nullable = false)
     private CategoryColor categoryColor;
 
     public void updateCategoryTitleAndEmoticonAndColor(final String categoryTitle,

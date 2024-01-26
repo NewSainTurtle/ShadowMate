@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Profile from "@components/common/Profile";
 import MyPageTab from "@components/mypage/MyPageTab";
@@ -9,16 +9,16 @@ import MyFriend from "@components/mypage/details/friend/MyFriend";
 import MyPassword from "@components/mypage/details/myInfo/MyPassword";
 import CancelMembership from "@components/mypage/details/myInfo/CancelMembership";
 import { useAppSelector } from "@hooks/hook";
-import { selectUserId, selectUserInfo, userInfoConfig } from "@store/authSlice";
+import { selectUserId, selectUserInfo, UserInfoConfig } from "@store/authSlice";
 
 interface Props {
   name?: string;
 }
 
 const MyPage = ({ name }: Props) => {
-  const [tabName, setTabName] = useState<string>(name ? name : "내 정보 확인");
+  const [tabName, setTabName] = useState<string>(name ?? "내 정보 확인");
   const userId: number = useAppSelector(selectUserId);
-  const userInfo: userInfoConfig = useAppSelector(selectUserInfo);
+  const userInfo: UserInfoConfig = useAppSelector(selectUserInfo);
 
   return (
     <div className={styles["mypage__container"]}>
@@ -47,6 +47,7 @@ const MyPage = ({ name }: Props) => {
               "다이어리 설정": <MyPageDiary />,
               "카테고리 설정": <MyPageFrame title="카테고리" />,
               "디데이 설정": <MyPageFrame title="디데이" />,
+              "루틴 설정": <MyPageFrame title="루틴" />,
               "팔로워 목록": <MyFriend title="팔로워" />,
               "팔로잉 목록": <MyFriend title="팔로잉" />,
               "친구 검색": <MyFriend title="친구검색" />,

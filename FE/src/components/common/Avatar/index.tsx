@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "@styles/common/Avatar.module.scss";
-import { Avatar } from "@mui/material";
-import { AvatarProps } from "@mui/material";
+import { Avatar, AvatarProps } from "@mui/material";
 
 const CustomAvatar = ({ src, ...rest }: AvatarProps) => {
   return (

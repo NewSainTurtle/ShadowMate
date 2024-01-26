@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import styles from "@styles/auth/Login.module.scss";
 import Input from "@components/common/Input";
 import AuthButton from "../AuthButton";
@@ -6,12 +6,12 @@ import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
-import { useAppDispatch } from "@hooks/hook";
-import { setIsGoogle, setLogin, setUserInfo } from "@store/authSlice";
+import { useAppDispatch, useAppSelector } from "@hooks/hook";
+import { setLogin, selectAutoLogin, setAutoLogin, setIsGoogle, setUserInfo } from "@store/authSlice";
 import { setPopupOpen } from "@store/modalSlice";
 
 const getCookie = (name: string) => {
-  var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  const value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
   return value ? value[2] : null;
 };
 
@@ -27,12 +27,12 @@ const Login = () => {
     email: true,
     password: true,
   });
-  const [autoLogin, setAutoLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
   });
   const { email, password } = loginInfo;
+  const autoLogin = useAppSelector(selectAutoLogin);
 
   const handleGoogleLogin = () => {
     window.location.href = process.env.REACT_APP_API_URL + "/api/oauth/google";
@@ -46,6 +46,16 @@ const Login = () => {
     });
   };
 
+  const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
+
+  const handleAutoLogin = () => {
+    dispatch(setAutoLogin(!autoLogin));
+  };
+
   const handleLogin = () => {
     setShowAlert(false);
     setError({ email: !!email, password: !!password }); // null이면 false
@@ -57,19 +67,19 @@ const Login = () => {
         setShowAlert(false);
         const accessToken = res.headers["authorization"];
         const userId = res.headers["id"];
-        dispatch(setLogin({ accessToken: accessToken, userId: userId }));
-        if (autoLogin) {
-          localStorage.clear();
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("id", userId);
-        }
+        const type = res.headers["type"];
+        dispatch(setLogin({ accessToken, userId, type }));
+
+        // 자동로그인 auto-login 코드 저장
+        const auto = res.headers["auto-login"];
+        if (auto) localStorage.setItem("AL", auto);
 
         userApi.getProfiles(userId).then((res) => {
           dispatch(setUserInfo(res.data.data));
           navigator("/month");
         });
 
-        dispatch(setPopupOpen());
+        // dispatch(setPopupOpen()); 로그인 팝업
       })
       .catch((err) => {
         setShowAlert(true);
@@ -78,13 +88,16 @@ const Login = () => {
   };
 
   useEffect(() => {
+    // 소셜 로그인
     const token = getCookie("token");
     const id = getCookie("userId");
-    if (token && id) {
-      dispatch(setLogin({ accessToken: token, userId: parseInt(id) }));
+    const type = getCookie("type");
+    if (token && id && type) {
+      dispatch(setLogin({ accessToken: token, userId: parseInt(id), type }));
       dispatch(setIsGoogle(true));
       deleteCookie("token");
       deleteCookie("userId");
+      deleteCookie("type");
       userApi
         .getProfiles(parseInt(id))
         .then((res) => {
@@ -108,6 +121,8 @@ const Login = () => {
             onChange={onChange}
             error={!error.email} // false일 시 error
             helperText={!error.email && "이메일을 입력해주세요."}
+            onKeyDown={handleOnKeyPress}
+            maxLength={100}
           />
           <Input
             name="password"
@@ -117,19 +132,21 @@ const Login = () => {
             onChange={onChange}
             error={!error.password}
             helperText={!error.password && "비밀번호를 입력해주세요."}
+            onKeyDown={handleOnKeyPress}
+            maxLength={20}
           />
         </div>
         <div className={styles.login_toolbox}>
-          {/* <div className={styles.login_checkbox}>
-            <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={() => setAutoLogin(!autoLogin)} />
+          <div className={styles.login_checkbox}>
+            <input id="auto" type="checkbox" defaultChecked={autoLogin} onChange={handleAutoLogin} />
             <label htmlFor="auto">
               <Text types="small">자동로그인</Text>
             </label>
           </div>
-          <Text types="small">비밀번호 찾기</Text> */}
+          {/* <Text types="small">비밀번호 찾기</Text> */}
         </div>
         <div className={styles.login_warning} style={{ visibility: showAlert ? "visible" : "hidden" }}>
-          <Text types="small">아이디 또는 비밀번호를 잘못 입력했습니다.</Text>
+          <Text types="small">이메일 또는 비밀번호를 잘못 입력했습니다.</Text>
           <Text types="small">입력하신 내용을 다시 확인해주세요</Text>
         </div>
         <AuthButton onClick={handleLogin}>Login</AuthButton>

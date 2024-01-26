@@ -75,6 +75,7 @@ const MyPassword = () => {
                 onChange={handlePassword}
                 error={error.oldPassword}
                 helperText={error.oldPassword ? "현재 비밀번호와 일치하지 않습니다." : " "}
+                maxLength={20}
               />
               <Input
                 types="password"
@@ -84,6 +85,7 @@ const MyPassword = () => {
                 onChange={handlePassword}
                 error={error.newPassword}
                 helperText={"6~20자의 영문, 숫자, 특수문자(!?^&*@#)를 사용해 주세요."}
+                maxLength={20}
               />
               <Input
                 types="password"
@@ -93,6 +95,7 @@ const MyPassword = () => {
                 onChange={handlePassword}
                 error={error.newPasswordCheck}
                 helperText={error.newPasswordCheck ? "비밀번호가 일치하지 않습니다." : " "}
+                maxLength={20}
               />
             </div>
           </div>

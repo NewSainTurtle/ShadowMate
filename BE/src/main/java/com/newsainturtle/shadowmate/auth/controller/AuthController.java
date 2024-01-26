@@ -1,11 +1,8 @@
 package com.newsainturtle.shadowmate.auth.controller;
 
-import com.newsainturtle.shadowmate.auth.dto.SendEmailAuthenticationCodeRequest;
-import com.newsainturtle.shadowmate.auth.dto.CheckEmailAuthenticationCodeRequest;
-import com.newsainturtle.shadowmate.auth.dto.DuplicatedNicknameRequest;
+import com.newsainturtle.shadowmate.auth.dto.*;
 import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
-import com.newsainturtle.shadowmate.auth.dto.JoinRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +41,18 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_LOGIN));
     }
 
+    @PostMapping("/auto-login")
+    public ResponseEntity<BaseResponse> autoLogin(@RequestHeader("Auto-Login") final String key) {
+        return ResponseEntity.ok().headers(authServiceImpl.checkAutoLogin(key)).body(BaseResponse.from(SUCCESS_AUTO_LOGIN));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse> autoLogin(@RequestHeader("Auto-Login") final String key,
+                                                  @RequestBody @Valid final RemoveTokenRequest removeTokenRequest) {
+        authServiceImpl.logout(key, removeTokenRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_LOGOUT));
+    }
+
     @PostMapping("/nickname-duplicated")
     public ResponseEntity<BaseResponse> duplicatedCheckNickname(@RequestBody @Valid final DuplicatedNicknameRequest duplicatedNicknameRequest) {
         authServiceImpl.duplicatedCheckNickname(duplicatedNicknameRequest);
@@ -54,5 +63,12 @@ public class AuthController {
     public ResponseEntity<BaseResponse> deleteCheckNickname(@RequestBody @Valid final DuplicatedNicknameRequest duplicatedNicknameRequest) {
         authServiceImpl.deleteCheckNickname(duplicatedNicknameRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_NICKNAME_CHECK));
+    }
+
+    @PostMapping("/token/{userId}")
+    public ResponseEntity<BaseResponse> changeToken(@RequestHeader("Authorization") final String token,
+                                                    @PathVariable("userId") final Long userId,
+                                                    @RequestBody @Valid final ChangeTokenRequest changeTokenRequest) {
+        return ResponseEntity.ok().headers(authServiceImpl.changeToken(token, userId, changeTokenRequest)).body(BaseResponse.from(SUCCESS_CHANGE_ACCESS_TOKEN));
     }
 }

@@ -3,7 +3,9 @@ package com.newsainturtle.shadowmate.planner.service;
 import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.AddTimeTableResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -16,7 +18,9 @@ import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.TimeTableRepository;
 import com.newsainturtle.shadowmate.planner.repository.TodoRepository;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
+import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
+import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
 import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +45,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     private final TimeTableRepository timeTableRepository;
     private final UserRepository userRepository;
     private final SocialRepository socialRepository;
+    private final RoutineTodoRepository routineTodoRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
         DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
@@ -112,11 +118,14 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     public AddDailyTodoResponse addDailyTodo(final User user, final AddDailyTodoRequest addDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, addDailyTodoRequest.getDate());
         final Category category = getCategory(user, addDailyTodoRequest.getCategoryId());
+        final TodoIndexResponse lastTodoIndex = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
         final Todo todo = Todo.builder()
                 .category(category)
                 .todoContent(addDailyTodoRequest.getTodoContent())
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
+                .todoIndex(lastTodoIndex == null ? 100000 : lastTodoIndex.getTodoIndex() + 100000)
+                .timeTables(new ArrayList<>())
                 .build();
         final Todo saveTodo = todoRepository.save(todo);
         return AddDailyTodoResponse.builder().todoId(saveTodo.getId()).build();
@@ -131,14 +140,24 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         final DailyPlanner dailyPlanner = getDailyPlanner(user, updateDailyTodoRequest.getDate());
         final Category category = getCategory(user, updateDailyTodoRequest.getCategoryId());
         final Todo todo = getTodo(updateDailyTodoRequest.getTodoId(), dailyPlanner);
-        todo.updateTodoContentAndCategoryAndStatus(updateDailyTodoRequest.getTodoContent(), category, status);
+        if ((status.equals(TodoStatus.EMPTY) || status.equals(TodoStatus.INCOMPLETE)) &&
+                (todo.getTodoStatus().equals(TodoStatus.INPROGRESS) || todo.getTodoStatus().equals(TodoStatus.COMPLETE))) {
+            timeTableRepository.deleteAllByTodoId(todo.getId());
+            todo.clearTimeTables();
+        }
+        todoRepository.updateAllByTodoId(updateDailyTodoRequest.getTodoContent(), category, status, LocalDateTime.now(), todo.getId());
     }
 
     @Override
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
         final DailyPlanner dailyPlanner = getDailyPlanner(user, removeDailyTodoRequest.getDate());
         final Todo todo = getTodo(removeDailyTodoRequest.getTodoId(), dailyPlanner);
-        todoRepository.deleteByIdAndDailyPlanner(todo.getId(), dailyPlanner);
+        final RoutineTodo routineTodo = routineTodoRepository.findByTodo(todo);
+        if (routineTodo != null) {
+            routineTodo.setRoutine(null);
+            routineTodoRepository.deleteById(routineTodo.getId());
+        }
+        todoRepository.deleteById(todo.getId());
     }
 
     @Override
@@ -168,11 +187,11 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     @Override
     public void addDailyLike(final User user, final Long plannerWriterId, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
         final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, plannerWriterId, addDailyPlannerLikeRequest.getDate());
-        DailyPlannerLike dailyPlannerLike = dailyPlannerLikeRepository.findByUserAndDailyPlanner(user, dailyPlanner);
-        if (dailyPlannerLike != null) {
+        final boolean like = dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user, dailyPlanner);
+        if (like) {
             throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE);
         }
-        dailyPlannerLike = DailyPlannerLike.builder()
+        final DailyPlannerLike dailyPlannerLike = DailyPlannerLike.builder()
                 .dailyPlanner(dailyPlanner)
                 .user(user)
                 .build();
@@ -186,34 +205,34 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     }
 
     @Override
-    public void addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
+    public AddTimeTableResponse addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
         LocalDateTime startTime = stringToLocalDateTime(addTimeTableRequest.getStartTime());
         LocalDateTime endTime = stringToLocalDateTime(addTimeTableRequest.getEndTime());
         checkValidDateTime(addTimeTableRequest.getDate(), startTime, endTime);
 
         final DailyPlanner dailyPlanner = getDailyPlanner(user, addTimeTableRequest.getDate());
         final Todo todo = getTodo(addTimeTableRequest.getTodoId(), dailyPlanner);
-
-        if (todo.getTimeTable() != null) {
-            throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE);
+        if (todo.getTodoStatus().equals(TodoStatus.EMPTY) || todo.getTodoStatus().equals(TodoStatus.INCOMPLETE)) {
+            throw new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE);
         }
 
-        todo.setTimeTable(TimeTable.builder()
+        final TimeTable saveTimeTable = timeTableRepository.save(TimeTable.builder()
                 .endTime(endTime)
                 .startTime(startTime)
                 .build());
+        saveTimeTable.setTodo(todo);
+        return AddTimeTableResponse.builder().timeTableId(saveTimeTable.getId()).build();
     }
 
     @Override
     public void removeTimeTable(final User user, final RemoveTimeTableRequest removeTimeTableRequest) {
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, removeTimeTableRequest.getDate());
-        final Todo todo = getTodo(removeTimeTableRequest.getTodoId(), dailyPlanner);
-        if (todo.getTimeTable() == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE);
+        getDailyPlanner(user, removeTimeTableRequest.getDate());
+        final TimeTable findTimeTable = timeTableRepository.findByIdAndTodoId(removeTimeTableRequest.getTimeTableId(), removeTimeTableRequest.getTodoId());
+        if (findTimeTable == null) {
+            throw new PlannerException(PlannerErrorResult.INVALID_TIMETABLE);
         }
-        final long timeTableId = todo.getTimeTable().getId();
-        todo.setTimeTable(null);
-        timeTableRepository.deleteById(timeTableId);
+        findTimeTable.setTodo(null);
+        timeTableRepository.deleteById(removeTimeTableRequest.getTimeTableId());
     }
 
     @Override
@@ -229,8 +248,34 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         final Social social = Social.builder()
                 .dailyPlanner(dailyPlanner)
                 .socialImage(shareSocialRequest.getSocialImage())
+                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                .ownerId(user.getId())
                 .build();
         final Social saveSocial = socialRepository.save(social);
         return ShareSocialResponse.builder().socialId(saveSocial.getId()).build();
+    }
+
+    @Override
+    public void changeDailyTodoSequence(final User user, final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest) {
+        final DailyPlanner dailyPlanner = getDailyPlanner(user, changeDailyTodoSequenceRequest.getDate());
+        final Todo todo = getTodo(changeDailyTodoSequenceRequest.getTodoId(), dailyPlanner);
+
+        if (changeDailyTodoSequenceRequest.getUpperTodoId() == null) {
+            final TodoIndexResponse lowerTodoIndex = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, 0);
+            if (lowerTodoIndex == null) {
+                throw new PlannerException(PlannerErrorResult.INVALID_TODO);
+            } else {
+                todo.updateTodoIndex(lowerTodoIndex.getTodoIndex() / 2);
+            }
+        } else {
+            final double upperTodoIndex = getTodo(changeDailyTodoSequenceRequest.getUpperTodoId(), dailyPlanner).getTodoIndex();
+            final TodoIndexResponse lowerTodoIndex = todoRepository.findTopByDailyPlannerAndTodoIndexGreaterThanOrderByTodoIndex(dailyPlanner, upperTodoIndex);
+            if (lowerTodoIndex == null) {
+                todo.updateTodoIndex(upperTodoIndex + 100000);
+            } else {
+                todo.updateTodoIndex((upperTodoIndex + lowerTodoIndex.getTodoIndex()) / 2);
+            }
+        }
+
     }
 }

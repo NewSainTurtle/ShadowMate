@@ -6,6 +6,7 @@ $color-gray-4: var(--color-gray-4);
 $color-gray-5: var(--color-gray-5);
 $color-blue: var(--color-btn-blue);
 $color-warning: var(--color-warning);
+$border: 1px;
 
 .mypage {
   &__container {
@@ -21,12 +22,10 @@ $color-warning: var(--color-warning);
   &__setting {
     display: inline-flex;
     margin: 0 1em 1em 1em;
-    overflow: auto;
   }
 
   &__contents {
     width: 100%;
-    overflow: auto;
   }
 }
 
@@ -41,6 +40,7 @@ $color-warning: var(--color-warning);
   &__container {
     position: relative;
     height: 100%;
+    width: 100%;
   }
 
   &__title {
@@ -91,9 +91,11 @@ $color-warning: var(--color-warning);
   }
 
   &__contents {
+    height: calc(100% - 120px - 2 * $border);
     position: relative;
     padding: 3em;
     box-sizing: border-box;
+    overflow-y: auto;
   }
 
   &__line {
@@ -101,6 +103,10 @@ $color-warning: var(--color-warning);
     grid-template-columns: 2fr 8fr;
     align-items: center;
     margin-bottom: 2em;
+    > span {
+      margin-right: max(2em);
+      word-break: keep-all;
+    }
 
     > input {
       height: 100%;
@@ -120,11 +126,17 @@ $color-warning: var(--color-warning);
   }
 }
 
+#date {
+  position: relative;
+}
+
 .date {
   &__picker {
     position: absolute;
-    right: 2em;
-    top: 10em;
+    right: 0;
+    top: 40;
+    z-index: 1000;
+
     > svg,
     span,
     button {
@@ -245,7 +257,7 @@ $color-warning: var(--color-warning);
     > div:nth-child(2) {
       margin-top: 3.5em;
     }
-    > div:last-child {
+    &--add {
       position: fixed;
       bottom: -3.5em;
       height: 3.5em;
@@ -321,6 +333,10 @@ $color-warning: var(--color-warning);
   }
 }
 
+#dday {
+  min-height: 25em;
+}
+
 .dday {
   &__item {
     display: grid;
@@ -363,11 +379,145 @@ $color-warning: var(--color-warning);
   }
 }
 
+#routine {
+  &__days {
+    margin: 0.5em 0 1em 0;
+  }
+}
+
+.routine {
+  &__item {
+    display: grid;
+    grid-template-columns: 9fr 1fr;
+    gap: 1em;
+    align-items: center;
+    min-height: 5.5em;
+    padding: 0.5em 1em;
+    box-sizing: border-box;
+    border-bottom: 0.5px solid $color-gray-2;
+    cursor: pointer;
+
+    > div:nth-child(2) {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+    }
+
+    &--clicked {
+      @extend .routine__item;
+      background-color: $color-gray-1;
+    }
+
+    &--disable {
+      @extend .routine__item;
+      cursor: default;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+
+    > div > span {
+      color: $color-gray-4;
+    }
+
+    &--disable {
+      @extend .routine__info;
+      color: $color-gray-5;
+    }
+  }
+  &__day {
+    &-list {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      > div > input {
+        display: none;
+      }
+    }
+
+    &-item {
+      > label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 45px;
+        height: 45px;
+        margin-top: 0.5em;
+        border-radius: 50%;
+        background-color: $color-gray-2;
+        cursor: pointer;
+      }
+
+      > input:checked + label {
+        background-color: $color-blue;
+      }
+    }
+    &-text {
+      width: 100%;
+      margin: 0.5em 0 0 0.2em;
+      > span {
+        visibility: hidden;
+        font-size: 0.75rem;
+        color: $color-gray-4;
+      }
+      &--error {
+        @extend .routine__day-text;
+        > span {
+          visibility: visible;
+          color: #d32f2f;
+        }
+      }
+    }
+  }
+
+  &__category {
+    > div > div > input {
+      cursor: pointer;
+    }
+  }
+
+  &__period {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+
+    > div > div > input {
+      caret-color: transparent;
+    }
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+
+      > div {
+        min-width: 5em;
+      }
+
+      > svg {
+        font-size: medium;
+        cursor: pointer;
+      }
+    }
+    > .start,
+    .end {
+      position: relative;
+    }
+  }
+}
+
 .tab {
   height: 100%;
   width: 10em;
   margin-right: 1em;
-
+  > div:nth-child(2) {
+    height: 12em;
+  }
   &__title {
     > input {
       display: none;
@@ -382,16 +532,9 @@ $color-warning: var(--color-warning);
         background-color: $color-gray-2;
         & + div {
           margin: 0.2em 0;
-          // 탭 아코디언 동작 시 사용됨.
-          // max-height: 0;
-          // transition: all 0.25s;
           overflow: hidden;
           cursor: pointer;
         }
-      }
-
-      &:checked + label + div {
-        max-height: 6.2em;
       }
     }
 

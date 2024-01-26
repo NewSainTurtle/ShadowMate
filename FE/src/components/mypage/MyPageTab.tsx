@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import { useAppSelector } from "@hooks/hook";
@@ -27,15 +27,18 @@ const TAB_LIST: TabListType[] = [
   },
   {
     title: "다이어리",
-    contents: { index: 1, list: ["다이어리 설정", "카테고리 설정", "디데이 설정"] },
+    contents: { index: 1, list: ["다이어리 설정", "카테고리 설정", "디데이 설정", "루틴 설정"] },
   },
   { title: "친구", contents: { index: 2, list: ["팔로워 목록", "팔로잉 목록", "친구 검색"] } },
 ];
 
+const setHeaderName = (name: string) => {
+  if (name === "친구 검색") return 2;
+  return name === "카테고리 설정" ? 1 : 0;
+};
+
 const MyPageTab = ({ tabName, setTabName }: MyPageTabProps) => {
-  const [headerIndex, setHeaderIndex] = useState<number>(
-    tabName === "친구 검색" ? 2 : tabName === "카테고리 설정" ? 1 : 0,
-  ); // 상위 카테고리
+  const [headerIndex, setHeaderIndex] = useState<number>(setHeaderName(tabName)); // 상위 카테고리
   const [subIndex, setSubIndex] = useState<string>(tabName); // 하위 카테고리
   const isGoogle = useAppSelector(selectIsGoogle);
 

@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import AddIcon from "@mui/icons-material/Add";

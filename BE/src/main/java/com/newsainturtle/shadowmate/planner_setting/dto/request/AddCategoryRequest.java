@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 public class AddCategoryRequest {
 
     @NotNull
-    @Size(min = 2, max = 10)
+    @Size(min = 1, max = 10)
     private String categoryTitle;
 
     @NotNull

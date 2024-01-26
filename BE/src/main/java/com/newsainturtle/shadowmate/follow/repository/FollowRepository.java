@@ -11,19 +11,14 @@ import java.util.List;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
-    List<Follow> findAllByFollowerId(final User user);
-
-    List<Follow> findAllByFollowingId(final User user);
-
-    Follow findByFollowerIdAndFollowingId(final User follower, final User following);
-
-    void deleteByFollowingIdAndFollowerId(final User user, final User target);
-
-    Long countByFollowerId(final User user);
-
-    Long countByFollowingId(final User user);
+    List<Follow> findAllByFollower(final User follower);
+    List<Follow> findAllByFollowing(final User following);
+    Follow findByFollowingAndFollower(final User following, final User follower);
+    void deleteByFollowingAndFollower(final User user, final User target);
+    Long countByFollower(final User follower);
+    Long countByFollowing(final User following);
 
     @Modifying(clearAutomatically = true)
-    @Query("DELETE FROM Follow f WHERE f.followerId = :followerId OR f.followingId = :followingId")
-    void deleteAllByFollowingIdOrFollowerId(@Param("followerId") final User follower, @Param("followingId") final User following);
+    @Query("DELETE FROM Follow f WHERE f.follower = :follower OR f.following = :following")
+    void deleteAllByFollowingOrFollower(@Param("follower") final User follower, @Param("following") final User following);
 }

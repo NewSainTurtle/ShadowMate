@@ -1,5 +1,5 @@
 import { TodoConfig } from "@util/planner.interface";
-import { Dispatch, MutableRefObject, RefObject, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 
 interface Props {
   todos: TodoConfig[];
@@ -7,19 +7,20 @@ interface Props {
 }
 
 const todoModule = (todos: TodoConfig[], setTodos: Dispatch<SetStateAction<TodoConfig[]>>) => {
+  const copyTodos = useMemo(() => [...todos], [todos]);
+
   const insertTodo = (props: TodoConfig) => {
     setTodos([...todos, { ...props }]);
   };
 
   const updateTodo = (idx: number, props: TodoConfig) => {
-    let copyTodos = [...todos];
     copyTodos[idx] = { ...props };
     setTodos(copyTodos);
   };
 
   const deleteTodo = (idx: number) => {
-    let newTodos = todos.filter((item, i) => idx != i);
-    setTodos(newTodos);
+    copyTodos.splice(idx, 1);
+    setTodos(copyTodos);
   };
 
   return {

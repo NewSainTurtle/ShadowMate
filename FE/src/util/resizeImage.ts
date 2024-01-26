@@ -3,7 +3,7 @@ const dataURItoBlob = function (dataURI: string) {
   const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
   const ab = new ArrayBuffer(byteString.length);
   const ia = new Uint8Array(ab);
-  for (var i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+  for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
   return new Blob([ia], { type: mimeString });
 };
 

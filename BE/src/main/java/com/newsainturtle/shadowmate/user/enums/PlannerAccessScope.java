@@ -1,7 +1,6 @@
 package com.newsainturtle.shadowmate.user.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

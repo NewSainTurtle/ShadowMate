@@ -1,4 +1,3 @@
-import React from "react";
 import { rootState } from "@hooks/configStore";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DdayItemConfig } from "@util/planner.interface";
@@ -42,6 +41,7 @@ const ddaySlice = createSlice({
 
 export const { setDdayList, setDdayClick, setDdayInput } = ddaySlice.actions;
 
+export const BASIC_DDAY_INPUT = initialState.ddayInput;
 export const selectDdayList = (state: rootState) => state.dday.ddayList;
 export const selectDdayClick = (state: rootState) => state.dday.ddayClick;
 export const selectDdayInput = (state: rootState) => state.dday.ddayInput;

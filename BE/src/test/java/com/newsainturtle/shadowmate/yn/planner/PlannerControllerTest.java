@@ -493,6 +493,80 @@ class PlannerControllerTest {
     }
 
     @Nested
+    class 일일플래너할일_순서변경 {
+        final String url = "/api/planners/{userId}/daily/todo-sequence";
+        final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest = ChangeDailyTodoSequenceRequest.builder()
+                .date(date)
+                .todoId(1L)
+                .upperTodoId(2L)
+                .build();
+
+        @Test
+        void 실패_없는사용자() throws Exception {
+            //given
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 실패_유효하지않은할일() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_유효하지않은일일플래너() throws Exception {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 성공() throws Exception {
+            //given
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.put(url, userId)
+                            .content(gson.toJson(changeDailyTodoSequenceRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+
+            //then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
+    @Nested
     class 일일플래너수정 {
         @Nested
         class 오늘의다짐편집 {
@@ -753,7 +827,7 @@ class PlannerControllerTest {
                     // 내일의 다짐 길이초과
                     Arguments.of(UpdateTomorrowGoalRequest.builder()
                             .date(date)
-                            .tomorrowGoal("012345678901234567890123456789012345678901234567890")
+                            .tomorrowGoal("01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")
                             .build()),
                     // 날짜 Null
                     Arguments.of(UpdateTomorrowGoalRequest.builder()
@@ -796,7 +870,9 @@ class PlannerControllerTest {
                     // 오늘의 회고 길이초과
                     Arguments.of(UpdateRetrospectionRequest.builder()
                             .date("2023-09-26")
-                            .retrospection("01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890")
+                            .retrospection("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                                    "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" +
+                                    "012345678901234567890123456789012345678901234567890")
                             .build()),
                     // 날짜 Null
                     Arguments.of(UpdateRetrospectionRequest.builder()
@@ -1874,9 +1950,9 @@ class PlannerControllerTest {
             }
 
             @Test
-            void 실패_이미타임테이블시간이존재() throws Exception {
+            void 실패_타임테이블등록_불가상태() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_TIME_TABLE)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1912,6 +1988,7 @@ class PlannerControllerTest {
             final RemoveTimeTableRequest removeTimeTableRequest = RemoveTimeTableRequest.builder()
                     .date(date)
                     .todoId(1L)
+                    .timeTableId(1L)
                     .build();
 
             @Test
@@ -1929,22 +2006,6 @@ class PlannerControllerTest {
 
                 //then
                 resultActions.andExpect(status().isForbidden());
-            }
-
-            @Test
-            void 실패_유효하지않은타임테이블() throws Exception {
-                //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME_TABLE)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
-
-                //when
-                final ResultActions resultActions = mockMvc.perform(
-                        MockMvcRequestBuilders.delete(url, userId)
-                                .content(gson.toJson(removeTimeTableRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-                //then
-                resultActions.andExpect(status().isBadRequest());
             }
 
             @Test

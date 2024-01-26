@@ -10,7 +10,7 @@ const CategoryColorList = () => {
   return (
     <div className={styles["color__container"]}>
       {categoryColors.map((item: CategoryColorConfig, idx: number) => (
-        <CategoryColorItem key={idx} item={item} index={idx} />
+        <CategoryColorItem key={item.categoryColorId} item={item} index={idx} />
       ))}
     </div>
   );

@@ -18,6 +18,7 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
   const todoEndRef = useRef<HTMLDivElement | null>(null);
   const [newTodo, setNewTodo] = useState<string>("");
   const { insertTodo } = todoModule(dailyTodos, setDailyTodos);
+  const maxLength = 50;
 
   const handleOnKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (newTodo === "") return;
@@ -59,12 +60,13 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
 
   return (
     <div ref={todoEndRef} className={styles["item__todo-item"]}>
-      <div style={{ cursor: "default " }}>
+      <div style={{ cursor: "default" }}>
         <span style={{ visibility: "hidden" }}>💻</span>
       </div>
       <input
         type="text"
         value={newTodo}
+        maxLength={maxLength}
         onChange={(e) => setNewTodo(e.target.value)}
         onKeyDown={(e) => handleOnKeyPress(e)}
         onBlur={handleOnBlur}

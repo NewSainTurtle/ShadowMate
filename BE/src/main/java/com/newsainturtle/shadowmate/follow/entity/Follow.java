@@ -13,16 +13,21 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "follow")
+@Table(name = "follow",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"follower_id", "following_id"}
+                )
+        })
 @AttributeOverride(name = "id", column = @Column(name = "follow_id"))
 public class Follow extends CommonEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "follower_id")
-    private User followerId;
+    @JoinColumn(name = "follower_id", nullable = false)
+    private User follower;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "following_id")
-    private User followingId;
+    @JoinColumn(name = "following_id", nullable = false)
+    private User following;
 }

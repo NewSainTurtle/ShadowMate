@@ -5,12 +5,14 @@ import weekReducer from "@store/planner/weekSlice";
 import dayReducer from "@store/planner/daySlice";
 import categoryReducer from "@store/mypage/categorySlice";
 import ddayReducer from "@store/mypage/ddaySlice";
+import routineReducer from "@store/mypage/routineSlice";
 import frinedReducer from "@store/friendSlice";
+import socialReducer from "@store/socialSlice";
 import modalReducer from "@store/modalSlice";
 import alertReducer from "@store/alertSlice";
 
 import { persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import storage from "redux-persist/lib/storage/session";
 import persistStore from "redux-persist/es/persistStore";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 
@@ -21,7 +23,9 @@ const rootReducer = combineReducers({
   day: dayReducer,
   category: categoryReducer,
   dday: ddayReducer,
+  routine: routineReducer,
   friend: frinedReducer,
+  social: socialReducer,
   modal: modalReducer,
   alert: alertReducer,
 });

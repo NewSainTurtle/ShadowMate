@@ -103,4 +103,37 @@ public class PlannerSettingController {
         plannerSettingServiceImpl.updateDday(principalDetails.getUser(), updateDdayRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_DDAY));
     }
+
+    @PostMapping("/{userId}/routines")
+    public ResponseEntity<BaseResponse> addRoutine(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                   @PathVariable("userId") final Long userId,
+                                                   @RequestBody @Valid final AddRoutineRequest addRoutineRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_ROUTINE, plannerSettingServiceImpl.addRoutine(principalDetails.getUser(), addRoutineRequest)));
+    }
+
+    @GetMapping("/{userId}/routines")
+    public ResponseEntity<BaseResponse> getRoutineList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                       @PathVariable("userId") final Long userId) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_ROUTINE_LIST, plannerSettingServiceImpl.getRoutineList(principalDetails.getUser())));
+    }
+
+    @DeleteMapping("/{userId}/routines")
+    public ResponseEntity<BaseResponse> removeRoutine(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                      @PathVariable("userId") final Long userId,
+                                                      @RequestBody @Valid final RemoveRoutineRequest removeRoutineRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.removeRoutine(principalDetails.getUser(), removeRoutineRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_ROUTINE));
+    }
+
+    @PutMapping("/{userId}/routines")
+    public ResponseEntity<BaseResponse> updateRoutine(@AuthenticationPrincipal final PrincipalDetails principalDetails,
+                                                      @PathVariable("userId") final Long userId,
+                                                      @RequestBody @Valid final UpdateRoutineRequest updateRoutineRequest) {
+        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        plannerSettingServiceImpl.updateRoutine(principalDetails.getUser(), updateRoutineRequest);
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_ROUTINE));
+    }
 }

@@ -5,12 +5,16 @@ import { MonthConfig } from "@store/planner/monthSlice";
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
   login: (data: { email: string; password: string }) => Axios.post(api.auth.login(), data),
+  autoLogin: (data: null, headers: { "Auto-Login": string }) => Axios.post(api.auth.autoLogin(), data, { headers }),
   googleLogin: () => Axios.post(api.auth.googleLogin()),
+  logout: (data: { userId: number; type: string }, headers: { "Auto-Login": string }) =>
+    Axios.post(api.auth.logout(), data, { headers }),
   nickname: (data: { nickname: string }) => Axios.post(api.auth.nickname(), data),
   deleteNickname: (data: { nickname: string }) => Axios.delete(api.auth.nickname(), { data }),
   emailAuthentication: (data: { email: string }) => Axios.post(api.auth.emailAuthentication(), data),
   emailAuthenticationCheck: (data: { email: string; code: string }) =>
     Axios.post(api.auth.emailAuthenticationCheck(), data),
+  token: (userId: number, data: { type: string }) => Axios.post(api.auth.token(userId), data),
 };
 
 export const userApi = {
@@ -78,15 +82,17 @@ export const plannerApi = {
       todoId: number;
       todoContent: string;
       categoryId: number;
-      todoStatus: "공백" | "완료" | "미완료";
+      todoStatus: "공백" | "완료" | "진행중" | "미완료";
     },
   ) => Axios.put(api.planners.dailyTodos(userId), data),
   deleteDailyTodos: (userId: number, data: { date: string; todoId: number }) =>
     Axios.delete(api.planners.dailyTodos(userId), { data: data }),
+  todoSequence: (userId: number, data: { date: string; todoId: number; upperTodoId: number | null }) =>
+    Axios.put(api.planners.dailyTodoSequence(userId), data),
 
   timetables: (userId: number, data: { date: string; todoId: number; startTime: string; endTime: string }) =>
     Axios.post(api.planners.timetables(userId), data),
-  deleteTimetable: (userId: number, data: { date: string; todoId: number }) =>
+  deleteTimetable: (userId: number, data: { date: string; todoId: number; timeTableId: number }) =>
     Axios.delete(api.planners.timetables(userId), { data: data }),
   retrospections: (userId: number, data: { date: string; retrospection: string }) =>
     Axios.put(api.planners.retrospections(userId), data),
@@ -123,12 +129,37 @@ export const settingApi = {
   editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
+  routines: (userId: number) => Axios.get(api.setting.routines(userId)),
+  addRoutines: (
+    userId: number,
+    data: { routineContent: string; startDay: string; endDay: string; categoryId: number; days: string[] },
+  ) => Axios.post(api.setting.routines(userId), data),
+  editRoutines: (
+    userId: number,
+    data: {
+      routineId: number;
+      order: number;
+      startDay: string;
+      endDay: string;
+      routineContent: string;
+      categoryId: number;
+      days: string[];
+    },
+  ) => Axios.put(api.setting.routines(userId), data),
+  deleteRoutines: (userId: number, data: { routineId: number; order: number }) =>
+    Axios.delete(api.setting.routines(userId), { data }),
 };
 
 export const socialApi = {
-  getSocial: (userId: number, params: { sort: "latest" | "popularity"; pageNumber: number }) =>
-    Axios.get(api.social.getSocial(userId), { params: params }),
-  searches: (userId: number, data: { nickname: string; sort: "latest" | "popularity"; pageNumber: number }) =>
-    Axios.post(api.social.searches(userId), data),
+  getSocial: (
+    userId: number,
+    params: {
+      sort: "latest" | "popularity";
+      "page-number": number;
+      nickname: string;
+      "start-date": string;
+      "end-date": string;
+    },
+  ) => Axios.get(api.social.getSocial(userId), { params: params }),
   delete: (userId: number, socialId: number) => Axios.delete(api.social.delete(userId, socialId)),
 };

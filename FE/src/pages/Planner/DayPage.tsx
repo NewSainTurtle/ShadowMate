@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectDayDate, selectDayInfo, selectTodoList, setDayInfo, setTodoItem } from "@store/planner/daySlice";
 import CustomCursor from "@components/planner/day/CustomCursor";
 import dayjs from "dayjs";
-import { TodoConfig } from "@util/planner.interface";
+import { TimeTableConfig, TodoConfig } from "@util/planner.interface";
 import { plannerApi } from "@api/Api";
 import { selectUserId } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -23,7 +23,7 @@ const DayPage = () => {
   let friendUserId = useAppSelector(selectFriendId);
   friendUserId = friendUserId != 0 ? friendUserId : userId;
   const date = useAppSelector(selectDayDate);
-  const todoList = useAppSelector(selectTodoList);
+  const todoList: TodoConfig[] = useAppSelector(selectTodoList);
   const dayPlannerInfo = useAppSelector(selectDayInfo);
   const [ment, setMent] = useState({
     todayGoal: "",
@@ -65,13 +65,13 @@ const DayPage = () => {
   }, [date, friendUserId]);
 
   useEffect(() => {
-    const sumMinute = todoList
-      .filter((ele: TodoConfig) => ele.timeTable && ele.timeTable.startTime != "" && ele.timeTable.endTime != "")
-      .reduce(
-        (accumulator: number, item: { timeTable: any }) =>
-          accumulator + Number(dayjs(item.timeTable!.endTime).diff(dayjs(item.timeTable!.startTime), "m")),
-        0,
-      );
+    const sumMinute = todoList.reduce((accumulate: number, ele: TodoConfig) => {
+      const sumTodoTime = ele.timeTables?.reduce((sumTime: number, item: TimeTableConfig) => {
+        return sumTime + Number(dayjs(item.endTime).diff(dayjs(item.startTime), "m"));
+      }, 0) as number;
+      return accumulate + sumTodoTime;
+    }, 0);
+
     const studyTimeHour = Math.floor(sumMinute / 60);
     const studyTimeMinute = Math.floor(sumMinute % 60);
     setTotalTime({ studyTimeHour, studyTimeMinute });
@@ -79,7 +79,7 @@ const DayPage = () => {
 
   useEffect(() => {
     const handleOutsideClose = (e: MouseEvent) => {
-      if (todoDivRef && todoDivRef.current && e.button == 2) {
+      if (todoDivRef?.current && e.button == 2) {
         setIsClickTimeTable(false);
         dispatch(
           setTodoItem({
@@ -207,9 +207,9 @@ const DayPage = () => {
           value={retrospection}
           onChange={handleInput}
           rows={5}
-          maxLength={100}
+          maxLength={250}
           isFile
-          retrospectionImage={retrospectionImage || ""}
+          retrospectionImage={retrospectionImage}
           setRetrospectionImage={setRetrospectionImage}
           onBlur={saveRetrospections}
         />
@@ -220,7 +220,7 @@ const DayPage = () => {
           value={tomorrowGoal}
           onChange={handleInput}
           rows={5}
-          maxLength={50}
+          maxLength={100}
           onBlur={saveTomorrowGoals}
         />
       </div>

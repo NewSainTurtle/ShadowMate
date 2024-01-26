@@ -4,12 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class AddDailyTodoResponse {
 
     private Long todoId;
 
-    @Builder
-    public AddDailyTodoResponse(Long todoId) {
-        this.todoId = todoId;
-    }
 }

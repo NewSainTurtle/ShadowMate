@@ -2,7 +2,7 @@ import React from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import { useAppSelector } from "@hooks/hook";
 import { DdayItemConfig } from "@util/planner.interface";
-import MyPageDdayItem from "@components/mypage/item/MyPageDdayItem";
+import DdayItem from "@components/mypage/item/DdayItem";
 import Text from "@components/common/Text";
 import { selectDdayList } from "@store/mypage/ddaySlice";
 
@@ -13,7 +13,7 @@ const DdayList = () => {
       {ddayList.length != 0 ? (
         <>
           {ddayList.map((item: DdayItemConfig, idx: number) => (
-            <MyPageDdayItem key={idx} idx={idx} item={item} />
+            <DdayItem key={item.ddayId} idx={idx} item={item} />
           ))}
         </>
       ) : (
