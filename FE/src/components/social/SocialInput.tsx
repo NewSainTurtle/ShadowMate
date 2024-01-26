@@ -45,6 +45,7 @@ const SocialInput = ({ onCalendarClick, onMyClick, ...rest }: Props & TextFieldP
       FormHelperTextProps={{
         className: styles["input__helper-text"],
       }}
+      inputProps={{ maxLength: 10 }}
       {...rest}
       variant="standard"
     />

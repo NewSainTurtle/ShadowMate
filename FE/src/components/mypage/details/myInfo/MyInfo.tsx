@@ -158,6 +158,7 @@ const MyPageInfo = () => {
                   ? "사용가능한 닉네임 입니다."
                   : `글자 수: ${length.nickname}/10`
               }
+              maxLength={10}
             />
             <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
               중복검사
@@ -179,6 +180,7 @@ const MyPageInfo = () => {
                 ? "0 ~ 20자의 상태 메세지를 입력할 수 있습니다."
                 : `글자 수: ${length.statusMessage}/20`
             }
+            maxLength={20}
           />
         ),
       },

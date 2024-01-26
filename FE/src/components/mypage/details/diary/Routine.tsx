@@ -130,7 +130,6 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
             name="routineContent"
             value={routineContent}
             placeholder="루틴 이름을 입력하세요."
-            inputProps={{ maxLength, inputMode: "text" }}
             onChange={onChangeInput}
             error={lengthError}
             helperText={
@@ -138,6 +137,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
                 ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.`
                 : `글자 수: ${length}/${maxLength}`
             }
+            maxLength={maxLength}
           />
         </div>
 

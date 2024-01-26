@@ -122,6 +122,7 @@ const Login = () => {
             error={!error.email} // false일 시 error
             helperText={!error.email && "이메일을 입력해주세요."}
             onKeyDown={handleOnKeyPress}
+            maxLength={100}
           />
           <Input
             name="password"
@@ -132,6 +133,7 @@ const Login = () => {
             error={!error.password}
             helperText={!error.password && "비밀번호를 입력해주세요."}
             onKeyDown={handleOnKeyPress}
+            maxLength={20}
           />
         </div>
         <div className={styles.login_toolbox}>
