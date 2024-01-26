@@ -10,18 +10,23 @@ import { useAppSelector } from "@hooks/hook";
 import { CategoryItemConfig, TodoConfig } from "@util/planner.interface";
 import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
-import { DeleteOutlined } from "@mui/icons-material";
+import { DeleteOutlined, DragHandle } from "@mui/icons-material";
 
 interface Props {
   idx: number;
   item: TodoConfig;
-  isMine: boolean;
+  isMine?: boolean;
+  disable?: boolean;
   date: string;
   dailyTodos: TodoConfig[];
   setDailyTodos: Dispatch<SetStateAction<TodoConfig[]>>;
+  dragModule?: {
+    childMouseEnter: () => void;
+    childMouseLeave: () => void;
+  };
 }
 
-const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props) => {
+const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos, dragModule }: Props) => {
   const userId = useAppSelector(selectUserId);
   const [Modalopen, setModalOpen] = useState(false);
   const handleClose = () => setModalOpen(false);
@@ -133,7 +138,7 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
 
   return (
     <>
-      <div className={styles[`item__todo-item${friend}`]}>
+      <div className={styles[`item__todo-item${friend}`]} id={styles["underbar--gray"]}>
         <div onClick={() => setModalOpen(!Modalopen)}>
           <span>{item.category?.categoryEmoticon ?? ""}</span>
         </div>
@@ -156,10 +161,23 @@ const WeekItem = ({ idx, item, isMine, date, dailyTodos, setDailyTodos }: Props)
             <Text types="small">{item?.todoContent}</Text>
           </div>
         )}
-        <DeleteOutlined onClick={handleDeleteModalOpen} />
-        <div onClick={handleStatusSave}>
-          <Text>{setStatus(item.todoStatus)}</Text>
-        </div>
+        {!disable && (
+          <>
+            <DragHandle
+              onMouseEnter={() => dragModule?.childMouseEnter()}
+              onMouseLeave={() => dragModule?.childMouseLeave()}
+            />
+            <DeleteOutlined
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteModalOpen();
+              }}
+            />
+            <div onClick={handleStatusSave}>
+              <Text>{setStatus(item.todoStatus)}</Text>
+            </div>
+          </>
+        )}
       </div>
       <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
         <CategorySelector type="week" handleClick={handleClickCategory} addBtn />

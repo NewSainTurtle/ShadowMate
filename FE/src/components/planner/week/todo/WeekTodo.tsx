@@ -20,7 +20,7 @@ const WeekTodo = ({ isMine }: Props) => {
       <div className={styles["item__title"]}>
         <Text>주차별 할 일</Text>
       </div>
-      <div className={styles["item__todo-list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, calc(100% / 7)` }}>
+      <div className={styles["todo__list"]} style={{ gridTemplateRows: `repeat(${rowMaxLength}, calc(100% / 7)` }}>
         {weeklyTodos.map((item: WeekTodoItemConfig, idx: number) => {
           return <WeekTodoItem key={item.weeklyTodoId} id={item.weeklyTodoId} idx={idx} item={item} isMine={isMine} />;
         })}

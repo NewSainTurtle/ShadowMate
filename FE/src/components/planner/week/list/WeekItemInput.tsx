@@ -59,7 +59,7 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
 
   return (
     <div ref={todoEndRef} className={styles["item__todo-item"]}>
-      <div style={{ cursor: "default " }}>
+      <div style={{ cursor: "default" }}>
         <span style={{ visibility: "hidden" }}>💻</span>
       </div>
       <input
