@@ -72,7 +72,8 @@ const Login = () => {
           dispatch(setUserInfo(res.data.data));
           navigator("/month");
         });
-        dispatch(setPopupOpen());
+
+        // dispatch(setPopupOpen()); 로그인 팝업
       })
       .catch((err) => {
         setShowAlert(true);

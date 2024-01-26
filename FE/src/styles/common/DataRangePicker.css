@@ -89,6 +89,7 @@
   }
 
   .rdrMonth {
+    padding: 0;
     width: 27em;
   }
 }
