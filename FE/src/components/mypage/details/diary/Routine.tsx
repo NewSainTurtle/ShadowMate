@@ -130,6 +130,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
             name="routineContent"
             value={routineContent}
             placeholder="루틴 이름을 입력하세요."
+            inputProps={{ maxLength, inputMode: "text" }}
             onChange={onChangeInput}
             error={lengthError}
             helperText={
@@ -139,17 +140,48 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
             }
           />
         </div>
+
         <div className={styles["frame__line"]}>
-          <Text>카테고리</Text>
-          <Input
-            name="routineCategory"
-            value={handleCategory()}
-            onClick={handleOpen}
-            style={{ caretColor: "transparent" }}
-            placeholder="루틴의 카테고리를 선택하세요."
-            autoComplete="off"
-          />
+          <Text>루틴 기간</Text>
+          <div className={styles["routine__period"]}>
+            <div className={styles["start"]}>
+              <Input name="startDay" value={dateFormat(startDay)} placeholder="시작 일자" disabled />
+              <CalendarMonthIcon onClick={() => setOpenStartCalendar(!openStartCalendar)} />
+              {openStartCalendar && (
+                <div ref={startCalendarRef} className={styles["date__picker"]}>
+                  <Calendar
+                    locale={ko}
+                    date={new Date(startDay)}
+                    onChange={(date) => handleStartCalendar(date)}
+                    dateDisplayFormat={"yyyy-mm-dd"}
+                    minDate={new Date(dayjs().startOf("year").add(-25, "year").toDate())}
+                    maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
+                    fixedHeight
+                  />
+                </div>
+              )}
+            </div>
+            <Text>~</Text>
+            <div className={styles["end"]}>
+              <Input name="endDay" value={dateFormat(endDay)} placeholder="종료 일자" disabled />
+              <CalendarMonthIcon onClick={() => setOpenEndCalendar(!openEndCalendar)} />
+              {openEndCalendar && (
+                <div ref={endCalendarRef} className={styles["date__picker"]}>
+                  <Calendar
+                    locale={ko}
+                    date={new Date(endDay)}
+                    onChange={(date) => handleEndCalendar(date)}
+                    dateDisplayFormat={"yyyy-mm-dd"}
+                    minDate={new Date(dayjs(startDay).toDate())}
+                    maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
+                    fixedHeight
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+
         <div id={styles["routine__days"]} className={styles["frame__line"]}>
           <Text>반복 요일</Text>
           <div className={styles["routine__day-list"]}>
@@ -174,46 +206,16 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
             <Text types="small">반복할 요일을 선택하세요.</Text>
           </div>
         </div>
-        <div>
-          <div className={styles["frame__line"]}>
-            <Text>루틴 기간</Text>
-            <div className={styles["routine__period"]}>
-              <div className={styles["start"]}>
-                <Input name="startDay" value={dateFormat(startDay)} placeholder="시작 일자" disabled />
-                <CalendarMonthIcon onClick={() => setOpenStartCalendar(!openStartCalendar)} />
-                {openStartCalendar && (
-                  <div ref={startCalendarRef} className={styles["date__picker"]}>
-                    <Calendar
-                      locale={ko}
-                      date={new Date(startDay)}
-                      onChange={(date) => handleStartCalendar(date)}
-                      dateDisplayFormat={"yyyy-mm-dd"}
-                      minDate={new Date(dayjs().startOf("year").add(-25, "year").toDate())}
-                      maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
-                      fixedHeight
-                    />
-                  </div>
-                )}
-              </div>
-              <div className={styles["end"]}>
-                <Input name="endDay" value={dateFormat(endDay)} placeholder="종료 일자" disabled />
-                <CalendarMonthIcon onClick={() => setOpenEndCalendar(!openEndCalendar)} />
-                {openEndCalendar && (
-                  <div ref={endCalendarRef} className={styles["date__picker"]}>
-                    <Calendar
-                      locale={ko}
-                      date={new Date(endDay)}
-                      onChange={(date) => handleEndCalendar(date)}
-                      dateDisplayFormat={"yyyy-mm-dd"}
-                      minDate={new Date(dayjs(startDay).toDate())}
-                      maxDate={new Date(dayjs().endOf("year").add(5, "year").toDate())}
-                      fixedHeight
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className={`${styles["frame__line"]} ${styles["routine__category"]}`}>
+          <Text>카테고리</Text>
+          <Input
+            name="routineCategory"
+            value={handleCategory()}
+            onClick={handleOpen}
+            style={{ caretColor: "transparent" }}
+            placeholder="루틴의 카테고리를 선택하세요."
+            autoComplete="off"
+          />
         </div>
       </div>
       <Modal types="noBtn" open={Modalopen} onClose={handleClose}>
