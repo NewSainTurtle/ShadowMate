@@ -84,11 +84,12 @@ const Dday = ({ newItem }: Props) => {
           helperText={
             error ? `${minLength} ~ ${maxLength}자의 이름을 입력할 수 있습니다.` : `글자 수: ${length}/${maxLength}`
           }
+          maxLength={maxLength}
         />
       </div>
       <div id={styles["date"]} className={styles["frame__line"]}>
         <Text>디데이 날짜</Text>
-        <Input name="ddayDate" value={dateFormat(ddayDate)} disabled />
+        <Input name="ddayDate" value={dateFormat(ddayDate)} disabled maxLength={maxLength} />
         <CalendarMonthIcon onClick={() => setOpenCalendar(!openCalendar)} />
         {openCalendar && (
           <div ref={calendarRef} className={styles["date__picker"]}>

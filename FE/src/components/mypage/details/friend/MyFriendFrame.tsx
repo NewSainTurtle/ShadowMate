@@ -109,7 +109,13 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         <Text bold>{title}</Text>
       </div>
       {search && (
-        <Input types="search" value={searchKeyWord} onChange={onChangeHandler} placeholder="사용자 닉네임으로 검색" />
+        <Input
+          types="search"
+          value={searchKeyWord}
+          onChange={onChangeHandler}
+          placeholder="사용자 닉네임으로 검색"
+          maxLength={10}
+        />
       )}
       <div className={styles["friend__frame__list"]}>
         {followList && followList.length > 0 ? (

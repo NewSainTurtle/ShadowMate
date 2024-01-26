@@ -176,6 +176,7 @@ const SignupAccount = () => {
             onBlur={checkError}
             error={!!error.email}
             helperText={error.email || " "}
+            maxLength={100}
           />
           <Button types="gray" onClick={onClickEmail} disabled={isEmailRedundancy}>
             {!isEmailAuthentication ? "메일인증" : "재전송"}
@@ -192,6 +193,7 @@ const SignupAccount = () => {
               onBlur={checkError}
               error={!!error.code}
               helperText={error.code || " "}
+              maxLength={6}
             />
             <Button types="gray" onClick={onClickEmailCheck} disabled={isEmailRedundancy}>
               {!isEmailRedundancy ? "인증확인" : "인증완료"}
@@ -207,6 +209,7 @@ const SignupAccount = () => {
           onBlur={checkError}
           error={!!error.password}
           helperText={error.password || " "}
+          maxLength={20}
         />
         <Input
           placeholder="비밀번호 확인"
@@ -217,6 +220,7 @@ const SignupAccount = () => {
           onBlur={checkError}
           error={!!error.passwordCheck}
           helperText={error.passwordCheck || " "}
+          maxLength={20}
         />
         <div className={styles["signup-account__input"]}>
           <Input
@@ -227,6 +231,7 @@ const SignupAccount = () => {
             onBlur={checkError}
             error={!!error.nickname}
             helperText={error.nickname || " "}
+            maxLength={10}
           />
           <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
             {!isNicknameAuthentication ? "중복확인" : "검사완료"}
