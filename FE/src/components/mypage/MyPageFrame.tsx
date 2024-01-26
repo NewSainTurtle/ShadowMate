@@ -301,14 +301,14 @@ const MyPageFrame = ({ title }: Props) => {
   };
 
   const handleDeleteRoutine = () => {
-    const { routineId } = routineInput;
+    const routineId = routineList[routineClick].routineId;
     settingApi
       .deleteRoutines(userId, { routineId, order: parseInt(order) })
       .then(() => {
         dispatch(
           setRoutineList(
             routineList.filter((_: RoutineItemConfig, idx: number) => {
-              return idx != routineClick;
+              return idx !== routineClick;
             }),
           ),
         );

@@ -48,7 +48,7 @@ const Dday = ({ newItem }: Props) => {
       dispatch(setDdayInput(ddayList[click]));
       setLength(ddayList[click].ddayTitle.length);
     }
-  }, [click]);
+  }, [ddayList, click]);
 
   /* 캘린더 외부 영역 클릭 시 캘린더 닫힘. */
   useEffect(() => {
@@ -71,7 +71,7 @@ const Dday = ({ newItem }: Props) => {
   }, []);
 
   return (
-    <div className={styles["frame__contents"]}>
+    <div id={styles["dday"]} className={styles["frame__contents"]}>
       <div className={styles["frame__line"]}>
         <Text>디데이 이름</Text>
         <Input
