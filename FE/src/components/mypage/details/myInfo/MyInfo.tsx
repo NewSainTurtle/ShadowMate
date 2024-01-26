@@ -42,6 +42,10 @@ const MyPageInfo = () => {
   const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLength({ ...length, [name]: value.length });
+    setUserMyInfo({
+      ...userMyInfo,
+      [name]: value,
+    });
 
     if (name == "nickname") {
       if (isErrorButton) setErrorButton(false);
@@ -59,11 +63,6 @@ const MyPageInfo = () => {
       else setError({ ...error, [name]: false });
       return;
     }
-
-    setUserMyInfo({
-      ...userMyInfo,
-      [name]: value,
-    });
   };
 
   const deletNickName = async () => {
