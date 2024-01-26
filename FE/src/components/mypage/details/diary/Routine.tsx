@@ -130,6 +130,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
             name="routineContent"
             value={routineContent}
             placeholder="루틴 이름을 입력하세요."
+            inputProps={{ maxLength, inputMode: "text" }}
             onChange={onChangeInput}
             error={lengthError}
             helperText={

@@ -78,6 +78,7 @@ const Dday = ({ newItem }: Props) => {
           inputRef={titleFocus}
           name="ddayTitle"
           value={ddayTitle}
+          inputProps={{ maxLength, inputMode: "text" }}
           placeholder="디데이 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
