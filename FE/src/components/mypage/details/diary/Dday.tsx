@@ -48,7 +48,7 @@ const Dday = ({ newItem }: Props) => {
       dispatch(setDdayInput(ddayList[click]));
       setLength(ddayList[click].ddayTitle.length);
     }
-  }, [click]);
+  }, [ddayList, click]);
 
   /* 캘린더 외부 영역 클릭 시 캘린더 닫힘. */
   useEffect(() => {

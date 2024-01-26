@@ -99,7 +99,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
       dispatch(setRoutineInput(routineList[routineClick]));
       setLength(routineList[routineClick].routineContent.length);
     }
-  }, [routineClick]);
+  }, [routineList, routineClick]);
 
   useEffect(() => {
     if (contentFocus.current) contentFocus.current.focus();

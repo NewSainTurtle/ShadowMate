@@ -62,7 +62,7 @@ const Category = ({ newItem }: Props) => {
         setLength(categoryList[click].categoryTitle.length);
       }
     }
-  }, [click]);
+  }, [categoryList, click]);
 
   useEffect(() => {
     if (newItem) dispatch(setCategoryColorClick(0));
