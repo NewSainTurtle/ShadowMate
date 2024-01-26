@@ -36,6 +36,7 @@ const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos,
   });
   const { updateTodo, deleteTodo } = todoModule(dailyTodos, setDailyTodos);
   const friend = isMine ? "" : "--friend";
+  const maxLength = 50;
 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
@@ -147,6 +148,7 @@ const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos,
             className={styles["item__edit-input"]}
             autoFocus
             type="text"
+            maxLength={maxLength}
             defaultValue={item.todoContent}
             onChange={(e) =>
               setTodo((prev) => {
