@@ -124,6 +124,7 @@ const MyPageFrame = ({ title }: Props) => {
       dispatch(setDdayInput(BASIC_DDAY_INPUT));
     } else if (title === "루틴") {
       dispatch(setRoutineInput(BASIC_ROUTINE_INPUT));
+      setRoutineError({ lengthError: false, dayError: false });
     }
     handleNewItemModalOpen();
   };

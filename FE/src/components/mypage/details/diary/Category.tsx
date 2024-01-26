@@ -77,6 +77,7 @@ const Category = ({ newItem }: Props) => {
           inputRef={titleFocus}
           name="categoryTitle"
           value={categoryTitle ?? ""}
+          inputProps={{ maxLength, inputMode: "text" }}
           placeholder="카테고리 이름을 입력하세요."
           onChange={onChangeInput}
           error={error}
