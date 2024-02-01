@@ -14,21 +14,21 @@ const Statistics = ({ types }: Props) => {
 
   const statistics = {
     월별통계: [
-      { title: "전체", count: statisticsInfo.todoTotal },
-      { title: "완료", count: statisticsInfo.todoComplete },
-      { title: "미완료", count: statisticsInfo.todoIncomplete },
+      { id: 0, title: "전체", count: statisticsInfo.todoTotal },
+      { id: 1, title: "완료", count: statisticsInfo.todoComplete },
+      { id: 2, title: "미완료", count: statisticsInfo.todoIncomplete },
     ],
     팔로우: [
-      { title: "팔로워", count: followCountInfo.followerCount },
-      { title: "팔로잉", count: followCountInfo.followingCount },
+      { id: 3, title: "팔로워", count: followCountInfo.followerCount },
+      { id: 4, title: "팔로잉", count: followCountInfo.followingCount },
     ],
-    좋아요: [{ title: " 월별", count: statisticsInfo.plannerLikeCount }],
+    좋아요: [{ id: 5, title: " 월별", count: statisticsInfo.plannerLikeCount }],
   };
 
   return (
     <div className={styles["stats"]}>
       {statistics[types].map((item, idx) => (
-        <div className={styles["stats__contents"]} key={idx}>
+        <div className={styles["stats__contents"]} key={item.id}>
           <Text types="small">{item.title}</Text>
           <Text types="small">{item.count}</Text>
         </div>

@@ -64,12 +64,34 @@ export interface EditInfoConfig {
 
 interface RoutineUpdateSelectorConfig {
   types: "수정" | "삭제";
+  order: string;
+  onChangeRadio: (order: string) => void;
 }
 
 export interface RoutineErrorConfig {
   lengthError: boolean;
   dayError: boolean;
 }
+
+const RoutineUpdateSelector = ({ types, order, onChangeRadio }: RoutineUpdateSelectorConfig) => {
+  return (
+    <div className={styles["radio"]}>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <RadioGroup value={order} onChange={(e) => onChangeRadio(e.target.value)}>
+          <FormControlLabel value="1" control={<RadioButton />} label={<Text types="small">모두 {types}하기</Text>} />
+          <FormControlLabel
+            value="2"
+            control={<RadioButton />}
+            label={<Text types="small">오늘 이후 루틴을 모두 {types}하기</Text>}
+          />
+          {types === "삭제" && (
+            <FormControlLabel value="3" control={<RadioButton />} label={<Text types="small">삭제하지 않기</Text>} />
+          )}
+        </RadioGroup>
+      </Stack>
+    </div>
+  );
+};
 
 const MyPageFrame = ({ title }: Props) => {
   const dispatch = useAppDispatch();
@@ -369,31 +391,10 @@ const MyPageFrame = ({ title }: Props) => {
     }
   };
 
-  const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
-    const order = e.target.value;
+  const onChangeRadio = (order: string) => {
     if (order === "1" || order === "2" || order === "3") {
       setOrder(order);
     }
-  };
-
-  const RoutineUpdateSelector = ({ types }: RoutineUpdateSelectorConfig) => {
-    return (
-      <div className={styles["radio"]}>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <RadioGroup value={order} onChange={onChangeRadio}>
-            <FormControlLabel value="1" control={<RadioButton />} label={<Text types="small">모두 {types}하기</Text>} />
-            <FormControlLabel
-              value="2"
-              control={<RadioButton />}
-              label={<Text types="small">오늘 이후 루틴을 모두 {types}하기</Text>}
-            />
-            {types === "삭제" && (
-              <FormControlLabel value="3" control={<RadioButton />} label={<Text types="small">삭제하지 않기</Text>} />
-            )}
-          </RadioGroup>
-        </Stack>
-      </div>
-    );
   };
 
   const getRoutines = () => {
@@ -460,7 +461,7 @@ const MyPageFrame = ({ title }: Props) => {
       >
         {title === "루틴" ? (
           <RoutineUpdateModal types="삭제">
-            <RoutineUpdateSelector types="삭제" />
+            <RoutineUpdateSelector types="삭제" order={order} onChangeRadio={onChangeRadio} />
           </RoutineUpdateModal>
         ) : (
           <DeleteModal types={title} />
@@ -474,7 +475,7 @@ const MyPageFrame = ({ title }: Props) => {
         onClickMessage="수정"
       >
         <RoutineUpdateModal types="수정">
-          <RoutineUpdateSelector types="수정" />
+          <RoutineUpdateSelector types="수정" order={order} onChangeRadio={onChangeRadio} />
         </RoutineUpdateModal>
       </Modal>
       <Modal

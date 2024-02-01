@@ -46,7 +46,7 @@ const Introduction = ({ isEdit, introduction, setIntroduction }: Props) => {
           {introduction ? (
             introduction.split("\n").map((item: string, idx: number) => {
               return (
-                <Fragment key={idx}>
+                <Fragment key={idx.toString()}>
                   <Text>{item}</Text>
                   <br />
                 </Fragment>

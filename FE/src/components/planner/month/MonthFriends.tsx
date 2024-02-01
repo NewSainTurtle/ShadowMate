@@ -9,8 +9,6 @@ import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
 import { ProfileConfig } from "@components/common/FriendProfile";
 import { selectFollowingList } from "@store/friendSlice";
-// import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"; // 추후 추가 예정
-// import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const MonthFriends = () => {
   const navigator = useNavigate();
