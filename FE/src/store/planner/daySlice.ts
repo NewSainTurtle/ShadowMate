@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
-import { TimeTableConfig, TodoConfig } from "@util/planner.interface";
+import { CategoryItemConfig, TimeTableConfig, TodoConfig } from "@util/planner.interface";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -109,7 +109,7 @@ const daySlice = createSlice({
 });
 
 export const BASIC_TODO_ITEM = initialState.todoItem;
-export const BASIC_CATEGORY_ITEM = initialState.todoItem.category!;
+export const BASIC_CATEGORY_ITEM = initialState.todoItem.category as CategoryItemConfig;
 export const { setDayDate, setDayInfo, setDayLike, setTodoItem, setTodoList, setTimeTable } = daySlice.actions;
 export const selectDayDate = (state: rootState) => state.day.date;
 export const selectDayInfo = (state: rootState) => state.day.info;

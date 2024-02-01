@@ -7,7 +7,7 @@ import { selectUserId } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
 
 interface Props {
-  nearDate: string | number | Date | dayjs.Dayjs;
+  nearDate: string | number | Date | dayjs.Dayjs | null;
   comparedDate: string | number | Date | dayjs.Dayjs;
 }
 

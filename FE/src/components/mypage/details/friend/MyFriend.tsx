@@ -12,7 +12,7 @@ const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색"
   const [followRequestData, setFollowRequestData] = useState<FollowRequestType[]>([]); // 팔로우 요청
   const [followerData, setFolloweData] = useState<FollowerType[]>([]); // 내 팔로워
   const [followingData, setFollowingData] = useState<FollowingType[]>([]); // 내 팔로잉
-  const followState: boolean = useAppSelector(selectFollowState);
+  const followState = useAppSelector(selectFollowState);
 
   useLayoutEffect(() => {
     switch (title) {
