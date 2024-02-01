@@ -72,7 +72,7 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
           {isOpen ? (
             <>
               {dayOfWeek.map((item, idx) => (
-                <div className={styles["calendar__week"]} key={idx}>
+                <div className={styles["calendar__week"]} key={idx.toString()}>
                   <Text types="small">{item}</Text>
                 </div>
               ))}
