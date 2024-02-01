@@ -22,7 +22,7 @@ const RoutineItem = ({ idx, item }: Props) => {
   const endRef = useRef<HTMLDivElement | null>(null);
   const clicked = click === idx ? "--clicked" : "";
   const sortDays = () => {
-    let days = [...item.days];
+    const days = [...item.days];
     return days?.sort((a: string, b: string) => {
       return DaysSorter[a] - DaysSorter[b];
     });
