@@ -9,7 +9,7 @@ const PLANNERS = "planners/";
 const SETTINGS = "planner-settings/";
 const SOCIAL = "social/";
 
-interface apiInterface {
+interface ApiInterface {
   auth: {
     join: () => string; // 회원가입
     login: () => string; // 로그인
@@ -68,7 +68,7 @@ interface apiInterface {
   };
 }
 
-const api: apiInterface = {
+const api: ApiInterface = {
   auth: {
     join: () => HOST + AUTH + "join",
     login: () => HOST + AUTH + "login",
