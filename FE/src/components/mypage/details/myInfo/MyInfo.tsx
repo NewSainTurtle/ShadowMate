@@ -39,7 +39,7 @@ const MyPageInfo = () => {
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
-  const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLength({ ...length, [name]: value.length });
     setUserMyInfo({

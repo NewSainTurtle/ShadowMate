@@ -46,7 +46,7 @@ function dragModule({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
     dragEndRef.current = idx;
   };
 
-  const dragEnd = async (e: DragEvent<HTMLDivElement>, todoId: number) => {
+  const dragEnd = (e: DragEvent<HTMLDivElement>, todoId: number) => {
     e.preventDefault();
     e.currentTarget.classList.remove(dragClassName);
     dragTodo(todoId);
