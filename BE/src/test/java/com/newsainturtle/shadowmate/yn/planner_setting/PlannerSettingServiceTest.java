@@ -194,6 +194,23 @@ class PlannerSettingServiceTest extends DateCommonService {
             }
 
             @Test
+            void 실패_없는카테고리2() {
+                //given
+                final UpdateCategoryRequest updateCategoryRequest = UpdateCategoryRequest.builder()
+                        .categoryId(0L)
+                        .categoryTitle("수학")
+                        .categoryEmoticon("🌀")
+                        .categoryColorId(1L)
+                        .build();
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.updateCategory(user, updateCategoryRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY);
+            }
+
+            @Test
             void 실패_없는카테고리색상() {
                 //given
                 doReturn(category).when(categoryRepository).findByUserAndId(user, updateCategoryRequest.getCategoryId());
@@ -266,6 +283,20 @@ class PlannerSettingServiceTest extends DateCommonService {
             void 실패_없는카테고리() {
                 //given
                 doReturn(null).when(categoryRepository).findByUserAndId(user, removeCategoryRequest.getCategoryId());
+
+                //when
+                final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.removeCategory(user, removeCategoryRequest));
+
+                //then
+                assertThat(result.getErrorResult()).isEqualTo(PlannerSettingErrorResult.INVALID_CATEGORY);
+            }
+
+            @Test
+            void 실패_없는카테고리2() {
+                //given
+                final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
+                        .categoryId(0L)
+                        .build();
 
                 //when
                 final PlannerSettingException result = assertThrows(PlannerSettingException.class, () -> plannerSettingService.removeCategory(user, removeCategoryRequest));
