@@ -428,18 +428,26 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
     @Transactional
     public void updateCategory(final User user, final UpdateCategoryRequest updateCategoryRequest) {
         final Category findCategory = getCategory(user, updateCategoryRequest.getCategoryId());
+        if (findCategory == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
+        }
+
         final CategoryColor categoryColor = getCategoryColor(updateCategoryRequest.getCategoryColorId());
         findCategory.updateCategoryTitleAndEmoticonAndColor(updateCategoryRequest.getCategoryTitle(),
                 updateCategoryRequest.getCategoryEmoticon(),
                 categoryColor);
+
     }
 
     @Override
     @Transactional
     public void removeCategory(final User user, final RemoveCategoryRequest removeCategoryRequest) {
         final Category findCategory = getCategory(user, removeCategoryRequest.getCategoryId());
-        final long count = todoRepository.countByCategory(findCategory) + routineRepository.countByCategory(findCategory);
+        if (findCategory == null) {
+            throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
+        }
 
+        final long count = todoRepository.countByCategory(findCategory) + routineRepository.countByCategory(findCategory);
         if (count == 0) {
             categoryRepository.deleteByUserAndId(user, removeCategoryRequest.getCategoryId());
         } else {
