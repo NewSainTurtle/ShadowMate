@@ -37,6 +37,11 @@ export const getThisWeek = (date: string | Date | dayjs.Dayjs) => {
 };
 
 export const getThisWeekCnt = (date: Date) => {
+  const getWeekMonth = () => {
+    if (date.getMonth() + 1 === 12) return 0;
+    return date.getMonth() + 1;
+  };
+
   let lastWeek = false;
   let currentDate = date.getDate();
   let firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -44,7 +49,7 @@ export const getThisWeekCnt = (date: Date) => {
   if (currentDate + 6 > lastDate.getDate()) lastWeek = true;
   const firstDay = firstDate.getDay() === 0 ? 6 : firstDate.getDay() - 1;
   const weekCnt = lastWeek ? 1 : Math.ceil((currentDate + firstDay) / 7);
-  const weekMonth = lastWeek ? (date.getMonth() + 1 == 12 ? 0 : date.getMonth() + 1) : date.getMonth();
+  const weekMonth = lastWeek ? getWeekMonth() : date.getMonth();
 
   const week: WeekConfig = {
     weekCnt,

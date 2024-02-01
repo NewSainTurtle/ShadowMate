@@ -54,6 +54,11 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
     }, 200);
   };
 
+  const setDayStatus = (item: MonthDayConfig | null) => {
+    if (item?.dayStatus === 3) return <CheckRoundedIcon />;
+    return item?.dayStatus === 0 ? null : item?.todoCount;
+  };
+
   const itemClickHandler = (date: string) => {
     dispatch(setDayDate(date));
     navigate("/day");
@@ -92,13 +97,7 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
                         {item && (
                           <div className={styles[`calendar__item`]} onClick={() => itemClickHandler(item.date)}>
                             <div style={{ backgroundColor: statusColor[item.dayStatus] }}>
-                              <Text types="small">
-                                {item.dayStatus === 3 ? (
-                                  <CheckRoundedIcon />
-                                ) : item.dayStatus === 0 ? null : (
-                                  item.todoCount
-                                )}
-                              </Text>
+                              <Text types="small">{setDayStatus(item)}</Text>
                             </div>
                             <div className={styles[`calendar__date${today}`]}>
                               <Text types="small">{dayjs(item.date).date()}</Text>
