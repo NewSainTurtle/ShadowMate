@@ -69,7 +69,6 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
     if (!isChecked && days.includes(day)) {
       const filteredDays = days.filter((item: string) => item !== day);
       dispatch(setRoutineInput({ ...routineInput, days: filteredDays }));
-      return;
     }
   };
 

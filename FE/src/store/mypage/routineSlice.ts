@@ -44,7 +44,6 @@ const routineSlice = createSlice({
   initialState,
   reducers: {
     setRoutineList: (state, { payload }: PayloadAction<RoutineItemConfig[]>) => {
-      // console.log(payload);
       state.routineList = payload;
     },
     setRoutineClick: (state, { payload }: PayloadAction<number>) => {
