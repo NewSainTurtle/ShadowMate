@@ -69,7 +69,6 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
     if (!isChecked && days.includes(day)) {
       const filteredDays = days.filter((item: string) => item !== day);
       dispatch(setRoutineInput({ ...routineInput, days: filteredDays }));
-      return;
     }
   };
 
@@ -187,7 +186,7 @@ const Routine = ({ newItem, routineError, setRoutineError }: Props) => {
           <div className={styles["routine__day-list"]}>
             {dayList.map((day: string, i: number) => {
               return (
-                <div className={styles["routine__day-item"]} key={i}>
+                <div className={styles["routine__day-item"]} key={i.toString()}>
                   <input
                     type="checkbox"
                     id={day}

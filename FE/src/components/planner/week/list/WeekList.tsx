@@ -131,7 +131,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
             {Array.from({
               length: isMine ? listMaxLength - dailyTodos.length - 1 : listMaxLength - dailyTodos.length,
             }).map((_, idx) => (
-              <div key={idx} style={{ height: `calc(100% / ${listMaxLength})` }}>
+              <div key={idx.toString()} style={{ height: `calc(100% / ${listMaxLength})` }}>
                 <WeekItem
                   idx={idx}
                   item={BASIC_TODO_ITEM}
@@ -145,7 +145,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
           </>
         )}
       </div>
-      <div className={`${styles[`item__memo${friend}`]} `}>
+      <div className={styles[`item__memo${friend}`]}>
         <textarea
           disabled={!isMine}
           value={retrospection}

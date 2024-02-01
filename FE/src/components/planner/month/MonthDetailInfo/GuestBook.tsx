@@ -75,7 +75,7 @@ const GuestBook = () => {
     setPrevScrollHeight(null);
   }, [guestBookList.length]);
 
-  const handleObserver = async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+  const handleObserver = ([entry]: IntersectionObserverEntry[]) => {
     if (!isEnd && entry.isIntersecting && preventRef.current) {
       setPrevScrollHeight(scrollBarRef.current?.scrollHeight);
       preventRef.current = false;

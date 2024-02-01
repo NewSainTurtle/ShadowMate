@@ -7,7 +7,6 @@ import DayPage from "@pages/Planner/DayPage";
 import MonthPage from "@pages/Planner/MonthPage";
 import WeekPage from "@pages/Planner/WeekPage";
 import SocialPage from "@pages/SocialPage";
-import CommonPage from "@pages/commonPage";
 import NotFoundPage from "@pages/NotFoundPage";
 import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
@@ -131,9 +130,7 @@ const App = () => {
               <Route path="/search" element={<MyPage name="친구 검색" />} />
               <Route path="/category" element={<MyPage name="카테고리 설정" />} />
             </Route>
-
             <Route path="*" element={<NotFoundPage />} />
-            <Route path="/common" element={<CommonPage />} />
           </Routes>
         </div>
         <Alert types={type} open={open} onClose={() => dispatch(setAlertClose())} message={message} />

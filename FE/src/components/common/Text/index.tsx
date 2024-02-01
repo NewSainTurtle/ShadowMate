@@ -9,13 +9,17 @@ interface Props {
 }
 
 const Text = ({ types = "default", bold, title, children }: Props) => {
+  const setFontWeight = () => {
+    if (title) return "800";
+    return bold ? "600" : "400";
+  };
   const style = {
-    fontWeight: title ? "800" : bold ? "600" : "400",
+    fontWeight: setFontWeight(),
   };
 
   return (
     <>
-      <span className={`${styles[`text-${types}`]}`} style={style}>
+      <span className={styles[`text-${types}`]} style={style}>
         {children}
       </span>
     </>

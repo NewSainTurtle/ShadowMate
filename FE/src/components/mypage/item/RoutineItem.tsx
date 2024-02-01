@@ -44,7 +44,7 @@ const RoutineItem = ({ idx, item }: Props) => {
         <Text>{item.routineContent}</Text>
         <div>
           {sortDays()?.map((day: string, i: number) => (
-            <Text types="small" key={i}>
+            <Text types="small" key={i.toString()}>
               {i === item.days.length - 1 ? day : day + ", "}
             </Text>
           ))}

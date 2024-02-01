@@ -5,7 +5,7 @@ import Input from "@components/common/Input";
 import CategoryColorList from "@components/mypage/item/CategoryColorList";
 import AppleIcon from "@mui/icons-material/Apple";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
-import { CategoryColorConfig, CategoryItemConfig } from "@util/planner.interface";
+import { CategoryColorConfig } from "@util/planner.interface";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import {
   selectCategoryClick,

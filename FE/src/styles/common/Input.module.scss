@@ -4,7 +4,7 @@ $color-text: var(--color-text);
 $color-icon: var(--color-gray-5);
 $color-background: var(--color-background);
 
-input__underline {
+%input__underline {
   border-bottom: $color-border;
   color: $color-text-placeholder;
   transition: none;
@@ -30,15 +30,15 @@ input__underline {
   }
 
   & :before {
-    @extend input__underline;
+    @extend %input__underline;
   }
 
   & :hover:not(.Mui-disabled, .Mui-error):before {
-    @extend input__underline;
+    @extend %input__underline;
   }
 
   & :after {
-    @extend input__underline;
+    @extend %input__underline;
   }
 
   &__helper-text {
