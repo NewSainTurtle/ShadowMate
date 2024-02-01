@@ -23,8 +23,20 @@
   "plugins": ["react", "@typescript-eslint", "jest", "cypress", "prettier"],
   "rules": {
     "no-var": "error",
-    "no-unused-vars": "error", // 사용하지 않는 변수 금지
+    "no-unused-vars": "off", // @typescript-eslint/no-unused-vars로 대체
     "no-console": ["warn", { "allow": ["warn", "error", "info"] }], // 콘솔 로그 사용 가능 (콘솔 로그 사용시 경고 → ["warn", { "allow": ["warn", "error", "info"] }] )
-    "prettier/prettier": "error"
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ]
   }
 }
