@@ -87,10 +87,10 @@ const daySlice = createSlice({
       const todoInfo = tempArr[findTodoIndex] as TodoConfig;
       const todoStatus = action.payload.todoStatus || todoInfo.todoStatus;
       const todoTimetable = (() => {
-        let tempTimeTable = todoInfo.timeTables ?? [];
+        const tempTimeTable = todoInfo.timeTables ?? [];
         if (startTime) return [...tempTimeTable, { timeTableId, startTime, endTime }];
         else {
-          const findTimeIndex = tempTimeTable?.findIndex((item) => item.timeTableId === timeTableId) as number;
+          const findTimeIndex = tempTimeTable?.findIndex((item) => item.timeTableId === timeTableId);
           tempTimeTable?.splice(findTimeIndex, 1);
           return tempTimeTable;
         }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/day.module.scss";
 import TodoItem from "@components/planner/day/todo/TodoItem";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -91,7 +91,13 @@ const TodoList = ({ clicked }: Props) => {
             style={{ height: `calc((100%/${listSize} * ${listSize - dailyTodos.length - 1})` }}
           >
             {Array.from({ length: listSize - dailyTodos.length - 1 }).map((_, idx) => (
-              <TodoItem key={idx} disable item={BASIC_TODO_ITEM} dailyTodos={dailyTodos} setDailyTodos={setTodos} />
+              <TodoItem
+                key={String(idx)}
+                disable
+                item={BASIC_TODO_ITEM}
+                dailyTodos={dailyTodos}
+                setDailyTodos={setTodos}
+              />
             ))}
           </div>
         </>

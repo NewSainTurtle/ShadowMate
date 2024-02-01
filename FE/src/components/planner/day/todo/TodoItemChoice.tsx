@@ -50,7 +50,10 @@ const TodoItemChoice = ({ todoItem, possible, disable }: Props) => {
   };
 
   return (
-    <div className={`${styles[`todo-item${isDisableStyle}`]} ${styles[possibility]}`} onClick={handleClickTodo}>
+    <div
+      className={`${styles[`todo-item`]} ${styles[isDisableStyle]} ${styles[possibility]}`}
+      onClick={handleClickTodo}
+    >
       <div className={styles["todo-item__category"]}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           <Text>{categoryTitle}</Text>

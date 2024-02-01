@@ -20,7 +20,6 @@ import {
 } from "@store/socialSlice";
 import dayjs from "dayjs";
 import Text from "@components/common/Text";
-import colors from "@util/colors";
 
 const SocialHeader = () => {
   const dispatch = useAppDispatch();
@@ -112,10 +111,10 @@ const SocialHeader = () => {
       <div className={styles["item-header__box"]}>
         <Text types="small">{searchDateInfo}</Text>
         <div className={styles["item-header__sort"]}>
-          {sortArr.map((order, idx) => (
+          {sortArr.map((order) => (
             <span
               className={sort != order ? styles["item-header__sort--none"] : ""}
-              key={idx}
+              key={order}
               onClick={() => onClickSort(order)}
             >
               {order == "latest" ? "최신순" : "인기순"}
