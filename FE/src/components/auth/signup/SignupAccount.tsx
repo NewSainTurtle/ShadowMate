@@ -45,32 +45,38 @@ const SignupAccount = () => {
   const checkError = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    if (name == "passwordCheck" && !value) setError({ ...error, [name]: "비밀번호를 다시 한번 입력해주세요." });
-    else if (!value) setError({ ...error, [name]: "필수 정보입니다." });
-    else {
-      setError({
-        ...error,
-        email: name == "email" && !userRegex.email.test(email) ? "이메일 형식이 올바르지 않습니다." : "",
-        password:
-          name == "password" && !userRegex.password.test(password)
-            ? "6~20자의 영문, 숫자, 특수문자(!?^&*@#)를 사용해 주세요."
-            : "",
-        passwordCheck:
-          (name == "password" || name == "passwordCheck") && !!passwordCheck && passwordCheck != password
-            ? "비밀번호가 일치하지 않습니다."
-            : "",
-        nickname:
-          name == "nickname" && !userRegex.nickname.test(nickname)
-            ? "2~10자의 특수문자를 제외한 문자를 사용해 주세요."
-            : "",
-      });
+    if (!value) {
+      if (name == "passwordCheck") setError({ ...error, [name]: "비밀번호를 다시 한번 입력해주세요." });
+      else setError({ ...error, [name]: "필수 정보입니다." });
+      return;
     }
+
+    setError({
+      ...error,
+      email: name == "email" && !userRegex.email.test(email) ? "이메일 형식이 올바르지 않습니다." : "",
+      password:
+        name == "password" && !userRegex.password.test(password)
+          ? "6~20자의 영문, 숫자, 특수문자(!?^&*@#)를 사용해 주세요."
+          : "",
+      passwordCheck:
+        (name == "password" || name == "passwordCheck") && !!passwordCheck && passwordCheck != password
+          ? "비밀번호가 일치하지 않습니다."
+          : "",
+      nickname:
+        name == "nickname" && !userRegex.nickname.test(nickname)
+          ? "2~10자의 특수문자를 제외한 문자를 사용해 주세요."
+          : "",
+    });
   };
 
   const signupApiModule = (() => {
     const onClickEmail = () => {
-      if (!email) setError({ ...error, email: "필수 정보입니다." });
-      else if (!error.email) {
+      if (!email) {
+        setError({ ...error, email: "필수 정보입니다." });
+        return;
+      }
+
+      if (!error.email) {
         authApi
           .emailAuthentication({ email })
           .then(() => {
@@ -102,8 +108,12 @@ const SignupAccount = () => {
     };
 
     const onClickNickName = () => {
-      if (!nickname) setError({ ...error, nickname: "필수 정보입니다." });
-      else if (!error.nickname) {
+      if (!nickname) {
+        setError({ ...error, nickname: "필수 정보입니다." });
+        return;
+      }
+
+      if (!error.nickname) {
         authApi
           .nickname({ nickname })
           .then(() => {
@@ -119,7 +129,7 @@ const SignupAccount = () => {
     };
 
     const onClickJoin = () => {
-      if (!email || !password || !passwordCheck || !nickname) {
+      if (!(email && password && passwordCheck && nickname)) {
         setError({
           email: !email ? "필수 정보입니다." : "",
           code: !code ? "이메일 인증 코드를 입력해주세요" : "",

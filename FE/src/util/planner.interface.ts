@@ -37,7 +37,6 @@ export interface TimeTableConfig {
   endTime: string;
 }
 
-// 공통 Todo Item
 export interface TodoConfig {
   todoId: number;
   category?: CategoryItemConfig | null;

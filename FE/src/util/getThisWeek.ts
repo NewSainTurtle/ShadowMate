@@ -43,8 +43,8 @@ export const getThisWeekCnt = (date: Date) => {
   };
 
   let lastWeek = false;
-  let currentDate = date.getDate();
-  let firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const currentDate = date.getDate();
+  const firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
   const lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   if (currentDate + 6 > lastDate.getDate()) lastWeek = true;
   const firstDay = firstDate.getDay() === 0 ? 6 : firstDate.getDay() - 1;

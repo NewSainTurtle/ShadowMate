@@ -61,13 +61,13 @@ const CardList = ({ scrollRef }: Props) => {
     if (pageNumber != 1) getPost(pageNumber);
   }, [pageNumber]);
 
-  const obsHandler = async (entries: IntersectionObserverEntry[]) => {
+  const obsHandler = (() => (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (!endRef.current && target.isIntersecting && preventRef.current) {
       preventRef.current = false;
       setPageNumber((prev) => prev + 1);
     }
-  };
+  })();
 
   const getPost = useCallback(
     async (pageNumber: number) => {

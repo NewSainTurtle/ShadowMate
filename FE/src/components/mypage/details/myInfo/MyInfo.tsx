@@ -55,13 +55,11 @@ const MyPageInfo = () => {
       if (myInfoData.nickname == value) setNicknameAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
-      return;
     }
 
     if (name == "statusMessage") {
       if (!userRegex.statusMessage.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
-      return;
     }
   };
 
@@ -147,18 +145,13 @@ const MyPageInfo = () => {
               value={nickname}
               onChange={handleUser}
               error={error.nickname || nicknameErrorMessage || isErrorButton}
-              helperText={
-                isErrorButton
-                  ? "닉네임 중복검사를 해주세요."
-                  : nicknameErrorMessage
-                  ? "중복된 닉네임 입니다."
-                  : error.nickname
-                  ? "2~10자의 공백과 특수문자를 제외한 문자를 사용해 주세요."
-                  : myInfoData.nickname != nickname && isNicknameAuthentication
-                  ? "사용가능한 닉네임 입니다."
-                  : `글자 수: ${length.nickname}/10`
-              }
-              maxLength={10}
+              helperText={(() => {
+                if (isErrorButton) return "닉네임 중복검사를 해주세요.";
+                if (nicknameErrorMessage) return "중복된 닉네임 입니다.";
+                if (error.nickname) return "2~10자의 공백과 특수문자를 제외한 문자를 사용해 주세요.";
+                if (myInfoData.nickname != nickname && isNicknameAuthentication) return "사용가능한 닉네임 입니다.";
+                return `글자 수: ${length.nickname}/10`;
+              })()}
             />
             <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
               중복검사

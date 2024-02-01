@@ -189,7 +189,7 @@ const MyPageFrame = ({ title }: Props) => {
     settingApi
       .editCategories(userId, data)
       .then(() => {
-        let copyList: CategoryItemConfig[] = [...categoryList];
+        const copyList: CategoryItemConfig[] = [...categoryList];
         copyList[categoryClick] = { ...data, categoryColorCode: categoryColors[colorClick].categoryColorCode };
         dispatch(setCategoryList(copyList));
       })
@@ -314,7 +314,7 @@ const MyPageFrame = ({ title }: Props) => {
     settingApi
       .editRoutines(userId, updateInput)
       .then(() => {
-        let copyList: RoutineItemConfig[] = [...routineList];
+        const copyList: RoutineItemConfig[] = [...routineList];
         copyList[routineClick] = { ...routineInput };
         dispatch(setRoutineList(copyList));
       })

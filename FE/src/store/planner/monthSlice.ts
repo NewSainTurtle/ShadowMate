@@ -66,5 +66,4 @@ export const selectPlannerAccessScope = (state: rootState) => state.month.planne
 export const selectStatistics = (state: rootState) => state.month.statistics;
 export const selectFollowCount = (state: rootState) => state.month.followCount;
 
-
 export default monthSlice.reducer;

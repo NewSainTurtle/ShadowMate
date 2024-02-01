@@ -50,7 +50,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
         retrospection: retrospection,
       })
       .then(() => {
-        let copyDayList = [...dayList];
+        const copyDayList = [...dayList];
         copyDayList[idx].retrospection = retrospection;
         dispatch(setDayList(copyDayList));
       })

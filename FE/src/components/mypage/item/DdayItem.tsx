@@ -20,8 +20,8 @@ const DdayItem = ({ item, idx }: Props) => {
   const [calc, setCalc] = useState<number>(0);
 
   const ddayCalculate = (comparedDate: Date | string | Dayjs) => {
-    let today = dayjs(new Date()).format("YYYY-MM-DD");
-    let date = dayjs(comparedDate).format("YYYY-MM-DD");
+    const today = dayjs(new Date()).format("YYYY-MM-DD");
+    const date = dayjs(comparedDate).format("YYYY-MM-DD");
     setCalc(dayjs(today).diff(dayjs(date), "day")); // 오늘 기준으로 비교
   };
 
