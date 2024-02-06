@@ -31,12 +31,16 @@
         "endOfLine": "auto"
       }
     ],
-
     "@typescript-eslint/no-misused-promises": [
       "error",
       {
         "checksVoidReturn": false
       }
-    ]
+    ],
+    "@typescript-eslint/no-floating-promises": "off", // 함수 사용할 땐 void 명시하기
+    "@typescript-eslint/restrict-plus-operands": "off", // 덧셈 연산자는 모두 동일한 유형이고, 'number' 또는 'string'이어야 한다.
+    "@typescript-eslint/no-unsafe-assignment": "warn", // 변수 any타입 할당 허용 여부
+    "@typescript-eslint/no-unsafe-member-access": "off", // any타입 엑세스 허용 여부 arr[member] 일때, member가 any일 때 허용 여부
+    "@typescript-eslint/no-unsafe-argument": "off" // any로 함수 인자 전달 허용 여부
   }
 }
