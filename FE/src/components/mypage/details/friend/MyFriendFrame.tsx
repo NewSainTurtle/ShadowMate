@@ -2,22 +2,16 @@ import React, { useLayoutEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
-import {
-  FollowerType,
-  FollowingType,
-  FollowRequestType,
-  FollowType,
-  FriendInfo,
-  FriendSearchType,
-} from "@util/friend.interface";
+import FriendProfile from "@components/common/FriendProfile";
+import { FollowerType, FollowingType, FollowRequestType, FollowType, FriendSearchType } from "@util/friend.interface";
+import { FriendInfoConfig } from "@util/auth.interface";
 import { selectUserId } from "@store/authSlice";
 import { useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
 import { useDebounce } from "@util/EventControlModule";
 import { selectFollowState } from "@store/friendSlice";
 
-interface MyFriendListType extends FriendInfo {
+interface MyFriendListType extends FriendInfoConfig {
   followerId?: number;
   followingId?: number;
   requesterId?: number;
@@ -37,7 +31,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const debounceKeyword = useDebounce(searchKeyWord, 400);
   const [alertMessage, setAlertMessage] = useState("");
-  const followState: boolean = useAppSelector(selectFollowState);
+  const followState = useAppSelector(selectFollowState);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyWord(e.target.value);
@@ -81,7 +75,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
 
           const isFollow = (() => {
             if (userId == response.userId) return "";
-            return typeToFollow(response.isFollow);
+            return typeToFollow(response.isFollow) as unknown as FriendSearchType["isFollow"];
           })();
           setSearchFriend([{ ...response, isFollow }]);
         })
@@ -99,9 +93,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
     else return { id: friend.userId, isFollow: friend.isFollow };
   };
 
-  const followList: (FollowerType | FollowingType | FollowRequestType | FriendSearchType)[] = search
-    ? searchFriend
-    : friendList!;
+  const followList = search ? searchFriend : (friendList as (FollowerType | FollowingType | FollowRequestType)[]);
 
   return (
     <div className={styles["friend__frame"]}>
@@ -122,8 +114,8 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
           followList.map((item) => {
             const { id, isFollow } = friendCheck(item);
             const { nickname, profileImage, statusMessage } = item;
-            const followInfo: ProfileConfig = {
-              userId: id!,
+            const followInfo = {
+              userId: id as number,
               nickname,
               statusMessage,
               profileImage,

@@ -10,7 +10,7 @@ export interface FriendInfoConfig extends UserConfig {
 
 export interface UserInfoConfig extends UserConfig {
   email: string;
-  plannerAccessScope: string;
+  plannerAccessScope: "전체공개" | "친구공개" | "비공개";
 }
 
 export interface ProfileConfig extends UserConfig {
