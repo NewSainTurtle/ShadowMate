@@ -1,6 +1,15 @@
 import Axios from "@api/JsonAxios";
 import api from "@api/BaseUrl";
 import { MonthConfig } from "@store/planner/monthSlice";
+import { FollowingType } from "@util/friend.interface";
+
+interface ServerResponse<T> {
+  statusCode: number; // 응답 HTTP 상태 메시지
+  errorCode: number; // 에러코드 (본인 서버에러코드)
+  message: string; // 메시지
+  payload: T;
+  data: T; // 데이터 내용
+}
 
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
@@ -30,7 +39,7 @@ export const userApi = {
 };
 
 export const followApi = {
-  getFollowing: (userId: number) => Axios.get(api.follow.following(userId)),
+  getFollowing: (userId: number) => Axios.get<ServerResponse<FollowingType[]>>(api.follow.following(userId)),
   deleteFollowing: (userId: number, data: { followingId: number }) =>
     Axios.delete(api.follow.following(userId), { data: data }),
   getFollwers: (userId: number) => Axios.get(api.follow.followers(userId)),
