@@ -34,8 +34,8 @@ const persistConfig = {
   key: "root",
   transforms: [
     encryptTransform({
-      secretKey: process.env.REACT_APP_ENCRYPT_PRIVATE_KEY!,
-      onError: (err) => console.log(err),
+      secretKey: process.env.REACT_APP_ENCRYPT_PRIVATE_KEY ?? "",
+      onError: (err) => console.error(err),
     }),
   ],
   whitelist: ["auth", "category", "dday"],

@@ -14,10 +14,10 @@ export function useDebounce(value: string, delay = 1000) {
   return debouncedValue;
 }
 
-export const debouncing = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
+export const debouncing = <T extends (...args: never[]) => void>(fn: T, delay: number) => {
   let timeId: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>): ReturnType<T> => {
-    let result: any;
+  return (...args: Parameters<T>): ReturnType<T> | unknown => {
+    let result: unknown;
     if (timeId) clearTimeout(timeId);
     timeId = setTimeout(() => {
       result = fn(...args);
@@ -26,10 +26,10 @@ export const debouncing = <T extends (...args: any[]) => any>(fn: T, delay: numb
   };
 };
 
-export const throttle = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
+export const throttle = <T extends (...args: never[]) => void>(fn: T, delay: number) => {
   let timeId: ReturnType<typeof setTimeout> | null;
   return (...args: Parameters<T>) => {
-    let result: any;
+    let result: unknown;
     if (!timeId) {
       timeId = setTimeout(() => {
         result = fn(...args);
