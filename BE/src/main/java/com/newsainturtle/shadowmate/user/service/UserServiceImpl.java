@@ -1,11 +1,6 @@
 package com.newsainturtle.shadowmate.user.service;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
-import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
-import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
@@ -31,12 +26,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final FollowRepository followRepository;
-    private final FollowRequestRepository followRequestRepository;
-    private final SocialRepository socialRepository;
-    private final DailyPlannerRepository dailyPlannerRepository;
-    private final VisitorBookRepository visitorBookRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisServiceImpl redisService;
 
@@ -98,20 +87,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(final User user) {
-        followRepository.deleteAllByFollowingOrFollower(user, user);
-        followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
-        socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
-        visitorBookRepository.deleteAllByVisitorId(user.getId());
         userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE, createNicknameRandomCode());
     }
 
     @Override
-    public User getUserByNickname(String nickname) {
+    public User getUserByNickname(final String nickname) {
         return userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
     }
 
     @Override
-    public User getUserById(long userId) {
+    public User getUserById(final long userId) {
         final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
         if (user == null) {
             throw new UserException(UserErrorResult.NOT_FOUND_USER);
@@ -120,8 +105,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByNicknameAndScopePublic(String nickname) {
+    public User getUserByNicknameAndScopePublic(final String nickname) {
         return userRepository.findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(nickname, PlannerAccessScope.PUBLIC);
+    }
+
+    @Override
+    @Transactional
+    public void updatePlannerAccessScope(final Long userId, final PlannerAccessScope plannerAccessScope) {
+        userRepository.updatePlannerAccessScope(plannerAccessScope, userId);
     }
 
     private String createNicknameRandomCode() {

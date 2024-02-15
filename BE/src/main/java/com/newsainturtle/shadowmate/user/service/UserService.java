@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
+import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,4 +20,5 @@ public interface UserService {
     User getUserByNickname(final String nickname);
     User getUserById(final long userId);
     User getUserByNicknameAndScopePublic(String nickname);
+    void updatePlannerAccessScope(final Long userId, final PlannerAccessScope plannerAccessScope);
 }

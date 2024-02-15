@@ -37,7 +37,8 @@ public class FollowServiceImpl implements FollowService {
                         .profileImage(follow.getFollowing().getProfileImage())
                         .statusMessage(follow.getFollowing().getStatusMessage())
                         .followingId(follow.getFollowing().getId())
-                        .build()).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -52,7 +53,8 @@ public class FollowServiceImpl implements FollowService {
                         .followerId(follow.getFollower().getId())
                         .statusMessage(follow.getFollower().getStatusMessage())
                         .isFollow(isFollow(user, follow.getFollower()))
-                        .build()).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -67,7 +69,8 @@ public class FollowServiceImpl implements FollowService {
                         .profileImage(followRequest.getRequester().getProfileImage())
                         .statusMessage(followRequest.getRequester().getStatusMessage())
                         .plannerAccessScope(followRequest.getRequester().getPlannerAccessScope())
-                        .build()).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -180,5 +183,25 @@ public class FollowServiceImpl implements FollowService {
                 .plannerAccessScope(searchUser.getPlannerAccessScope())
                 .isFollow(isFollow(user, searchUser))
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void acceptAllFollowRequest(final User user) {
+        List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiver(user);
+        for (FollowRequest followRequest : followRequestList) {
+            followRepository.save(Follow.builder()
+                    .follower(followRequest.getRequester())
+                    .following(user)
+                    .build());
+        }
+        followRequestRepository.deleteAllByReceiver(user.getId());
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(final User user) {
+        followRepository.deleteAllByFollowingOrFollower(user, user);
+        followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
     }
 }
