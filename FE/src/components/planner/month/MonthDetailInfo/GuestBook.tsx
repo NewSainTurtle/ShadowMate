@@ -42,7 +42,7 @@ const GuestBook = () => {
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
   const handleGuestBookChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let input = e.target.value;
+    const input = e.target.value;
     if (input.length > maxLength) input.slice(0, maxLength);
     setGuestBookInput(input);
   };
@@ -75,7 +75,7 @@ const GuestBook = () => {
     setPrevScrollHeight(null);
   }, [guestBookList.length]);
 
-  const handleObserver = async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+  const handleObserver = ([entry]: IntersectionObserverEntry[]) => {
     if (!isEnd && entry.isIntersecting && preventRef.current) {
       setPrevScrollHeight(scrollBarRef.current?.scrollHeight);
       preventRef.current = false;
@@ -133,7 +133,7 @@ const GuestBook = () => {
   const deleteGuestBook = async (id: number, idx: number) => {
     const response = await plannerApi.deleteGuestBook(friendId, { visitorBookId: id });
     if (response.status === 200) {
-      let newList = guestBookList.filter((_, i) => idx != i);
+      const newList = guestBookList.filter((_, i) => idx != i);
       setGuestBookList(newList);
       handleDeleteModalClose();
     }

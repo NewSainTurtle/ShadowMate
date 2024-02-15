@@ -130,7 +130,6 @@ const App = () => {
               <Route path="/search" element={<MyPage name="친구 검색" />} />
               <Route path="/category" element={<MyPage name="카테고리 설정" />} />
             </Route>
-
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

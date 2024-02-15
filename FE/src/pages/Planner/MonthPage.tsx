@@ -16,7 +16,7 @@ const MonthPage = () => {
     settingApi
       .categories(userId)
       .then((res) => {
-        let response: CategoryItemConfig[] = res.data.data.categoryList;
+        const response: CategoryItemConfig[] = res.data.data.categoryList;
         if (response.length != 0) {
           dispatch(setCategoryList(response));
           dispatch(setCategoryInput(response[0]));

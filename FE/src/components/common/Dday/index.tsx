@@ -19,8 +19,8 @@ const Dday = ({ nearDate, comparedDate }: Props) => {
 
   const dday = (() => {
     if (isVisible) {
-      let date = dayjs(comparedDate).format("YYYY-MM-DD");
-      let cacl = dayjs(date).diff(dayjs(nearDate), "day");
+      const date = dayjs(comparedDate).format("YYYY-MM-DD");
+      const cacl = dayjs(date).diff(dayjs(nearDate), "day");
 
       if (cacl == 0) return "-DAY";
       return cacl < 0 ? cacl : "+" + cacl;

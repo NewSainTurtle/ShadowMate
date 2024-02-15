@@ -20,8 +20,8 @@ const DdayItem = ({ item, idx }: Props) => {
   const [calc, setCalc] = useState<number>(0);
 
   const ddayCalculate = (comparedDate: Date | string | Dayjs) => {
-    let today = dayjs(new Date()).format("YYYY-MM-DD");
-    let date = dayjs(comparedDate).format("YYYY-MM-DD");
+    const today = dayjs(new Date()).format("YYYY-MM-DD");
+    const date = dayjs(comparedDate).format("YYYY-MM-DD");
     setCalc(dayjs(today).diff(dayjs(date), "day")); // 오늘 기준으로 비교
   };
 
@@ -33,7 +33,15 @@ const DdayItem = ({ item, idx }: Props) => {
     ddayCalculate(item.ddayDate);
   }, [item]);
 
-  const ddayStyle = calc == 0 ? "--today" : calc < 0 ? "--minus" : "--plus";
+  const setDday = () => {
+    if (calc === 0) return "D-Day";
+    return calc < 0 ? "D" + calc : "D+" + calc;
+  };
+
+  const setDdayStyle = () => {
+    if (calc === 0) return "--today";
+    return calc < 0 ? "--minus" : "--plus";
+  };
 
   return (
     <div
@@ -45,9 +53,9 @@ const DdayItem = ({ item, idx }: Props) => {
         <Text>{item.ddayTitle}</Text>
         <Text types="small">{dateFormat(item.ddayDate)}</Text>
       </div>
-      <div className={styles[`dday__item${ddayStyle}`]}>
+      <div className={styles[`dday__item${setDdayStyle()}`]}>
         <Text types="semi-medium" bold>
-          {calc == 0 ? "D-Day" : calc < 0 ? "D" + calc : "D+" + calc}
+          {setDday()}
         </Text>
       </div>
     </div>

@@ -8,10 +8,10 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { setLogin, selectAutoLogin, setAutoLogin, setIsGoogle, setUserInfo } from "@store/authSlice";
-import { setPopupOpen } from "@store/modalSlice";
 
 const getCookie = (name: string) => {
-  const value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  const regExp = new RegExp("(^|;) ?" + name + "=([^;]*)(;|$)");
+  const value = regExp.exec(document.cookie);
   return value ? value[2] : null;
 };
 

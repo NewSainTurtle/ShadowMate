@@ -5,10 +5,10 @@ import AddIcon from "@mui/icons-material/Add";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { FollowingType } from "@util/friend.interface";
+import { ProfileConfig } from "@util/auth.interface";
 import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
 import { selectFollowingList } from "@store/friendSlice";
-import { ProfileConfig } from "@util/auth.interface";
 
 const MonthFriends = () => {
   const navigator = useNavigate();

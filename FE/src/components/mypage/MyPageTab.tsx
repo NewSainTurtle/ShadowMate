@@ -10,26 +10,23 @@ interface MyPageTabProps {
 }
 
 interface TabListType {
+  id: number;
   title: string;
-  contents: {
-    index: number;
-    list: string[];
-  };
+  list: string[];
 }
 
 const TAB_LIST: TabListType[] = [
   {
+    id: 0,
     title: "내 정보",
-    contents: {
-      index: 0,
-      list: ["내 정보 확인", "비밀번호 변경", "회원탈퇴"],
-    },
+    list: ["내 정보 확인", "비밀번호 변경", "회원탈퇴"],
   },
   {
+    id: 1,
     title: "다이어리",
-    contents: { index: 1, list: ["다이어리 설정", "카테고리 설정", "디데이 설정", "루틴 설정"] },
+    list: ["다이어리 설정", "카테고리 설정", "디데이 설정", "루틴 설정"],
   },
-  { title: "친구", contents: { index: 2, list: ["팔로워 목록", "팔로잉 목록", "친구 검색"] } },
+  { id: 2, title: "친구", list: ["팔로워 목록", "팔로잉 목록", "친구 검색"] },
 ];
 
 const setHeaderName = (name: string) => {
@@ -53,17 +50,17 @@ const MyPageTab = ({ tabName, setTabName }: MyPageTabProps) => {
       {TAB_LIST.map((item, idx) => {
         const clicked = idx === headerIndex ? "--clicked" : "";
         return (
-          <div key={idx} className={styles[`tab__title${clicked}`]}>
+          <div key={item.id} className={styles[`tab__title${clicked}`]}>
             <input type="checkbox" id={item.title} checked readOnly />
             <label htmlFor={item.title}>{item.title}</label>
-            {item.contents.list && (
+            {item.list && (
               <div className={styles["tab__contents"]}>
-                {item.contents.list.map((list, idx) => {
-                  const cur = item.contents.index;
+                {item.list.map((list, idx) => {
+                  const cur = item.id;
                   return (
                     <div
+                      key={idx.toString()}
                       onClick={() => handleLink(list, cur)}
-                      key={idx}
                       style={{ display: isGoogle && list === "비밀번호 변경" ? "none" : "visible" }}
                     >
                       <Text types="small" bold={list === subIndex}>

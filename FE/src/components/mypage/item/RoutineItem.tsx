@@ -22,7 +22,7 @@ const RoutineItem = ({ idx, item }: Props) => {
   const endRef = useRef<HTMLDivElement | null>(null);
   const clicked = click === idx ? "--clicked" : "";
   const sortDays = () => {
-    let days = [...item.days];
+    const days = [...item.days];
     return days?.sort((a: string, b: string) => {
       return DaysSorter[a] - DaysSorter[b];
     });
@@ -44,7 +44,7 @@ const RoutineItem = ({ idx, item }: Props) => {
         <Text>{item.routineContent}</Text>
         <div>
           {sortDays()?.map((day: string, i: number) => (
-            <Text types="small" key={i}>
+            <Text types="small" key={i.toString()}>
               {i === item.days.length - 1 ? day : day + ", "}
             </Text>
           ))}

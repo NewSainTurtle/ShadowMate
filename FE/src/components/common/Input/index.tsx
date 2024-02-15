@@ -25,27 +25,31 @@ const Input = ({ types, maxLength, ...rest }: Props & TextFieldProps) => {
           WebkitTextFillColor: colors.colorGray_Light_4,
         },
       }}
-      InputProps={
-        types == "password"
-          ? {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleClickShowPassword} className={styles.input__icon}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }
-          : types == "search"
-          ? {
-              startAdornment: (
-                <InputAdornment position="start" className={styles.input__icon}>
-                  <Search />
-                </InputAdornment>
-              ),
-            }
-          : {}
-      }
+      InputProps={(() => {
+        if (types == "password") {
+          return {
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleClickShowPassword} className={styles.input__icon}>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          };
+        }
+
+        if (types == "search") {
+          return {
+            startAdornment: (
+              <InputAdornment position="start" className={styles.input__icon}>
+                <Search />
+              </InputAdornment>
+            ),
+          };
+        }
+
+        return {};
+      })()}
       FormHelperTextProps={{
         className: styles["input__helper-text"],
       }}
