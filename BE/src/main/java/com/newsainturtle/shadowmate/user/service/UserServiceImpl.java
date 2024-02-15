@@ -3,7 +3,6 @@ package com.newsainturtle.shadowmate.user.service;
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
@@ -12,7 +11,6 @@ import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
-import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
@@ -41,7 +39,6 @@ public class UserServiceImpl implements UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisServiceImpl redisService;
-    private final FollowServiceImpl followService;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
@@ -54,23 +51,6 @@ public class UserServiceImpl implements UserService {
                 .profileImage(user.getProfileImage())
                 .statusMessage(user.getStatusMessage())
                 .plannerAccessScope(user.getPlannerAccessScope().getScope())
-                .build();
-    }
-
-    @Override
-    public UserResponse searchNickname(final User user, final String nickname) {
-        final User searchUser = userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
-        if (searchUser == null) {
-            return UserResponse.builder().build();
-        }
-        return UserResponse.builder()
-                .userId(searchUser.getId())
-                .email(searchUser.getEmail())
-                .profileImage(searchUser.getProfileImage())
-                .nickname(searchUser.getNickname())
-                .statusMessage(searchUser.getStatusMessage())
-                .plannerAccessScope(searchUser.getPlannerAccessScope())
-                .isFollow(followService.isFollow(user, searchUser))
                 .build();
     }
 

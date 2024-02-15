@@ -18,4 +18,5 @@ public interface FollowService {
     String receiveFollow(final User user, final Long targetUserId, final boolean followReceive);
     FollowStatus isFollow(final User user, final User searchUser);
     CountFollowResponse countFollow(final Long userId);
+    SearchUserResponse searchNickname(final User user, final String nickname);
 }

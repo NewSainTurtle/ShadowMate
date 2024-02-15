@@ -13,7 +13,7 @@ import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
-import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
+import com.newsainturtle.shadowmate.follow.dto.response.SearchUserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -275,61 +275,6 @@ public class UserServiceTest {
 
     @Nested
     class 회원TEST {
-
-        @Test
-        void 실패_회원없음() {
-            // given
-            final String user2Nickname = user2.getNickname();
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2Nickname);
-
-            // then
-            assertThat(result.getUserId()).isNull();
-            assertThat(result.getNickname()).isNull();
-        }
-
-        @Test
-        void 성공_회원검색_친구요청상태() {
-            // given
-            doReturn(FollowStatus.REQUESTED).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
-
-            // then
-            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
-            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.REQUESTED);
-        }
-
-        @Test
-        void 성공_회원검색_팔로우아닌상태() {
-            // given
-            doReturn(FollowStatus.EMPTY).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
-
-            // then
-            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
-            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.EMPTY);
-        }
-
-        @Test
-        void 성공_회원검색_FOLLOW상태() {
-            // given
-            doReturn(FollowStatus.FOLLOW).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
-
-            // then
-            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
-            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.FOLLOW);
-        }
 
         @Test
         void 성공_회원탈퇴() {
