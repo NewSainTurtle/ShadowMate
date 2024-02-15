@@ -324,5 +324,17 @@ public class UserServiceTest {
             assertThat(user).isNotNull();
         }
 
+        @Test
+        void 성공_공개된유저닉네임검색() {
+            //given
+            doReturn(user1).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
+
+            //when
+            final User user = userService.getUserByNicknameAndScopePublic(user1.getNickname());
+
+            //then
+            assertThat(user).isNotNull();
+        }
+
     }
 }

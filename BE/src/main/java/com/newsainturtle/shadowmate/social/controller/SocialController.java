@@ -4,6 +4,7 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.social.service.SocialService;
+import com.newsainturtle.shadowmate.social.service.UserPlannerSocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,8 @@ public class SocialController {
 
     private final SocialService socialService;
 
+    private final UserPlannerSocialService userPlannerSocialService;
+
     @GetMapping("/{userId}")
     public ResponseEntity<BaseResponse> getSocial(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                   @PathVariable("userId") final Long userId,
@@ -30,7 +33,7 @@ public class SocialController {
                                                   @RequestParam(name = "start-date") final String startDate,
                                                   @RequestParam(name = "end-date") final String endDate) {
         authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_SOCIAL, socialService.getSocial(sort, pageNumber, nickname, startDate, endDate)));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_SOCIAL, userPlannerSocialService.getSocial(sort, pageNumber, nickname, startDate, endDate)));
     }
 
     @DeleteMapping("/{userId}/{socialId}")
@@ -38,7 +41,7 @@ public class SocialController {
                                                      @PathVariable("userId") final Long userId,
                                                      @PathVariable("socialId") final Long socialId) {
         authService.certifyUser(userId, principalDetails.getUser());
-        socialService.deleteSocial(socialId);
+        socialService.deleteSocial(principalDetails.getUser(), socialId);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_DELETE_SOCIAL));
     }
 }

@@ -119,6 +119,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public User getUserByNicknameAndScopePublic(String nickname) {
+        return userRepository.findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(nickname, PlannerAccessScope.PUBLIC);
+    }
+
     private String createNicknameRandomCode() {
         final String temp = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         final StringBuilder sb = new StringBuilder();
