@@ -8,7 +8,6 @@ import { FollowingType } from "@util/friend.interface";
 import { ProfileConfig } from "@util/auth.interface";
 import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
-import { ProfileConfig } from "@util/auth.interface";
 import { selectFollowingList } from "@store/friendSlice";
 
 const MonthFriends = () => {
