@@ -6,17 +6,18 @@ import MonthIconBox from "@components/planner/month/MonthIconBox";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { selectFriendId, selectFriendInfo } from "@store/friendSlice";
+import { ProfileConfig, UserInfoConfig } from "@util/auth.interface";
 
 interface Props {
   isOpen: boolean;
 }
 
 const MonthDetail = ({ isOpen }: Props) => {
-  const userId = useAppSelector(selectUserId);
-  let friendId = useAppSelector(selectFriendId);
+  const userId: number = useAppSelector(selectUserId);
+  let friendId: number = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
-  const userInfo = useAppSelector(selectUserInfo);
-  const friendInfo = useAppSelector(selectFriendInfo);
+  const userInfo: UserInfoConfig = useAppSelector(selectUserInfo);
+  const friendInfo: ProfileConfig = useAppSelector(selectFriendInfo);
   const close = isOpen ? "" : "--close";
 
   return (

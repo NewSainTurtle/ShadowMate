@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
-import FriendProfile, { ProfileConfig } from "@components/common/FriendProfile";
+import FriendProfile from "@components/common/FriendProfile";
 import {
   FollowerType,
   FollowingType,
@@ -16,6 +16,7 @@ import { useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
 import { useDebounce } from "@util/EventControlModule";
 import { selectFollowState } from "@store/friendSlice";
+import { ProfileConfig } from "@util/auth.interface";
 
 interface MyFriendListType extends FriendInfo {
   followerId?: number;
@@ -37,7 +38,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const debounceKeyword = useDebounce(searchKeyWord, 400);
   const [alertMessage, setAlertMessage] = useState("");
-  const followState: boolean = useAppSelector(selectFollowState);
+  const followState = useAppSelector(selectFollowState);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyWord(e.target.value);

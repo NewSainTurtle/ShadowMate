@@ -1,4 +1,4 @@
-import baseAxios from "axios";
+import baseAxios, { AxiosError, AxiosResponse } from "axios";
 import { store } from "@hooks/configStore";
 import { authApi } from "@api/Api";
 import { setAccessToken, setAutoLogin } from "@store/authSlice";
@@ -38,28 +38,30 @@ Axios.interceptors.response.use(
     }
     return res;
   },
-  async (err) => {
-    const {
-      config,
-      response: { status },
-    } = err;
-
-    if (status === 401) {
-      if (err.response.data.code === "EXPIRED_ACCESS_TOKEN") {
-        const userId = store.getState().auth.userId;
-        const type = store.getState().auth.type;
-        const res = await authApi.token(userId, type);
-        if (res.status === 200) {
-          const accessToken = res.headers["authorization"].replace("Bearer ", "");
-          store.dispatch(setAccessToken(accessToken));
-          config.headers.Authorization = `Bearer ${accessToken}`;
-          return Axios(config);
+  async (error: AxiosError | Error): Promise<AxiosError> => {
+    if (baseAxios.isAxiosError(error)) {
+      const response = error.response as AxiosResponse;
+      const { status } = response;
+      if (status === 401) {
+        if (response.data.code === "EXPIRED_ACCESS_TOKEN") {
+          const { userId, type } = store.getState().auth;
+          const res = await authApi.token(userId, { type });
+          if (res.status === 200) {
+            const headers = res.headers["authorization"] as string;
+            const accessToken = headers.replace("Bearer ", "");
+            store.dispatch(setAccessToken(accessToken));
+            if (error?.config !== undefined) {
+              error.config.headers.Authorization = `Bearer ${accessToken}`;
+              return Axios(error.config);
+            }
+          }
+        } else if (response.data.code === "EXPIRED_REFRESH_TOKEN") {
+          store.dispatch(setModalOpen());
         }
-      } else if (err.response.data.code === "EXPIRED_REFRESH_TOKEN") {
-        store.dispatch(setModalOpen());
       }
     }
-    return Promise.reject(err);
+
+    return Promise.reject(error);
   },
 );
 

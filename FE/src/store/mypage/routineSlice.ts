@@ -11,19 +11,10 @@ export interface RoutineItemConfig {
   days: string[];
   category: CategoryItemConfig | null;
 }
-
-export interface InitRoutineItemConfig {
-  routineContent: string;
-  startDay: string | Date;
-  endDay: string | Date;
-  category: CategoryItemConfig | null;
-  days: string[];
-}
-
 interface RoutineConfig {
   routineList: RoutineItemConfig[];
   routineClick: number;
-  routineInput: RoutineItemConfig | InitRoutineItemConfig;
+  routineInput: RoutineItemConfig;
 }
 
 const initialState: RoutineConfig = {
@@ -50,7 +41,7 @@ const routineSlice = createSlice({
     setRoutineClick: (state, { payload }: PayloadAction<number>) => {
       state.routineClick = payload;
     },
-    setRoutineInput: (state, { payload }: PayloadAction<RoutineItemConfig | InitRoutineItemConfig>) => {
+    setRoutineInput: (state, { payload }: PayloadAction<RoutineItemConfig>) => {
       state.routineInput = payload;
     },
   },

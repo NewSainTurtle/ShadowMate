@@ -71,6 +71,11 @@ export interface RoutineErrorConfig {
   dayError: boolean;
 }
 
+const GenericReturnFunc = <T extends object>(str: string) => {
+  const jsonValue: T = JSON.parse(str) as T;
+  return jsonValue;
+};
+
 const MyPageFrame = ({ title }: Props) => {
   const dispatch = useAppDispatch();
   const userId: number = useAppSelector(selectUserId);
@@ -86,7 +91,10 @@ const MyPageFrame = ({ title }: Props) => {
   const ddayList: DdayItemConfig[] = useAppSelector(selectDdayList);
   const ddayClick: number = useAppSelector(selectDdayClick);
   const ddayInput: DdayItemConfig = useAppSelector(selectDdayInput);
-  const copyDdays: DdayItemConfig[] = useMemo(() => JSON.parse(JSON.stringify(ddayList)), [ddayList]);
+  const copyDdays: DdayItemConfig[] = useMemo<DdayItemConfig[]>(
+    () => GenericReturnFunc(JSON.stringify(ddayList)),
+    [ddayList],
+  );
 
   /* 루틴 관련 변수 */
   const routineList: RoutineItemConfig[] = useAppSelector(selectRoutineList);
@@ -140,11 +148,12 @@ const MyPageFrame = ({ title }: Props) => {
     settingApi
       .addCategories(userId, data)
       .then((res) => {
-        const returnId = res.data.data.categoryId;
+        const categoryId: number = res.data.data.categoryId;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { categoryColorId, ...rest } = data;
-        const newCategory = {
+        const newCategory: CategoryItemConfig = {
           ...rest,
-          categoryId: returnId,
+          categoryId,
           categoryColorCode: categoryColors[colorClick].categoryColorCode,
         };
         dispatch(setCategoryList([...categoryList, newCategory]));
@@ -152,7 +161,7 @@ const MyPageFrame = ({ title }: Props) => {
         dispatch(setCategoryInput(newCategory));
       })
       .then(() => handleNewItemModalClose())
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleUpdateCategory = () => {
@@ -171,7 +180,7 @@ const MyPageFrame = ({ title }: Props) => {
         copyList[categoryClick] = { ...data, categoryColorCode: categoryColors[colorClick].categoryColorCode };
         dispatch(setCategoryList(copyList));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleDeleteCategory = () => {
@@ -191,7 +200,7 @@ const MyPageFrame = ({ title }: Props) => {
       })
       .then(() => handleDeleteModalClose())
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -204,14 +213,14 @@ const MyPageFrame = ({ title }: Props) => {
     settingApi
       .addDdays(userId, data)
       .then((res) => {
-        const returnId = res.data.data.ddayId;
-        const newDday = { ...data, ddayId: returnId };
+        const ddayId: number = res.data.data.ddayId;
+        const newDday = { ...data, ddayId };
         dispatch(setDdayList([...ddayList, newDday]));
         dispatch(setDdayClick(ddayList.length));
         dispatch(setDdayInput(newDday));
       })
       .then(() => handleNewItemModalClose())
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleUpdateDday = () => {
@@ -228,7 +237,7 @@ const MyPageFrame = ({ title }: Props) => {
         copyDdays[ddayClick] = { ...data };
         dispatch(setDdayList(copyDdays));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleDeleteDday = () => {
@@ -247,7 +256,7 @@ const MyPageFrame = ({ title }: Props) => {
         dispatch(setDdayClick(ddayClick === 0 ? ddayClick : ddayClick - 1));
       })
       .then(() => handleDeleteModalClose())
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleAddRoutine = () => {
@@ -264,8 +273,8 @@ const MyPageFrame = ({ title }: Props) => {
       .addRoutines(userId, input)
       .then((res) => {
         const routineId = res.data.data.routineId;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { categoryId, ...rest } = input;
-
         const newItem = { ...rest, routineId, category };
         dispatch(setRoutineList([...routineList, newItem]));
         dispatch(setRoutineClick(routineList.length));
@@ -275,7 +284,7 @@ const MyPageFrame = ({ title }: Props) => {
         handleNewItemModalClose();
         setRoutineError({ lengthError: false, dayError: false });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleUpdateRoutine = () => {
@@ -297,7 +306,7 @@ const MyPageFrame = ({ title }: Props) => {
         dispatch(setRoutineList(copyList));
       })
       .then(() => handleUpdateModalClose())
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleDeleteRoutine = () => {
@@ -317,7 +326,7 @@ const MyPageFrame = ({ title }: Props) => {
         dispatch(setRoutineInput(routineList[nextClick]));
       })
       .then(() => handleDeleteModalClose())
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleAdd = () => {
@@ -405,7 +414,7 @@ const MyPageFrame = ({ title }: Props) => {
         dispatch(setRoutineClick(0));
         dispatch(setRoutineInput(response[0]));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {

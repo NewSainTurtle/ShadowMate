@@ -9,7 +9,8 @@ import MyFriend from "@components/mypage/details/friend/MyFriend";
 import MyPassword from "@components/mypage/details/myInfo/MyPassword";
 import CancelMembership from "@components/mypage/details/myInfo/CancelMembership";
 import { useAppSelector } from "@hooks/hook";
-import { selectUserId, selectUserInfo, UserInfoConfig } from "@store/authSlice";
+import { selectUserId, selectUserInfo } from "@store/authSlice";
+import { ProfileConfig, UserInfoConfig } from "@util/auth.interface";
 
 interface Props {
   name?: string;
@@ -25,7 +26,7 @@ const MyPage = ({ name }: Props) => {
       <div className={styles["mypage__profile"]}>
         <Profile
           types="로그아웃"
-          profile={(() => {
+          profile={((): ProfileConfig => {
             const { nickname, profileImage, statusMessage } = userInfo;
             return {
               userId,

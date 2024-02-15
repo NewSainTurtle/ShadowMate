@@ -1,6 +1,16 @@
 import Axios from "@api/JsonAxios";
 import api from "@api/BaseUrl";
 import { MonthConfig } from "@store/planner/monthSlice";
+import { RoutineItemConfig } from "@store/mypage/routineSlice";
+import { IntroductionConfig } from "@components/planner/month/MonthDetailInfo/Introduction";
+
+interface ServerResponse<T> {
+  statusCode: number; // 응답 HTTP 상태 메시지
+  errorCode: number; // 에러코드 (본인 서버에러코드)
+  message: string; // 메시지
+  payload: T;
+  data: T; // 데이터 내용
+}
 
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
@@ -25,7 +35,7 @@ export const userApi = {
     Axios.put(api.users.password(userId), data),
   userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
   searches: (userId: number, params: { nickname: string }) => Axios.get(api.users.searches(userId), { params }),
-  getIntroduction: (userId: number) => Axios.get(api.users.introduction(userId)),
+  getIntroduction: (userId: number) => Axios.get<ServerResponse<IntroductionConfig>>(api.users.introduction(userId)),
   editIntroduction: (userId: number, data: { introduction: string }) => Axios.put(api.users.introduction(userId), data),
 };
 
@@ -115,7 +125,7 @@ export const settingApi = {
   addCategories: (
     userId: number,
     data: { categoryTitle: string; categoryColorId: number; categoryEmoticon: string | null },
-  ) => Axios.post(api.setting.categories(userId), data),
+  ) => Axios.post<ServerResponse<{ categoryId: number }>>(api.setting.categories(userId), data),
   editCategories: (
     userId: number,
     data: { categoryId: number; categoryTitle: string; categoryColorId: number; categoryEmoticon: string | null },
@@ -125,15 +135,16 @@ export const settingApi = {
 
   ddays: (userId: number) => Axios.get(api.setting.ddays(userId)),
   addDdays: (userId: number, data: { ddayDate: string; ddayTitle: string }) =>
-    Axios.post(api.setting.ddays(userId), data),
+    Axios.post<ServerResponse<{ ddayId: number }>>(api.setting.ddays(userId), data),
   editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
-  routines: (userId: number) => Axios.get(api.setting.routines(userId)),
+  routines: (userId: number) =>
+    Axios.get<ServerResponse<{ routineList: RoutineItemConfig[] }>>(api.setting.routines(userId)),
   addRoutines: (
     userId: number,
     data: { routineContent: string; startDay: string; endDay: string; categoryId: number; days: string[] },
-  ) => Axios.post(api.setting.routines(userId), data),
+  ) => Axios.post<ServerResponse<{ routineId: number }>>(api.setting.routines(userId), data),
   editRoutines: (
     userId: number,
     data: {

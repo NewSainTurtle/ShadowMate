@@ -6,6 +6,10 @@ import { selectUserId } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
 import { userApi } from "@api/Api";
 
+export interface IntroductionConfig {
+  introduction: string;
+}
+
 interface Props {
   isEdit: boolean;
   introduction: string;

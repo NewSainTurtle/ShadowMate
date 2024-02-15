@@ -3,7 +3,7 @@ import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
-import { ProfileConfig } from "@components/common/FriendProfile";
+import { ProfileConfig } from "@util/auth.interface";
 import { socialApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
