@@ -1,8 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
-import dayjs from "dayjs";
 import { ProfileConfig } from "@util/auth.interface";
 import { FollowingType } from "@util/friend.interface";
+import dayjs from "dayjs";
 
 interface FriendConfig {
   followState: number;

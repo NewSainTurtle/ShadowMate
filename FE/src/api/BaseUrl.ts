@@ -9,121 +9,62 @@ const PLANNERS = "planners/";
 const SETTINGS = "planner-settings/";
 const SOCIAL = "social/";
 
-interface ApiInterface {
+const api = {
   auth: {
-    join: () => string; // 회원가입
-    login: () => string; // 로그인
-    autoLogin: () => string; // 자동로그인
-    googleLogin: () => string; // 구글 로그인
-    logout: () => string; // 로그아웃
-    nickname: () => string; // 닉네임 중복검사, 삭제
-    emailAuthentication: () => string; // 이메일 인증 (+중복검사)
-    emailAuthenticationCheck: () => string; // 이메일 인증 - 응답
-    token: (userId: number) => string; // 토큰 재발급
-  };
-  users: {
-    getProfiles: (userId: number) => string; // 프로필 조회
-    myPages: (userId: number) => string; // 내 정보 설정
-    password: (userId: number) => string; // 비밀번호 수정
-    userOut: (userId: number) => string; // 회원 탈퇴
-    searches: (userId: number) => string; // 회원 검색
-    introduction: (userId: number) => string; // 소개글 수정
-  };
-  follow: {
-    following: (userId: number) => string; // 팔로잉 조회, 삭제
-    followers: (userId: number) => string; // 팔로워 조회, 삭제
-    requested: (userId: number) => string; // 팔로우 신청, 취소
-    receive: (userId: number) => string; // 팔로우 신청 수락, 거절
-    receiveList: (userId: number) => string; // 받은 팔로우 신청 목록(친구신청 목록)
-    count: (userId: number) => string;
-  };
-  planners: {
-    calendars: (userId: number) => string; // 캘린더 조회
-    guestBook: (userId: number) => string; // 방명록 조회, 등록, 삭제
-    weekly: (userId: number) => string; // 주간 플래너 조회
-    weeklyTodos: (userId: number) => string; // 주별 할일 등록, 수정, 삭제
-    weeklyTodosStatus: (userId: number) => string; // 주차별 할일 상태 수정
-    daily: (userId: number) => string; // 일일 플래너 조회
-    dailyTodos: (userId: number) => string; // 일별 할일 등록, 수정, 삭제
-    dailyTodoSequence: (userId: number) => string; // 일별 할일 순서 변경
-    likes: (userId: number) => string; // 좋아요 누르기, 취소
-    timetables: (userId: number) => string; // 타임 테이블 표시, 삭제
-    retrospections: (userId: number) => string; // 오늘의 회고 편집
-    todayGoals: (userId: number) => string; // 오늘의 다짐 편집
-    tomorrowGoals: (userId: number) => string; // 내일의 다짐 편집
-    retrospectionImages: (userId: number) => string; // 오늘의 회고 사진 업로드
-    social: (userId: number) => string; // 소셜 공유, 재공유
-  };
-  setting: {
-    accessScopes: (userId: number) => string; // 플래너 공개 여부
-    categories: (userId: number) => string; // 카테고리 목록 조회, 등록, 수정, 삭제
-    categoriesColors: (userId: number) => string; // 카테고리 색상 목록 조회
-    ddays: (userId: number) => string; // 디데이 목록 조회, 등록, 수정, 삭제
-    routines: (userId: number) => string; // 루틴 조회, 등록, 수정, 삭제
-  };
-  social: {
-    getSocial: (userId: number) => string; // 공개된 플래너 조회
-    searches: (userId: number) => string; // 닉네임 검색
-    delete: (userId: number, socialId: number) => string; // 내가 공유한 소셜 플래너 삭제
-  };
-}
-
-const api: ApiInterface = {
-  auth: {
-    join: () => HOST + AUTH + "join",
-    login: () => HOST + AUTH + "login",
-    autoLogin: () => HOST + AUTH + "auto-login",
-    googleLogin: () => HOST + AUTH + "social-login",
-    logout: () => HOST + AUTH + "logout",
-    nickname: () => HOST + AUTH + "nickname-duplicated",
-    emailAuthentication: () => HOST + AUTH + "email-authentication",
-    emailAuthenticationCheck: () => HOST + AUTH + "email-authentication" + "/check",
-    token: (userId: number) => HOST + AUTH + "token/" + userId,
+    join: () => HOST + AUTH + "join", // 회원가입
+    login: () => HOST + AUTH + "login", // 로그인
+    autoLogin: () => HOST + AUTH + "auto-login", // 자동로그인
+    googleLogin: () => HOST + AUTH + "social-login", // 구글 로그인
+    logout: () => HOST + AUTH + "logout", // 로그아웃
+    nickname: () => HOST + AUTH + "nickname-duplicated", // 닉네임 중복검사, 삭제
+    emailAuthentication: () => HOST + AUTH + "email-authentication", // 이메일 인증 (+중복검사)
+    emailAuthenticationCheck: () => HOST + AUTH + "email-authentication" + "/check", // 이메일 인증 - 응답
+    token: (userId: number) => HOST + AUTH + "token/" + userId, // 토큰 재발급
   },
   users: {
-    getProfiles: (userId: number) => HOST + USERS + userId + "/profiles",
-    myPages: (userId: number) => HOST + USERS + userId + "/mypages",
-    password: (userId: number) => HOST + USERS + userId + "/password",
-    userOut: (userId: number) => HOST + USERS + userId,
-    searches: (userId: number) => HOST + USERS + userId + "/searches",
-    introduction: (userId: number) => HOST + USERS + userId + "/introduction",
+    getProfiles: (userId: number) => HOST + USERS + userId + "/profiles", // 프로필 조회
+    myPages: (userId: number) => HOST + USERS + userId + "/mypages", // 내 정보 설정
+    password: (userId: number) => HOST + USERS + userId + "/password", // 비밀번호 수정
+    userOut: (userId: number) => HOST + USERS + userId, // 회원 탈퇴
+    searches: (userId: number) => HOST + USERS + userId + "/searches", // 회원 검색
+    introduction: (userId: number) => HOST + USERS + userId + "/introduction", // 소개글 수정
   },
   follow: {
-    following: (userId: number) => HOST + FOLLOW + userId + "/following",
-    followers: (userId: number) => HOST + FOLLOW + userId + "/followers",
-    requested: (userId: number) => HOST + FOLLOW + userId + "/requested",
-    receive: (userId: number) => HOST + FOLLOW + userId + "/receive",
-    receiveList: (userId: number) => HOST + FOLLOW + userId + "/receive-lists",
-    count: (userId: number) => HOST + FOLLOW + userId + "/counts",
+    following: (userId: number) => HOST + FOLLOW + userId + "/following", // 팔로잉 조회
+    followers: (userId: number) => HOST + FOLLOW + userId + "/followers", // 팔로워 조회
+    requested: (userId: number) => HOST + FOLLOW + userId + "/requested", // 팔로우 신청, 취소
+    receive: (userId: number) => HOST + FOLLOW + userId + "/receive", // 팔로우 신청 수락, 거절
+    receiveList: (userId: number) => HOST + FOLLOW + userId + "/receive-lists", // 받은 팔로우 신청 목록(친구신청 목록)
+    count: (userId: number) => HOST + FOLLOW + userId + "/counts", // 팔로우 수 조회
   },
   planners: {
-    calendars: (userId: number) => HOST + PLANNERS + userId + "/calendars",
-    guestBook: (userId: number) => HOST + PLANNERS + userId + "/monthly" + "/visitor-books",
-    weekly: (userId: number) => HOST + PLANNERS + userId + "/weekly",
-    weeklyTodos: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos",
-    weeklyTodosStatus: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos-status",
-    daily: (userId: number) => HOST + PLANNERS + userId + "/daily",
-    dailyTodos: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todos",
-    dailyTodoSequence: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todo-sequence",
-    likes: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/likes",
-    timetables: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/timetables",
-    retrospections: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/retrospections",
-    todayGoals: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/today-goals",
-    tomorrowGoals: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/tomorrow-goals",
-    retrospectionImages: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/retrospection-images",
-    social: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/social",
+    calendars: (userId: number) => HOST + PLANNERS + userId + "/calendars", // 캘린더 조회
+    guestBook: (userId: number) => HOST + PLANNERS + userId + "/monthly" + "/visitor-books", // 방명록 조회, 등록, 삭제
+    weekly: (userId: number) => HOST + PLANNERS + userId + "/weekly", // 주간 플래너 조회
+    weeklyTodos: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos", // 주별 할일 등록, 수정, 삭제
+    weeklyTodosStatus: (userId: number) => HOST + PLANNERS + userId + "/weekly" + "/todos-status", // 주차별 할일 상태 수정
+    daily: (userId: number) => HOST + PLANNERS + userId + "/daily", // 일일 플래너 조회
+    dailyTodos: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todos", // 일별 할일 등록, 수정, 삭제
+    dailyTodoSequence: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/todo-sequence", // 일별 할일 순서 변경
+    likes: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/likes", // 좋아요 누르기, 취소
+    timetables: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/timetables", // 타임 테이블 표시, 삭제
+    retrospections: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/retrospections", // 오늘의 회고 편집
+    todayGoals: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/today-goals", // 오늘의 다짐 편집
+    tomorrowGoals: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/tomorrow-goals", // 내일의 다짐 편집
+    retrospectionImages: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/retrospection-images", // 오늘의 회고 사진 업로드
+    social: (userId: number) => HOST + PLANNERS + userId + "/daily" + "/social", // 소셜 공유, 재공유
   },
   setting: {
-    accessScopes: (userId: number) => HOST + SETTINGS + userId + "/access-scopes",
-    categories: (userId: number) => HOST + SETTINGS + userId + "/categories",
-    categoriesColors: (userId: number) => HOST + SETTINGS + userId + "/categories" + "/colors",
-    ddays: (userId: number) => HOST + SETTINGS + userId + "/d-days",
-    routines: (userId: number) => HOST + SETTINGS + userId + "/routines",
+    accessScopes: (userId: number) => HOST + SETTINGS + userId + "/access-scopes", // 플래너 공개 여부
+    categories: (userId: number) => HOST + SETTINGS + userId + "/categories", // 카테고리 목록 조회, 등록, 수정, 삭제
+    categoriesColors: (userId: number) => HOST + SETTINGS + userId + "/categories" + "/colors", // 카테고리 색상 목록 조회
+    ddays: (userId: number) => HOST + SETTINGS + userId + "/d-days", // 디데이 목록 조회, 등록, 수정, 삭제
+    routines: (userId: number) => HOST + SETTINGS + userId + "/routines", // 루틴 조회, 등록, 수정, 삭제
   },
   social: {
-    getSocial: (userId: number) => HOST + SOCIAL + userId,
-    searches: (userId: number) => HOST + SOCIAL + userId + "/searches" + "/nicknames",
-    delete: (userId: number, socialId: number) => HOST + SOCIAL + userId + "/" + socialId,
+    getSocial: (userId: number) => HOST + SOCIAL + userId, // 공개된 플래너 조회
+    searches: (userId: number) => HOST + SOCIAL + userId + "/searches" + "/nicknames", // 닉네임 검색
+    delete: (userId: number, socialId: number) => HOST + SOCIAL + userId + "/" + socialId, // 내가 공유한 소셜 플래너 삭제
   },
 };
 

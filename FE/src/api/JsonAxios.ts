@@ -4,6 +4,7 @@ import { authApi } from "@api/Api";
 import { setAccessToken, setAutoLogin } from "@store/authSlice";
 import { setModalOpen } from "@store/modalSlice";
 import { setAlertOpen } from "@store/alertSlice";
+import axios from "axios";
 
 export const baseURL = process.env.REACT_APP_API_URL;
 
@@ -31,11 +32,15 @@ Axios.interceptors.request.use(
 );
 
 Axios.interceptors.response.use(
-  (res) => {
-    if (res.status === 202) {
-      store.dispatch(setAlertOpen({ type: "success", message: res.data.message }));
+  (response: AxiosResponse): AxiosResponse => {
+    const { status } = response;
+    const message = response.data as string;
+
+    if (status === 202) {
+      store.dispatch(setAlertOpen({ type: "success", message }));
     }
-    return res;
+
+    return response;
   },
   async (error: AxiosError | Error): Promise<AxiosError> => {
     if (baseAxios.isAxiosError(error)) {

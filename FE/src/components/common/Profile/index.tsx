@@ -20,7 +20,7 @@ import { authApi, followApi, userApi } from "@api/Api";
 
 interface Props {
   types: "기본" | "로그아웃";
-  profile: UserInfoConfig | ProfileConfig;
+  profile: ProfileConfig | UserInfoConfig;
 }
 
 const Profile = ({ types, profile }: Props) => {

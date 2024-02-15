@@ -75,7 +75,6 @@ const MyHeader = ({ socialClick, clicked }: { socialClick: () => Promise<void>; 
 
   function handleClick() {
     if (shareSocial == 0) {
-      dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: true }));
       socialClick();
     } else {
       handleDeleteModalOpen();
@@ -85,7 +84,7 @@ const MyHeader = ({ socialClick, clicked }: { socialClick: () => Promise<void>; 
   const handleDelete = async () => {
     await socialApi
       .delete(userId, shareSocial)
-      .then(() => dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: false })))
+      .then(() => dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial: 0 })))
       .catch((err) => console.error(err))
       .finally(() => handleDeleteModalClose());
   };

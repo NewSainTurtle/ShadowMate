@@ -73,8 +73,7 @@ const CardList = ({ scrollRef }: Props) => {
     async (pageNumber: number) => {
       setLoad(true);
       try {
-        let response: { totalPage: number; socialList: [] };
-        response = (
+        const response = (
           await socialApi.getSocial(userId, {
             sort: sort,
             "page-number": pageNumber,

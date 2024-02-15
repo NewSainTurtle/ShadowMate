@@ -96,8 +96,8 @@ const DayPage = () => {
   }, []);
 
   useEffect(() => {
-    const handleOutsideClose = (e: { target: any }) => {
-      if (isClickTimeTable && !todoDivRef.current?.contains(e.target)) {
+    const handleOutsideClose = ({ target }: MouseEvent) => {
+      if (isClickTimeTable && !todoDivRef.current?.contains(target as Node)) {
         setIsClickTimeTable(false);
         dispatch(
           setTodoItem({
@@ -155,7 +155,7 @@ const DayPage = () => {
             plannerApi
               .social(userId, { date, socialImage: downloadURL })
               .then((res) => {
-                const shareSocial = res.data.data.sharSocial;
+                const shareSocial = res.data.data.socialId;
                 dispatch(setDayInfo({ ...dayPlannerInfo, shareSocial }));
               })
               .catch((err) => console.error(err)),

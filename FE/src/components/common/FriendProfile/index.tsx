@@ -165,6 +165,7 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
         <PersonAddIcon />
       </div>
     ),
+    "": <></>,
   }[type];
 };
 

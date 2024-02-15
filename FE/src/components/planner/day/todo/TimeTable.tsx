@@ -152,7 +152,8 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
         const { todoId, category, timeTables } = item;
         timeTables?.forEach((time: TimeTableConfig) => {
           const miniArr: TimeTableType[] = [];
-          let { timeTableId, startTime, endTime } = time;
+          const { timeTableId, endTime } = time;
+          let { startTime } = time;
           let tempTime = startTime;
           while (tempTime != endTime) {
             tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
