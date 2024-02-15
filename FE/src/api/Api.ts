@@ -36,10 +36,7 @@ export const userApi = {
   password: (userId: number, data: { oldPassword: string; newPassword: string }) =>
     Axios.put(api.users.password(userId), data),
   userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
-  searches: (userId: number, params: { nickname: string }) =>
-    Axios.get<ServerResponse<FriendSearchResponse>>(api.users.searches(userId), { params }),
-  getIntroduction: (userId: number) =>
-    Axios.get<ServerResponse<{ introduction: string }>>(api.users.introduction(userId)),
+  getIntroduction: (userId: number) => Axios.get<ServerResponse<IntroductionConfig>>(api.users.introduction(userId)),
   editIntroduction: (userId: number, data: { introduction: string }) => Axios.put(api.users.introduction(userId), data),
 };
 
@@ -58,6 +55,8 @@ export const followApi = {
     Axios.post(api.follow.receive(userId), data),
   receiveList: (userId: number) => Axios.get<ServerResponse<FollowRequestType[]>>(api.follow.receiveList(userId)),
   getFollowCount: (userId: number) => Axios.get(api.follow.count(userId)),
+  searches: (userId: number, params: { nickname: string }) =>
+    Axios.get<ServerResponse<FriendSearchResponse>>(api.follow.searches(userId), { params }),
 };
 
 export const plannerApi = {

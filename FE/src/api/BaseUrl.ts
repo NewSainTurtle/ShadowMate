@@ -26,7 +26,6 @@ const api = {
     myPages: (userId: number) => HOST + USERS + userId + "/mypages", // 내 정보 설정
     password: (userId: number) => HOST + USERS + userId + "/password", // 비밀번호 수정
     userOut: (userId: number) => HOST + USERS + userId, // 회원 탈퇴
-    searches: (userId: number) => HOST + USERS + userId + "/searches", // 회원 검색
     introduction: (userId: number) => HOST + USERS + userId + "/introduction", // 소개글 수정
   },
   follow: {
@@ -34,6 +33,7 @@ const api = {
     followers: (userId: number) => HOST + FOLLOW + userId + "/followers", // 팔로워 조회
     requested: (userId: number) => HOST + FOLLOW + userId + "/requested", // 팔로우 신청, 취소
     receive: (userId: number) => HOST + FOLLOW + userId + "/receive", // 팔로우 신청 수락, 거절
+    searches: (userId: number) => HOST + FOLLOW + userId + "/searches", // 친구 검색
     receiveList: (userId: number) => HOST + FOLLOW + userId + "/receive-lists", // 받은 팔로우 신청 목록(친구신청 목록)
     count: (userId: number) => HOST + FOLLOW + userId + "/counts", // 팔로우 수 조회
   },
