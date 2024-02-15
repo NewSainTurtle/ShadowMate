@@ -18,4 +18,5 @@ public interface UserService {
     void deleteUser(final User user);
     User getUserByNickname(final String nickname);
     User getUserById(final long userId);
+    User getUserByNicknameAndScopePublic(String nickname);
 }

@@ -12,6 +12,7 @@ import com.newsainturtle.shadowmate.social.entity.Social;
 import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
 import com.newsainturtle.shadowmate.social.exception.SocialException;
 import com.newsainturtle.shadowmate.social.service.SocialServiceImpl;
+import com.newsainturtle.shadowmate.social.service.UserPlannerSocialServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,9 @@ class SocialControllerTest {
 
     @Mock
     private SocialServiceImpl socialService;
+
+    @Mock
+    private UserPlannerSocialServiceImpl userPlannerSocialService;
 
     @Mock
     private AuthServiceImpl authService;
@@ -85,7 +89,7 @@ class SocialControllerTest {
         @Test
         void 실패_정렬입력값이잘못됨() throws Exception {
             //given
-            doThrow(new SocialException(SocialErrorResult.BAD_REQUEST_SORT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+            doThrow(new SocialException(SocialErrorResult.BAD_REQUEST_SORT)).when(userPlannerSocialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -104,7 +108,7 @@ class SocialControllerTest {
         @Test
         void 실패_날짜형식이잘못됨() throws Exception {
             //given
-            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_FORMAT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_FORMAT)).when(userPlannerSocialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -123,7 +127,7 @@ class SocialControllerTest {
         @Test
         void 실패_기간이잘못됨() throws Exception {
             //given
-            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_PERIOD)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_PERIOD)).when(userPlannerSocialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -159,7 +163,7 @@ class SocialControllerTest {
                                     .build())
                             .collect(Collectors.toList()))
                     .build();
-            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, "", "", "");
+            doReturn(searchPublicDailyPlannerResponse).when(userPlannerSocialService).getSocial(sort, pageNumber, "", "", "");
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -195,7 +199,7 @@ class SocialControllerTest {
                                     .build())
                             .collect(Collectors.toList()))
                     .build();
-            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, "", "2023-12-25", "2023-12-26");
+            doReturn(searchPublicDailyPlannerResponse).when(userPlannerSocialService).getSocial(sort, pageNumber, "", "2023-12-25", "2023-12-26");
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -236,7 +240,7 @@ class SocialControllerTest {
         @Test
         void 실패_정렬입력값이잘못됨() throws Exception {
             //given
-            doThrow(new SocialException(SocialErrorResult.BAD_REQUEST_SORT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+            doThrow(new SocialException(SocialErrorResult.BAD_REQUEST_SORT)).when(userPlannerSocialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -255,7 +259,7 @@ class SocialControllerTest {
         @Test
         void 실패_날짜형식이잘못됨() throws Exception {
             //given
-            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_FORMAT)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_FORMAT)).when(userPlannerSocialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -274,7 +278,7 @@ class SocialControllerTest {
         @Test
         void 실패_기간이잘못됨() throws Exception {
             //given
-            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_PERIOD)).when(socialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
+            doThrow(new SocialException(SocialErrorResult.INVALID_DATE_PERIOD)).when(userPlannerSocialService).getSocial(any(String.class), any(Integer.class), any(String.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -310,7 +314,7 @@ class SocialControllerTest {
                                     .build())
                             .collect(Collectors.toList()))
                     .build();
-            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, userNickname, "", "");
+            doReturn(searchPublicDailyPlannerResponse).when(userPlannerSocialService).getSocial(sort, pageNumber, userNickname, "", "");
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -346,7 +350,7 @@ class SocialControllerTest {
                                     .build())
                             .collect(Collectors.toList()))
                     .build();
-            doReturn(searchPublicDailyPlannerResponse).when(socialService).getSocial(sort, pageNumber, userNickname, "2023-12-25", "2023-12-26");
+            doReturn(searchPublicDailyPlannerResponse).when(userPlannerSocialService).getSocial(sort, pageNumber, userNickname, "2023-12-25", "2023-12-26");
 
             //when
             final ResultActions resultActions = mockMvc.perform(

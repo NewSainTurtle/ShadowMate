@@ -4,7 +4,6 @@ import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.AddTimeTableResponse;
-import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
 import com.newsainturtle.shadowmate.planner.dto.response.TodoIndexResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
@@ -21,10 +20,7 @@ import com.newsainturtle.shadowmate.planner_setting.entity.Category;
 import com.newsainturtle.shadowmate.planner_setting.entity.RoutineTodo;
 import com.newsainturtle.shadowmate.planner_setting.repository.CategoryRepository;
 import com.newsainturtle.shadowmate.planner_setting.repository.RoutineTodoRepository;
-import com.newsainturtle.shadowmate.social.entity.Social;
-import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
-import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,13 +40,12 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     private final DailyPlannerLikeRepository dailyPlannerLikeRepository;
     private final TimeTableRepository timeTableRepository;
     private final UserRepository userRepository;
-    private final SocialRepository socialRepository;
     private final RoutineTodoRepository routineTodoRepository;
 
     private DailyPlanner getOrCreateDailyPlanner(final User user, final String date) {
-        DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
+        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
         if (dailyPlanner == null) {
-            dailyPlanner = dailyPlannerRepository.save(DailyPlanner.builder()
+            return dailyPlannerRepository.save(DailyPlanner.builder()
                     .dailyPlannerDay(date)
                     .user(user)
                     .build());
@@ -58,7 +53,8 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         return dailyPlanner;
     }
 
-    private DailyPlanner getDailyPlanner(final User user, final String date) {
+    @Override
+    public DailyPlanner getDailyPlanner(final User user, final String date) {
         final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(user, date);
         if (dailyPlanner == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -68,7 +64,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
 
     private Category getCategory(final User user, final Long categoryId) {
         if (categoryId == 0) return null;
-        Category category = categoryRepository.findByUserAndId(user, categoryId);
+        final Category category = categoryRepository.findByUserAndId(user, categoryId);
         if (category == null) {
             throw new PlannerException(PlannerErrorResult.INVALID_CATEGORY);
         }
@@ -87,18 +83,12 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         if (user.getId().equals(plannerWriterId)) {
             throw new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER);
         }
-
         final User plannerWriter = certifyPlannerWriter(plannerWriterId);
-
-        final DailyPlanner dailyPlanner = dailyPlannerRepository.findByUserAndDailyPlannerDay(plannerWriter, date);
-        if (dailyPlanner == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER);
-        }
-        return dailyPlanner;
+        return getDailyPlanner(plannerWriter, date);
     }
 
     private void checkValidDateTime(final String date, final LocalDateTime startTime, final LocalDateTime endTime) {
-        LocalDateTime localDateTime = stringToLocalDateTime(date + " 00:00");
+        final LocalDateTime localDateTime = stringToLocalDateTime(date + " 00:00");
         if (endTime.isBefore(startTime)
                 || localDateTime.withHour(4).isAfter(startTime)
                 || localDateTime.plusDays(1).withHour(4).isBefore(endTime)) {
@@ -119,16 +109,15 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, addDailyTodoRequest.getDate());
         final Category category = getCategory(user, addDailyTodoRequest.getCategoryId());
         final TodoIndexResponse lastTodoIndex = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
-        final Todo todo = Todo.builder()
+        final long todoId = todoRepository.save(Todo.builder()
                 .category(category)
                 .todoContent(addDailyTodoRequest.getTodoContent())
                 .todoStatus(TodoStatus.EMPTY)
                 .dailyPlanner(dailyPlanner)
                 .todoIndex(lastTodoIndex == null ? 100000 : lastTodoIndex.getTodoIndex() + 100000)
                 .timeTables(new ArrayList<>())
-                .build();
-        final Todo saveTodo = todoRepository.save(todo);
-        return AddDailyTodoResponse.builder().todoId(saveTodo.getId()).build();
+                .build()).getId();
+        return AddDailyTodoResponse.builder().todoId(todoId).build();
     }
 
     @Override
@@ -187,15 +176,13 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     @Override
     public void addDailyLike(final User user, final Long plannerWriterId, final AddDailyLikeRequest addDailyPlannerLikeRequest) {
         final DailyPlanner dailyPlanner = getAnotherUserDailyPlanner(user, plannerWriterId, addDailyPlannerLikeRequest.getDate());
-        final boolean like = dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user, dailyPlanner);
-        if (like) {
+        if (dailyPlannerLikeRepository.existsByUserAndDailyPlanner(user, dailyPlanner)) {
             throw new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE);
         }
-        final DailyPlannerLike dailyPlannerLike = DailyPlannerLike.builder()
+        dailyPlannerLikeRepository.save(DailyPlannerLike.builder()
                 .dailyPlanner(dailyPlanner)
                 .user(user)
-                .build();
-        dailyPlannerLikeRepository.save(dailyPlannerLike);
+                .build());
     }
 
     @Override
@@ -206,8 +193,8 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
 
     @Override
     public AddTimeTableResponse addTimeTable(final User user, final AddTimeTableRequest addTimeTableRequest) {
-        LocalDateTime startTime = stringToLocalDateTime(addTimeTableRequest.getStartTime());
-        LocalDateTime endTime = stringToLocalDateTime(addTimeTableRequest.getEndTime());
+        final LocalDateTime startTime = stringToLocalDateTime(addTimeTableRequest.getStartTime());
+        final LocalDateTime endTime = stringToLocalDateTime(addTimeTableRequest.getEndTime());
         checkValidDateTime(addTimeTableRequest.getDate(), startTime, endTime);
 
         final DailyPlanner dailyPlanner = getDailyPlanner(user, addTimeTableRequest.getDate());
@@ -216,12 +203,12 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
             throw new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE);
         }
 
-        final TimeTable saveTimeTable = timeTableRepository.save(TimeTable.builder()
+        final TimeTable timeTable = timeTableRepository.save(TimeTable.builder()
                 .endTime(endTime)
                 .startTime(startTime)
                 .build());
-        saveTimeTable.setTodo(todo);
-        return AddTimeTableResponse.builder().timeTableId(saveTimeTable.getId()).build();
+        timeTable.setTodo(todo);
+        return AddTimeTableResponse.builder().timeTableId(timeTable.getId()).build();
     }
 
     @Override
@@ -233,26 +220,6 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
         }
         findTimeTable.setTodo(null);
         timeTableRepository.deleteById(removeTimeTableRequest.getTimeTableId());
-    }
-
-    @Override
-    public ShareSocialResponse shareSocial(final User user, final ShareSocialRequest shareSocialRequest) {
-        if (!user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
-            throw new PlannerException(PlannerErrorResult.FAILED_SHARE_SOCIAL);
-        }
-        final DailyPlanner dailyPlanner = getDailyPlanner(user, shareSocialRequest.getDate());
-        final Social findSocial = socialRepository.findByDailyPlanner(dailyPlanner);
-        if (findSocial != null) {
-            throw new PlannerException(PlannerErrorResult.ALREADY_SHARED_SOCIAL);
-        }
-        final Social social = Social.builder()
-                .dailyPlanner(dailyPlanner)
-                .socialImage(shareSocialRequest.getSocialImage())
-                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                .ownerId(user.getId())
-                .build();
-        final Social saveSocial = socialRepository.save(social);
-        return ShareSocialResponse.builder().socialId(saveSocial.getId()).build();
     }
 
     @Override
