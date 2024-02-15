@@ -3,6 +3,7 @@ import api from "@api/BaseUrl";
 import { MonthConfig } from "@store/planner/monthSlice";
 import { RoutineItemConfig } from "@store/mypage/routineSlice";
 import { IntroductionConfig } from "@components/planner/month/MonthDetailInfo/Introduction";
+import { RoutineUpdateSelectorConfig } from "@components/mypage/MyPageFrame";
 
 interface ServerResponse<T> {
   statusCode: number; // 응답 HTTP 상태 메시지
@@ -149,7 +150,7 @@ export const settingApi = {
     userId: number,
     data: {
       routineId: number;
-      order: number;
+      order: RoutineUpdateSelectorConfig["order"];
       startDay: string;
       endDay: string;
       routineContent: string;
@@ -157,7 +158,7 @@ export const settingApi = {
       days: string[];
     },
   ) => Axios.put(api.setting.routines(userId), data),
-  deleteRoutines: (userId: number, data: { routineId: number; order: number }) =>
+  deleteRoutines: (userId: number, data: { routineId: number; order: RoutineUpdateSelectorConfig["order"] }) =>
     Axios.delete(api.setting.routines(userId), { data }),
 };
 

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "@styles/mypage/MyPage.module.scss";
 import Text from "@components/common/Text";
 import Modal from "@components/common/Modal";
@@ -62,10 +62,10 @@ export interface EditInfoConfig {
   clicked: number;
 }
 
-interface RoutineUpdateSelectorConfig {
+export interface RoutineUpdateSelectorConfig {
   types: "수정" | "삭제";
-  order: string;
-  onChangeRadio: (order: string) => void;
+  order: "1" | "2" | "3";
+  setOrder: Dispatch<SetStateAction<RoutineUpdateSelectorConfig["order"]>>;
 }
 
 export interface RoutineErrorConfig {
@@ -76,6 +76,32 @@ export interface RoutineErrorConfig {
 const GenericReturnFunc = <T extends object>(str: string) => {
   const jsonValue: T = JSON.parse(str) as T;
   return jsonValue;
+};
+
+const RoutineUpdateSelector = ({ types, order, setOrder }: RoutineUpdateSelectorConfig) => {
+  return (
+    <div className={styles["radio"]}>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <RadioGroup
+          value={order}
+          onChange={(e) => {
+            const order = e.target.value;
+            if (order === "1" || order === "2" || order === "3") setOrder(order);
+          }}
+        >
+          <FormControlLabel value="1" control={<RadioButton />} label={<Text types="small">모두 {types}하기</Text>} />
+          <FormControlLabel
+            value="2"
+            control={<RadioButton />}
+            label={<Text types="small">오늘 이후 루틴을 모두 {types}하기</Text>}
+          />
+          {types === "삭제" && (
+            <FormControlLabel value="3" control={<RadioButton />} label={<Text types="small">삭제하지 않기</Text>} />
+          )}
+        </RadioGroup>
+      </Stack>
+    </div>
+  );
 };
 
 const MyPageFrame = ({ title }: Props) => {
@@ -107,7 +133,7 @@ const MyPageFrame = ({ title }: Props) => {
     dayError: false,
   });
 
-  const [order, setOrder] = useState<"1" | "2" | "3">("1");
+  const [order, setOrder] = useState<RoutineUpdateSelectorConfig["order"]>("1");
   const [updateModal, setUpdateModal] = useState(false);
   const handleUpdateModalOpen = () => setUpdateModal(true);
   const handleUpdateModalClose = () => setUpdateModal(false);
@@ -151,7 +177,7 @@ const MyPageFrame = ({ title }: Props) => {
       .addCategories(userId, data)
       .then((res) => {
         const categoryId: number = res.data.data.categoryId;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
         const { categoryColorId, ...rest } = data;
         const newCategory: CategoryItemConfig = {
           ...rest,
@@ -275,7 +301,7 @@ const MyPageFrame = ({ title }: Props) => {
       .addRoutines(userId, input)
       .then((res) => {
         const routineId = res.data.data.routineId;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
         const { categoryId, ...rest } = input;
         const newItem = { ...rest, routineId, category };
         dispatch(setRoutineList([...routineList, newItem]));
@@ -293,7 +319,7 @@ const MyPageFrame = ({ title }: Props) => {
     const { routineId, routineContent, category, startDay, endDay, days } = routineInput;
     const updateInput = {
       routineId,
-      order: parseInt(order),
+      order,
       startDay: dayjs(startDay).format("YYYY-MM-DD"),
       endDay: dayjs(endDay).format("YYYY-MM-DD"),
       categoryId: category ? category.categoryId : BASIC_CATEGORY_ITEM.categoryId,
@@ -314,7 +340,7 @@ const MyPageFrame = ({ title }: Props) => {
   const handleDeleteRoutine = () => {
     const routineId = routineList[routineClick].routineId;
     settingApi
-      .deleteRoutines(userId, { routineId, order: parseInt(order) })
+      .deleteRoutines(userId, { routineId, order })
       .then(() => {
         dispatch(
           setRoutineList(
@@ -377,12 +403,6 @@ const MyPageFrame = ({ title }: Props) => {
         return handleDeleteDday();
       case "루틴":
         return handleDeleteRoutine();
-    }
-  };
-
-  const onChangeRadio = (order: string) => {
-    if (order === "1" || order === "2" || order === "3") {
-      setOrder(order);
     }
   };
 
@@ -450,7 +470,7 @@ const MyPageFrame = ({ title }: Props) => {
       >
         {title === "루틴" ? (
           <RoutineUpdateModal types="삭제">
-            <RoutineUpdateSelector types="삭제" order={order} onChangeRadio={onChangeRadio} />
+            <RoutineUpdateSelector types="삭제" order={order} setOrder={setOrder} />
           </RoutineUpdateModal>
         ) : (
           <DeleteModal types={title} />
@@ -464,7 +484,7 @@ const MyPageFrame = ({ title }: Props) => {
         onClickMessage="수정"
       >
         <RoutineUpdateModal types="수정">
-          <RoutineUpdateSelector types="수정" order={order} onChangeRadio={onChangeRadio} />
+          <RoutineUpdateSelector types="수정" order={order} setOrder={setOrder} />
         </RoutineUpdateModal>
       </Modal>
       <Modal
