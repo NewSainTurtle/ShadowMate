@@ -32,7 +32,7 @@ const CancelMembership = () => {
         localStorage.removeItem("popup_visible");
         localStorage.removeItem("theme");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   return (

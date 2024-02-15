@@ -5,8 +5,9 @@ import AuthButton from "@components/auth/AuthButton";
 import Text from "@components/common/Text";
 import Input from "@components/common/Input";
 import Button from "@components/common/Button";
-import { authApi } from "@api/Api";
+import { ServerErrorResponse, authApi } from "@api/Api";
 import { userRegex, removeWhitespaceRegex } from "@util/regex";
+import axios from "axios";
 
 const SignupAccount = () => {
   const navigator = useNavigate();
@@ -84,11 +85,12 @@ const SignupAccount = () => {
             setErrorMessage("");
           })
           .catch((err) => {
-            const { code, message } = err.response.data;
-            setEmailAuthentication(false);
-            if (code == "DUPLICATED_EMAIL" || code == "ALREADY_AUTHENTICATED_EMAIL")
-              setError({ ...error, email: message });
-            else console.error(err);
+            if (axios.isAxiosError<ServerErrorResponse>(err) && err.response) {
+              const { code, message } = err.response.data;
+              setEmailAuthentication(false);
+              if (code == "DUPLICATED_EMAIL" || code == "ALREADY_AUTHENTICATED_EMAIL")
+                setError({ ...error, email: message });
+            } else console.error(err);
           });
       }
     };

@@ -1,4 +1,3 @@
-import React from "react";
 import { rootState } from "@hooks/configStore";
 import { createSlice } from "@reduxjs/toolkit";
 

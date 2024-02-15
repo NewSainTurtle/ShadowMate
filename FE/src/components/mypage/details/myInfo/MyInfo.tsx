@@ -7,7 +7,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
-import { selectUserId, selectUserInfo, setUserInfo, UserInfoConfig } from "@store/authSlice";
+import { selectUserId, selectUserInfo, setUserInfo } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { resizeImage } from "@util/resizeImage";
@@ -18,8 +18,8 @@ import { userRegex } from "@util/regex";
 const MyPageInfo = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const myInfoData: UserInfoConfig = useAppSelector(selectUserInfo);
-  const [userMyInfo, setUserMyInfo] = useState<UserInfoConfig>(myInfoData);
+  const myInfoData = useAppSelector(selectUserInfo);
+  const [userMyInfo, setUserMyInfo] = useState(myInfoData);
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
   const [newNickname, setNewNickname] = useState(nickname);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
@@ -39,7 +39,7 @@ const MyPageInfo = () => {
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
-  const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLength({ ...length, [name]: value.length });
     setUserMyInfo({

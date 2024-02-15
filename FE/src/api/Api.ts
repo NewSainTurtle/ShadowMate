@@ -1,6 +1,18 @@
 import Axios from "@api/JsonAxios";
 import api from "@api/BaseUrl";
 import { MonthConfig } from "@store/planner/monthSlice";
+import { FollowRequestType, FollowerType, FollowingType, FriendSearchResponse } from "@util/friend.interface";
+import { CategoryColorConfig, CategoryItemConfig, DayInfoResponse, DdayItemConfig } from "@util/planner.interface";
+import { SocialListType } from "@components/social/CardList";
+import { UserInfoConfig } from "@util/auth.interface";
+
+interface ServerResponse<T> {
+  statusCode: number; // 응답 HTTP 상태 메시지
+  errorCode: number; // 에러코드 (본인 서버에러코드)
+  message: string; // 메시지
+  payload: T;
+  data: T; // 데이터 내용
+}
 
 export const authApi = {
   join: (data: { email: string; password: string; nickname: string }) => Axios.post(api.auth.join(), data),
@@ -18,30 +30,33 @@ export const authApi = {
 };
 
 export const userApi = {
-  getProfiles: (userId: number) => Axios.get(api.users.getProfiles(userId)),
+  getProfiles: (userId: number) => Axios.get<ServerResponse<UserInfoConfig>>(api.users.getProfiles(userId)),
   myPages: (userId: number, data: { newNickname: string; newProfileImage: string; newStatusMessage: string }) =>
     Axios.put(api.users.myPages(userId), data),
   password: (userId: number, data: { oldPassword: string; newPassword: string }) =>
     Axios.put(api.users.password(userId), data),
   userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
-  searches: (userId: number, params: { nickname: string }) => Axios.get(api.users.searches(userId), { params }),
-  getIntroduction: (userId: number) => Axios.get(api.users.introduction(userId)),
+  searches: (userId: number, params: { nickname: string }) =>
+    Axios.get<ServerResponse<FriendSearchResponse>>(api.users.searches(userId), { params }),
+  getIntroduction: (userId: number) =>
+    Axios.get<ServerResponse<{ introduction: string }>>(api.users.introduction(userId)),
   editIntroduction: (userId: number, data: { introduction: string }) => Axios.put(api.users.introduction(userId), data),
 };
 
 export const followApi = {
-  getFollowing: (userId: number) => Axios.get(api.follow.following(userId)),
+  getFollowing: (userId: number) => Axios.get<ServerResponse<FollowingType[]>>(api.follow.following(userId)),
   deleteFollowing: (userId: number, data: { followingId: number }) =>
     Axios.delete(api.follow.following(userId), { data: data }),
-  getFollwers: (userId: number) => Axios.get(api.follow.followers(userId)),
+  getFollwers: (userId: number) => Axios.get<ServerResponse<FollowerType[]>>(api.follow.followers(userId)),
   deleteFollowers: (userId: number, data: { followerId: number }) =>
     Axios.delete(api.follow.followers(userId), { data: data }),
-  addRequested: (userId: number, data: { followingId: number }) => Axios.post(api.follow.requested(userId), data),
+  addRequested: (userId: number, data: { followingId: number }) =>
+    Axios.post<ServerResponse<{ followId: number; plannerAcceesScope: string }>>(api.follow.requested(userId), data),
   cancelRequested: (userId: number, data: { receiverId: number }) =>
     Axios.delete(api.follow.requested(userId), { data: data }),
   receive: (userId: number, data: { requesterId: number; followReceive: boolean }) =>
     Axios.post(api.follow.receive(userId), data),
-  receiveList: (userId: number) => Axios.get(api.follow.receiveList(userId)),
+  receiveList: (userId: number) => Axios.get<ServerResponse<FollowRequestType[]>>(api.follow.receiveList(userId)),
   getFollowCount: (userId: number) => Axios.get(api.follow.count(userId)),
 };
 
@@ -49,7 +64,20 @@ export const plannerApi = {
   calendars: (userId: number, params: { date: string }) =>
     Axios.get(api.planners.calendars(userId), { params: params }),
   getGuestBook: (userId: number, params: { last: number }) =>
-    Axios.get(api.planners.guestBook(userId), { params: params }),
+    Axios.get<
+      ServerResponse<{
+        visitorBookResponses: {
+          visitorBookId: number;
+          visitorId: number;
+          visitorNickname: string;
+          visitorProfileImage: string;
+          visitorBookContent: string;
+          writeDateTime: string;
+        }[];
+      }>
+    >(api.planners.guestBook(userId), {
+      params: params,
+    }),
   addGuestBook: (userId: number, data: { visitorBookContent: string }) =>
     Axios.post(api.planners.guestBook(userId), data),
   deleteGuestBook: (userId: number, data: { visitorBookId: number }) =>
@@ -69,12 +97,13 @@ export const plannerApi = {
     data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoStatus: boolean },
   ) => Axios.put(api.planners.weeklyTodosStatus(userId), data),
 
-  daily: (userId: number, params: { date: string }) => Axios.get(api.planners.daily(userId), { params: params }),
+  daily: (userId: number, params: { date: string }) =>
+    Axios.get<ServerResponse<DayInfoResponse>>(api.planners.daily(userId), { params: params }),
   likes: (userId: number, data: { date: string; anotherUserId: number }) =>
     Axios.post(api.planners.likes(userId), data),
   cancelLikes: (userId: number, data: { date: string }) => Axios.delete(api.planners.likes(userId), { data: data }),
   addDailyTodos: (userId: number, data: { date: string; todoContent: string; categoryId: number }) =>
-    Axios.post(api.planners.dailyTodos(userId), data),
+    Axios.post<ServerResponse<{ todoId: number }>>(api.planners.dailyTodos(userId), data),
   editDailyTodos: (
     userId: number,
     data: {
@@ -91,7 +120,7 @@ export const plannerApi = {
     Axios.put(api.planners.dailyTodoSequence(userId), data),
 
   timetables: (userId: number, data: { date: string; todoId: number; startTime: string; endTime: string }) =>
-    Axios.post(api.planners.timetables(userId), data),
+    Axios.post<ServerResponse<{ timeTableId: number }>>(api.planners.timetables(userId), data),
   deleteTimetable: (userId: number, data: { date: string; todoId: number; timeTableId: number }) =>
     Axios.delete(api.planners.timetables(userId), { data: data }),
   retrospections: (userId: number, data: { date: string; retrospection: string }) =>
@@ -103,15 +132,17 @@ export const plannerApi = {
   retrospectionImages: (userId: number, data: { date: string; retrospectionImage: string | null }) =>
     Axios.put(api.planners.retrospectionImages(userId), data),
   social: (userId: number, data: { date: string; socialImage: string }) =>
-    Axios.post(api.planners.social(userId), data),
+    Axios.post<ServerResponse<{ socialId: number }>>(api.planners.social(userId), data),
 };
 
 export const settingApi = {
   accessScopes: (userId: number, data: { plannerAccessScope: MonthConfig["plannerAccessScope"] }) =>
     Axios.put(api.setting.accessScopes(userId), data),
 
-  categories: (userId: number) => Axios.get(api.setting.categories(userId)),
-  categoriesColors: (userId: number) => Axios.get(api.setting.categoriesColors(userId)),
+  categories: (userId: number) =>
+    Axios.get<ServerResponse<{ categoryList: CategoryItemConfig[] }>>(api.setting.categories(userId)),
+  categoriesColors: (userId: number) =>
+    Axios.get<ServerResponse<{ categoryColorList: CategoryColorConfig[] }>>(api.setting.categoriesColors(userId)),
   addCategories: (
     userId: number,
     data: { categoryTitle: string; categoryColorId: number; categoryEmoticon: string | null },
@@ -123,7 +154,7 @@ export const settingApi = {
   deleteCategories: (userId: number, data: { categoryId: number }) =>
     Axios.delete(api.setting.categories(userId), { data: data }),
 
-  ddays: (userId: number) => Axios.get(api.setting.ddays(userId)),
+  ddays: (userId: number) => Axios.get<ServerResponse<{ ddayList: DdayItemConfig[] }>>(api.setting.ddays(userId)),
   addDdays: (userId: number, data: { ddayDate: string; ddayTitle: string }) =>
     Axios.post(api.setting.ddays(userId), data),
   editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
@@ -160,6 +191,6 @@ export const socialApi = {
       "start-date": string;
       "end-date": string;
     },
-  ) => Axios.get(api.social.getSocial(userId), { params: params }),
+  ) => Axios.get<ServerResponse<{ socialList: SocialListType[] }>>(api.social.getSocial(userId), { params: params }),
   delete: (userId: number, socialId: number) => Axios.delete(api.social.delete(userId, socialId)),
 };

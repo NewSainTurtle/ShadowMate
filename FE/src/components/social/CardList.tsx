@@ -3,7 +3,7 @@ import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
-import { ProfileConfig } from "@components/common/FriendProfile";
+import { ProfileConfig } from "@util/auth.interface";
 import { socialApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
@@ -73,8 +73,7 @@ const CardList = ({ scrollRef }: Props) => {
     async (pageNumber: number) => {
       setLoad(true);
       try {
-        let response: { totalPage: number; socialList: [] };
-        response = (
+        const response = (
           await socialApi.getSocial(userId, {
             sort: sort,
             "page-number": pageNumber,

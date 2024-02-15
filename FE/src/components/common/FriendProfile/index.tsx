@@ -11,13 +11,7 @@ import { selectUserId } from "@store/authSlice";
 import { FollowType } from "@util/friend.interface";
 import { selectFollowState, setFollowState, setFriendInfo } from "@store/friendSlice";
 import { useNavigate } from "react-router-dom";
-
-export interface ProfileConfig {
-  userId: number;
-  nickname: string;
-  profileImage: string;
-  statusMessage: string;
-}
+import { ProfileConfig } from "@util/auth.interface";
 
 interface Props {
   profile: ProfileConfig;
@@ -171,6 +165,7 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
         <PersonAddIcon />
       </div>
     ),
+    "": <></>,
   }[type];
 };
 

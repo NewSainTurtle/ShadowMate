@@ -7,7 +7,7 @@ import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { FollowingType } from "@util/friend.interface";
 import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
-import { ProfileConfig } from "@components/common/FriendProfile";
+import { ProfileConfig } from "@util/auth.interface";
 import { selectFollowingList } from "@store/friendSlice";
 
 const MonthFriends = () => {

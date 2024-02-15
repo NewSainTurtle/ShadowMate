@@ -4,7 +4,7 @@ import Text from "@components/common/Text";
 import Button from "@components/common/Button";
 import Avatar from "@components/common/Avatar";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { ProfileConfig } from "@components/common/FriendProfile";
+import { ProfileConfig, UserInfoConfig } from "@util/auth.interface";
 import { FollowingType } from "@util/friend.interface";
 import { persistor } from "@hooks/configStore";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
@@ -20,7 +20,7 @@ import { authApi, followApi, userApi } from "@api/Api";
 
 interface Props {
   types: "기본" | "로그아웃";
-  profile: ProfileConfig;
+  profile: ProfileConfig | UserInfoConfig;
 }
 
 const Profile = ({ types, profile }: Props) => {
@@ -68,7 +68,7 @@ const Profile = ({ types, profile }: Props) => {
         persistor.purge();
         localStorage.removeItem("AL");
       })
-      .catch((e) => console.log(e));
+      .catch((e) => console.error(e));
   };
 
   useEffect(() => {
@@ -104,7 +104,9 @@ const Profile = ({ types, profile }: Props) => {
               ),
               로그아웃: (
                 <div className={styles["profile_button"]}>
-                  <Button children="로그아웃" types="gray" onClick={handleLogout} />
+                  <Button types="gray" onClick={handleLogout}>
+                    로그아웃
+                  </Button>
                 </div>
               ),
             }[types]

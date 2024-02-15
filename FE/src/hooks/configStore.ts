@@ -34,8 +34,8 @@ const persistConfig = {
   key: "root",
   transforms: [
     encryptTransform({
-      secretKey: process.env.REACT_APP_ENCRYPT_PRIVATE_KEY!,
-      onError: (err) => console.log(err),
+      secretKey: process.env.REACT_APP_ENCRYPT_PRIVATE_KEY ?? "",
+      onError: (err) => console.error(err),
     }),
   ],
   whitelist: ["auth", "category", "dday"],
@@ -43,7 +43,7 @@ const persistConfig = {
 };
 
 export const store = configureStore({
-  reducer: persistReducer(persistConfig, rootReducer),
+  reducer: persistReducer<ReturnType<typeof rootReducer>>(persistConfig, rootReducer),
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,

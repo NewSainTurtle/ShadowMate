@@ -117,10 +117,10 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, dragModule, dailyTodos, se
       .addDailyTodos(userId, {
         date,
         todoContent: init.todoContent,
-        categoryId: init.category!.categoryId,
+        categoryId: init.category?.categoryId ?? 0,
       })
       .then((res) => {
-        const returnId = res.data.data["todoId"];
+        const returnId = res.data.data.todoId;
         insertTodo({ ...init, todoId: returnId });
       })
       .catch((err) => console.error(err));

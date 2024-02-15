@@ -1,14 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { rootState } from "@hooks/configStore";
 import { PURGE } from "redux-persist";
-
-export interface UserInfoConfig {
-  email: string;
-  nickname: string;
-  profileImage: string;
-  statusMessage: string;
-  plannerAccessScope: string;
-}
+import { UserInfoConfig } from "@util/auth.interface";
 
 interface AuthConfig {
   accessToken: string;
@@ -30,7 +23,7 @@ const initialState: AuthConfig = {
     nickname: "",
     profileImage: "",
     statusMessage: "",
-    plannerAccessScope: "",
+    plannerAccessScope: "전체공개",
   },
   type: "",
   autoLogin: false,
