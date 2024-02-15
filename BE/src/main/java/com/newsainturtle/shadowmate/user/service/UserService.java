@@ -16,4 +16,6 @@ public interface UserService {
     void updatePassword(final User user, final UpdatePasswordRequest updatePasswordRequest);
     void updateIntroduction(final Long userId, final UpdateIntroductionRequest updateIntroductionRequest);
     void deleteUser(final User user);
+    User getUserByNickname(final String nickname);
+    User getUserById(final long userId);
 }

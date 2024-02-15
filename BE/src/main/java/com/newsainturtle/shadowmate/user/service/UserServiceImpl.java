@@ -56,9 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SearchIntroductionResponse searchIntroduction(final Long userId) {
-        if (userRepository.findByIdAndWithdrawalIsFalse(userId) == null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+        getUserById(userId);
         return SearchIntroductionResponse.builder()
                 .introduction(userRepository.findIntroduction(userId))
                 .build();
@@ -105,6 +103,20 @@ public class UserServiceImpl implements UserService {
         socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
         visitorBookRepository.deleteAllByVisitorId(user.getId());
         userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE, createNicknameRandomCode());
+    }
+
+    @Override
+    public User getUserByNickname(String nickname) {
+        return userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
+    }
+
+    @Override
+    public User getUserById(long userId) {
+        final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
+        if (user == null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        return user;
     }
 
     private String createNicknameRandomCode() {

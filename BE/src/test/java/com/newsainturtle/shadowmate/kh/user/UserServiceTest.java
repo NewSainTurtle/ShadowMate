@@ -1,10 +1,8 @@
 package com.newsainturtle.shadowmate.kh.user;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
@@ -13,7 +11,6 @@ import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
-import com.newsainturtle.shadowmate.follow.dto.response.SearchUserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -49,9 +46,6 @@ public class UserServiceTest {
 
     @Mock
     private RedisServiceImpl redisService;
-
-    @Mock
-    private FollowServiceImpl followService;
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -292,6 +286,42 @@ public class UserServiceTest {
             verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
             verify(visitorBookRepository, times(1)).deleteAllByVisitorId(any(Long.class));
             verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class), any(String.class));
+        }
+
+        @Test
+        void 실패_아이디검색() {
+            //given
+            doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+
+            //when
+            final UserException result = assertThrows(UserException.class, () -> userService.getUserById(userId1));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+        }
+
+        @Test
+        void 성공_아이디검색() {
+            //given
+            doReturn(user1).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+
+            //when
+            final User user = userService.getUserById(userId1);
+
+            //then
+            assertThat(user).isNotNull();
+        }
+
+        @Test
+        void 성공_닉네검색() {
+            //given
+            doReturn(user1).when(userRepository).findByNicknameAndWithdrawalIsFalse(any(String.class));
+
+            //when
+            final User user = userService.getUserByNickname(user1.getNickname());
+
+            //then
+            assertThat(user).isNotNull();
         }
 
     }

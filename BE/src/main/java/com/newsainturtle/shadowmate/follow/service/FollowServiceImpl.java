@@ -9,10 +9,8 @@ import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.follow.dto.response.SearchUserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
-import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +25,6 @@ public class FollowServiceImpl implements FollowService {
 
     private final FollowRepository followRepository;
     private final FollowRequestRepository followRequestRepository;
-    private final UserRepository userRepository;
 
     @Override
     public List<FollowingResponse> getFollowing(final User user) {
@@ -75,8 +72,7 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public AddFollowResponse addFollow(final User user, final Long targetUserId) {
-        final User targetUser = certifyFollowUser(targetUserId);
+    public AddFollowResponse addFollow(final User user, final User targetUser) {
         if (targetUser.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
             return addFollowPublic(user, targetUser);
         } else {
@@ -86,29 +82,25 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public void deleteFollowing(final User user, final Long targetUserId) {
-        final User targetUser = certifyFollowUser(targetUserId);
+    public void deleteFollowing(final User user, final User targetUser) {
         followRepository.deleteByFollowingAndFollower(targetUser, user);
     }
 
     @Override
     @Transactional
-    public void deleteFollower(final User user, final Long targetUserId) {
-        final User targetUser = certifyFollowUser(targetUserId);
+    public void deleteFollower(final User user, final User targetUser) {
         followRepository.deleteByFollowingAndFollower(user, targetUser);
     }
 
     @Override
     @Transactional
-    public void deleteFollowRequest(final User user, final Long targetUserId) {
-        final User targetUser = certifyFollowUser(targetUserId);
+    public void deleteFollowRequest(final User user, final User targetUser) {
         followRequestRepository.deleteByRequesterAndReceiver(user, targetUser);
     }
 
     @Override
     @Transactional
-    public String receiveFollow(final User user, final Long targetUserId, final boolean followReceive) {
-        final User targetUser = certifyFollowUser(targetUserId);
+    public String receiveFollow(final User user, final User targetUser, final boolean followReceive) {
         final FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(targetUser, user);
         if (followRequest == null) {
             throw new FollowException(FollowErrorResult.NOT_FOUND_FOLLOW_REQUEST);
@@ -126,9 +118,9 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public FollowStatus isFollow(final User user, final User searchUser) {
-        Follow follow = followRepository.findByFollowingAndFollower(searchUser, user);
+        final Follow follow = followRepository.findByFollowingAndFollower(searchUser, user);
         if (follow == null) {
-            FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(user, searchUser);
+            final FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(user, searchUser);
             if (followRequest == null) {
                 return FollowStatus.EMPTY;
             }
@@ -138,11 +130,10 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public CountFollowResponse countFollow(final Long userId) {
-        final User user = certifyFollowUser(userId);
+    public CountFollowResponse countFollow(final User targetUser) {
         return CountFollowResponse.builder()
-                .followerCount(followRepository.countByFollowing(user))
-                .followingCount(followRepository.countByFollower(user))
+                .followerCount(followRepository.countByFollowing(targetUser))
+                .followingCount(followRepository.countByFollower(targetUser))
                 .build();
     }
 
@@ -168,23 +159,15 @@ public class FollowServiceImpl implements FollowService {
                 .requester(requester)
                 .receiver(receiver)
                 .build()).getId();
+
         return AddFollowResponse.builder()
                 .followId(followRequestId)
                 .plannerAccessScope(receiver.getPlannerAccessScope())
                 .build();
     }
 
-    private User certifyFollowUser(final Long userId) {
-        final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
-        if (user == null) {
-            throw new FollowException(FollowErrorResult.NOT_FOUND_FOLLOW_USER);
-        }
-        return user;
-    }
-
     @Override
-    public SearchUserResponse searchNickname(final User user, final String nickname) {
-        final User searchUser = userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
+    public SearchUserResponse searchNickname(final User user, final User searchUser) {
         if (searchUser == null) {
             return SearchUserResponse.builder().build();
         }

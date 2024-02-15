@@ -4,7 +4,8 @@ import com.newsainturtle.shadowmate.auth.service.AuthService;
 import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.follow.dto.request.*;
-import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
+import com.newsainturtle.shadowmate.follow.service.FollowService;
+import com.newsainturtle.shadowmate.follow.service.UserFollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,7 +20,8 @@ import static com.newsainturtle.shadowmate.follow.constant.FollowConstant.*;
 @RequiredArgsConstructor
 public class FollowController {
 
-    private final FollowServiceImpl followService;
+    private final FollowService followService;
+    private final UserFollowService userFollowService;
 
     private final AuthService authService;
 
@@ -49,7 +51,7 @@ public class FollowController {
                                                   @PathVariable("userId") final Long userId,
                                                   @RequestBody @Valid final AddFollowRequest addFollowRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW, followService.addFollow(principalDetails.getUser(), addFollowRequest.getFollowingId())));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_FOLLOW, userFollowService.addFollow(principalDetails.getUser(), addFollowRequest.getFollowingId())));
     }
 
     @DeleteMapping("/{userId}/following")
@@ -57,7 +59,7 @@ public class FollowController {
                                                         @PathVariable("userId") final Long userId,
                                                         @RequestBody @Valid final DeleteFollowingRequest deleteFollowingRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        followService.deleteFollowing(principalDetails.getUser(), deleteFollowingRequest.getFollowingId());
+        userFollowService.deleteFollowing(principalDetails.getUser(), deleteFollowingRequest.getFollowingId());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_FOLLOWING));
     }
 
@@ -66,7 +68,7 @@ public class FollowController {
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final DeleteFollowerRequest deleteFollowerRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        followService.deleteFollower(principalDetails.getUser(), deleteFollowerRequest.getFollowerId());
+        userFollowService.deleteFollower(principalDetails.getUser(), deleteFollowerRequest.getFollowerId());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_FOLLOWER));
     }
 
@@ -75,7 +77,7 @@ public class FollowController {
                                                             @PathVariable("userId") final Long userId,
                                                             @RequestBody @Valid final DeleteFollowRequestRequest deleteFollowRequestRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        followService.deleteFollowRequest(principalDetails.getUser(), deleteFollowRequestRequest.getReceiverId());
+        userFollowService.deleteFollowRequest(principalDetails.getUser(), deleteFollowRequestRequest.getReceiverId());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_DELETE_FOLLOW_REQUEST));
     }
 
@@ -84,12 +86,12 @@ public class FollowController {
                                                       @PathVariable("userId") final Long userId,
                                                       @RequestBody @Valid final ReceiveFollowRequest receiveFollowRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(followService.receiveFollow(principalDetails.getUser(), receiveFollowRequest.getRequesterId(), receiveFollowRequest.isFollowReceive())));
+        return ResponseEntity.ok(BaseResponse.from(userFollowService.receiveFollow(principalDetails.getUser(), receiveFollowRequest.getRequesterId(), receiveFollowRequest.isFollowReceive())));
     }
 
     @GetMapping("/{userId}/counts")
     public ResponseEntity<BaseResponse> countFollow(@PathVariable("userId") final Long userId) {
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_FOLLOW_COUNT, followService.countFollow(userId)));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_FOLLOW_COUNT, userFollowService.countFollow(userId)));
     }
 
 
@@ -99,7 +101,7 @@ public class FollowController {
                                                        @RequestParam final String nickname) {
         authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(
-                SUCCESS_SEARCH_NICKNAME, followService.searchNickname(principalDetails.getUser(), nickname)));
+                SUCCESS_SEARCH_NICKNAME, userFollowService.searchNickname(principalDetails.getUser(), nickname)));
     }
 
 }
