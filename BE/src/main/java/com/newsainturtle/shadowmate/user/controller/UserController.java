@@ -32,15 +32,6 @@ public class UserController {
                 SUCCESS_PROFILE, profileResponse));
     }
 
-    @GetMapping("/{userId}/searches")
-    public ResponseEntity<BaseResponse> searchNickname(@AuthenticationPrincipal final PrincipalDetails principalDetails,
-                                                       @PathVariable("userId") final Long userId,
-                                                       @RequestParam final String nickname) {
-        authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(
-                SUCCESS_SEARCH_NICKNAME, userService.searchNickname(principalDetails.getUser(), nickname)));
-    }
-
     @GetMapping("/{userId}/introduction")
     public ResponseEntity<BaseResponse> searchIntroduction(@PathVariable("userId") final Long userId) {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_INTRODUCTION, userService.searchIntroduction(userId)));

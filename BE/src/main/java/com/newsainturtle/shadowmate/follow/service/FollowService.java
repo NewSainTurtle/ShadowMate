@@ -7,15 +7,15 @@ import com.newsainturtle.shadowmate.user.entity.User;
 import java.util.List;
 
 public interface FollowService {
-
     List<FollowingResponse> getFollowing(final User user);
     List<FollowerResponse> getFollower(final User user);
     List<FollowRequestResponse> getFollowRequestList(final User user);
-    AddFollowResponse addFollow(final User user, final Long targetUserId);
-    void deleteFollowing(final User user, final Long targetUserId);
-    void deleteFollower(final User user, final Long targetUserId);
-    void deleteFollowRequest(final User user, final Long targetUserId);
-    String receiveFollow(final User user, final Long targetUserId, final boolean followReceive);
+    AddFollowResponse addFollow(final User user, final User targetUser);
+    void deleteFollowing(final User user, final User targetUser);
+    void deleteFollower(final User user, final User targetUser);
+    void deleteFollowRequest(final User user, final User targetUser);
+    String receiveFollow(final User user, final User targetUser, final boolean followReceive);
     FollowStatus isFollow(final User user, final User searchUser);
-    CountFollowResponse countFollow(final Long userId);
+    CountFollowResponse countFollow(final User targetUser);
+    SearchUserResponse searchNickname(final User user, final User searchUser);
 }

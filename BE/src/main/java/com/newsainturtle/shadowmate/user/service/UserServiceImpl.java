@@ -3,7 +3,6 @@ package com.newsainturtle.shadowmate.user.service;
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
 import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
 import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
 import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
 import com.newsainturtle.shadowmate.social.repository.SocialRepository;
@@ -12,7 +11,6 @@ import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
-import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
@@ -41,7 +39,6 @@ public class UserServiceImpl implements UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisServiceImpl redisService;
-    private final FollowServiceImpl followService;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
@@ -58,27 +55,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse searchNickname(final User user, final String nickname) {
-        final User searchUser = userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
-        if (searchUser == null) {
-            return UserResponse.builder().build();
-        }
-        return UserResponse.builder()
-                .userId(searchUser.getId())
-                .email(searchUser.getEmail())
-                .profileImage(searchUser.getProfileImage())
-                .nickname(searchUser.getNickname())
-                .statusMessage(searchUser.getStatusMessage())
-                .plannerAccessScope(searchUser.getPlannerAccessScope())
-                .isFollow(followService.isFollow(user, searchUser))
-                .build();
-    }
-
-    @Override
     public SearchIntroductionResponse searchIntroduction(final Long userId) {
-        if (userRepository.findByIdAndWithdrawalIsFalse(userId) == null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+        getUserById(userId);
         return SearchIntroductionResponse.builder()
                 .introduction(userRepository.findIntroduction(userId))
                 .build();
@@ -125,6 +103,20 @@ public class UserServiceImpl implements UserService {
         socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
         visitorBookRepository.deleteAllByVisitorId(user.getId());
         userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE, createNicknameRandomCode());
+    }
+
+    @Override
+    public User getUserByNickname(String nickname) {
+        return userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
+    }
+
+    @Override
+    public User getUserById(long userId) {
+        final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
+        if (user == null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        return user;
     }
 
     private String createNicknameRandomCode() {

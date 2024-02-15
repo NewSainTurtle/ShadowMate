@@ -10,12 +10,16 @@ import com.newsainturtle.shadowmate.follow.controller.FollowController;
 import com.newsainturtle.shadowmate.follow.dto.request.*;
 import com.newsainturtle.shadowmate.follow.dto.response.*;
 import com.newsainturtle.shadowmate.follow.entity.FollowRequest;
+import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.follow.exception.FollowErrorResult;
 import com.newsainturtle.shadowmate.follow.exception.FollowException;
 import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
+import com.newsainturtle.shadowmate.follow.service.UserFollowServiceImpl;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
+import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
+import com.newsainturtle.shadowmate.user.exception.UserException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -45,6 +49,9 @@ class FollowControllerTest {
 
     @Mock
     private FollowServiceImpl followService;
+
+    @Mock
+    private UserFollowServiceImpl userFollowService;
 
     @Mock
     private AuthServiceImpl authService;
@@ -90,7 +97,7 @@ class FollowControllerTest {
                 .followerCount(1L)
                 .followingCount(10L)
                 .build();
-        doReturn(countFollowResponse).when(followService).countFollow(any());
+        doReturn(countFollowResponse).when(userFollowService).countFollow(any());
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -188,7 +195,7 @@ class FollowControllerTest {
             void 실패_팔로잉삭제유저없음() throws Exception {
                 //given
                 final DeleteFollowingRequest deleteFollowingRequest = DeleteFollowingRequest.builder().followingId(1L).build();
-                doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(followService).deleteFollowing(any(), any());
+                doThrow(new UserException(UserErrorResult.NOT_FOUND_USER)).when(userFollowService).deleteFollowing(any(), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -218,6 +225,7 @@ class FollowControllerTest {
             }
         }
     }
+
     @Nested
     class 팔로워TEST {
         final String url = "/api/follow/{userId}/followers";
@@ -262,6 +270,7 @@ class FollowControllerTest {
             resultActions.andExpect(status().isOk());
 
         }
+
         @Test
         void 실패_팔로워삭제유저없음() throws Exception {
             //given
@@ -358,7 +367,7 @@ class FollowControllerTest {
         @Test
         void 실패_중복신청() throws Exception {
             //given
-            doThrow(new FollowException(FollowErrorResult.DUPLICATED_FOLLOW)).when(followService).addFollow(any(), any());
+            doThrow(new FollowException(FollowErrorResult.DUPLICATED_FOLLOW)).when(userFollowService).addFollow(any(), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -375,7 +384,7 @@ class FollowControllerTest {
         @Test
         void 실패_팔로우신청_유저없음() throws Exception {
             //given
-            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(followService).addFollow(any(), any());
+            doThrow(new UserException(UserErrorResult.NOT_FOUND_USER)).when(userFollowService).addFollow(any(), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -397,7 +406,7 @@ class FollowControllerTest {
                     .followId(1L)
                     .plannerAccessScope(PlannerAccessScope.PRIVATE)
                     .build();
-            doReturn(addFollowResponse).when(followService).addFollow(any(), any());
+            doReturn(addFollowResponse).when(userFollowService).addFollow(any(), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -413,7 +422,7 @@ class FollowControllerTest {
 
         }
 
-        
+
         @Test
         void 성공_팔로우신청_전체공개() throws Exception {
             final AddFollowRequest addFollowRequest = AddFollowRequest
@@ -426,7 +435,7 @@ class FollowControllerTest {
                     .followId(1L)
                     .plannerAccessScope(PlannerAccessScope.PUBLIC)
                     .build();
-            doReturn(addFollowResponse).when(followService).addFollow(any(), any());
+            doReturn(addFollowResponse).when(userFollowService).addFollow(any(), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -472,6 +481,7 @@ class FollowControllerTest {
             // then
             resultActions.andExpect(status().isOk());
         }
+
         @Test
         void 실패_친구신청유저인증실패() throws Exception {
             //given
@@ -494,6 +504,7 @@ class FollowControllerTest {
             resultActions.andExpect(status().isForbidden());
 
         }
+
         @Test
         void 실패_친구신청유저없음() throws Exception {
             //given
@@ -503,7 +514,7 @@ class FollowControllerTest {
                     .requesterId(1L)
                     .followReceive(false)
                     .build();
-            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER)).when(followService).receiveFollow(any(), any(), any(boolean.class));
+            doThrow(new UserException(UserErrorResult.NOT_FOUND_USER)).when(userFollowService).receiveFollow(any(), any(), any(boolean.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -526,7 +537,7 @@ class FollowControllerTest {
                     .requesterId(1L)
                     .followReceive(false)
                     .build();
-            doThrow(new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST)).when(followService).receiveFollow(any(), any(), any(boolean.class));
+            doThrow(new FollowException(FollowErrorResult.NOT_FOUND_FOLLOW_REQUEST)).when(userFollowService).receiveFollow(any(), any(), any(boolean.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -549,7 +560,7 @@ class FollowControllerTest {
                     .requesterId(1L)
                     .followReceive(false)
                     .build();
-            doReturn(FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE).when(followService).receiveFollow(any(),
+            doReturn(FollowConstant.SUCCESS_FOLLOW_RECEIVE_FALSE).when(userFollowService).receiveFollow(any(),
                     any(),
                     any(boolean.class));
 
@@ -575,7 +586,7 @@ class FollowControllerTest {
                     .requesterId(1L)
                     .followReceive(true)
                     .build();
-            doReturn(FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE).when(followService).receiveFollow(any(),
+            doReturn(FollowConstant.SUCCESS_FOLLOW_RECEIVE_TRUE).when(userFollowService).receiveFollow(any(),
                     any(),
                     any(boolean.class));
 
@@ -593,4 +604,49 @@ class FollowControllerTest {
         }
 
     }
+
+    @Nested
+    class 회원검색 {
+        final String url = "/api/follow/{userId}/searches";
+        final Long userId = 1L;
+
+        @Test
+        void 실패_회원없음() throws Exception {
+            // given
+            doThrow(new UserException(UserErrorResult.NOT_FOUND_NICKNAME)).when(userFollowService).searchNickname(any(), any());
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("nickname", "없는닉네임"));
+
+            // then
+            resultActions.andExpect(status().isNotFound());
+
+        }
+
+        @Test
+        void 성공_회원검색() throws Exception {
+            // given
+            SearchUserResponse userResponse = SearchUserResponse.builder()
+                    .userId(user2.getId())
+                    .email(user2.getEmail())
+                    .profileImage(user2.getProfileImage())
+                    .nickname(user2.getNickname())
+                    .statusMessage(user2.getStatusMessage())
+                    .plannerAccessScope(user2.getPlannerAccessScope())
+                    .isFollow(FollowStatus.EMPTY)
+                    .build();
+            doReturn(userResponse).when(userFollowService).searchNickname(any(), any());
+
+            // when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.get(url, userId)
+                            .param("nickname", user2.getNickname()));
+
+            // then
+            resultActions.andExpect(status().isOk());
+        }
+    }
+
 }
