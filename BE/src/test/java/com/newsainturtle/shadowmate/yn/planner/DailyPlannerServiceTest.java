@@ -67,9 +67,6 @@ class DailyPlannerServiceTest extends DateCommonService {
     private UserRepository userRepository;
 
     @Mock
-    private SocialRepository socialRepository;
-
-    @Mock
     private RoutineTodoRepository routineTodoRepository;
 
     private final String email = "yntest@shadowmate.com";
@@ -953,99 +950,6 @@ class DailyPlannerServiceTest extends DateCommonService {
                 verify(timeTableRepository, times(1)).findByIdAndTodoId(any(Long.class), any(Long.class));
                 verify(timeTableRepository, times(1)).deleteById(any(Long.class));
             }
-
-        }
-    }
-
-    @Nested
-    class 소셜공유 {
-        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
-        final ShareSocialRequest shareSocialRequest = ShareSocialRequest.builder()
-                .date(date)
-                .socialImage(socialImage)
-                .build();
-
-        @Test
-        void 실패_공개상태가아닌경우() {
-            //given
-            final User user = User.builder()
-                    .id(1L)
-                    .email(email)
-                    .password(password)
-                    .socialLogin(socialType)
-                    .nickname(nickname)
-                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
-                    .withdrawal(false)
-                    .build();
-
-            //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.FAILED_SHARE_SOCIAL);
-        }
-
-        @Test
-        void 실패_유효하지않은플래너() {
-            //given
-            doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-
-            //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
-        }
-
-        @Test
-        void 실패_이미공유한_소셜재공유() {
-            //given
-            final Social social = Social.builder()
-                    .id(1L)
-                    .socialImage(socialImage)
-                    .dailyPlanner(dailyPlanner)
-                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                    .ownerId(user.getId())
-                    .build();
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-            doReturn(social).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
-
-            //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest));
-
-            //then
-            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.ALREADY_SHARED_SOCIAL);
-
-            //verify
-            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
-            verify(socialRepository, times(1)).findByDailyPlanner(any(DailyPlanner.class));
-        }
-
-        @Test
-        void 성공_소셜공유() {
-            //given
-            final Social social = Social.builder()
-                    .id(1L)
-                    .socialImage(socialImage)
-                    .dailyPlanner(dailyPlanner)
-                    .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
-                    .ownerId(user.getId())
-                    .build();
-            doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
-            doReturn(null).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
-            doReturn(social).when(socialRepository).save(any(Social.class));
-
-            //when
-            ShareSocialResponse shareSocialResponse = dailyPlannerServiceImpl.shareSocial(user, shareSocialRequest);
-
-            //then
-            assertThat(shareSocialResponse).isNotNull();
-            assertThat(shareSocialResponse.getSocialId()).isEqualTo(1L);
-
-            //verify
-            verify(dailyPlannerRepository, times(1)).findByUserAndDailyPlannerDay(any(), any(String.class));
-            verify(socialRepository, times(1)).findByDailyPlanner(any(DailyPlanner.class));
-            verify(socialRepository, times(1)).save(any(Social.class));
 
         }
     }

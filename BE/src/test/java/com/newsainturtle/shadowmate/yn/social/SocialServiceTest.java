@@ -1,6 +1,7 @@
 package com.newsainturtle.shadowmate.yn.social;
 
 import com.newsainturtle.shadowmate.common.DateCommonService;
+import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.social.dto.response.SearchSocialPlannerResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
@@ -360,6 +361,37 @@ class SocialServiceTest extends DateCommonService {
             assertThat(result.getSocialList()).hasSize(count);
             assertThat(result.getTotalPage()).isEqualTo(1L);
             assertThat(result.getPageNumber()).isEqualTo(pageNumber);
+        }
+    }
+
+    @Nested
+    class 소셜공유 {
+        final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
+
+        @Test
+        void 실패_이미공유한_소셜재공유() {
+            //given
+            doReturn(social).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
+
+            //when
+            final SocialException result = assertThrows(SocialException.class, () -> socialService.shareSocial(user, dailyPlanner, socialImage));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(SocialErrorResult.ALREADY_SHARED_SOCIAL);
+        }
+
+        @Test
+        void 성공_소셜공유() {
+            //given
+            doReturn(null).when(socialRepository).findByDailyPlanner(any(DailyPlanner.class));
+            doReturn(social).when(socialRepository).save(any(Social.class));
+
+            //when
+            ShareSocialResponse shareSocialResponse = socialService.shareSocial(user, dailyPlanner, socialImage);
+
+            //then
+            assertThat(shareSocialResponse).isNotNull();
+            assertThat(shareSocialResponse.getSocialId()).isEqualTo(1L);
         }
     }
 }

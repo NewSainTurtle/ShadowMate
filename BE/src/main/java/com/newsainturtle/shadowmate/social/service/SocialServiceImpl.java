@@ -1,5 +1,7 @@
 package com.newsainturtle.shadowmate.social.service;
 
+import com.newsainturtle.shadowmate.planner.dto.response.ShareSocialResponse;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.social.dto.response.SearchSocialPlannerResponse;
 import com.newsainturtle.shadowmate.social.dto.response.SearchSocialResponse;
 import com.newsainturtle.shadowmate.social.entity.Social;
@@ -31,7 +33,6 @@ import static com.newsainturtle.shadowmate.social.exception.SocialErrorResult.NO
 public class SocialServiceImpl implements SocialService {
 
     private final SocialRepository socialRepository;
-
     private final UserRepository userRepository;
 
     private void checkValidDate(final String startDate, final String endDate) {
@@ -193,6 +194,22 @@ public class SocialServiceImpl implements SocialService {
         } else {
             throw new SocialException(NOT_FOUND_SOCIAL);
         }
+    }
+
+    @Override
+    @Transactional
+    public ShareSocialResponse shareSocial(final User user, final DailyPlanner dailyPlanner, final String socialImage) {
+        final Social social = socialRepository.findByDailyPlanner(dailyPlanner);
+        if (social != null) {
+            throw new SocialException(SocialErrorResult.ALREADY_SHARED_SOCIAL);
+        }
+        final long socialId = socialRepository.save(Social.builder()
+                .dailyPlanner(dailyPlanner)
+                .socialImage(socialImage)
+                .dailyPlannerDay(dailyPlanner.getDailyPlannerDay())
+                .ownerId(user.getId())
+                .build()).getId();
+        return ShareSocialResponse.builder().socialId(socialId).build();
     }
 
     private List<SearchSocialResponse> makeSearchSocialResponseList(List<Social> socialList) {
