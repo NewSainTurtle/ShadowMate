@@ -445,4 +445,48 @@ class FollowServiceTest {
             assertThat(result.getIsFollow()).isEqualTo(FollowStatus.FOLLOW);
         }
     }
+
+    @Test
+    void 성공_모든팔로우요청수락() {
+        //given
+        final User user2 = User.builder()
+                .id(2L)
+                .email("jntest@shadowmate.com")
+                .password("yntest1234")
+                .socialLogin(SocialType.BASIC)
+                .nickname("토끼")
+                .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                .withdrawal(false)
+                .build();
+        final User user3 = User.builder()
+                .id(3L)
+                .email("nctest@shadowmate.com")
+                .password("yntest1234")
+                .socialLogin(SocialType.BASIC)
+                .nickname("고양이")
+                .plannerAccessScope(PlannerAccessScope.PUBLIC)
+                .withdrawal(false)
+                .build();
+        final List<FollowRequest> followRequestList = new ArrayList<>();
+        followRequestList.add(FollowRequest.builder()
+                .id(1L)
+                .receiver(user2)
+                .requester(user1)
+                .build());
+        followRequestList.add(FollowRequest.builder()
+                .id(2L)
+                .receiver(user2)
+                .requester(user3)
+                .build());
+
+        doReturn(followRequestList).when(followRequestRepository).findAllByReceiver(any(User.class));
+
+        //when
+        followService.acceptAllFollowRequest(user2);
+
+        //then
+        verify(followRequestRepository, times(1)).findAllByReceiver(any(User.class));
+        verify(followRepository, times(2)).save(any(Follow.class));
+        verify(followRequestRepository, times(1)).deleteAllByReceiver(any(Long.class));
+    }
 }

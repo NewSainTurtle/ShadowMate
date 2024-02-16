@@ -9,7 +9,10 @@ import com.newsainturtle.shadowmate.planner_setting.controller.PlannerSettingCon
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
 import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
+import com.newsainturtle.shadowmate.planner_setting.service.UserPlannerSettingServiceImpl;
+import com.newsainturtle.shadowmate.planner_setting.service.PlannerRoutineServiceImpl;
 import com.newsainturtle.shadowmate.planner_setting.service.PlannerSettingServiceImpl;
+import com.newsainturtle.shadowmate.planner_setting.service.RoutineServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,10 +45,19 @@ class PlannerSettingControllerTest {
     private PlannerSettingController plannerSettingController;
 
     @Mock
-    private PlannerSettingServiceImpl plannerSettingServiceImpl;
+    private PlannerSettingServiceImpl plannerSettingService;
 
     @Mock
-    private AuthService authServiceImpl;
+    private PlannerRoutineServiceImpl plannerRoutineService;
+
+    @Mock
+    private UserPlannerSettingServiceImpl userPlannerSettingService;
+
+    @Mock
+    private RoutineServiceImpl routineService;
+
+    @Mock
+    private AuthService authService;
 
     private MockMvc mockMvc;
     private Gson gson;
@@ -75,7 +87,7 @@ class PlannerSettingControllerTest {
             void 실패_없는사용자() throws Exception {
                 //given
 
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -91,7 +103,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_없는카테고리색상() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR)).when(plannerSettingServiceImpl).addCategory(any(), any(AddCategoryRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR)).when(plannerSettingService).addCategory(any(), any(AddCategoryRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -152,7 +164,7 @@ class PlannerSettingControllerTest {
                         .categoryEmoticon("🍅")
                         .categoryColorId(1L)
                         .build();
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -175,7 +187,7 @@ class PlannerSettingControllerTest {
                         .categoryEmoticon("🍅")
                         .categoryColorId(1L)
                         .build();
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerSettingServiceImpl).updateCategory(any(), any(UpdateCategoryRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerSettingService).updateCategory(any(), any(UpdateCategoryRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -197,7 +209,7 @@ class PlannerSettingControllerTest {
                         .categoryEmoticon("🍅")
                         .categoryColorId(1L)
                         .build();
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR)).when(plannerSettingServiceImpl).updateCategory(any(), any(UpdateCategoryRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY_COLOR)).when(plannerSettingService).updateCategory(any(), any(UpdateCategoryRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -264,7 +276,7 @@ class PlannerSettingControllerTest {
                 final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
                         .categoryId(1L)
                         .build();
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -283,7 +295,7 @@ class PlannerSettingControllerTest {
                 final RemoveCategoryRequest removeCategoryRequest = RemoveCategoryRequest.builder()
                         .categoryId(1L)
                         .build();
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerSettingServiceImpl).removeCategory(any(), any(RemoveCategoryRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerRoutineService).removeCategory(any(), any(RemoveCategoryRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -354,7 +366,7 @@ class PlannerSettingControllerTest {
             void 실패_카테고리목록조회_사용자없음() throws Exception {
                 //given
                 final String url = "/api/planner-settings/{userId}/categories";
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -490,7 +502,7 @@ class PlannerSettingControllerTest {
         @Test
         void 실패_없는사용자() throws Exception {
             //given
-            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+            doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -509,7 +521,7 @@ class PlannerSettingControllerTest {
             final SetAccessScopeRequest setAccessScopeRequest = SetAccessScopeRequest.builder()
                     .plannerAccessScope("잘못된범위값")
                     .build();
-            doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE)).when(plannerSettingServiceImpl).setAccessScope(any(), any(SetAccessScopeRequest.class));
+            doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_PLANNER_ACCESS_SCOPE)).when(userPlannerSettingService).setAccessScope(any(), any(SetAccessScopeRequest.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -552,7 +564,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -586,7 +598,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -620,7 +632,7 @@ class PlannerSettingControllerTest {
             void 실패_없는사용자() throws Exception {
                 //given
 
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -677,7 +689,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -694,7 +706,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_유효하지않은디데이() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY)).when(plannerSettingServiceImpl).updateDday(any(), any(UpdateDdayRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DDAY)).when(plannerSettingService).updateDday(any(), any(UpdateDdayRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -859,7 +871,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1064,7 +1076,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_시작날짜보다_과거인종료날짜() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE)).when(plannerSettingServiceImpl).addRoutine(any(), any(AddRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE)).when(plannerRoutineService).addRoutine(any(), any(AddRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1080,7 +1092,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_유효하지않은요일이나중복요일() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY)).when(plannerSettingServiceImpl).addRoutine(any(), any(AddRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY)).when(plannerRoutineService).addRoutine(any(), any(AddRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1115,7 +1127,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_없는사용자() throws Exception {
                 //given
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1148,7 +1160,7 @@ class PlannerSettingControllerTest {
             void 실패_없는사용자() throws Exception {
                 //given
 
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1196,7 +1208,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_유효하지않은루틴() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE)).when(plannerSettingServiceImpl).removeRoutine(any(), any(RemoveRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE)).when(routineService).removeRoutine(any(), any(RemoveRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1212,7 +1224,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_올바르지않은order값() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER)).when(plannerSettingServiceImpl).removeRoutine(any(), any(RemoveRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER)).when(routineService).removeRoutine(any(), any(RemoveRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1257,7 +1269,7 @@ class PlannerSettingControllerTest {
             void 실패_없는사용자() throws Exception {
                 //given
 
-                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authServiceImpl).certifyUser(any(Long.class), any());
+                doThrow(new AuthException(AuthErrorResult.UNREGISTERED_USER)).when(authService).certifyUser(any(Long.class), any());
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1465,7 +1477,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_유효하지않은루틴() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE)).when(plannerRoutineService).updateRoutine(any(), any(UpdateRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1481,7 +1493,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_시작날짜보다_과거인종료날짜() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_DATE)).when(plannerRoutineService).updateRoutine(any(), any(UpdateRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1497,7 +1509,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_유효하지않은카테고리() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(plannerRoutineService).updateRoutine(any(), any(UpdateRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1513,7 +1525,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_올바르지않은order값() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ORDER)).when(plannerRoutineService).updateRoutine(any(), any(UpdateRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1529,7 +1541,7 @@ class PlannerSettingControllerTest {
             @Test
             void 실패_유효하지않은요일() throws Exception {
                 //given
-                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY)).when(plannerSettingServiceImpl).updateRoutine(any(), any(UpdateRoutineRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_ROUTINE_DAY)).when(plannerRoutineService).updateRoutine(any(), any(UpdateRoutineRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(

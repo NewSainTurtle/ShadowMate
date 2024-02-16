@@ -5,12 +5,11 @@ import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
 import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
-import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
+import com.newsainturtle.shadowmate.planner_setting.service.UserPlannerSettingServiceImpl;
 import com.newsainturtle.shadowmate.user.controller.UserController;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
-import com.newsainturtle.shadowmate.follow.dto.response.SearchUserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -31,9 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.newsainturtle.shadowmate.user.constant.UserConstant.*;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,25 +47,18 @@ public class UserControllerTest {
     @Mock
     private AuthServiceImpl authService;
 
+    @Mock
+    private UserPlannerSettingServiceImpl userPlannerSettingService;
+
     private MockMvc mockMvc;
 
     private Gson gson;
-
+    final Long userId = 1L;
     final User user1 = User.builder()
             .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
             .nickname("거북이1")
-            .withdrawal(false)
-            .profileImage("TestProfileURL")
-            .plannerAccessScope(PlannerAccessScope.PUBLIC)
-            .build();
-
-    final User user2 = User.builder()
-            .email("test2@test.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
-            .nickname("거북이2")
             .withdrawal(false)
             .profileImage("TestProfileURL")
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
@@ -84,7 +74,6 @@ public class UserControllerTest {
 
     @Nested
     class 프로필TEST {
-        final Long userId = 1L;
         final String url = "/api/users/{userId}/profiles";
 
         @Test
@@ -106,7 +95,7 @@ public class UserControllerTest {
 
             // when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.get(url,userId));
+                    MockMvcRequestBuilders.get(url, userId));
 
             // then
             resultActions.andExpect(status().isOk());
@@ -128,7 +117,7 @@ public class UserControllerTest {
 
             //when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updateUserRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -149,7 +138,7 @@ public class UserControllerTest {
 
             //when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updateUserRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -172,7 +161,7 @@ public class UserControllerTest {
 
             //when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updateUserRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -194,7 +183,7 @@ public class UserControllerTest {
 
             //when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updatePasswordRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -214,7 +203,7 @@ public class UserControllerTest {
 
             //when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updatePasswordRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -249,7 +238,7 @@ public class UserControllerTest {
 
             // when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updateIntroductionRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -268,7 +257,7 @@ public class UserControllerTest {
 
             // when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updateIntroductionRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -287,7 +276,7 @@ public class UserControllerTest {
 
             // when
             final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.put(url,userId)
+                    MockMvcRequestBuilders.put(url, userId)
                             .content(gson.toJson(updateIntroductionRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
@@ -300,10 +289,6 @@ public class UserControllerTest {
 
     @Nested
     class 회원TEST {
-
-        final Long userId = 1L;
-
-
 
         @Test
         void 실패_회원탈퇴_유저틀림() throws Exception {
@@ -323,15 +308,15 @@ public class UserControllerTest {
         void 성공_회원탈퇴() throws Exception {
             //given
             final String url = "/api/users/{userId}";
-            
+
             //when
             final ResultActions resultActions = mockMvc.perform(
                     MockMvcRequestBuilders.delete(url, userId));
-            
+
             //then
             resultActions.andExpect(status().isOk())
                     .andExpect(jsonPath("$.message").value(SUCCESS_DELETE_USER));
         }
-        
+
     }
 }

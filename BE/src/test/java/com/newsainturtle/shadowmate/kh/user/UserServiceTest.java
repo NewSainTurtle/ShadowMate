@@ -1,11 +1,6 @@
 package com.newsainturtle.shadowmate.kh.user;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
-import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
-import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
@@ -26,9 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,21 +42,6 @@ public class UserServiceTest {
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Mock
-    private FollowRepository followRepository;
-
-    @Mock
-    private FollowRequestRepository followRequestRepository;
-
-    @Mock
-    private SocialRepository socialRepository;
-
-    @Mock
-    private DailyPlannerRepository dailyPlannerRepository;
-
-    @Mock
-    private VisitorBookRepository visitorBookRepository;
-
     final User user1 = User.builder()
             .id(1L)
             .email("test1@test.com")
@@ -76,16 +53,6 @@ public class UserServiceTest {
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
     final Long userId1 = user1.getId();
-    final User user2 = User.builder()
-            .id(2L)
-            .email("test2@test.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
-            .nickname("거북이2")
-            .withdrawal(false)
-            .profileImage("TestProfileURL")
-            .plannerAccessScope(PlannerAccessScope.PUBLIC)
-            .build();
 
     @Nested
     class 프로필TEST {
@@ -271,24 +238,6 @@ public class UserServiceTest {
     class 회원TEST {
 
         @Test
-        void 성공_회원탈퇴() {
-            //given
-            doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
-            doReturn(false).when(userRepository).existsByNickname(any(String.class));
-
-            //when
-            userService.deleteUser(user1);
-
-            //then
-            verify(followRepository, times(1)).deleteAllByFollowingOrFollower(any(User.class), any(User.class));
-            verify(followRequestRepository, times(1)).deleteAllByRequesterOrReceiver(any(User.class), any(User.class));
-            verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
-            verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
-            verify(visitorBookRepository, times(1)).deleteAllByVisitorId(any(Long.class));
-            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class), any(String.class));
-        }
-
-        @Test
         void 실패_아이디검색() {
             //given
             doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
@@ -334,6 +283,17 @@ public class UserServiceTest {
 
             //then
             assertThat(user).isNotNull();
+        }
+
+        @Test
+        void 성공_플래너공개범위수정() {
+            // given
+
+            // when
+            userService.updatePlannerAccessScope(1L, PlannerAccessScope.PRIVATE);
+
+            // then
+            verify(userRepository, times(1)).updatePlannerAccessScope(any(PlannerAccessScope.class), any(Long.class));
         }
 
     }

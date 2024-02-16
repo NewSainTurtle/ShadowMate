@@ -93,4 +93,10 @@ public class MonthlyPlannerServiceImpl extends DateCommonService implements Mont
 
         return SearchVisitorBookResponse.builder().visitorBookResponses(visitorBookResponses).build();
     }
+
+    @Override
+    @Transactional
+    public void deleteUser(final User user) {
+        visitorBookRepository.deleteAllByVisitorId(user.getId());
+    }
 }

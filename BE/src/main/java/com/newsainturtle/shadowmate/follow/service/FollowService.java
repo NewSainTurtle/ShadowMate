@@ -18,4 +18,6 @@ public interface FollowService {
     FollowStatus isFollow(final User user, final User searchUser);
     CountFollowResponse countFollow(final User targetUser);
     SearchUserResponse searchNickname(final User user, final User searchUser);
+    void acceptAllFollowRequest(final User user);
+    void deleteUser(final User user);
 }

@@ -8,6 +8,7 @@ import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
 import com.newsainturtle.shadowmate.planner.service.MonthlyPlannerService;
 import com.newsainturtle.shadowmate.planner.service.SearchPlannerService;
 import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerService;
+import com.newsainturtle.shadowmate.social.service.UserPlannerSocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +27,7 @@ public class PlannerController {
     private final WeeklyPlannerService weeklyPlannerServiceImpl;
     private final SearchPlannerService searchPlannerServiceImpl;
     private final MonthlyPlannerService monthlyPlannerServiceImpl;
+    private final UserPlannerSocialService userPlannerSocialService;
     private final AuthService authServiceImpl;
 
     @PostMapping("/{userId}/daily/todos")
@@ -175,7 +177,7 @@ public class PlannerController {
                                                     @PathVariable("userId") final Long userId,
                                                     @RequestBody @Valid final ShareSocialRequest shareSocialRequest) {
         authServiceImpl.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_SHARE_SOCIAL, dailyPlannerServiceImpl.shareSocial(principalDetails.getUser(), shareSocialRequest)));
+        return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_SHARE_SOCIAL, userPlannerSocialService.shareSocial(principalDetails.getUser(), shareSocialRequest)));
     }
 
     @GetMapping("/{userId}/daily")

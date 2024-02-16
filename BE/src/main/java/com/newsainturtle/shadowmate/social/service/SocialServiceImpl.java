@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -175,6 +176,12 @@ public class SocialServiceImpl implements SocialService {
                 .ownerId(user.getId())
                 .build()).getId();
         return ShareSocialResponse.builder().socialId(socialId).build();
+    }
+
+    @Override
+    @Transactional
+    public void updateDeleteTimeAll(final LocalDateTime time, final List<DailyPlanner> dailyPlannerList) {
+        socialRepository.updateDeleteTimeAll(time, dailyPlannerList);
     }
 
     private List<SearchSocialResponse> makeSearchSocialResponseList(List<Social> socialList) {

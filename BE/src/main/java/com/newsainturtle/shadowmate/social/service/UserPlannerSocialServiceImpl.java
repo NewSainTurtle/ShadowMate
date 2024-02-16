@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class UserPlannerSocialServiceImpl implements UserPlannerSocialService {
 
     private final SocialService socialService;
@@ -23,6 +23,7 @@ public class UserPlannerSocialServiceImpl implements UserPlannerSocialService {
     private final UserService userService;
 
     @Override
+    @Transactional
     public ShareSocialResponse shareSocial(final User user, final ShareSocialRequest shareSocialRequest) {
         if (!user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
             throw new SocialException(SocialErrorResult.FAILED_SHARE_SOCIAL);

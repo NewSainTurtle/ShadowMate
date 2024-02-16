@@ -12,7 +12,6 @@ import com.newsainturtle.shadowmate.social.service.SocialServiceImpl;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
-import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,13 +20,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SocialServiceTest extends DateCommonService {
@@ -37,9 +36,6 @@ class SocialServiceTest extends DateCommonService {
 
     @Mock
     private SocialRepository socialRepository;
-
-    @Mock
-    private UserRepository userRepository;
 
     private final String date = "2023-09-25";
     private final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
@@ -382,5 +378,16 @@ class SocialServiceTest extends DateCommonService {
             assertThat(shareSocialResponse).isNotNull();
             assertThat(shareSocialResponse.getSocialId()).isEqualTo(1L);
         }
+    }
+
+    @Test
+    void 성공_소셜_DeleteTime_전체수정() {
+        // given
+
+        // when
+        socialService.updateDeleteTimeAll(LocalDateTime.now(), new ArrayList<>());
+
+        // then
+        verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
     }
 }
