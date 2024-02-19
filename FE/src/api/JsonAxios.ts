@@ -1,10 +1,9 @@
 import baseAxios, { AxiosError, AxiosResponse } from "axios";
 import { store } from "@hooks/configStore";
-import { authApi } from "@api/Api";
+import { ServerErrorResponse, authApi } from "@api/Api";
 import { setAccessToken, setAutoLogin } from "@store/authSlice";
 import { setModalOpen } from "@store/modalSlice";
 import { setAlertOpen } from "@store/alertSlice";
-import axios from "axios";
 
 export const baseURL = process.env.REACT_APP_API_URL;
 
@@ -47,7 +46,8 @@ Axios.interceptors.response.use(
       const response = error.response as AxiosResponse;
       const { status } = response;
       if (status === 401) {
-        if (response.data.code === "EXPIRED_ACCESS_TOKEN") {
+        const { code } = response.data as ServerErrorResponse;
+        if (code === "EXPIRED_ACCESS_TOKEN") {
           const { userId, type } = store.getState().auth;
           const res = await authApi.token(userId, { type });
           if (res.status === 200) {
@@ -59,7 +59,7 @@ Axios.interceptors.response.use(
               return Axios(error.config);
             }
           }
-        } else if (response.data.code === "EXPIRED_REFRESH_TOKEN") {
+        } else if (code === "EXPIRED_REFRESH_TOKEN") {
           store.dispatch(setModalOpen());
         }
       }

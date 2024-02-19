@@ -8,7 +8,6 @@ import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
 import { selectUserId, selectUserInfo, setUserInfo } from "@store/authSlice";
-import { UserInfoConfig } from "@util/auth.interface";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { resizeImage } from "@util/resizeImage";

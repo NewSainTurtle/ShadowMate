@@ -18,16 +18,16 @@ import { selectPopupVisible } from "@store/modalSlice";
 
 const Month = () => {
   const dispatch = useAppDispatch();
-  const today = new Date();
+  const today: Date = new Date();
   const [selectedDay, setSelectedDay] = useState<string>(dayjs(today).format("YYYY-MM-DD"));
   const year: number = dayjs(selectedDay).year();
   const month: number = dayjs(selectedDay).month() + 1;
-  const userId = useAppSelector(selectUserId);
-  let friendId = useAppSelector(selectFriendId);
+  const userId: number = useAppSelector(selectUserId);
+  let friendId: number = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
   const [loading, setLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const visible = useAppSelector(selectPopupVisible);
+  const visible: boolean = useAppSelector(selectPopupVisible);
 
   const handlePrevMonth = () => {
     const newDate = dayjs(selectedDay).subtract(1, "month").endOf("month").format("MM/DD/YY");
@@ -62,7 +62,7 @@ const Month = () => {
         dispatch(setStatistics(statistics));
         setLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const getFollowCountInfo = () => {
@@ -72,7 +72,7 @@ const Month = () => {
         const response = res.data.data;
         dispatch(setFollowCount(response));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {

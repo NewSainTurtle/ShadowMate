@@ -1,13 +1,20 @@
 import Axios from "@api/JsonAxios";
 import api from "@api/BaseUrl";
-import { MonthConfig } from "@store/planner/monthSlice";
+import { MonthConfig, MonthDayConfig } from "@store/planner/monthSlice";
 import { RoutineItemConfig } from "@store/mypage/routineSlice";
 import { IntroductionConfig } from "@components/planner/month/MonthDetailInfo/Introduction";
 import { RoutineUpdateSelectorConfig } from "@components/mypage/MyPageFrame";
 import { FollowRequestType, FollowerType, FollowingType, FriendSearchResponse } from "@util/friend.interface";
-import { CategoryColorConfig, CategoryItemConfig, DayInfoResponse, DdayItemConfig } from "@util/planner.interface";
+import {
+  CategoryColorConfig,
+  CategoryItemConfig,
+  DayInfoResponse,
+  DdayItemConfig,
+  GuestBookConfig,
+} from "@util/planner.interface";
 import { SocialListType } from "@components/social/CardList";
 import { UserInfoConfig } from "@util/auth.interface";
+import { WeekConfig } from "@store/planner/weekSlice";
 
 interface ServerResponse<T> {
   statusCode: number; // 응답 HTTP 상태 메시지
@@ -15,6 +22,11 @@ interface ServerResponse<T> {
   message: string; // 메시지
   payload: T;
   data: T; // 데이터 내용
+}
+
+export interface ServerErrorResponse {
+  code: string;
+  message: string;
 }
 
 export const authApi = {
@@ -59,12 +71,21 @@ export const followApi = {
   receive: (userId: number, data: { requesterId: number; followReceive: boolean }) =>
     Axios.post(api.follow.receive(userId), data),
   receiveList: (userId: number) => Axios.get<ServerResponse<FollowRequestType[]>>(api.follow.receiveList(userId)),
-  getFollowCount: (userId: number) => Axios.get(api.follow.count(userId)),
+  getFollowCount: (userId: number) => Axios.get<ServerResponse<MonthConfig["followCount"]>>(api.follow.count(userId)),
 };
 
 export const plannerApi = {
   calendars: (userId: number, params: { date: string }) =>
-    Axios.get(api.planners.calendars(userId), { params: params }),
+    Axios.get<
+      ServerResponse<{
+        plannerAccessScope: MonthConfig["plannerAccessScope"];
+        plannerLikeCount: number;
+        todoTotal: number;
+        todoComplete: number;
+        todoIncomplete: number;
+        dayList: MonthDayConfig[];
+      }>
+    >(api.planners.calendars(userId), { params: params }),
   getGuestBook: (userId: number, params: { last: number }) =>
     Axios.get<
       ServerResponse<{
@@ -81,13 +102,13 @@ export const plannerApi = {
       params: params,
     }),
   addGuestBook: (userId: number, data: { visitorBookContent: string }) =>
-    Axios.post(api.planners.guestBook(userId), data),
+    Axios.post<ServerResponse<GuestBookConfig>>(api.planners.guestBook(userId), data),
   deleteGuestBook: (userId: number, data: { visitorBookId: number }) =>
     Axios.delete(api.planners.guestBook(userId), { data: data }),
   weekly: (userId: number, params: { "start-date": string; "end-date": string }) =>
-    Axios.get(api.planners.weekly(userId), { params: params }),
+    Axios.get<ServerResponse<WeekConfig>>(api.planners.weekly(userId), { params: params }),
   addWeeklyTodos: (userId: number, data: { startDate: string; endDate: string; weeklyTodoContent: string }) =>
-    Axios.post(api.planners.weeklyTodos(userId), data),
+    Axios.post<ServerResponse<{ weeklyTodoId: number }>>(api.planners.weeklyTodos(userId), data),
   editWeeklyTodos: (
     userId: number,
     data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoContent: string },

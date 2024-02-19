@@ -10,7 +10,6 @@ import { useAppSelector } from "@hooks/hook";
 import { userApi } from "@api/Api";
 import { useDebounce } from "@util/EventControlModule";
 import { selectFollowState } from "@store/friendSlice";
-import { ProfileConfig } from "@util/auth.interface";
 
 interface MyFriendListType extends FriendInfoConfig {
   followerId?: number;

@@ -73,7 +73,7 @@ export interface RoutineErrorConfig {
   dayError: boolean;
 }
 
-const GenericReturnFunc = <T extends object>(str: string) => {
+export const GenericReturnFunc = <T extends object>(str: string) => {
   const jsonValue: T = JSON.parse(str) as T;
   return jsonValue;
 };

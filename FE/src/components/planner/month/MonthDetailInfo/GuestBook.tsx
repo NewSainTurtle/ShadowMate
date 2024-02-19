@@ -13,6 +13,7 @@ import { selectFriendId, setFriendInfo } from "@store/friendSlice";
 import { plannerApi, userApi } from "@api/Api";
 import { GuestBookConfig } from "@util/planner.interface";
 import { useNavigate } from "react-router-dom";
+import { FriendSearchResponse } from "@util/friend.interface";
 
 const GuestBook = () => {
   const dispatch = useAppDispatch();
@@ -125,7 +126,8 @@ const GuestBook = () => {
   const addGuestBook = async () => {
     const response = await plannerApi.addGuestBook(friendId, { visitorBookContent: guestBookInput });
     if (response.status === 200) {
-      setGuestBookList([...guestBookList, response.data.data]);
+      const newGuestBook: GuestBookConfig = response.data.data;
+      setGuestBookList([...guestBookList, newGuestBook]);
       setGuestBookInput("");
     }
   };
@@ -143,12 +145,12 @@ const GuestBook = () => {
     userApi
       .searches(userId, { nickname })
       .then((res) => {
-        const response = res.data.data;
+        const response: FriendSearchResponse = res.data.data;
         dispatch(setFriendInfo(response));
         navigator("/month");
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 

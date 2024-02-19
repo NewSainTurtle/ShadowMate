@@ -26,7 +26,7 @@ const Menu = () => {
 
   return (
     <div className={styles.menu_container}>
-      {values.map((item, idx) => (
+      {values.map((item) => (
         <NavLink className={styles.menu_item} to={item.link} key={item.id} onClick={() => handleClear(item.link)}>
           {item.icon}
           <Text types="small">{item.message}</Text>

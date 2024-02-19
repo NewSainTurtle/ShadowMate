@@ -93,7 +93,7 @@ const MonthCalendar = ({ selectedDay, isOpen }: Props) => {
                           </div>
                         </div>
                       )}
-                      <div className={styles["calendar__container"]} key={item ? item.toString() : `${item}${idx}`}>
+                      <div className={styles["calendar__container"]} key={item ? item.toString() : idx.toString()}>
                         {item && (
                           <div className={styles[`calendar__item`]} onClick={() => itemClickHandler(item.date)}>
                             <div style={{ backgroundColor: statusColor[item.dayStatus] }}>

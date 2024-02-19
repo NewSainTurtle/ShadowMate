@@ -1,7 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import styles from "@styles/auth/Login.module.scss";
 import Input from "@components/common/Input";
-import AuthButton from "../AuthButton";
+import AuthButton from "@components/auth/AuthButton";
 import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -65,13 +65,13 @@ const Login = () => {
       .login({ email: email, password: password })
       .then((res) => {
         setShowAlert(false);
-        const accessToken = res.headers["authorization"];
-        const userId = res.headers["id"];
-        const type = res.headers["type"];
+        const accessToken = res.headers["authorization"] as string;
+        const userId = res.headers["id"] as number;
+        const type = res.headers["type"] as string;
         dispatch(setLogin({ accessToken, userId, type }));
 
         // 자동로그인 auto-login 코드 저장
-        const auto = res.headers["auto-login"];
+        const auto = res.headers["auto-login"] as string;
         if (auto) localStorage.setItem("AL", auto);
 
         userApi.getProfiles(userId).then((res) => {
@@ -83,7 +83,7 @@ const Login = () => {
       })
       .catch((err) => {
         setShowAlert(true);
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -104,7 +104,7 @@ const Login = () => {
           dispatch(setUserInfo(res.data.data));
           navigator("/month");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
   }, [document.cookie]);
 

@@ -15,6 +15,7 @@ import { BASIC_TODO_ITEM, setDayDate } from "@store/planner/daySlice";
 import { plannerApi } from "@api/Api";
 import dragModule from "@util/DragModule";
 import dayjs from "dayjs";
+import { GenericReturnFunc } from "@components/mypage/MyPageFrame";
 
 interface Props {
   idx: number;
@@ -38,7 +39,10 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
   const friend = isMine ? "" : "--friend";
 
   const draggablesRef = useRef<HTMLDivElement[]>([]);
-  const copyDailyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(dailyTodos)), [dailyTodos]);
+  const copyDailyTodos: TodoConfig[] = useMemo<TodoConfig[]>(
+    () => GenericReturnFunc(JSON.stringify(dailyTodos)),
+    [dailyTodos],
+  );
   const [clicked, setClicked] = useState<number>(-1);
 
   const handleSaveRetrospection = () => {
@@ -54,7 +58,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
         copyDayList[idx].retrospection = retrospection;
         dispatch(setDayList(copyDayList));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleMoveToDay = () => {
