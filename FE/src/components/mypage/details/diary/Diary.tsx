@@ -36,9 +36,9 @@ const MyPageDiary = () => {
         userApi
           .getProfiles(userId)
           .then((res) => dispatch(setUserInfo(res.data.data)))
-          .catch((err) => console.log(err));
+          .catch((err) => console.error(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {

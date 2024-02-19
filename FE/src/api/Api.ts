@@ -1,10 +1,20 @@
 import Axios from "@api/JsonAxios";
 import api from "@api/BaseUrl";
-import { MonthConfig } from "@store/planner/monthSlice";
+import { MonthConfig, MonthDayConfig } from "@store/planner/monthSlice";
+import { RoutineItemConfig } from "@store/mypage/routineSlice";
+import { IntroductionConfig } from "@components/planner/month/MonthDetailInfo/Introduction";
+import { RoutineUpdateSelectorConfig } from "@components/mypage/MyPageFrame";
 import { FollowRequestType, FollowerType, FollowingType, FriendSearchResponse } from "@util/friend.interface";
-import { CategoryColorConfig, CategoryItemConfig, DayInfoResponse, DdayItemConfig } from "@util/planner.interface";
+import {
+  CategoryColorConfig,
+  CategoryItemConfig,
+  DayInfoResponse,
+  DdayItemConfig,
+  GuestBookConfig,
+} from "@util/planner.interface";
 import { SocialListType } from "@components/social/CardList";
 import { UserInfoConfig } from "@util/auth.interface";
+import { WeekConfig } from "@store/planner/weekSlice";
 
 interface ServerResponse<T> {
   statusCode: number; // 응답 HTTP 상태 메시지
@@ -12,6 +22,11 @@ interface ServerResponse<T> {
   message: string; // 메시지
   payload: T;
   data: T; // 데이터 내용
+}
+
+export interface ServerErrorResponse {
+  code: string;
+  message: string;
 }
 
 export const authApi = {
@@ -38,8 +53,7 @@ export const userApi = {
   userOut: (userId: number) => Axios.delete(api.users.userOut(userId)),
   searches: (userId: number, params: { nickname: string }) =>
     Axios.get<ServerResponse<FriendSearchResponse>>(api.users.searches(userId), { params }),
-  getIntroduction: (userId: number) =>
-    Axios.get<ServerResponse<{ introduction: string }>>(api.users.introduction(userId)),
+  getIntroduction: (userId: number) => Axios.get<ServerResponse<IntroductionConfig>>(api.users.introduction(userId)),
   editIntroduction: (userId: number, data: { introduction: string }) => Axios.put(api.users.introduction(userId), data),
 };
 
@@ -57,12 +71,21 @@ export const followApi = {
   receive: (userId: number, data: { requesterId: number; followReceive: boolean }) =>
     Axios.post(api.follow.receive(userId), data),
   receiveList: (userId: number) => Axios.get<ServerResponse<FollowRequestType[]>>(api.follow.receiveList(userId)),
-  getFollowCount: (userId: number) => Axios.get(api.follow.count(userId)),
+  getFollowCount: (userId: number) => Axios.get<ServerResponse<MonthConfig["followCount"]>>(api.follow.count(userId)),
 };
 
 export const plannerApi = {
   calendars: (userId: number, params: { date: string }) =>
-    Axios.get(api.planners.calendars(userId), { params: params }),
+    Axios.get<
+      ServerResponse<{
+        plannerAccessScope: MonthConfig["plannerAccessScope"];
+        plannerLikeCount: number;
+        todoTotal: number;
+        todoComplete: number;
+        todoIncomplete: number;
+        dayList: MonthDayConfig[];
+      }>
+    >(api.planners.calendars(userId), { params: params }),
   getGuestBook: (userId: number, params: { last: number }) =>
     Axios.get<
       ServerResponse<{
@@ -79,13 +102,13 @@ export const plannerApi = {
       params: params,
     }),
   addGuestBook: (userId: number, data: { visitorBookContent: string }) =>
-    Axios.post(api.planners.guestBook(userId), data),
+    Axios.post<ServerResponse<GuestBookConfig>>(api.planners.guestBook(userId), data),
   deleteGuestBook: (userId: number, data: { visitorBookId: number }) =>
     Axios.delete(api.planners.guestBook(userId), { data: data }),
   weekly: (userId: number, params: { "start-date": string; "end-date": string }) =>
-    Axios.get(api.planners.weekly(userId), { params: params }),
+    Axios.get<ServerResponse<WeekConfig>>(api.planners.weekly(userId), { params: params }),
   addWeeklyTodos: (userId: number, data: { startDate: string; endDate: string; weeklyTodoContent: string }) =>
-    Axios.post(api.planners.weeklyTodos(userId), data),
+    Axios.post<ServerResponse<{ weeklyTodoId: number }>>(api.planners.weeklyTodos(userId), data),
   editWeeklyTodos: (
     userId: number,
     data: { startDate: string; endDate: string; weeklyTodoId: number; weeklyTodoContent: string },
@@ -146,7 +169,7 @@ export const settingApi = {
   addCategories: (
     userId: number,
     data: { categoryTitle: string; categoryColorId: number; categoryEmoticon: string | null },
-  ) => Axios.post(api.setting.categories(userId), data),
+  ) => Axios.post<ServerResponse<{ categoryId: number }>>(api.setting.categories(userId), data),
   editCategories: (
     userId: number,
     data: { categoryId: number; categoryTitle: string; categoryColorId: number; categoryEmoticon: string | null },
@@ -156,20 +179,21 @@ export const settingApi = {
 
   ddays: (userId: number) => Axios.get<ServerResponse<{ ddayList: DdayItemConfig[] }>>(api.setting.ddays(userId)),
   addDdays: (userId: number, data: { ddayDate: string; ddayTitle: string }) =>
-    Axios.post(api.setting.ddays(userId), data),
+    Axios.post<ServerResponse<{ ddayId: number }>>(api.setting.ddays(userId), data),
   editDdays: (userId: number, data: { ddayId: number; ddayDate: string; ddayTitle: string }) =>
     Axios.put(api.setting.ddays(userId), data),
   deleteDdays: (userId: number, data: { ddayId: number }) => Axios.delete(api.setting.ddays(userId), { data: data }),
-  routines: (userId: number) => Axios.get(api.setting.routines(userId)),
+  routines: (userId: number) =>
+    Axios.get<ServerResponse<{ routineList: RoutineItemConfig[] }>>(api.setting.routines(userId)),
   addRoutines: (
     userId: number,
     data: { routineContent: string; startDay: string; endDay: string; categoryId: number; days: string[] },
-  ) => Axios.post(api.setting.routines(userId), data),
+  ) => Axios.post<ServerResponse<{ routineId: number }>>(api.setting.routines(userId), data),
   editRoutines: (
     userId: number,
     data: {
       routineId: number;
-      order: number;
+      order: RoutineUpdateSelectorConfig["order"];
       startDay: string;
       endDay: string;
       routineContent: string;
@@ -177,7 +201,7 @@ export const settingApi = {
       days: string[];
     },
   ) => Axios.put(api.setting.routines(userId), data),
-  deleteRoutines: (userId: number, data: { routineId: number; order: number }) =>
+  deleteRoutines: (userId: number, data: { routineId: number; order: RoutineUpdateSelectorConfig["order"] }) =>
     Axios.delete(api.setting.routines(userId), { data }),
 };
 

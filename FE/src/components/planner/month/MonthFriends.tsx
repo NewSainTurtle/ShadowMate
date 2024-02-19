@@ -5,9 +5,9 @@ import AddIcon from "@mui/icons-material/Add";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { FollowingType } from "@util/friend.interface";
+import { ProfileConfig } from "@util/auth.interface";
 import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
-import { ProfileConfig } from "@util/auth.interface";
 import { selectFollowingList } from "@store/friendSlice";
 
 const MonthFriends = () => {
@@ -67,7 +67,7 @@ const MonthFriends = () => {
         <FriendProfileIcon profile={userProfile} />
         {followingList && followingList.length > 0 && (
           <>
-            {followingList.map((item: FollowingType, key: number) => {
+            {followingList.map((item: FollowingType) => {
               const { followingId, nickname, profileImage, statusMessage } = item;
               const followInfo = {
                 userId: followingId,

@@ -50,7 +50,7 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
     dispatch(setWeeklyTodos(copyTodos));
   };
 
-  const handleUpdateStatus = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleUpdateStatus = () => {
     putUpdateWeeklyTodoStatus();
   };
 
@@ -83,7 +83,7 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
         weeklyTodoContent: content,
       })
       .then()
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const putUpdateWeeklyTodoStatus = () => {
@@ -94,30 +94,24 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
         weeklyTodoId: id,
         weeklyTodoStatus: !checked,
       })
-      .then((res) => {
+      .then(() => {
         setChecked(!checked);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const deleteWeeklyTodo = () => {
     plannerApi
       .deleteWeeklyTodos(userId, { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
       .then()
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   return (
     <>
       <div className={styles[`todo__item${friend}`]} key={item.weeklyTodoId}>
         <div className={styles["todo__checkbox"]}>
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={(e) => {
-              handleUpdateStatus(e);
-            }}
-          />
+          <input type="checkbox" checked={checked} onChange={handleUpdateStatus} />
           {item.weeklyTodoUpdate ? (
             <input
               autoFocus
