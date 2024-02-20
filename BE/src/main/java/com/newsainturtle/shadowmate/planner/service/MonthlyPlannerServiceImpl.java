@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,14 @@ import java.util.List;
 public class MonthlyPlannerServiceImpl extends DateCommonService implements MonthlyPlannerService {
 
     private final VisitorBookRepository visitorBookRepository;
+
+    @Override
+    public void checkValidDate(final String date) {
+        final String datePattern = "^([12]\\d{3}-(0[1-9]|1[0-2])-01)$";
+        if (!Pattern.matches(datePattern, date)) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT);
+        }
+    }
 
     @Override
     @Transactional

@@ -28,7 +28,7 @@ public class UserPlannerSocialServiceImpl implements UserPlannerSocialService {
         if (!user.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
             throw new SocialException(SocialErrorResult.FAILED_SHARE_SOCIAL);
         }
-        return socialService.shareSocial(user, dailyPlannerService.getDailyPlanner(user, shareSocialRequest.getDate()), shareSocialRequest.getSocialImage());
+        return socialService.shareSocial(user, dailyPlannerService.getOrExceptionDailyPlanner(user, shareSocialRequest.getDate()), shareSocialRequest.getSocialImage());
     }
 
     @Override

@@ -41,7 +41,6 @@ public class PlannerRoutineServiceImpl extends DateCommonService implements Plan
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
         }
         plannerSettingService.removeCategory(user, category, dailyPlannerService.getRoutineCount(category) + routineService.getRoutineCount(category));
-
     }
 
     @Override
@@ -60,7 +59,7 @@ public class PlannerRoutineServiceImpl extends DateCommonService implements Plan
 
     @Override
     public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
-        final DailyPlanner dailyPlanner = dailyPlannerService.getDailyPlanner(user, removeDailyTodoRequest.getDate());
+        final DailyPlanner dailyPlanner = dailyPlannerService.getOrExceptionDailyPlanner(user, removeDailyTodoRequest.getDate());
         final Todo todo = dailyPlannerService.getTodo(removeDailyTodoRequest.getTodoId(), dailyPlanner);
         routineService.removeRoutineTodo(todo);
         dailyPlannerService.removeDailyTodo(todo.getId());

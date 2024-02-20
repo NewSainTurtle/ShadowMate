@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.yn.planner;
 import com.newsainturtle.shadowmate.common.DateCommonService;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchDailyPlannerResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlannerLike;
 import com.newsainturtle.shadowmate.planner.entity.TimeTable;
@@ -28,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -835,7 +837,7 @@ class DailyPlannerServiceTest extends DateCommonService {
             doReturn(null).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
 
             //when
-            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.getDailyPlanner(user, date));
+            final PlannerException result = assertThrows(PlannerException.class, () -> dailyPlannerServiceImpl.getOrExceptionDailyPlanner(user, date));
 
             //then
             assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
@@ -847,7 +849,7 @@ class DailyPlannerServiceTest extends DateCommonService {
             doReturn(dailyPlanner).when(dailyPlannerRepository).findByUserAndDailyPlannerDay(any(), any(String.class));
 
             //when
-            final DailyPlanner findDailyPlanner = dailyPlannerServiceImpl.getDailyPlanner(user, date);
+            final DailyPlanner findDailyPlanner = dailyPlannerServiceImpl.getOrExceptionDailyPlanner(user, date);
 
             //then
             assertThat(findDailyPlanner).isEqualTo(dailyPlanner);
@@ -855,4 +857,65 @@ class DailyPlannerServiceTest extends DateCommonService {
 
     }
 
+    @Nested
+    class 일일플래너조회API {
+
+        @Test
+        void 성공() {
+            //given
+            final CategoryColor categoryColor = CategoryColor.builder()
+                    .categoryColorCode("#D9B5D9")
+                    .build();
+            final Category category = Category.builder()
+                    .id(1L)
+                    .categoryColor(categoryColor)
+                    .user(user)
+                    .categoryTitle("국어")
+                    .categoryRemove(false)
+                    .categoryEmoticon("🍅")
+                    .build();
+            final List<TimeTable> timeTableList = new ArrayList<>();
+            final Todo todo = Todo.builder()
+                    .id(1L)
+                    .category(category)
+                    .todoContent(todoContent)
+                    .todoStatus(TodoStatus.EMPTY)
+                    .dailyPlanner(dailyPlanner)
+                    .todoIndex(100000D)
+                    .timeTables(timeTableList)
+                    .build();
+            final List<Todo> todoList = new ArrayList<>();
+            todoList.add(todo);
+            timeTableList.add(TimeTable.builder()
+                    .startTime(stringToLocalDateTime("2023-10-10 22:50"))
+                    .endTime(stringToLocalDateTime("2023-10-11 01:30"))
+                    .todo(todo)
+                    .build());
+
+            doReturn(false).when(dailyPlannerLikeRepository).existsByUserAndDailyPlanner(any(), any(DailyPlanner.class));
+            doReturn(127L).when(dailyPlannerLikeRepository).countByDailyPlanner(any(DailyPlanner.class));
+            doReturn(todoList).when(todoRepository).findAllByDailyPlannerOrderByTodoIndex(any(DailyPlanner.class));
+
+            //when
+            final SearchDailyPlannerResponse searchDailyPlannerResponse = dailyPlannerServiceImpl.searchDailyPlanner(user, user, date, dailyPlanner);
+
+            //then
+            assertThat(searchDailyPlannerResponse).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDate()).isEqualTo(dailyPlanner.getDailyPlannerDay());
+            assertThat(searchDailyPlannerResponse.getPlannerAccessScope()).isEqualTo(plannerAccessScope.getScope());
+            assertThat(searchDailyPlannerResponse.getDday()).isNull();
+            assertThat(searchDailyPlannerResponse.getDdayTitle()).isNull();
+            assertThat(searchDailyPlannerResponse.getTodayGoal()).isEqualTo(dailyPlanner.getTodayGoal());
+            assertThat(searchDailyPlannerResponse.getRetrospection()).isEqualTo(dailyPlanner.getRetrospection());
+            assertThat(searchDailyPlannerResponse.getRetrospectionImage()).isEqualTo(dailyPlanner.getRetrospectionImage());
+            assertThat(searchDailyPlannerResponse.getTomorrowGoal()).isEqualTo(dailyPlanner.getTomorrowGoal());
+            assertThat(searchDailyPlannerResponse.getShareSocial()).isNull();
+            assertThat(searchDailyPlannerResponse.isLike()).isFalse();
+            assertThat(searchDailyPlannerResponse.getLikeCount()).isEqualTo(127L);
+            assertThat(searchDailyPlannerResponse.getStudyTimeHour()).isEqualTo(2);
+            assertThat(searchDailyPlannerResponse.getStudyTimeMinute()).isEqualTo(40);
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).isNotNull();
+            assertThat(searchDailyPlannerResponse.getDailyTodos()).hasSize(1);
+        }
+    }
 }

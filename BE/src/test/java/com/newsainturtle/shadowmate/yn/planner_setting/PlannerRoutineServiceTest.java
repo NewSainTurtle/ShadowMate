@@ -336,7 +336,7 @@ class PlannerRoutineServiceTest extends DateCommonService {
         @Test
         void 실패_유효하지않은일일플래너() {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).getDailyPlanner(any(User.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
 
             //when
             final PlannerException result = assertThrows(PlannerException.class, () -> plannerRoutineService.removeDailyTodo(user, removeDailyTodoRequest));
@@ -348,7 +348,7 @@ class PlannerRoutineServiceTest extends DateCommonService {
         @Test
         void 실패_유효하지않은할일() {
             //given
-            doReturn(dailyPlanner).when(dailyPlannerService).getDailyPlanner(any(User.class), any(String.class));
+            doReturn(dailyPlanner).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
             doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerService).getTodo(any(Long.class), any(DailyPlanner.class));
 
             //when
@@ -361,7 +361,7 @@ class PlannerRoutineServiceTest extends DateCommonService {
         @Test
         void 성공() {
             //given
-            doReturn(dailyPlanner).when(dailyPlannerService).getDailyPlanner(any(User.class), any(String.class));
+            doReturn(dailyPlanner).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
             doReturn(todo).when(dailyPlannerService).getTodo(any(Long.class), any(DailyPlanner.class));
 
             //when
@@ -370,7 +370,7 @@ class PlannerRoutineServiceTest extends DateCommonService {
             //then
 
             //verify
-            verify(dailyPlannerService, times(1)).getDailyPlanner(any(User.class), any(String.class));
+            verify(dailyPlannerService, times(1)).getOrExceptionDailyPlanner(any(User.class), any(String.class));
             verify(dailyPlannerService, times(1)).getTodo(any(Long.class), any(DailyPlanner.class));
             verify(routineService, times(1)).removeRoutineTodo(any(Todo.class));
             verify(dailyPlannerService, times(1)).removeDailyTodo(any(Long.class));

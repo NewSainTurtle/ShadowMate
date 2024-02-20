@@ -23,7 +23,6 @@ public class PlannerController {
 
     private final DailyPlannerService dailyPlannerService;
     private final WeeklyPlannerService weeklyPlannerService;
-    private final SearchPlannerService searchPlannerService;
     private final MonthlyPlannerService monthlyPlannerService;
     private final UserPlannerService userPlannerService;
     private final SettingPlannerService settingPlannerService;
@@ -186,7 +185,7 @@ public class PlannerController {
                                                            @PathVariable("userId") final Long userId,
                                                            @RequestParam(name = "date") final String date) {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_DAILY_PLANNER,
-                searchPlannerService.searchDailyPlanner(principalDetails.getUser(), userId, date)));
+                userPlannerService.searchDailyPlanner(principalDetails.getUser(), userId, date)));
     }
 
     @GetMapping("/{userId}/weekly")
@@ -195,7 +194,7 @@ public class PlannerController {
                                                             @RequestParam(name = "start-date") final String startDate,
                                                             @RequestParam(name = "end-date") final String endDate) {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_WEEKLY_PLANNER,
-                searchPlannerService.searchWeeklyPlanner(principalDetails.getUser(), userId, startDate, endDate)));
+                userPlannerService.searchWeeklyPlanner(principalDetails.getUser(), userId, startDate, endDate)));
     }
 
     @GetMapping("/{userId}/calendars")
@@ -203,7 +202,7 @@ public class PlannerController {
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestParam(name = "date") final String date) {
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_SEARCH_CALENDAR,
-                searchPlannerService.searchCalendar(principalDetails.getUser(), userId, date)));
+                userPlannerService.searchCalendar(principalDetails.getUser(), userId, date)));
     }
 
     @PostMapping("/{userId}/monthly/visitor-books")

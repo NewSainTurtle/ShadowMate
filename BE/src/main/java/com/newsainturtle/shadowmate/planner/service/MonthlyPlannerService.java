@@ -11,4 +11,5 @@ public interface MonthlyPlannerService {
     void removeVisitorBook(final User visitor, final long ownerId, final RemoveVisitorBookRequest removeVisitorBookRequest);
     SearchVisitorBookResponse searchVisitorBook(final User visitor, final User owner, final long lastVisitorBookId);
     void deleteUser(final User user);
+    void checkValidDate(final String date);
 }

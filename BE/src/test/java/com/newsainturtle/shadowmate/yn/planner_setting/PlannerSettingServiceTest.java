@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -282,19 +283,17 @@ class PlannerSettingServiceTest extends DateCommonService {
         }
 
         @Nested
-        class 디데이조회 {
+        class 디데이목록조회 {
             @Test
             void 등록된디데이목록이없음() {
                 //given
-                final List<Dday> list = new ArrayList<>();
-                doReturn(list).when(ddayRepository).findByUserOrderByDdayDateDesc(user);
+                doReturn(new ArrayList<>()).when(ddayRepository).findByUserOrderByDdayDateDesc(user);
 
                 //when
                 final GetDdayListResponse ddayListResponse = plannerSettingService.getDdayList(user);
 
                 //then
-                assertThat(ddayListResponse.getDdayList()).isNotNull();
-                assertThat(ddayListResponse.getDdayList()).isEmpty();
+                assertThat(ddayListResponse.getDdayList()).isNotNull().isEmpty();
             }
 
             @Test
@@ -313,8 +312,65 @@ class PlannerSettingServiceTest extends DateCommonService {
                 final GetDdayListResponse ddayListResponse = plannerSettingService.getDdayList(user);
 
                 //then
-                assertThat(ddayListResponse.getDdayList()).isNotNull();
-                assertThat(ddayListResponse.getDdayList()).hasSize(2);
+                assertThat(ddayListResponse.getDdayList()).isNotNull().hasSize(2);
+            }
+        }
+
+        @Nested
+        class 디데이조회 {
+            final String today = LocalDate.now().toString();
+
+            @Test
+            void 디데이없음() {
+                //given
+                doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+                doReturn(null).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+
+                //when
+                final Dday dday = plannerSettingService.getDday(user);
+
+                //then
+                assertThat(dday).isNotNull();
+                assertThat(dday.getDdayTitle()).isNull();
+                assertThat(dday.getDdayDate()).isNull();
+            }
+
+            @Test
+            void 디데이있음_현재미래() {
+                //given
+                final String future = String.valueOf(LocalDate.now().plusDays(1));
+                doReturn(Dday.builder()
+                        .ddayTitle("시험")
+                        .ddayDate(future)
+                        .user(user)
+                        .build()).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+
+                //when
+                final Dday dday = plannerSettingService.getDday(user);
+
+                //then
+                assertThat(dday).isNotNull();
+                assertThat(dday.getDdayTitle()).isEqualTo("시험");
+                assertThat(dday.getDdayDate()).isEqualTo(future);
+            }
+
+            @Test
+            void 디데이있음_과거() {
+                //given
+                doReturn(null).when(ddayRepository).findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+                doReturn(Dday.builder()
+                        .ddayTitle("크리스마스")
+                        .ddayDate("2023-12-25")
+                        .user(user)
+                        .build()).when(ddayRepository).findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+
+                //when
+                final Dday dday = plannerSettingService.getDday(user);
+
+                //then
+                assertThat(dday).isNotNull();
+                assertThat(dday.getDdayTitle()).isEqualTo("크리스마스");
+                assertThat(dday.getDdayDate()).isEqualTo("2023-12-25");
             }
         }
 

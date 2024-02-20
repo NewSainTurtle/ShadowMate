@@ -52,9 +52,6 @@ class PlannerControllerTest {
     private WeeklyPlannerServiceImpl weeklyPlannerService;
 
     @Mock
-    private SearchPlannerServiceImpl searchPlannerService;
-
-    @Mock
     private MonthlyPlannerServiceImpl monthlyPlannerService;
 
     @Mock
@@ -2197,7 +2194,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerService).searchDailyPlanner(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(userPlannerService).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2212,7 +2209,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerService).searchDailyPlanner(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2248,7 +2245,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(userPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2264,7 +2261,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2280,7 +2277,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(searchPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(userPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2317,7 +2314,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerService).searchCalendar(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(userPlannerService).searchCalendar(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2332,7 +2329,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerService).searchCalendar(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchCalendar(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(

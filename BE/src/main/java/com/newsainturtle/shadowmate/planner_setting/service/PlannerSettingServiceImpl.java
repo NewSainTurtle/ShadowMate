@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,6 +108,19 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
                     .build());
         }
         return GetCategoryListResponse.builder().categoryList(categoryList).build();
+    }
+
+    @Override
+    public Dday getDday(final User user) {
+        final String today = String.valueOf(LocalDate.now());
+        Dday dday = ddayRepository.findTopByUserAndDdayDateGreaterThanEqualOrderByDdayDateAsc(user, today);
+        if (dday == null) {
+            dday = ddayRepository.findTopByUserAndDdayDateBeforeOrderByDdayDateDesc(user, today);
+            if (dday == null) {
+                dday = Dday.builder().build();
+            }
+        }
+        return dday;
     }
 
     @Override

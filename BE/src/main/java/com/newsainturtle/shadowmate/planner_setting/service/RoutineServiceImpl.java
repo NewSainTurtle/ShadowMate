@@ -116,7 +116,7 @@ public class RoutineServiceImpl extends DateCommonService implements RoutineServ
         for (RoutineTodo routineTodo : routineTodoList) {
             final DailyPlanner dailyPlanner = getOrCreateDailyPlanner(user, routineTodo.getDailyPlannerDay());
             final TodoIndexResponse lastTodoIndex = todoRepository.findTopByDailyPlannerOrderByTodoIndexDesc(dailyPlanner);
-            todoRepository.save(Todo.builder()
+            final Todo todo = todoRepository.save(Todo.builder()
                     .category(routineTodo.getRoutine().getCategory())
                     .todoContent(routineTodo.getRoutine().getRoutineContent())
                     .todoStatus(TodoStatus.EMPTY)
@@ -124,6 +124,7 @@ public class RoutineServiceImpl extends DateCommonService implements RoutineServ
                     .todoIndex(lastTodoIndex == null ? 100000 : lastTodoIndex.getTodoIndex() + 100000)
                     .timeTables(new ArrayList<>())
                     .build());
+            routineTodo.updateTodo(todo);
         }
     }
 
@@ -485,11 +486,22 @@ public class RoutineServiceImpl extends DateCommonService implements RoutineServ
 
     @Override
     @Transactional
-    public void removeRoutineTodo(final Todo todo){
+    public void removeRoutineTodo(final Todo todo) {
         final RoutineTodo routineTodo = routineTodoRepository.findByTodo(todo);
         if (routineTodo != null) {
             routineTodo.setRoutine(null);
             routineTodoRepository.deleteById(routineTodo.getId());
         }
+    }
+
+    @Override
+    @Transactional
+    public void makeRoutineTodo(final User user, final String date) {
+        addTodo(user, routineTodoRepository.findAllByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), date));
+    }
+
+    @Override
+    public int countRoutineTodo(final User user, final String date) {
+        return routineTodoRepository.countByUserAndDailyPlannerDayAndTodoIsNull(user.getId(), date);
     }
 }

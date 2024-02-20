@@ -148,7 +148,6 @@ public class FollowRepositoryTest {
             final List<Follow> followingList = followRepository.findAllByFollower(user1);
 
             //then
-            System.out.println(followingList.get(0).getFollower().getNickname());
             assertThat(followingList.get(0).getFollower()).isEqualTo(user1);
             assertThat(followingList.get(0).getFollowing()).isEqualTo(user2);
         }

@@ -20,4 +20,5 @@ public interface FollowService {
     SearchUserResponse searchNickname(final User user, final User searchUser);
     void acceptAllFollowRequest(final User user);
     void deleteUser(final User user);
+    boolean havePermissionToSearch(final User user, final User plannerWriter);
 }

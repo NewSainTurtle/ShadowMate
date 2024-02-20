@@ -16,4 +16,6 @@ public interface RoutineService {
     void updateRoutine(final User user, final Category category, final UpdateRoutineRequest updateRoutineRequest);
     long getRoutineCount(final Category category);
     void removeRoutineTodo(final Todo todo);
+    void makeRoutineTodo(final User user, final String date);
+    int countRoutineTodo(final User user, final String date);
 }

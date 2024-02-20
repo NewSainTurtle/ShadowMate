@@ -3,6 +3,7 @@ package com.newsainturtle.shadowmate.planner_setting.service;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.*;
 import com.newsainturtle.shadowmate.planner_setting.dto.response.*;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
+import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import com.newsainturtle.shadowmate.user.entity.User;
 
 public interface PlannerSettingService {
@@ -12,6 +13,7 @@ public interface PlannerSettingService {
     void removeCategory(final User user, final Category category, final long count);
     GetCategoryColorListResponse getCategoryColorList();
     GetCategoryListResponse getCategoryList(final User user);
+    Dday getDday(final User user);
     AddDdayResponse addDday(final User user, final AddDdayRequest addDdayRequest);
     GetDdayListResponse getDdayList(final User user);
     void removeDday(final User user, final RemoveDdayRequest removeDdayRequest);

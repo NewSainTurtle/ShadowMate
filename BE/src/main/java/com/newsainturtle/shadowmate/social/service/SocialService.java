@@ -15,4 +15,5 @@ public interface SocialService {
     void deleteSocial(final User user, final long socialId);
     ShareSocialResponse shareSocial(final User user, final DailyPlanner dailyPlanner, final String socialImage);
     void updateDeleteTimeAll(final LocalDateTime time, final List<DailyPlanner> dailyPlannerList);
+    Long getSocialId(final DailyPlanner dailyPlanner);
 }
