@@ -483,4 +483,13 @@ public class RoutineServiceImpl extends DateCommonService implements RoutineServ
         return routineRepository.countByCategory(category);
     }
 
+    @Override
+    @Transactional
+    public void removeRoutineTodo(final Todo todo){
+        final RoutineTodo routineTodo = routineTodoRepository.findByTodo(todo);
+        if (routineTodo != null) {
+            routineTodo.setRoutine(null);
+            routineTodoRepository.deleteById(routineTodo.getId());
+        }
+    }
 }

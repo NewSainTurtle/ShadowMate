@@ -593,4 +593,70 @@ class RoutineServiceTest extends DateCommonService {
         }
 
     }
+
+    @Nested
+    class 루틴할일삭제 {
+        final String date = "2023-09-25";
+        final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                .id(1L)
+                .dailyPlannerDay(date)
+                .user(user)
+                .build();
+        final Todo todo = Todo.builder()
+                .id(1L)
+                .category(null)
+                .todoContent("영단어 암기하기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .build();
+
+        @Test
+        void 성공_관련루틴없음() {
+            //given
+            doReturn(null).when(routineTodoRepository).findByTodo(todo);
+
+            //when
+            routineService.removeRoutineTodo(todo);
+
+            //then
+
+            //verify
+            verify(routineTodoRepository, times(1)).findByTodo(any(Todo.class));
+        }
+
+        @Test
+        void 성공_관련루틴있음() {
+            //given
+            final Routine routine = Routine.builder()
+                    .id(1L)
+                    .startDay("2023-12-25")
+                    .endDay("2023-12-30")
+                    .routineContent("아침운동")
+                    .category(null)
+                    .user(user)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
+                    .build();
+            final RoutineTodo routineTodo = RoutineTodo.builder()
+                    .id(1L)
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .routine(routine)
+                    .build();
+
+            doReturn(routineTodo).when(routineTodoRepository).findByTodo(todo);
+
+            //when
+            routineService.removeRoutineTodo(todo);
+
+            //then
+
+            //verify
+            verify(routineTodoRepository, times(1)).findByTodo(any(Todo.class));
+            verify(routineTodoRepository, times(1)).deleteById(any(Long.class));
+        }
+
+    }
 }

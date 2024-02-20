@@ -5,6 +5,7 @@ import com.newsainturtle.shadowmate.common.BaseResponse;
 import com.newsainturtle.shadowmate.config.auth.PrincipalDetails;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.service.*;
+import com.newsainturtle.shadowmate.planner_setting.service.PlannerRoutineService;
 import com.newsainturtle.shadowmate.social.service.UserPlannerSocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,9 @@ public class PlannerController {
     private final SearchPlannerService searchPlannerService;
     private final MonthlyPlannerService monthlyPlannerService;
     private final UserPlannerService userPlannerService;
+    private final SettingPlannerService settingPlannerService;
     private final UserPlannerSocialService userPlannerSocialService;
+    private final PlannerRoutineService plannerRoutineService;
     private final AuthService authService;
 
     @PostMapping("/{userId}/daily/todos")
@@ -33,7 +36,7 @@ public class PlannerController {
                                                      @PathVariable("userId") final Long userId,
                                                      @RequestBody @Valid final AddDailyTodoRequest addDailyTodoRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DAILY_TODO, dailyPlannerService.addDailyTodo(principalDetails.getUser(), addDailyTodoRequest)));
+        return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DAILY_TODO, settingPlannerService.addDailyTodo(principalDetails.getUser(), addDailyTodoRequest)));
     }
 
     @PutMapping("/{userId}/daily/todos")
@@ -41,7 +44,7 @@ public class PlannerController {
                                                         @PathVariable("userId") final Long userId,
                                                         @RequestBody @Valid final UpdateDailyTodoRequest updateDailyTodoRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        dailyPlannerService.updateDailyTodo(principalDetails.getUser(), updateDailyTodoRequest);
+        settingPlannerService.updateDailyTodo(principalDetails.getUser(), updateDailyTodoRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_DAILY_TODO));
     }
 
@@ -59,7 +62,7 @@ public class PlannerController {
                                                         @PathVariable("userId") final Long userId,
                                                         @RequestBody @Valid final RemoveDailyTodoRequest removeDailyTodoRequest) {
         authService.certifyUser(userId, principalDetails.getUser());
-        dailyPlannerService.removeDailyTodo(principalDetails.getUser(), removeDailyTodoRequest);
+        plannerRoutineService.removeDailyTodo(principalDetails.getUser(), removeDailyTodoRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_TODO));
     }
 
@@ -105,7 +108,7 @@ public class PlannerController {
     public ResponseEntity<BaseResponse> addDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                      @PathVariable("userId") final Long userId,
                                                      @RequestBody @Valid final AddDailyLikeRequest addDailyLikeRequest) {
-        dailyPlannerService.addDailyLike(principalDetails.getUser(), userId, addDailyLikeRequest);
+        userPlannerService.addDailyLike(principalDetails.getUser(), userId, addDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DAILY_LIKE));
     }
 
@@ -113,7 +116,7 @@ public class PlannerController {
     public ResponseEntity<BaseResponse> removeDailyLike(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                         @PathVariable("userId") final Long userId,
                                                         @RequestBody @Valid final RemoveDailyLikeRequest removeDailyLikeRequest) {
-        dailyPlannerService.removeDailyLike(principalDetails.getUser(), userId, removeDailyLikeRequest);
+        userPlannerService.removeDailyLike(principalDetails.getUser(), userId, removeDailyLikeRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_DAILY_LIKE));
     }
 
