@@ -50,7 +50,7 @@ class MonthlyPlannerServiceTest {
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .withdrawal(false)
             .build();
-    final User visitor = User.builder()
+    private final User visitor = User.builder()
             .id(2L)
             .email("jntest@shadowmate.com")
             .password("yntest1234")
@@ -62,7 +62,6 @@ class MonthlyPlannerServiceTest {
 
     @Nested
     class 방명록 {
-        private final long ownerId = owner.getId();
 
         @Nested
         class 방명록추가 {
@@ -72,24 +71,11 @@ class MonthlyPlannerServiceTest {
                     .build();
 
             @Test
-            void 실패_유효하지않은사용자() {
-                //given
-                doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
-
-                //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.addVisitorBook(visitor, ownerId, addVisitorBookRequest));
-
-                //then
-                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
-            }
-
-            @Test
             void 실패_자신플래너에방명록추가() {
                 //given
-                doReturn(visitor).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
 
                 //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.addVisitorBook(visitor, ownerId, addVisitorBookRequest));
+                final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.addVisitorBook(visitor, visitor, addVisitorBookRequest));
 
                 //then
                 assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.FAILED_SELF_VISITOR_BOOK_WRITING);
@@ -105,11 +91,10 @@ class MonthlyPlannerServiceTest {
                         .visitorBookContent(addVisitorBookRequest.getVisitorBookContent())
                         .createTime(LocalDateTime.now())
                         .build();
-                doReturn(owner).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
                 doReturn(visitorBook).when(visitorBookRepository).save(any(VisitorBook.class));
 
                 //when
-                final VisitorBookResponse addVisitorBookResponse = monthlyPlannerServiceImpl.addVisitorBook(visitor, ownerId, addVisitorBookRequest);
+                final VisitorBookResponse addVisitorBookResponse = monthlyPlannerServiceImpl.addVisitorBook(visitor, owner, addVisitorBookRequest);
 
                 //then
                 assertThat(addVisitorBookResponse).isNotNull();
@@ -120,13 +105,13 @@ class MonthlyPlannerServiceTest {
                 assertThat(addVisitorBookResponse.getVisitorBookContent()).isEqualTo(addVisitorBookRequest.getVisitorBookContent());
 
                 //verify
-                verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
                 verify(visitorBookRepository, times(1)).save(any(VisitorBook.class));
             }
         }
 
         @Nested
         class 방명록삭제 {
+            final long ownerId = owner.getId();
             final VisitorBook visitorBook = VisitorBook.builder()
                     .id(1L)
                     .visitorBookContent("왔다가유 @--")
@@ -205,18 +190,6 @@ class MonthlyPlannerServiceTest {
         class 방명록조회 {
 
             @Test
-            void 실패_유효하지않은사용자() {
-                //given
-                doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
-
-                //when
-                final PlannerException result = assertThrows(PlannerException.class, () -> monthlyPlannerServiceImpl.searchVisitorBook(visitor, ownerId, 0L));
-
-                //then
-                assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_USER);
-            }
-
-            @Test
             void 성공_처음() {
                 //given
                 final List<VisitorBook> visitorBooks = new ArrayList<>();
@@ -234,18 +207,16 @@ class MonthlyPlannerServiceTest {
                         .visitorBookContent("안녕하세요~!")
                         .createTime(LocalDateTime.now())
                         .build());
-                doReturn(owner).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
                 doReturn(visitorBooks).when(visitorBookRepository).findTop10ByOwnerOrderByIdDesc(any());
 
                 //when
-                final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, ownerId, 0L);
+                final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, owner, 0L);
 
                 //then
                 assertThat(searchVisitorBookResponse).isNotNull();
                 assertThat(searchVisitorBookResponse.getVisitorBookResponses()).hasSize(2);
 
                 //verify
-                verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
                 verify(visitorBookRepository, times(1)).findTop10ByOwnerOrderByIdDesc(any());
             }
 
@@ -267,18 +238,16 @@ class MonthlyPlannerServiceTest {
                         .visitorBookContent("안녕하세요~!")
                         .createTime(LocalDateTime.now())
                         .build());
-                doReturn(owner).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
                 doReturn(visitorBooks).when(visitorBookRepository).findTop10ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
 
                 //when
-                final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, ownerId, 100L);
+                final SearchVisitorBookResponse searchVisitorBookResponse = monthlyPlannerServiceImpl.searchVisitorBook(visitor, owner, 100L);
 
                 //then
                 assertThat(searchVisitorBookResponse).isNotNull();
                 assertThat(searchVisitorBookResponse.getVisitorBookResponses()).hasSize(2);
 
                 //verify
-                verify(userRepository, times(1)).findByIdAndWithdrawalIsFalse(any(Long.class));
                 verify(visitorBookRepository, times(1)).findTop10ByOwnerAndIdLessThanOrderByIdDesc(any(), any(Long.class));
             }
         }

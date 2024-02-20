@@ -10,7 +10,6 @@ import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
-import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +22,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class MonthlyPlannerServiceImpl extends DateCommonService implements MonthlyPlannerService {
 
-    private final UserRepository userRepository;
     private final VisitorBookRepository visitorBookRepository;
 
     @Override
     @Transactional
-    public VisitorBookResponse addVisitorBook(final User visitor, final long ownerId, final AddVisitorBookRequest addVisitorBookRequest) {
-        final User owner = userRepository.findByIdAndWithdrawalIsFalse(ownerId);
-        if (owner == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_USER);
-        }
+    public VisitorBookResponse addVisitorBook(final User visitor, final User owner, final AddVisitorBookRequest addVisitorBookRequest) {
         if (owner.getId().equals(visitor.getId())) {
             throw new PlannerException(PlannerErrorResult.FAILED_SELF_VISITOR_BOOK_WRITING);
         }
@@ -71,12 +65,7 @@ public class MonthlyPlannerServiceImpl extends DateCommonService implements Mont
     }
 
     @Override
-    public SearchVisitorBookResponse searchVisitorBook(final User visitor, final long ownerId, final long lastVisitorBookId) {
-        final User owner = userRepository.findByIdAndWithdrawalIsFalse(ownerId);
-        if (owner == null) {
-            throw new PlannerException(PlannerErrorResult.INVALID_USER);
-        }
-
+    public SearchVisitorBookResponse searchVisitorBook(final User visitor, final User owner, final long lastVisitorBookId) {
         final List<VisitorBook> visitorBooks = lastVisitorBookId == 0 ? visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner) :
                 visitorBookRepository.findTop10ByOwnerAndIdLessThanOrderByIdDesc(owner, lastVisitorBookId);
         final List<VisitorBookResponse> visitorBookResponses = new ArrayList<>();

@@ -9,10 +9,7 @@ import com.newsainturtle.shadowmate.planner.controller.PlannerController;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
-import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
-import com.newsainturtle.shadowmate.planner.service.MonthlyPlannerServiceImpl;
-import com.newsainturtle.shadowmate.planner.service.SearchPlannerServiceImpl;
-import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerServiceImpl;
+import com.newsainturtle.shadowmate.planner.service.*;
 import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
 import com.newsainturtle.shadowmate.social.exception.SocialException;
 import com.newsainturtle.shadowmate.social.service.UserPlannerSocialServiceImpl;
@@ -56,6 +53,9 @@ class PlannerControllerTest {
 
     @Mock
     private MonthlyPlannerServiceImpl monthlyPlannerService;
+
+    @Mock
+    private UserPlannerServiceImpl userPlannerService;
 
     @Mock
     private UserPlannerSocialServiceImpl userPlannerSocialService;
@@ -2538,7 +2538,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은사용자() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(monthlyPlannerService).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2554,7 +2554,7 @@ class PlannerControllerTest {
             @Test
             void 실패_자신플래너에방명록추가() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.FAILED_SELF_VISITOR_BOOK_WRITING)).when(monthlyPlannerService).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.FAILED_SELF_VISITOR_BOOK_WRITING)).when(userPlannerService).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2663,7 +2663,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은사용자() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(monthlyPlannerService).searchVisitorBook(any(), any(Long.class), any(Long.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchVisitorBook(any(), any(Long.class), any(Long.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
