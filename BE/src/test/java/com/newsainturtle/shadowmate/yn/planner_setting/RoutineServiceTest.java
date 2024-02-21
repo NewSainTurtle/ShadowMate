@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -532,16 +533,16 @@ class RoutineServiceTest extends DateCommonService {
         @Test
         void 성공_order2_오늘이후수정() {
             //given
+            final LocalDate today = LocalDate.now();
             final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
                     .routineId(1L)
                     .order(2)
                     .routineContent("저녁운동하기")
                     .startDay("2023-12-25")
-                    .endDay("2024-01-09")
+                    .endDay(String.valueOf(today.plusDays(1)))
                     .days(days)
                     .categoryId(0L)
                     .build();
-
             final DailyPlanner dailyPlanner = DailyPlanner.builder()
                     .id(1L)
                     .dailyPlannerDay("2023-12-25")
@@ -565,20 +566,26 @@ class RoutineServiceTest extends DateCommonService {
                     .build();
             routineDay1.setRoutine(routine);
             routineDay2.setRoutine(routine);
-            final RoutineTodo routineTodo = RoutineTodo.builder()
+            final RoutineTodo routineTodo1 = RoutineTodo.builder()
                     .id(1L)
                     .day("월")
                     .dailyPlannerDay("2023-12-25")
                     .todo(todo)
                     .build();
-            routineTodo.setRoutine(routine);
+            final RoutineTodo routineTodo2 = RoutineTodo.builder()
+                    .id(2L)
+                    .day("월")
+                    .dailyPlannerDay(String.valueOf(today))
+                    .todo(todo)
+                    .build();
+            routineTodo1.setRoutine(routine);
+            routineTodo2.setRoutine(routine);
 
-            final RoutineDay[] routineDayList = new RoutineDay[]{routineDay1, routineDay2};
-            final RoutineTodo[] routineTodoList = new RoutineTodo[]{routineTodo};
             doReturn(routine).when(routineRepository).findByIdAndUser(any(Long.class), any());
-            doReturn(routineDayList).when(routineDayRepository).findAllByRoutine(any(Routine.class));
-            doReturn(routineTodoList).when(routineTodoRepository).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanAndDayIn(any(Routine.class), any(String.class), any(List.class));
-            doReturn(routineTodoList).when(routineTodoRepository).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqualAndDayIn(any(Routine.class), any(String.class), any(List.class));
+            doReturn(new RoutineDay[]{routineDay1, routineDay2}).when(routineDayRepository).findAllByRoutine(any(Routine.class));
+            doReturn(new RoutineTodo[]{routineTodo1}).when(routineTodoRepository).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanAndDayIn(any(Routine.class), any(String.class), any(List.class));
+            doReturn(new RoutineTodo[]{routineTodo2}).when(routineTodoRepository).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqualAndDayIn(any(Routine.class), any(String.class), any(List.class));
+            doReturn(routineTodo2).when(routineTodoRepository).save(any());
 
             //when
             routineService.updateRoutine(user, null, updateRoutineRequest);
@@ -590,6 +597,72 @@ class RoutineServiceTest extends DateCommonService {
             verify(routineDayRepository, times(1)).findAllByRoutine(any(Routine.class));
             verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanAndDayIn(any(Routine.class), any(String.class), any(List.class));
             verify(routineTodoRepository, times(1)).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqualAndDayIn(any(Routine.class), any(String.class), any(List.class));
+        }
+
+    }
+
+    @Nested
+    class 루틴할일삭제 {
+        final String date = "2023-09-25";
+        final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                .id(1L)
+                .dailyPlannerDay(date)
+                .user(user)
+                .build();
+        final Todo todo = Todo.builder()
+                .id(1L)
+                .category(null)
+                .todoContent("영단어 암기하기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .build();
+
+        @Test
+        void 성공_관련루틴없음() {
+            //given
+            doReturn(null).when(routineTodoRepository).findByTodo(todo);
+
+            //when
+            routineService.removeRoutineTodo(todo);
+
+            //then
+
+            //verify
+            verify(routineTodoRepository, times(1)).findByTodo(any(Todo.class));
+        }
+
+        @Test
+        void 성공_관련루틴있음() {
+            //given
+            final Routine routine = Routine.builder()
+                    .id(1L)
+                    .startDay("2023-12-25")
+                    .endDay("2023-12-30")
+                    .routineContent("아침운동")
+                    .category(null)
+                    .user(user)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
+                    .build();
+            final RoutineTodo routineTodo = RoutineTodo.builder()
+                    .id(1L)
+                    .todo(todo)
+                    .dailyPlannerDay("2023-12-25")
+                    .day("월")
+                    .routine(routine)
+                    .build();
+
+            doReturn(routineTodo).when(routineTodoRepository).findByTodo(todo);
+
+            //when
+            routineService.removeRoutineTodo(todo);
+
+            //then
+
+            //verify
+            verify(routineTodoRepository, times(1)).findByTodo(any(Todo.class));
+            verify(routineTodoRepository, times(1)).deleteById(any(Long.class));
         }
 
     }

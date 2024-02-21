@@ -197,4 +197,11 @@ public class SocialServiceImpl implements SocialService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Long getSocialId(final DailyPlanner dailyPlanner){
+        final Social shareSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
+        if(shareSocial == null) return null;
+        return shareSocial.getId();
+    }
 }

@@ -204,4 +204,11 @@ public class FollowServiceImpl implements FollowService {
         followRepository.deleteAllByFollowingOrFollower(user, user);
         followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
     }
+
+    @Override
+    public boolean havePermissionToSearch(final User user, final User plannerWriter) {
+        return user.getId().equals(plannerWriter.getId()) ||
+                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowingAndFollower(plannerWriter, user) != null);
+    }
 }

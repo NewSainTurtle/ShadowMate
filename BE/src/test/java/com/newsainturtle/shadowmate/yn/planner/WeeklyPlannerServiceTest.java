@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.planner.dto.request.RemoveWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoContentRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoStatusRequest;
 import com.newsainturtle.shadowmate.planner.dto.response.AddWeeklyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.WeeklyPlannerTodoResponse;
 import com.newsainturtle.shadowmate.planner.entity.Weekly;
 import com.newsainturtle.shadowmate.planner.entity.WeeklyTodo;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -22,6 +23,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -407,6 +411,63 @@ class WeeklyPlannerServiceTest extends DateCommonService {
             //verify
             verify(weeklyRepository, times(1)).findByUserAndStartDayAndEndDay(any(), any(String.class), any(String.class));
             verify(weeklyTodoRepository, times(1)).deleteByIdAndWeekly(any(Long.class), any(Weekly.class));
+        }
+
+    }
+
+    @Nested
+    class 주간할일조회 {
+        final String startDay = "2023-10-09";
+        final String endDay = "2023-10-15";
+
+        @Test
+        void 성공_플래너없을때() {
+            //given
+            doReturn(null).when(weeklyRepository).findByUserAndStartDayAndEndDay(user, startDay, endDay);
+
+            //when
+            final List<WeeklyPlannerTodoResponse> weeklyTodos = weeklyPlannerServiceImpl.getWeeklyTodos(user, startDay, endDay, true);
+
+            //then
+            assertThat(weeklyTodos).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 성공_플래너있을때_권한없음() {
+            //given
+            doReturn(Weekly.builder().build()).when(weeklyRepository).findByUserAndStartDayAndEndDay(user, startDay, endDay);
+
+            //when
+            final List<WeeklyPlannerTodoResponse> weeklyTodos = weeklyPlannerServiceImpl.getWeeklyTodos(user, startDay, endDay, false);
+
+            //then
+            assertThat(weeklyTodos).isNotNull().isEmpty();
+        }
+
+        @Test
+        void 성공_플래너있을때_권한있음() {
+            //given
+            final Weekly weekly = Weekly.builder()
+                    .id(1L)
+                    .user(user)
+                    .startDay(startDay)
+                    .endDay(endDay)
+                    .build();
+            final List<WeeklyTodo> weeklyTodoList = new ArrayList<>();
+            weeklyTodoList.add(WeeklyTodo.builder()
+                    .id(1L)
+                    .weeklyTodoStatus(false)
+                    .weekly(weekly)
+                    .weeklyTodoContent("약국가기")
+                    .build());
+            doReturn(weekly).when(weeklyRepository).findByUserAndStartDayAndEndDay(user, startDay, endDay);
+            doReturn(weeklyTodoList).when(weeklyTodoRepository).findAllByWeekly(weekly);
+
+            //when
+            final List<WeeklyPlannerTodoResponse> weeklyTodos = weeklyPlannerServiceImpl.getWeeklyTodos(user, startDay, endDay, true);
+
+            //then
+            assertThat(weeklyTodos).isNotNull().hasSize(1);
         }
 
     }

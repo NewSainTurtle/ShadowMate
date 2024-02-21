@@ -99,7 +99,7 @@ class UserPlannerSocialServiceTest extends DateCommonService {
         @Test
         void 실패_유효하지않은플래너() {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).getDailyPlanner(any(User.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
 
             //when
             final PlannerException result = assertThrows(PlannerException.class, () -> userPlannerSocialService.shareSocial(user, shareSocialRequest));
@@ -111,7 +111,7 @@ class UserPlannerSocialServiceTest extends DateCommonService {
         @Test
         void 실패_이미공유한_소셜재공유() {
             //given
-            doReturn(dailyPlanner).when(dailyPlannerService).getDailyPlanner(any(User.class), any(String.class));
+            doReturn(dailyPlanner).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
             doThrow(new SocialException(SocialErrorResult.ALREADY_SHARED_SOCIAL)).when(socialService).shareSocial(any(User.class), any(DailyPlanner.class), any(String.class));
 
             //when
@@ -124,7 +124,7 @@ class UserPlannerSocialServiceTest extends DateCommonService {
         @Test
         void 성공_소셜공유() {
             //given
-            doReturn(dailyPlanner).when(dailyPlannerService).getDailyPlanner(any(User.class), any(String.class));
+            doReturn(dailyPlanner).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
             doReturn(ShareSocialResponse.builder().socialId(1L).build()).when(socialService).shareSocial(any(User.class), any(DailyPlanner.class), any(String.class));
 
             //when

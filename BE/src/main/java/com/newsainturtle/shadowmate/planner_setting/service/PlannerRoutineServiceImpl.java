@@ -1,6 +1,9 @@
 package com.newsainturtle.shadowmate.planner_setting.service;
 
 import com.newsainturtle.shadowmate.common.DateCommonService;
+import com.newsainturtle.shadowmate.planner.dto.request.RemoveDailyTodoRequest;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerService;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.AddRoutineRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.RemoveCategoryRequest;
@@ -38,7 +41,6 @@ public class PlannerRoutineServiceImpl extends DateCommonService implements Plan
             throw new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY);
         }
         plannerSettingService.removeCategory(user, category, dailyPlannerService.getRoutineCount(category) + routineService.getRoutineCount(category));
-
     }
 
     @Override
@@ -53,6 +55,14 @@ public class PlannerRoutineServiceImpl extends DateCommonService implements Plan
         checkValidDay(updateRoutineRequest.getStartDay(), updateRoutineRequest.getEndDay());
         final Category category = plannerSettingService.getCategory(user, updateRoutineRequest.getCategoryId());
         routineService.updateRoutine(user, category, updateRoutineRequest);
+    }
+
+    @Override
+    public void removeDailyTodo(final User user, final RemoveDailyTodoRequest removeDailyTodoRequest) {
+        final DailyPlanner dailyPlanner = dailyPlannerService.getOrExceptionDailyPlanner(user, removeDailyTodoRequest.getDate());
+        final Todo todo = dailyPlannerService.getTodo(removeDailyTodoRequest.getTodoId(), dailyPlanner);
+        routineService.removeRoutineTodo(todo);
+        dailyPlannerService.removeDailyTodo(todo.getId());
     }
 
 }

@@ -41,6 +41,7 @@ class FollowServiceTest {
     private FollowRequestRepository followRequestRepository;
 
     final User user1 = User.builder()
+            .id(1L)
             .email("test1@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
@@ -50,6 +51,7 @@ class FollowServiceTest {
             .build();
 
     final User user2 = User.builder()
+            .id(2L)
             .email("test2@test.com")
             .password("123456")
             .socialLogin(SocialType.BASIC)
@@ -488,5 +490,106 @@ class FollowServiceTest {
         verify(followRequestRepository, times(1)).findAllByReceiver(any(User.class));
         verify(followRepository, times(2)).save(any(Follow.class));
         verify(followRequestRepository, times(1)).deleteAllByReceiver(any(Long.class));
+    }
+
+    @Nested
+    class 접근권한확인 {
+        @Test
+        void 전체공개() {
+            //given
+
+            //when
+            final boolean permission = followService.havePermissionToSearch(user1, user2);
+
+            //then
+            assertThat(permission).isTrue();
+        }
+
+        @Test
+        void 비공개_자기플래너확인() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이2")
+                    .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                    .withdrawal(false)
+                    .build();
+
+            //when
+            final boolean permission = followService.havePermissionToSearch(plannerWriter, plannerWriter);
+
+            //then
+            assertThat(permission).isTrue();
+        }
+
+        @Test
+        void 비공개_다른사람플래너확인() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이2")
+                    .plannerAccessScope(PlannerAccessScope.PRIVATE)
+                    .withdrawal(false)
+                    .build();
+
+            //when
+            final boolean permission = followService.havePermissionToSearch(user1, plannerWriter);
+
+            //then
+            assertThat(permission).isFalse();
+        }
+
+        @Test
+        void 친구공개_친구플래너() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이2")
+                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                    .withdrawal(false)
+                    .build();
+            final Follow follow = Follow.builder()
+                    .id(1L)
+                    .follower(user1)
+                    .following(plannerWriter)
+                    .build();
+            doReturn(follow).when(followRepository).findByFollowingAndFollower(any(), any());
+
+            //when
+            final boolean permission = followService.havePermissionToSearch(user1, plannerWriter);
+
+            //then
+            assertThat(permission).isTrue();
+        }
+
+        @Test
+        void 친구공개_친구아님() {
+            //given
+            final User plannerWriter = User.builder()
+                    .id(2L)
+                    .email("test2@test.com")
+                    .password("123456")
+                    .socialLogin(SocialType.BASIC)
+                    .nickname("거북이2")
+                    .plannerAccessScope(PlannerAccessScope.FOLLOW)
+                    .withdrawal(false)
+                    .build();
+            doReturn(null).when(followRepository).findByFollowingAndFollower(any(), any());
+
+            //when
+            final boolean permission = followService.havePermissionToSearch(user1, plannerWriter);
+
+            //then
+            assertThat(permission).isFalse();
+        }
     }
 }

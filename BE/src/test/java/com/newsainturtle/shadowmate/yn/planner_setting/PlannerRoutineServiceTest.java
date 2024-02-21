@@ -1,6 +1,12 @@
 package com.newsainturtle.shadowmate.yn.planner_setting;
 
 import com.newsainturtle.shadowmate.common.DateCommonService;
+import com.newsainturtle.shadowmate.planner.dto.request.RemoveDailyTodoRequest;
+import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
+import com.newsainturtle.shadowmate.planner.entity.Todo;
+import com.newsainturtle.shadowmate.planner.enums.TodoStatus;
+import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
+import com.newsainturtle.shadowmate.planner.exception.PlannerException;
 import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.AddRoutineRequest;
 import com.newsainturtle.shadowmate.planner_setting.dto.request.RemoveCategoryRequest;
@@ -301,6 +307,73 @@ class PlannerRoutineServiceTest extends DateCommonService {
             //verify
             verify(plannerSettingService, times(1)).getCategory(any(User.class), any(Long.class));
             verify(routineService, times(1)).updateRoutine(any(User.class), any(Category.class), any(UpdateRoutineRequest.class));
+        }
+
+    }
+
+    @Nested
+    class 일일플래너할일삭제 {
+
+        final String date = "2023-09-25";
+        final DailyPlanner dailyPlanner = DailyPlanner.builder()
+                .id(1L)
+                .dailyPlannerDay(date)
+                .user(user)
+                .build();
+        final Todo todo = Todo.builder()
+                .id(1L)
+                .category(category)
+                .todoContent("영단어 암기하기")
+                .todoStatus(TodoStatus.EMPTY)
+                .dailyPlanner(dailyPlanner)
+                .todoIndex(100000D)
+                .build();
+        final RemoveDailyTodoRequest removeDailyTodoRequest = RemoveDailyTodoRequest.builder()
+                .date(date)
+                .todoId(1L)
+                .build();
+
+        @Test
+        void 실패_유효하지않은일일플래너() {
+            //given
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> plannerRoutineService.removeDailyTodo(user, removeDailyTodoRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_DAILY_PLANNER);
+        }
+
+        @Test
+        void 실패_유효하지않은할일() {
+            //given
+            doReturn(dailyPlanner).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerService).getTodo(any(Long.class), any(DailyPlanner.class));
+
+            //when
+            final PlannerException result = assertThrows(PlannerException.class, () -> plannerRoutineService.removeDailyTodo(user, removeDailyTodoRequest));
+
+            //then
+            assertThat(result.getErrorResult()).isEqualTo(PlannerErrorResult.INVALID_TODO);
+        }
+
+        @Test
+        void 성공() {
+            //given
+            doReturn(dailyPlanner).when(dailyPlannerService).getOrExceptionDailyPlanner(any(User.class), any(String.class));
+            doReturn(todo).when(dailyPlannerService).getTodo(any(Long.class), any(DailyPlanner.class));
+
+            //when
+            plannerRoutineService.removeDailyTodo(user, removeDailyTodoRequest);
+
+            //then
+
+            //verify
+            verify(dailyPlannerService, times(1)).getOrExceptionDailyPlanner(any(User.class), any(String.class));
+            verify(dailyPlannerService, times(1)).getTodo(any(Long.class), any(DailyPlanner.class));
+            verify(routineService, times(1)).removeRoutineTodo(any(Todo.class));
+            verify(dailyPlannerService, times(1)).removeDailyTodo(any(Long.class));
         }
 
     }
