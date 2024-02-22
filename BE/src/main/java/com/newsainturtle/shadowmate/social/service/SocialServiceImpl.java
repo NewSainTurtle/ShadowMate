@@ -40,7 +40,7 @@ public class SocialServiceImpl implements SocialService {
         }
     }
 
-    private void checkSortFormat(String sort) {
+    private void checkSortFormat(final String sort) {
         if (!sort.equals(SORT_LATEST) && !sort.equals(SORT_POPULARITY)) {
             throw new SocialException(SocialErrorResult.BAD_REQUEST_SORT);
         }

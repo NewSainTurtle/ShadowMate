@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
     private String serverEmail;
 
     @Override
-    public void certifyUser(Long userId, User user) {
+    public void certifyUser(final Long userId, final User user) {
         if (!userId.equals(user.getId())) {
             throw new AuthException(AuthErrorResult.UNREGISTERED_USER);
         }
@@ -127,14 +127,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void deleteCheckNickname(DuplicatedNicknameRequest duplicatedNicknameRequest) {
+    public void deleteCheckNickname(final DuplicatedNicknameRequest duplicatedNicknameRequest) {
         redisServiceImpl.deleteNicknameData(duplicatedNicknameRequest.getNickname());
     }
 
     @Override
     @Transactional
     public void join(final JoinRequest joinRequest) {
-        String email = joinRequest.getEmail();
+        final String email = joinRequest.getEmail();
         checkDuplicatedEmail(email);
 
         final EmailAuthentication findEmailAuth = redisServiceImpl.getEmailData(email);
@@ -148,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserException(UserErrorResult.RETRY_NICKNAME);
         }
 
-        User userEntity =
+        User user =
                 User.builder()
                         .email(email)
                         .password(bCryptPasswordEncoder.encode(joinRequest.getPassword()))
@@ -157,7 +157,7 @@ public class AuthServiceImpl implements AuthService {
                         .plannerAccessScope(PlannerAccessScope.PUBLIC)
                         .withdrawal(false)
                         .build();
-        userRepository.save(userEntity);
+        userRepository.save(user);
         redisServiceImpl.deleteEmailData(email);
         redisServiceImpl.deleteNicknameData(joinRequest.getNickname());
     }

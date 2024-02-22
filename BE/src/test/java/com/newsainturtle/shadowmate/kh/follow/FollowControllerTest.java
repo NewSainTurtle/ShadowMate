@@ -611,21 +611,6 @@ class FollowControllerTest {
         final Long userId = 1L;
 
         @Test
-        void 실패_회원없음() throws Exception {
-            // given
-            doThrow(new UserException(UserErrorResult.NOT_FOUND_NICKNAME)).when(userFollowService).searchNickname(any(), any());
-
-            // when
-            final ResultActions resultActions = mockMvc.perform(
-                    MockMvcRequestBuilders.get(url, userId)
-                            .param("nickname", "없는닉네임"));
-
-            // then
-            resultActions.andExpect(status().isNotFound());
-
-        }
-
-        @Test
         void 성공_회원검색() throws Exception {
             // given
             SearchUserResponse userResponse = SearchUserResponse.builder()

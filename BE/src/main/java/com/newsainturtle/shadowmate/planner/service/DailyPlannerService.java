@@ -1,7 +1,10 @@
 package com.newsainturtle.shadowmate.planner.service;
 
 import com.newsainturtle.shadowmate.planner.dto.request.*;
-import com.newsainturtle.shadowmate.planner.dto.response.*;
+import com.newsainturtle.shadowmate.planner.dto.response.AddDailyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.AddTimeTableResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.SearchDailyPlannerResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.WeeklyPlannerDailyResponse;
 import com.newsainturtle.shadowmate.planner.entity.DailyPlanner;
 import com.newsainturtle.shadowmate.planner.entity.Todo;
 import com.newsainturtle.shadowmate.planner_setting.entity.Category;
@@ -30,7 +33,7 @@ public interface DailyPlannerService {
     void changeDailyTodoSequence(final User user, final ChangeDailyTodoSequenceRequest changeDailyTodoSequenceRequest);
     long getRoutineCount(final Category category);
     List<DailyPlanner> getDailyPlannerList(final User user);
-    WeeklyPlannerDailyResponse getDay(final User plannerWriter, final String date);
+    WeeklyPlannerDailyResponse getWeeklyPlannerDailyResponse(final User plannerWriter, final String date);
     SearchDailyPlannerResponse searchDailyPlanner(final User user, final User plannerWriter, final String date, final DailyPlanner dailyPlanner);
     int countTodo(final DailyPlanner dailyPlanner);
     int countTodoComplete(final DailyPlanner dailyPlanner);

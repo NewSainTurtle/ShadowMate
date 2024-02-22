@@ -1,6 +1,5 @@
 package com.newsainturtle.shadowmate.planner.dto.request;
 
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

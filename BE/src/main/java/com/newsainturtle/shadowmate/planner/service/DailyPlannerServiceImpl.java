@@ -300,7 +300,7 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
     }
 
     @Override
-    public WeeklyPlannerDailyResponse getDay(final User plannerWriter, final String date) {
+    public WeeklyPlannerDailyResponse getWeeklyPlannerDailyResponse(final User plannerWriter, final String date) {
         final DailyPlanner dailyPlanner = getDailyPlanner(plannerWriter, date);
         if (dailyPlanner == null) {
             return WeeklyPlannerDailyResponse.builder()

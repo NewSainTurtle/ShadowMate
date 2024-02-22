@@ -19,9 +19,7 @@ import static com.newsainturtle.shadowmate.social.constant.SocialConstant.SUCCES
 public class SocialController {
 
     private final AuthService authService;
-
     private final SocialService socialService;
-
     private final UserPlannerSocialService userPlannerSocialService;
 
     @GetMapping("/{userId}")

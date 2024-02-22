@@ -48,7 +48,7 @@ public class UserPlannerServiceImpl extends DateCommonService implements UserPla
                         .build());
             } else {
                 routineService.makeRoutineTodo(plannerWriter, targetDate);
-                dayList.add(dailyPlannerService.getDay(plannerWriter, targetDate));
+                dayList.add(dailyPlannerService.getWeeklyPlannerDailyResponse(plannerWriter, targetDate));
             }
         }
         return dayList;

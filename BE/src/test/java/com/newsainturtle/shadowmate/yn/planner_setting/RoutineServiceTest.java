@@ -534,12 +534,22 @@ class RoutineServiceTest extends DateCommonService {
         void 성공_order2_오늘이후수정() {
             //given
             final LocalDate today = LocalDate.now();
+            final Routine routine = Routine.builder()
+                    .id(1L)
+                    .routineContent("아침운동하기")
+                    .startDay("2023-12-25")
+                    .endDay(String.valueOf(today))
+                    .user(user)
+                    .category(null)
+                    .routineDays(new ArrayList<>())
+                    .routineTodos(new ArrayList<>())
+                    .build();
             final UpdateRoutineRequest updateRoutineRequest = UpdateRoutineRequest.builder()
                     .routineId(1L)
                     .order(2)
                     .routineContent("저녁운동하기")
                     .startDay("2023-12-25")
-                    .endDay(String.valueOf(today.plusDays(1)))
+                    .endDay(String.valueOf(today.plusDays(10)))
                     .days(days)
                     .categoryId(0L)
                     .build();
@@ -578,14 +588,21 @@ class RoutineServiceTest extends DateCommonService {
                     .dailyPlannerDay(String.valueOf(today))
                     .todo(todo)
                     .build();
+            final RoutineTodo routineTodo3 = RoutineTodo.builder()
+                    .id(3L)
+                    .day("월")
+                    .dailyPlannerDay(String.valueOf(today.plusDays(7)))
+                    .todo(todo)
+                    .build();
             routineTodo1.setRoutine(routine);
             routineTodo2.setRoutine(routine);
+            routineTodo3.setRoutine(routine);
 
             doReturn(routine).when(routineRepository).findByIdAndUser(any(Long.class), any());
             doReturn(new RoutineDay[]{routineDay1, routineDay2}).when(routineDayRepository).findAllByRoutine(any(Routine.class));
             doReturn(new RoutineTodo[]{routineTodo1}).when(routineTodoRepository).findAllByRoutineAndTodoIsNullAndDailyPlannerDayLessThanAndDayIn(any(Routine.class), any(String.class), any(List.class));
             doReturn(new RoutineTodo[]{routineTodo2}).when(routineTodoRepository).findAllByRoutineAndTodoIsNotNullAndDailyPlannerDayGreaterThanEqualAndDayIn(any(Routine.class), any(String.class), any(List.class));
-            doReturn(routineTodo2).when(routineTodoRepository).save(any());
+            doReturn(routineTodo3).when(routineTodoRepository).save(any());
 
             //when
             routineService.updateRoutine(user, null, updateRoutineRequest);

@@ -598,7 +598,7 @@ class UserPlannerServiceTest {
                     .date(date)
                     .retrospection(null)
                     .dailyTodos(new ArrayList<>())
-                    .build()).when(dailyPlannerService).getDay(user2, startDay);
+                    .build()).when(dailyPlannerService).getWeeklyPlannerDailyResponse(user2, startDay);
 
             //when
             final SearchWeeklyPlannerResponse searchWeeklyPlanner = userPlannerService.searchWeeklyPlanner(user, plannerWriterId, startDay, endDay);

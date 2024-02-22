@@ -22,7 +22,6 @@ public class FollowController {
 
     private final FollowService followService;
     private final UserFollowService userFollowService;
-
     private final AuthService authService;
 
     @GetMapping("/{userId}/following")
