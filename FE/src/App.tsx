@@ -67,7 +67,7 @@ const App = () => {
     const headers = {
       "Auto-Login": key,
     };
-    const res = await authApi.autoLogin(null, headers);
+    const res = await authApi.autoLogin(headers);
     const accessToken = res.headers["authorization"] as string;
     const userId = res.headers["id"] as number;
     const type = res.headers["type"] as string;
