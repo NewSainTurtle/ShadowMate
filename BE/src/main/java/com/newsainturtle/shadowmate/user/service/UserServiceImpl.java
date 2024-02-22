@@ -1,6 +1,6 @@
 package com.newsainturtle.shadowmate.user.service;
 
-import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
+import com.newsainturtle.shadowmate.auth.service.RedisService;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,13 +26,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final RedisServiceImpl redisService;
+    private final RedisService redisService;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (!optionalUser.isPresent()) throw new UserException(UserErrorResult.NOT_FOUND_PROFILE);
-        User user = optionalUser.get();
+        final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
+        if (user == null) throw new UserException(UserErrorResult.NOT_FOUND_PROFILE);
         return ProfileResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())

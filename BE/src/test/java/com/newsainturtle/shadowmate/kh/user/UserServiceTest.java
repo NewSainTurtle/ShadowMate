@@ -64,6 +64,7 @@ public class UserServiceTest {
 
             // when
 
+
             // then
             assertThrows(UserException.class, () -> {
                 userService.getProfile(userId);
@@ -73,12 +74,10 @@ public class UserServiceTest {
         @Test
         void 성공_프로필조회() {
             // given
-            final Long userId = 1L;
-            Optional<User> optUser = Optional.ofNullable(user1);
-            doReturn(optUser).when(userRepository).findById(userId);
+            doReturn(user1).when(userRepository).findByIdAndWithdrawalIsFalse(userId1);
 
             // when
-            final ProfileResponse profileResponse = userService.getProfile(userId);
+            final ProfileResponse profileResponse = userService.getProfile(userId1);
 
             // then
             assertThat(profileResponse.getEmail()).isEqualTo(user1.getEmail());
