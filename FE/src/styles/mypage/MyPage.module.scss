@@ -711,40 +711,42 @@ $border: 1px;
 
 .friend {
   &__cantainer {
-    height: 100%;
     display: grid;
-    grid-template-rows: 1fr;
-    padding-right: 1em;
-    overflow-y: auto;
-  }
-
-  &__content {
-    overflow-y: auto;
-    padding-right: 1em;
+    gap: 1em;
+    height: 100%;
+    padding: 0 1em;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    row-gap: 1em;
+    overflow-y: auto;
   }
 
   &__frame {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     row-gap: 1em;
+    overflow-y: auto;
 
     &__title {
+      height: 3em;
       padding: 1em;
       box-sizing: border-box;
       border-bottom: 1px solid $color-text;
     }
 
     &__list {
-      display: flex;
-      flex-direction: column;
-      row-gap: 1em;
-      > span {
-        margin: 3em 0em;
-        text-align: center;
-        color: $color-gray-4;
+      max-height: calc(80vh - 3.2em - 2em);
+      padding-right: 1em;
+      overflow-y: auto;
+
+      &:nth-child(n) > div {
+        display: flex;
+        flex-direction: column;
+        row-gap: 1em;
+        overflow-y: hidden;
+        > span {
+          margin: 3em 0em;
+          text-align: center;
+          color: $color-gray-4;
+        }
       }
     }
   }

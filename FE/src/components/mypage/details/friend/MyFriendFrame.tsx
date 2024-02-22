@@ -110,23 +110,29 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
         />
       )}
       <div className={styles["friend__frame__list"]}>
-        {followList && followList.length > 0 ? (
-          followList.map((item) => {
-            const { id, isFollow } = friendCheck(item);
-            const { nickname, profileImage, statusMessage } = item;
-            const followInfo = {
-              userId: id as number,
-              nickname,
-              statusMessage,
-              profileImage,
-            };
-            return (
-              <FriendProfile key={title + id + isFollow} types={isFollow as FollowType["types"]} profile={followInfo} />
-            );
-          })
-        ) : (
-          <Text types="small">{search ? alertMessage : `${title}이(가) 없습니다.`}</Text>
-        )}
+        <div>
+          {followList && followList.length > 0 ? (
+            followList.map((item) => {
+              const { id, isFollow } = friendCheck(item);
+              const { nickname, profileImage, statusMessage } = item;
+              const followInfo = {
+                userId: id as number,
+                nickname,
+                statusMessage,
+                profileImage,
+              };
+              return (
+                <FriendProfile
+                  key={title + id + isFollow}
+                  types={isFollow as FollowType["types"]}
+                  profile={followInfo}
+                />
+              );
+            })
+          ) : (
+            <Text types="small">{search ? alertMessage : `${title}이(가) 없습니다.`}</Text>
+          )}
+        </div>
       </div>
     </div>
   );
