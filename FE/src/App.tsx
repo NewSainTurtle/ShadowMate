@@ -52,13 +52,9 @@ const App = () => {
         dispatch(setLogout());
       })
       .then(() => {
-        persistor
-          .purge()
-          .then(() => {
-            localStorage.removeItem("AL");
-            navigator("/login");
-          })
-          .catch((err) => console.error(err));
+        persistor.purge();
+        localStorage.removeItem("AL");
+        navigator("/login");
       })
       .catch((err) => console.error(err));
   };
