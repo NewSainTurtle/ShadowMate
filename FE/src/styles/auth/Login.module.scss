@@ -28,6 +28,9 @@ $color-blue: var(--color-btn-blue);
   > div:nth-child(1) {
     margin: 1em 0 3em 0;
   }
+  > div > p > p {
+    margin: 0;
+  }
 }
 
 .login_toolbox {

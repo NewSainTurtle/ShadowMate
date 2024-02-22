@@ -10,9 +10,10 @@ interface Props {
   types: "default" | "password" | "search";
   value?: string | number;
   maxLength?: number;
+  dataCy?: string;
 }
 
-const Input = ({ types, maxLength, ...rest }: Props & TextFieldProps) => {
+const Input = ({ types, maxLength, dataCy, ...rest }: Props & TextFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -53,7 +54,7 @@ const Input = ({ types, maxLength, ...rest }: Props & TextFieldProps) => {
       FormHelperTextProps={{
         className: styles["input__helper-text"],
       }}
-      inputProps={{ maxLength }}
+      inputProps={{ maxLength, "data-cy": dataCy }}
       {...rest}
       variant="standard"
     />
