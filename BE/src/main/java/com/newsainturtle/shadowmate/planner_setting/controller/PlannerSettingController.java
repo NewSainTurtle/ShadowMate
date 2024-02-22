@@ -26,13 +26,13 @@ public class PlannerSettingController {
     private final PlannerRoutineService plannerRoutineService;
     private final UserPlannerSettingService plannerAccessScopeService;
     private final RoutineService routineService;
-    private final AuthService authServiceImpl;
+    private final AuthService authService;
 
     @PostMapping("/{userId}/categories")
     public ResponseEntity<BaseResponse> addCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                     @PathVariable("userId") final Long userId,
                                                     @RequestBody @Valid final AddCategoryRequest addCategoryRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_CATEGORY, plannerSettingService.addCategory(principalDetails.getUser(), addCategoryRequest)));
     }
 
@@ -40,7 +40,7 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> removeCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final RemoveCategoryRequest removeCategoryRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         plannerRoutineService.removeCategory(principalDetails.getUser(), removeCategoryRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_REMOVE_CATEGORY));
     }
@@ -49,7 +49,7 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> updateCategory(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final UpdateCategoryRequest updateCategoryRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         plannerSettingService.updateCategory(principalDetails.getUser(), updateCategoryRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_CATEGORY));
     }
@@ -57,14 +57,14 @@ public class PlannerSettingController {
     @GetMapping("/{userId}/categories")
     public ResponseEntity<BaseResponse> getCategoryColor(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                          @PathVariable("userId") final Long userId) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_LIST, plannerSettingService.getCategoryList(principalDetails.getUser())));
     }
 
     @GetMapping("/{userId}/categories/colors")
     public ResponseEntity<BaseResponse> getCategoryColorList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                              @PathVariable("userId") final Long userId) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_CATEGORY_COLOR_LIST, plannerSettingService.getCategoryColorList()));
     }
 
@@ -72,7 +72,7 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> setAccessScope(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId,
                                                        @RequestBody @Valid final SetAccessScopeRequest setAccessScopeRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         plannerAccessScopeService.setAccessScope(principalDetails.getUser(), setAccessScopeRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_SET_PLANNER_ACCESS_SCOPE));
     }
@@ -81,14 +81,14 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> addDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                 @PathVariable("userId") final Long userId,
                                                 @RequestBody @Valid final AddDdayRequest addDdayRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_DDAY, plannerSettingService.addDday(principalDetails.getUser(), addDdayRequest)));
     }
 
     @GetMapping("/{userId}/d-days")
     public ResponseEntity<BaseResponse> getDdayList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                     @PathVariable("userId") final Long userId) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_DDAY_LIST, plannerSettingService.getDdayList(principalDetails.getUser())));
     }
 
@@ -96,7 +96,7 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> removeDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                    @PathVariable("userId") final Long userId,
                                                    @RequestBody @Valid final RemoveDdayRequest removeDdayRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         plannerSettingService.removeDday(principalDetails.getUser(), removeDdayRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_REMOVE_DDAY));
     }
@@ -105,7 +105,7 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> updateDday(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                    @PathVariable("userId") final Long userId,
                                                    @RequestBody @Valid final UpdateDdayRequest updateDdayRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         plannerSettingService.updateDday(principalDetails.getUser(), updateDdayRequest);
         return ResponseEntity.accepted().body(BaseResponse.from(SUCCESS_UPDATE_DDAY));
     }
@@ -114,14 +114,14 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> addRoutine(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                    @PathVariable("userId") final Long userId,
                                                    @RequestBody @Valid final AddRoutineRequest addRoutineRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_ADD_ROUTINE, plannerRoutineService.addRoutine(principalDetails.getUser(), addRoutineRequest)));
     }
 
     @GetMapping("/{userId}/routines")
     public ResponseEntity<BaseResponse> getRoutineList(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                        @PathVariable("userId") final Long userId) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_GET_ROUTINE_LIST, routineService.getRoutineList(principalDetails.getUser())));
     }
 
@@ -129,7 +129,7 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> removeRoutine(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                       @PathVariable("userId") final Long userId,
                                                       @RequestBody @Valid final RemoveRoutineRequest removeRoutineRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         routineService.removeRoutine(principalDetails.getUser(), removeRoutineRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_REMOVE_ROUTINE));
     }
@@ -138,7 +138,7 @@ public class PlannerSettingController {
     public ResponseEntity<BaseResponse> updateRoutine(@AuthenticationPrincipal final PrincipalDetails principalDetails,
                                                       @PathVariable("userId") final Long userId,
                                                       @RequestBody @Valid final UpdateRoutineRequest updateRoutineRequest) {
-        authServiceImpl.certifyUser(userId, principalDetails.getUser());
+        authService.certifyUser(userId, principalDetails.getUser());
         plannerRoutineService.updateRoutine(principalDetails.getUser(), updateRoutineRequest);
         return ResponseEntity.ok(BaseResponse.from(SUCCESS_UPDATE_ROUTINE));
     }
