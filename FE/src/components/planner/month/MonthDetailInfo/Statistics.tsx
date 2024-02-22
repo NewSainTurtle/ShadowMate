@@ -27,7 +27,7 @@ const Statistics = ({ types }: Props) => {
 
   return (
     <div className={styles["stats"]}>
-      {statistics[types].map((item, idx) => (
+      {statistics[types].map((item) => (
         <div className={styles["stats__contents"]} key={item.id}>
           <Text types="small">{item.title}</Text>
           <Text types="small">{item.count}</Text>

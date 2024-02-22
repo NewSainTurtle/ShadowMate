@@ -7,7 +7,7 @@ import { FollowerType, FollowingType, FollowRequestType, FollowType, FriendSearc
 import { FriendInfoConfig } from "@util/auth.interface";
 import { selectUserId } from "@store/authSlice";
 import { useAppSelector } from "@hooks/hook";
-import { userApi } from "@api/Api";
+import { followApi } from "@api/Api";
 import { useDebounce } from "@util/EventControlModule";
 import { selectFollowState } from "@store/friendSlice";
 
@@ -63,7 +63,7 @@ const MyFriendFrame = ({ title, search, friendList }: Props) => {
 
   useLayoutEffect(() => {
     if (searchKeyWord)
-      userApi
+      followApi
         .searches(userId, { nickname: searchKeyWord })
         .then((res) => {
           const response = res.data.data;

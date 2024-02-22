@@ -10,7 +10,7 @@ interface Props {
   message: string;
 }
 
-const Alert = ({ types, open, onClose, message, ...rest }: Props) => {
+const Alert = ({ types, open, onClose, message }: Props) => {
   return (
     <Snackbar
       anchorOrigin={{ vertical: "top", horizontal: "center" }}

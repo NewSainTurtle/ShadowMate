@@ -70,7 +70,7 @@ const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos,
       .then(() => {
         updateTodo(idx, { ...item, todoContent: e.target.value, todoUpdate: !item.todoUpdate });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleDelete = () => {
@@ -84,7 +84,7 @@ const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos,
         deleteTodo(idx);
         handleDeleteModalClose();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleClickCategory = (props: CategoryItemConfig) => {
@@ -102,7 +102,7 @@ const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos,
         updateTodo(idx, newCategory);
         setModalOpen(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const setStatus = (status: string) => {
@@ -134,7 +134,7 @@ const WeekItem = ({ idx, item, isMine, disable, date, dailyTodos, setDailyTodos,
           todoStatus: newStatus,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   return (

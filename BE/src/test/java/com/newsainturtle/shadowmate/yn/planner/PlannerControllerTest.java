@@ -3,16 +3,19 @@ package com.newsainturtle.shadowmate.yn.planner;
 import com.google.gson.Gson;
 import com.newsainturtle.shadowmate.auth.exception.AuthErrorResult;
 import com.newsainturtle.shadowmate.auth.exception.AuthException;
-import com.newsainturtle.shadowmate.auth.service.AuthService;
+import com.newsainturtle.shadowmate.auth.service.AuthServiceImpl;
 import com.newsainturtle.shadowmate.common.GlobalExceptionHandler;
 import com.newsainturtle.shadowmate.planner.controller.PlannerController;
 import com.newsainturtle.shadowmate.planner.dto.request.*;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
 import com.newsainturtle.shadowmate.planner.exception.PlannerException;
-import com.newsainturtle.shadowmate.planner.service.DailyPlannerServiceImpl;
-import com.newsainturtle.shadowmate.planner.service.MonthlyPlannerServiceImpl;
-import com.newsainturtle.shadowmate.planner.service.SearchPlannerServiceImpl;
-import com.newsainturtle.shadowmate.planner.service.WeeklyPlannerServiceImpl;
+import com.newsainturtle.shadowmate.planner.service.*;
+import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingErrorResult;
+import com.newsainturtle.shadowmate.planner_setting.exception.PlannerSettingException;
+import com.newsainturtle.shadowmate.planner_setting.service.PlannerRoutineServiceImpl;
+import com.newsainturtle.shadowmate.social.exception.SocialErrorResult;
+import com.newsainturtle.shadowmate.social.exception.SocialException;
+import com.newsainturtle.shadowmate.social.service.UserPlannerSocialServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,19 +46,28 @@ class PlannerControllerTest {
     private PlannerController plannerController;
 
     @Mock
-    private DailyPlannerServiceImpl dailyPlannerServiceImpl;
+    private DailyPlannerServiceImpl dailyPlannerService;
 
     @Mock
-    private WeeklyPlannerServiceImpl weeklyPlannerServiceImpl;
+    private WeeklyPlannerServiceImpl weeklyPlannerService;
 
     @Mock
-    private SearchPlannerServiceImpl searchPlannerServiceImpl;
+    private MonthlyPlannerServiceImpl monthlyPlannerService;
 
     @Mock
-    private MonthlyPlannerServiceImpl monthlyPlannerServiceImpl;
+    private UserPlannerServiceImpl userPlannerService;
 
     @Mock
-    private AuthService authServiceImpl;
+    private SettingPlannerServiceImpl settingPlannerService;
+
+    @Mock
+    private UserPlannerSocialServiceImpl userPlannerSocialService;
+
+    @Mock
+    private AuthServiceImpl authServiceImpl;
+
+    @Mock
+    private PlannerRoutineServiceImpl plannerRoutineService;
 
     private MockMvc mockMvc;
     private Gson gson;
@@ -102,7 +114,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은카테고리() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_CATEGORY)).when(dailyPlannerServiceImpl).addDailyTodo(any(), any(AddDailyTodoRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(settingPlannerService).addDailyTodo(any(), any(AddDailyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -160,7 +172,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은할일상태값() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO_STATUS)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO_STATUS)).when(settingPlannerService).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -176,7 +188,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은일일플래너() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(settingPlannerService).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -192,7 +204,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은카테고리() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_CATEGORY)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+                doThrow(new PlannerSettingException(PlannerSettingErrorResult.INVALID_CATEGORY)).when(settingPlannerService).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -208,7 +220,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은할일() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(settingPlannerService).updateDailyTodo(any(), any(UpdateDailyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -265,7 +277,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은플래너() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeDailyTodo(any(), any(RemoveDailyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(plannerRoutineService).removeDailyTodo(any(), any(RemoveDailyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -281,7 +293,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은할일() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).removeDailyTodo(any(), any(RemoveDailyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(plannerRoutineService).removeDailyTodo(any(), any(RemoveDailyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -520,7 +532,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은할일() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerService).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -536,7 +548,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은일일플래너() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).changeDailyTodoSequence(any(), any(ChangeDailyTodoSequenceRequest.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -974,7 +986,7 @@ class PlannerControllerTest {
             void 실패_자신플래너에좋아요() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(userPlannerService).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -991,7 +1003,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은사용자() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1008,7 +1020,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은플래너() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(userPlannerService).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1025,7 +1037,7 @@ class PlannerControllerTest {
             void 실패_이전에좋아요를이미누름() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE)).when(dailyPlannerServiceImpl).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.ALREADY_ADDED_LIKE)).when(userPlannerService).addDailyLike(any(), any(Long.class), any(AddDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1101,7 +1113,7 @@ class PlannerControllerTest {
             void 실패_자신플래너에좋아요취소() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.UNABLE_TO_LIKE_YOUR_OWN_PLANNER)).when(userPlannerService).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1118,7 +1130,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은사용자() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1135,7 +1147,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은플래너() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(userPlannerService).removeDailyLike(any(), any(Long.class), any(RemoveDailyLikeRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1207,7 +1219,7 @@ class PlannerControllerTest {
                         .endDate(endDay)
                         .weeklyTodoContent(weeklyTodoContent)
                         .build();
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).addWeeklyTodo(any(), any(AddWeeklyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).addWeeklyTodo(any(), any(AddWeeklyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1228,7 +1240,7 @@ class PlannerControllerTest {
                         .endDate("2023-10-16")
                         .weeklyTodoContent(weeklyTodoContent)
                         .build();
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).addWeeklyTodo(any(), any(AddWeeklyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).addWeeklyTodo(any(), any(AddWeeklyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1298,7 +1310,7 @@ class PlannerControllerTest {
                         .weeklyTodoId(weeklyTodoId)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1321,7 +1333,7 @@ class PlannerControllerTest {
                         .weeklyTodoId(weeklyTodoId)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1338,7 +1350,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은위클리() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerServiceImpl).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerService).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1355,7 +1367,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은위클리할일() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(weeklyPlannerServiceImpl).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(weeklyPlannerService).updateWeeklyTodoContent(any(), any(UpdateWeeklyTodoContentRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1425,7 +1437,7 @@ class PlannerControllerTest {
                         .weeklyTodoStatus(true)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1448,7 +1460,7 @@ class PlannerControllerTest {
                         .weeklyTodoStatus(true)
                         .build();
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1465,7 +1477,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은위클리() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerServiceImpl).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerService).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1482,7 +1494,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은위클리할일() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(weeklyPlannerServiceImpl).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(weeklyPlannerService).updateWeeklyTodoStatus(any(), any(UpdateWeeklyTodoStatusRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1546,7 +1558,7 @@ class PlannerControllerTest {
                         .endDate(endDay)
                         .weeklyTodoId(1L)
                         .build();
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1567,7 +1579,7 @@ class PlannerControllerTest {
                         .endDate("2023-10-16")
                         .weeklyTodoId(1L)
                         .build();
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerServiceImpl).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(weeklyPlannerService).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1584,7 +1596,7 @@ class PlannerControllerTest {
             void 실패_유효하지않은위클리() throws Exception {
                 //given
 
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerServiceImpl).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_WEEKLY_PLANNER)).when(weeklyPlannerService).removeWeeklyTodo(any(), any(RemoveWeeklyTodoRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1904,7 +1916,7 @@ class PlannerControllerTest {
             @Test
             void 실패_잘못된시간값() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TIME)).when(dailyPlannerService).addTimeTable(any(), any(AddTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1920,7 +1932,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은플래너() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).addTimeTable(any(), any(AddTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1936,7 +1948,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은할일() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerService).addTimeTable(any(), any(AddTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -1952,7 +1964,7 @@ class PlannerControllerTest {
             @Test
             void 실패_타임테이블등록_불가상태() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE)).when(dailyPlannerServiceImpl).addTimeTable(any(), any(AddTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.FAILED_ADDED_TIMETABLE)).when(dailyPlannerService).addTimeTable(any(), any(AddTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2011,7 +2023,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은플래너() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerService).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2027,7 +2039,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은할일() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerServiceImpl).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_TODO)).when(dailyPlannerService).removeTimeTable(any(), any(RemoveTimeTableRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2182,7 +2194,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(userPlannerService).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2197,7 +2209,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerServiceImpl).searchDailyPlanner(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchDailyPlanner(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2233,7 +2245,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(userPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2249,7 +2261,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2265,7 +2277,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(searchPlannerServiceImpl).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE)).when(userPlannerService).searchWeeklyPlanner(any(), any(Long.class), any(String.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2302,7 +2314,7 @@ class PlannerControllerTest {
         @Test
         void 실패_올바르지않은날짜형식() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(searchPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DATE_FORMAT)).when(userPlannerService).searchCalendar(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2317,7 +2329,7 @@ class PlannerControllerTest {
         @Test
         void 실패_유효하지않은플래너작성자() throws Exception {
             //given
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(searchPlannerServiceImpl).searchCalendar(any(), any(Long.class), any(String.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchCalendar(any(), any(Long.class), any(String.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2374,7 +2386,7 @@ class PlannerControllerTest {
         void 실패_공개상태가아닌경우() throws Exception {
             //given
 
-            doThrow(new PlannerException(PlannerErrorResult.FAILED_SHARE_SOCIAL)).when(dailyPlannerServiceImpl).shareSocial(any(), any(ShareSocialRequest.class));
+            doThrow(new SocialException(SocialErrorResult.FAILED_SHARE_SOCIAL)).when(userPlannerSocialService).shareSocial(any(), any(ShareSocialRequest.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2391,7 +2403,24 @@ class PlannerControllerTest {
         void 실패_유효하지않은플래너() throws Exception {
             //given
 
-            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(dailyPlannerServiceImpl).shareSocial(any(), any(ShareSocialRequest.class));
+            doThrow(new PlannerException(PlannerErrorResult.INVALID_DAILY_PLANNER)).when(userPlannerSocialService).shareSocial(any(), any(ShareSocialRequest.class));
+
+            //when
+            final ResultActions resultActions = mockMvc.perform(
+                    MockMvcRequestBuilders.post(url, userId)
+                            .content(gson.toJson(shareSocialRequest))
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            //then
+            resultActions.andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void 실패_이미공유된소셜() throws Exception {
+            //given
+
+            doThrow(new SocialException(SocialErrorResult.ALREADY_SHARED_SOCIAL)).when(userPlannerSocialService).shareSocial(any(), any(ShareSocialRequest.class));
 
             //when
             final ResultActions resultActions = mockMvc.perform(
@@ -2515,7 +2544,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은사용자() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(monthlyPlannerServiceImpl).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2531,7 +2560,7 @@ class PlannerControllerTest {
             @Test
             void 실패_자신플래너에방명록추가() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.FAILED_SELF_VISITOR_BOOK_WRITING)).when(monthlyPlannerServiceImpl).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.FAILED_SELF_VISITOR_BOOK_WRITING)).when(userPlannerService).addVisitorBook(any(), any(Long.class), any(AddVisitorBookRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2588,7 +2617,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은방명록() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_VISITOR_BOOK)).when(monthlyPlannerServiceImpl).removeVisitorBook(any(), any(Long.class), any(RemoveVisitorBookRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_VISITOR_BOOK)).when(monthlyPlannerService).removeVisitorBook(any(), any(Long.class), any(RemoveVisitorBookRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2604,7 +2633,7 @@ class PlannerControllerTest {
             @Test
             void 실패_삭제권한이없는사용자() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.NO_PERMISSION_TO_REMOVE_VISITOR_BOOK)).when(monthlyPlannerServiceImpl).removeVisitorBook(any(), any(Long.class), any(RemoveVisitorBookRequest.class));
+                doThrow(new PlannerException(PlannerErrorResult.NO_PERMISSION_TO_REMOVE_VISITOR_BOOK)).when(monthlyPlannerService).removeVisitorBook(any(), any(Long.class), any(RemoveVisitorBookRequest.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(
@@ -2640,7 +2669,7 @@ class PlannerControllerTest {
             @Test
             void 실패_유효하지않은사용자() throws Exception {
                 //given
-                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(monthlyPlannerServiceImpl).searchVisitorBook(any(), any(Long.class), any(Long.class));
+                doThrow(new PlannerException(PlannerErrorResult.INVALID_USER)).when(userPlannerService).searchVisitorBook(any(), any(Long.class), any(Long.class));
 
                 //when
                 final ResultActions resultActions = mockMvc.perform(

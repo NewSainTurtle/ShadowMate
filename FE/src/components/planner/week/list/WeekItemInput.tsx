@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, KeyboardEvent, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { Dispatch, KeyboardEvent, SetStateAction, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import todoModule from "@util/TodoModule";
 import dayjs from "dayjs";
@@ -33,7 +33,7 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
     }
   };
 
-  const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleOnBlur = () => {
     if (newTodo === "") return;
     const init = {
       date: dayjs(date).format("YYYY-MM-DD"),
@@ -51,7 +51,7 @@ const WeekItemInput = ({ date, dailyTodos, setDailyTodos }: Props) => {
         insertTodo({ todoId: returnId, todoContent: newTodo, todoStatus: "공백" });
         setNewTodo("");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {

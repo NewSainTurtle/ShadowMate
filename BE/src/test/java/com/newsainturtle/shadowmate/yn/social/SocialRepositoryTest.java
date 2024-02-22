@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -178,7 +179,8 @@ class SocialRepositoryTest {
             final List<Social> result = socialRepository.findAllByDeleteTimeIsNullAndPeriodSortLatest("2000-09-23", "2000-09-24", PageRequest.of(0, 6));
 
             // then
-            assertThat(result).isNotNull().isEmpty();;
+            assertThat(result).isNotNull().isEmpty();
+            ;
         }
 
         @Test
@@ -318,10 +320,11 @@ class SocialRepositoryTest {
                     .build());
 
             // when
-            final List<Social> result = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(user1.getId(),"2000-09-23", "2000-09-24", PageRequest.of(0, 6));
+            final List<Social> result = socialRepository.findAllByOwnerIdAndDeleteTimeIsNullAndPeriodSortLatest(user1.getId(), "2000-09-23", "2000-09-24", PageRequest.of(0, 6));
 
             // then
-            assertThat(result).isNotNull().isEmpty();;
+            assertThat(result).isNotNull().isEmpty();
+            ;
         }
 
         @Test
@@ -351,6 +354,28 @@ class SocialRepositoryTest {
 
             // then
             assertThat(result).isNotNull().hasSize(1);
+        }
+    }
+
+    @Nested
+    class 소셜삭제 {
+        @Test
+        void 성공() {
+            // given
+            final Long socialId = socialRepository.save(Social.builder()
+                    .dailyPlanner(dailyPlanner1)
+                    .socialImage(socialImage)
+                    .dailyPlannerDay(dailyPlanner1.getDailyPlannerDay())
+                    .ownerId(user1.getId())
+                    .build()).getId();
+
+            // when
+            socialRepository.deleteByIdAndOwnerId(socialId, user1.getId());
+            final Optional<Social> findSocial = socialRepository.findById(socialId);
+
+            // then
+            assertThat(socialId).isNotNull();
+            assertThat(findSocial).isNotPresent();
         }
     }
 }

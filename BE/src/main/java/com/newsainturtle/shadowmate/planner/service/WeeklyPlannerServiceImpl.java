@@ -6,6 +6,7 @@ import com.newsainturtle.shadowmate.planner.dto.request.RemoveWeeklyTodoRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoContentRequest;
 import com.newsainturtle.shadowmate.planner.dto.request.UpdateWeeklyTodoStatusRequest;
 import com.newsainturtle.shadowmate.planner.dto.response.AddWeeklyTodoResponse;
+import com.newsainturtle.shadowmate.planner.dto.response.WeeklyPlannerTodoResponse;
 import com.newsainturtle.shadowmate.planner.entity.Weekly;
 import com.newsainturtle.shadowmate.planner.entity.WeeklyTodo;
 import com.newsainturtle.shadowmate.planner.exception.PlannerErrorResult;
@@ -18,10 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class WeeklyPlannerServiceImpl extends DateCommonService implements WeeklyPlannerService {
 
     private final WeeklyRepository weeklyRepository;
@@ -52,13 +55,6 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
         return weekly;
     }
 
-    private void checkValidWeek(final String startDateStr, final String endDateStr) {
-        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1
-                || ChronoUnit.DAYS.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)) != 6) {
-            throw new PlannerException(PlannerErrorResult.INVALID_DATE);
-        }
-    }
-
     private WeeklyTodo getWeeklyTodo(final User user, final String startDateStr, final String endDateStr, final Long weeklyTodoId) {
         final Weekly weekly = getWeeklyPlanner(user, startDateStr, endDateStr);
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.findByIdAndWeekly(weeklyTodoId, weekly);
@@ -69,6 +65,15 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
     }
 
     @Override
+    public void checkValidWeek(final String startDateStr, final String endDateStr) {
+        if (stringToLocalDate(startDateStr).getDayOfWeek().getValue() != 1
+                || ChronoUnit.DAYS.between(stringToLocalDate(startDateStr), stringToLocalDate(endDateStr)) != 6) {
+            throw new PlannerException(PlannerErrorResult.INVALID_DATE);
+        }
+    }
+
+    @Override
+    @Transactional
     public AddWeeklyTodoResponse addWeeklyTodo(final User user, final AddWeeklyTodoRequest addWeeklyTodoRequest) {
         final Weekly weekly = getOrCreateWeeklyPlanner(user, addWeeklyTodoRequest.getStartDate(), addWeeklyTodoRequest.getEndDate());
         final WeeklyTodo weeklyTodo = weeklyTodoRepository.save(WeeklyTodo.builder()
@@ -80,6 +85,7 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
     }
 
     @Override
+    @Transactional
     public void updateWeeklyTodoContent(final User user, final UpdateWeeklyTodoContentRequest updateWeeklyTodoContentRequest) {
         final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoContentRequest.getStartDate(),
                 updateWeeklyTodoContentRequest.getEndDate(), updateWeeklyTodoContentRequest.getWeeklyTodoId());
@@ -87,6 +93,7 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
     }
 
     @Override
+    @Transactional
     public void updateWeeklyTodoStatus(final User user, final UpdateWeeklyTodoStatusRequest updateWeeklyTodoStatusRequest) {
         final WeeklyTodo weeklyTodo = getWeeklyTodo(user, updateWeeklyTodoStatusRequest.getStartDate(),
                 updateWeeklyTodoStatusRequest.getEndDate(), updateWeeklyTodoStatusRequest.getWeeklyTodoId());
@@ -94,9 +101,27 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
     }
 
     @Override
+    @Transactional
     public void removeWeeklyTodo(final User user, final RemoveWeeklyTodoRequest removeWeeklyTodoRequest) {
         final Weekly weekly = getWeeklyPlanner(user, removeWeeklyTodoRequest.getStartDate(), removeWeeklyTodoRequest.getEndDate());
         weeklyTodoRepository.deleteByIdAndWeekly(removeWeeklyTodoRequest.getWeeklyTodoId(), weekly);
+    }
+
+    @Override
+    public List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
+        final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
+        final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, startDate, endDate);
+        if (weekly != null && permission) {
+            final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
+            for (WeeklyTodo weeklyTodo : weeklyTodoList) {
+                weeklyTodos.add(WeeklyPlannerTodoResponse.builder()
+                        .weeklyTodoId(weeklyTodo.getId())
+                        .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
+                        .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
+                        .build());
+            }
+        }
+        return weeklyTodos;
     }
 
 }

@@ -52,31 +52,27 @@ const App = () => {
         dispatch(setLogout());
       })
       .then(() => {
-        persistor.purge();
-        localStorage.removeItem("AL");
-        navigator("/login");
+        persistor
+          .purge()
+          .then(() => {
+            localStorage.removeItem("AL");
+            navigator("/login");
+          })
+          .catch((err) => console.error(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleAutoLogin = async (key: string) => {
-    try {
-      const headers = {
-        "Auto-Login": key,
-      };
-      const res = await authApi.autoLogin(null, headers);
-      const accessToken = res.headers["authorization"];
-      const userId = res.headers["id"];
-      const type = res.headers["type"];
-      dispatch(setLogin({ accessToken, userId, type }));
-      navigator("/month");
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 403) {
-          localStorage.removeItem("AL");
-        }
-      }
-    }
+    const headers = {
+      "Auto-Login": key,
+    };
+    const res = await authApi.autoLogin(null, headers);
+    const accessToken = res.headers["authorization"] as string;
+    const userId = res.headers["id"] as number;
+    const type = res.headers["type"] as string;
+    dispatch(setLogin({ accessToken, userId, type }));
+    navigator("/month");
   };
 
   useEffect(() => {
@@ -94,7 +90,14 @@ const App = () => {
 
   useEffect(() => {
     const key = localStorage.getItem("AL");
-    if (key && !isLogin) handleAutoLogin(key);
+    if (key && !isLogin)
+      handleAutoLogin(key).catch((err) => {
+        if (err instanceof AxiosError) {
+          if (err.response?.status === 403) {
+            localStorage.removeItem("AL");
+          }
+        }
+      });
   }, []);
 
   return (

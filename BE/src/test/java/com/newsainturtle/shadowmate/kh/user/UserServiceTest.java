@@ -1,19 +1,11 @@
 package com.newsainturtle.shadowmate.kh.user;
 
 import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
-import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
-import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
-import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
-import com.newsainturtle.shadowmate.social.repository.SocialRepository;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
-import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.enums.SocialType;
@@ -29,9 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,25 +40,7 @@ public class UserServiceTest {
     private RedisServiceImpl redisService;
 
     @Mock
-    private FollowServiceImpl followService;
-
-    @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Mock
-    private FollowRepository followRepository;
-
-    @Mock
-    private FollowRequestRepository followRequestRepository;
-
-    @Mock
-    private SocialRepository socialRepository;
-
-    @Mock
-    private DailyPlannerRepository dailyPlannerRepository;
-
-    @Mock
-    private VisitorBookRepository visitorBookRepository;
 
     final User user1 = User.builder()
             .id(1L)
@@ -82,16 +53,6 @@ public class UserServiceTest {
             .plannerAccessScope(PlannerAccessScope.PUBLIC)
             .build();
     final Long userId1 = user1.getId();
-    final User user2 = User.builder()
-            .id(2L)
-            .email("test2@test.com")
-            .password("123456")
-            .socialLogin(SocialType.BASIC)
-            .nickname("거북이2")
-            .withdrawal(false)
-            .profileImage("TestProfileURL")
-            .plannerAccessScope(PlannerAccessScope.PUBLIC)
-            .build();
 
     @Nested
     class 프로필TEST {
@@ -103,6 +64,7 @@ public class UserServiceTest {
 
             // when
 
+
             // then
             assertThrows(UserException.class, () -> {
                 userService.getProfile(userId);
@@ -112,12 +74,10 @@ public class UserServiceTest {
         @Test
         void 성공_프로필조회() {
             // given
-            final Long userId = 1L;
-            Optional<User> optUser = Optional.ofNullable(user1);
-            doReturn(optUser).when(userRepository).findById(userId);
+            doReturn(user1).when(userRepository).findByIdAndWithdrawalIsFalse(userId1);
 
             // when
-            final ProfileResponse profileResponse = userService.getProfile(userId);
+            final ProfileResponse profileResponse = userService.getProfile(userId1);
 
             // then
             assertThat(profileResponse.getEmail()).isEqualTo(user1.getEmail());
@@ -277,76 +237,62 @@ public class UserServiceTest {
     class 회원TEST {
 
         @Test
-        void 실패_회원없음() {
-            // given
-            final String user2Nickname = user2.getNickname();
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2Nickname);
-
-            // then
-            assertThat(result.getUserId()).isNull();
-            assertThat(result.getNickname()).isNull();
-        }
-
-        @Test
-        void 성공_회원검색_친구요청상태() {
-            // given
-            doReturn(FollowStatus.REQUESTED).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
-
-            // then
-            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
-            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.REQUESTED);
-        }
-
-        @Test
-        void 성공_회원검색_팔로우아닌상태() {
-            // given
-            doReturn(FollowStatus.EMPTY).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
-
-            // then
-            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
-            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.EMPTY);
-        }
-
-        @Test
-        void 성공_회원검색_FOLLOW상태() {
-            // given
-            doReturn(FollowStatus.FOLLOW).when(followService).isFollow(any(), any());
-            doReturn(user2).when(userRepository).findByNicknameAndWithdrawalIsFalse(any());
-
-            // when
-            final UserResponse result = userService.searchNickname(user1, user2.getNickname());
-
-            // then
-            assertThat(result.getNickname()).isEqualTo(user2.getNickname());
-            assertThat(result.getIsFollow()).isEqualTo(FollowStatus.FOLLOW);
-        }
-
-        @Test
-        void 성공_회원탈퇴() {
+        void 실패_아이디검색() {
             //given
-            doReturn(new ArrayList<>()).when(dailyPlannerRepository).findAllByUser(any(User.class));
-            doReturn(false).when(userRepository).existsByNickname(any(String.class));
+            doReturn(null).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
 
             //when
-            userService.deleteUser(user1);
+            final UserException result = assertThrows(UserException.class, () -> userService.getUserById(userId1));
 
             //then
-            verify(followRepository, times(1)).deleteAllByFollowingOrFollower(any(User.class), any(User.class));
-            verify(followRequestRepository, times(1)).deleteAllByRequesterOrReceiver(any(User.class), any(User.class));
-            verify(dailyPlannerRepository, times(1)).findAllByUser(any(User.class));
-            verify(socialRepository, times(1)).updateDeleteTimeAll(any(LocalDateTime.class), any(List.class));
-            verify(visitorBookRepository, times(1)).deleteAllByVisitorId(any(Long.class));
-            verify(userRepository, times(1)).deleteUser(any(LocalDateTime.class), any(Long.class), any(PlannerAccessScope.class), any(String.class));
+            assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.NOT_FOUND_USER);
+        }
+
+        @Test
+        void 성공_아이디검색() {
+            //given
+            doReturn(user1).when(userRepository).findByIdAndWithdrawalIsFalse(any(Long.class));
+
+            //when
+            final User user = userService.getUserById(userId1);
+
+            //then
+            assertThat(user).isNotNull();
+        }
+
+        @Test
+        void 성공_닉네검색() {
+            //given
+            doReturn(user1).when(userRepository).findByNicknameAndWithdrawalIsFalse(any(String.class));
+
+            //when
+            final User user = userService.getUserByNickname(user1.getNickname());
+
+            //then
+            assertThat(user).isNotNull();
+        }
+
+        @Test
+        void 성공_공개된유저닉네임검색() {
+            //given
+            doReturn(user1).when(userRepository).findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(any(String.class), any(PlannerAccessScope.class));
+
+            //when
+            final User user = userService.getUserByNicknameAndScopePublic(user1.getNickname());
+
+            //then
+            assertThat(user).isNotNull();
+        }
+
+        @Test
+        void 성공_플래너공개범위수정() {
+            // given
+
+            // when
+            userService.updatePlannerAccessScope(1L, PlannerAccessScope.PRIVATE);
+
+            // then
+            verify(userRepository, times(1)).updatePlannerAccessScope(any(PlannerAccessScope.class), any(Long.class));
         }
 
     }

@@ -37,7 +37,7 @@ const Profile = ({ types, profile }: Props) => {
     followApi
       .addRequested(userId, { followingId: friendId })
       .then((res) => {
-        const followId = res.data.data.followId;
+        const followId: number = res.data.data.followId;
         const followingInfo: FollowingType = {
           followingId: friendId,
           nickname,

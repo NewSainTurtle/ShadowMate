@@ -1,5 +1,6 @@
 package com.newsainturtle.shadowmate.planner.dto.response;
 
+import com.newsainturtle.shadowmate.planner_setting.entity.Dday;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,5 +24,16 @@ public class SearchDailyPlannerResponse {
     private int studyTimeHour;
     private int studyTimeMinute;
     private List<DailyPlannerTodoResponse> dailyTodos;
+
+    public void setDday(final Dday dday) {
+        if (dday != null) {
+            this.dday = dday.getDdayDate();
+            this.ddayTitle = dday.getDdayTitle();
+        }
+    }
+
+    public void setShareSocial(final Long socialId) {
+        this.shareSocial = socialId;
+    }
 
 }

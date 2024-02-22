@@ -1,4 +1,4 @@
-package com.newsainturtle.shadowmate.user.dto.response;
+package com.newsainturtle.shadowmate.follow.dto.response;
 
 import com.newsainturtle.shadowmate.follow.enums.FollowStatus;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserResponse {
+public class SearchUserResponse {
     private Long userId;
     private String email;
     private String nickname;
