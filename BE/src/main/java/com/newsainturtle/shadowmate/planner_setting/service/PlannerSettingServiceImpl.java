@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -90,24 +90,22 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
 
     @Override
     public GetCategoryColorListResponse getCategoryColorList() {
-        final List<CategoryColor> result = categoryColorRepository.findAll();
-        return GetCategoryColorListResponse.builder().categoryColorList(result).build();
+        return GetCategoryColorListResponse.builder().categoryColorList(categoryColorRepository.findAll()).build();
     }
 
     @Override
     public GetCategoryListResponse getCategoryList(final User user) {
-        final List<Category> result = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
-        List<GetCategoryResponse> categoryList = new ArrayList<>();
-
-        for (Category category : result) {
-            categoryList.add(GetCategoryResponse.builder()
-                    .categoryId(category.getId())
-                    .categoryColorCode(category.getCategoryColor().getCategoryColorCode())
-                    .categoryEmoticon(category.getCategoryEmoticon())
-                    .categoryTitle(category.getCategoryTitle())
-                    .build());
-        }
-        return GetCategoryListResponse.builder().categoryList(categoryList).build();
+        final List<Category> categoryList = categoryRepository.findByUserAndAndCategoryRemoveIsFalse(user);
+        return GetCategoryListResponse.builder()
+                .categoryList(categoryList.stream()
+                        .map(category -> GetCategoryResponse.builder()
+                                .categoryId(category.getId())
+                                .categoryColorCode(category.getCategoryColor().getCategoryColorCode())
+                                .categoryEmoticon(category.getCategoryEmoticon())
+                                .categoryTitle(category.getCategoryTitle())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
@@ -138,16 +136,15 @@ public class PlannerSettingServiceImpl extends DateCommonService implements Plan
 
     @Override
     public GetDdayListResponse getDdayList(final User user) {
-        final List<Dday> result = ddayRepository.findByUserOrderByDdayDateDesc(user);
-        List<GetDdayResponse> ddayList = new ArrayList<>();
-        for (Dday dday : result) {
-            ddayList.add(GetDdayResponse.builder()
-                    .ddayId(dday.getId())
-                    .ddayTitle(dday.getDdayTitle())
-                    .ddayDate(String.valueOf(dday.getDdayDate()))
-                    .build());
-        }
-        return GetDdayListResponse.builder().ddayList(ddayList).build();
+        final List<Dday> ddayList = ddayRepository.findByUserOrderByDdayDateDesc(user);
+        return GetDdayListResponse.builder()
+                .ddayList(ddayList.stream()
+                        .map(dday -> GetDdayResponse.builder()
+                                .ddayId(dday.getId())
+                                .ddayTitle(dday.getDdayTitle())
+                                .ddayDate(String.valueOf(dday.getDdayDate()))
+                                .build())
+                        .collect(Collectors.toList())).build();
     }
 
     @Override

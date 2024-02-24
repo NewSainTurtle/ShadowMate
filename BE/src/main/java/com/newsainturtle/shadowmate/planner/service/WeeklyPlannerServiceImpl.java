@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,19 +110,18 @@ public class WeeklyPlannerServiceImpl extends DateCommonService implements Weekl
 
     @Override
     public List<WeeklyPlannerTodoResponse> getWeeklyTodos(final User plannerWriter, final String startDate, final String endDate, final boolean permission) {
-        final List<WeeklyPlannerTodoResponse> weeklyTodos = new ArrayList<>();
         final Weekly weekly = weeklyRepository.findByUserAndStartDayAndEndDay(plannerWriter, startDate, endDate);
         if (weekly != null && permission) {
             final List<WeeklyTodo> weeklyTodoList = weeklyTodoRepository.findAllByWeekly(weekly);
-            for (WeeklyTodo weeklyTodo : weeklyTodoList) {
-                weeklyTodos.add(WeeklyPlannerTodoResponse.builder()
-                        .weeklyTodoId(weeklyTodo.getId())
-                        .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
-                        .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
-                        .build());
-            }
+            return weeklyTodoList.stream()
+                    .map(weeklyTodo -> WeeklyPlannerTodoResponse.builder()
+                            .weeklyTodoId(weeklyTodo.getId())
+                            .weeklyTodoContent(weeklyTodo.getWeeklyTodoContent())
+                            .weeklyTodoStatus(weeklyTodo.getWeeklyTodoStatus())
+                            .build())
+                    .collect(Collectors.toList());
         }
-        return weeklyTodos;
+        return new ArrayList<>();
     }
 
 }
