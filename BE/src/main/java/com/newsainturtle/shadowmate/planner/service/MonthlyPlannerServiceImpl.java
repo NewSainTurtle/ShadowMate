@@ -14,9 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,19 +77,18 @@ public class MonthlyPlannerServiceImpl extends DateCommonService implements Mont
     public SearchVisitorBookResponse searchVisitorBook(final User visitor, final User owner, final long lastVisitorBookId) {
         final List<VisitorBook> visitorBooks = lastVisitorBookId == 0 ? visitorBookRepository.findTop10ByOwnerOrderByIdDesc(owner) :
                 visitorBookRepository.findTop10ByOwnerAndIdLessThanOrderByIdDesc(owner, lastVisitorBookId);
-        final List<VisitorBookResponse> visitorBookResponses = new ArrayList<>();
-        for (VisitorBook visitorBook : visitorBooks) {
-            visitorBookResponses.add(VisitorBookResponse.builder()
-                    .visitorBookId(visitorBook.getId())
-                    .visitorId(visitorBook.getVisitor().getId())
-                    .visitorNickname(visitorBook.getVisitor().getNickname())
-                    .visitorProfileImage(visitorBook.getVisitor().getProfileImage())
-                    .visitorBookContent(visitorBook.getVisitorBookContent())
-                    .writeDateTime(localDateTimeToString(visitorBook.getCreateTime()))
-                    .build());
-        }
-
-        return SearchVisitorBookResponse.builder().visitorBookResponses(visitorBookResponses).build();
+        return SearchVisitorBookResponse.builder()
+                .visitorBookResponses(visitorBooks.stream()
+                        .map(visitorBook -> VisitorBookResponse.builder()
+                                .visitorBookId(visitorBook.getId())
+                                .visitorId(visitorBook.getVisitor().getId())
+                                .visitorNickname(visitorBook.getVisitor().getNickname())
+                                .visitorProfileImage(visitorBook.getVisitor().getProfileImage())
+                                .visitorBookContent(visitorBook.getVisitorBookContent())
+                                .writeDateTime(localDateTimeToString(visitorBook.getCreateTime()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override

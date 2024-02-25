@@ -46,6 +46,20 @@ public class SocialServiceImpl implements SocialService {
         }
     }
 
+    private List<SearchSocialResponse> makeSearchSocialResponseList(List<Social> socialList) {
+        return socialList.stream()
+                .map(social -> SearchSocialResponse.builder()
+                        .socialId(social.getId())
+                        .socialImage(social.getSocialImage())
+                        .dailyPlannerDay(social.getDailyPlanner().getDailyPlannerDay())
+                        .userId(social.getDailyPlanner().getUser().getId())
+                        .statusMessage(social.getDailyPlanner().getUser().getStatusMessage())
+                        .nickname(social.getDailyPlanner().getUser().getNickname())
+                        .profileImage(social.getDailyPlanner().getUser().getProfileImage())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     @Override
     public SearchSocialPlannerResponse getSocial(final String sort, final int pageNumber, final String startDate, final String endDate) {
         checkSortFormat(sort);
@@ -184,24 +198,10 @@ public class SocialServiceImpl implements SocialService {
         socialRepository.updateDeleteTimeAll(time, dailyPlannerList);
     }
 
-    private List<SearchSocialResponse> makeSearchSocialResponseList(List<Social> socialList) {
-        return socialList.stream()
-                .map(social -> SearchSocialResponse.builder()
-                        .socialId(social.getId())
-                        .socialImage(social.getSocialImage())
-                        .dailyPlannerDay(social.getDailyPlanner().getDailyPlannerDay())
-                        .userId(social.getDailyPlanner().getUser().getId())
-                        .statusMessage(social.getDailyPlanner().getUser().getStatusMessage())
-                        .nickname(social.getDailyPlanner().getUser().getNickname())
-                        .profileImage(social.getDailyPlanner().getUser().getProfileImage())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
     @Override
-    public Long getSocialId(final DailyPlanner dailyPlanner){
+    public Long getSocialId(final DailyPlanner dailyPlanner) {
         final Social shareSocial = socialRepository.findByDailyPlannerAndDeleteTimeIsNull(dailyPlanner);
-        if(shareSocial == null) return null;
+        if (shareSocial == null) return null;
         return shareSocial.getId();
     }
 }

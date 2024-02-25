@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.newsainturtle.shadowmate.common.constant.CommonConstant.DATE_PATTERN;
 
@@ -65,27 +66,24 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
                     .endTime(localDateTimeToString(timeTable.getEndTime()))
                     .build());
         }
-
         return timeTables;
     }
 
     private List<WeeklyPlannerDailyTodoResponse> getDayTodo(final DailyPlanner dailyPlanner) {
-        final List<WeeklyPlannerDailyTodoResponse> dailyTodos = new ArrayList<>();
         final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
-        for (Todo todo : todoList) {
-            dailyTodos.add(WeeklyPlannerDailyTodoResponse.builder()
-                    .todoId(todo.getId())
-                    .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
-                            .categoryId(todo.getCategory().getId())
-                            .categoryTitle(todo.getCategory().getCategoryTitle())
-                            .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
-                            .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
-                            .build() : null)
-                    .todoContent(todo.getTodoContent())
-                    .todoStatus(todo.getTodoStatus().getStatus())
-                    .build());
-        }
-        return dailyTodos;
+        return todoList.stream()
+                .map(todo -> WeeklyPlannerDailyTodoResponse.builder()
+                        .todoId(todo.getId())
+                        .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
+                                .categoryId(todo.getCategory().getId())
+                                .categoryTitle(todo.getCategory().getCategoryTitle())
+                                .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
+                                .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
+                                .build() : null)
+                        .todoContent(todo.getTodoContent())
+                        .todoStatus(todo.getTodoStatus().getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -318,23 +316,22 @@ public class DailyPlannerServiceImpl extends DateCommonService implements DailyP
 
     @Override
     public SearchDailyPlannerResponse searchDailyPlanner(final User user, final User plannerWriter, final String date, final DailyPlanner dailyPlanner) {
-        final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
-        final List<DailyPlannerTodoResponse> dailyTodos = new ArrayList<>();
         totalMinutes = 0;
-        for (Todo todo : todoList) {
-            dailyTodos.add(DailyPlannerTodoResponse.builder()
-                    .todoId(todo.getId())
-                    .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
-                            .categoryId(todo.getCategory().getId())
-                            .categoryTitle(todo.getCategory().getCategoryTitle())
-                            .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
-                            .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
-                            .build() : null)
-                    .todoContent(todo.getTodoContent())
-                    .todoStatus(todo.getTodoStatus().getStatus())
-                    .timeTables(getTimeTable(todo))
-                    .build());
-        }
+        final List<Todo> todoList = todoRepository.findAllByDailyPlannerOrderByTodoIndex(dailyPlanner);
+        final List<DailyPlannerTodoResponse> dailyTodos = todoList.stream()
+                .map(todo -> DailyPlannerTodoResponse.builder()
+                        .todoId(todo.getId())
+                        .category(todo.getCategory() != null ? DailyPlannerTodoCategoryResponse.builder()
+                                .categoryId(todo.getCategory().getId())
+                                .categoryTitle(todo.getCategory().getCategoryTitle())
+                                .categoryColorCode(todo.getCategory().getCategoryColor().getCategoryColorCode())
+                                .categoryEmoticon(todo.getCategory().getCategoryEmoticon())
+                                .build() : null)
+                        .todoContent(todo.getTodoContent())
+                        .todoStatus(todo.getTodoStatus().getStatus())
+                        .timeTables(getTimeTable(todo))
+                        .build())
+                .collect(Collectors.toList());
 
         return SearchDailyPlannerResponse.builder()
                 .date(date)
