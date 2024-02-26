@@ -40,7 +40,12 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
       <div className={styles["signup-contract__form"]}>
         <div className={`${styles["signup-contract__line"]} ${styles["all-agree"]}`}>
           <Text types="small">전체 동의하기</Text>
-          <Checkbox name="allAgreed" checked={allAgreed} onChange={handleAllAgreementChange} />
+          <Checkbox
+            data-cy="allAgreedCheckbox"
+            name="allAgreed"
+            checked={allAgreed}
+            onChange={handleAllAgreementChange}
+          />
         </div>
 
         <div>
@@ -49,7 +54,12 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
               <Text types="small">이용약관 동의</Text>
               <Text types="small"> (필수)</Text>
             </div>
-            <Checkbox name="conditionsAgreed" checked={conditionsAgreed} onChange={handleAgreementChange} />
+            <Checkbox
+              data-cy="conditionsAgreed"
+              name="conditionsAgreed"
+              checked={conditionsAgreed}
+              onChange={handleAgreementChange}
+            />
           </div>
           <textarea className={styles["signup-contract__textarea"]} value={Conditions} readOnly>
             {Conditions}
@@ -62,7 +72,12 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
               <Text types="small">개인정보 수집 및 이용 동의</Text>
               <Text types="small"> (필수)</Text>
             </div>
-            <Checkbox name="personalInfoAgreed" checked={personalInfoAgreed} onChange={handleAgreementChange} />
+            <Checkbox
+              data-cy="personalInfoAgreed"
+              name="personalInfoAgreed"
+              checked={personalInfoAgreed}
+              onChange={handleAgreementChange}
+            />
           </div>
           <textarea className={styles["signup-contract__textarea"]} value={PersonalInformation} readOnly>
             {PersonalInformation}
@@ -71,7 +86,9 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
       </div>
 
       <div className={`${styles["signup-contract__button"]} ${!allAgreed ? styles["--disable"] : ""}`}>
-        <AuthButton onClick={onClickNext}>Next</AuthButton>
+        <AuthButton onClick={onClickNext} data-cy="nextButton">
+          Next
+        </AuthButton>
       </div>
     </>
   );
