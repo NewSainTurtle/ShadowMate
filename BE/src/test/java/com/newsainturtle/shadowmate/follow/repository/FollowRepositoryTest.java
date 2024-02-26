@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class FollowRepositoryTest {
+class FollowRepositoryTest {
 
     @Autowired
     private FollowRepository followRepository;
@@ -30,7 +30,7 @@ public class FollowRepositoryTest {
     private User user2;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user1 = userRepository.save(User.builder()
                 .email("test1@test.com")
                 .password("123456")

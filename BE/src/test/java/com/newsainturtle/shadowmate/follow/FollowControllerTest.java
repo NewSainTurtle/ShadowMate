@@ -79,7 +79,7 @@ class FollowControllerTest {
             .build();
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(followController)
                 .setControllerAdvice(new GlobalExceptionHandler())

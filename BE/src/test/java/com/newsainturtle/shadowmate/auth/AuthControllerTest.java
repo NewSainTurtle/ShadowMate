@@ -41,7 +41,7 @@ class AuthControllerTest {
     private final String nickname = "거북이";
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
                 .setControllerAdvice(new GlobalExceptionHandler())

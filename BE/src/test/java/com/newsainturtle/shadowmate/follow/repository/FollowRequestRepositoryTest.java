@@ -34,7 +34,7 @@ class FollowRequestRepositoryTest {
     private FollowRequest followRequest;
 
     @BeforeEach
-    public void init() {
+    void init() {
         user1 = userRepository.save(User.builder()
                 .email("test1@test.com")
                 .password("123456")

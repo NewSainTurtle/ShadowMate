@@ -58,7 +58,7 @@ class SocialControllerTest {
     private final Long userId = 1L;
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(socialController)
                 .setControllerAdvice(new GlobalExceptionHandler())

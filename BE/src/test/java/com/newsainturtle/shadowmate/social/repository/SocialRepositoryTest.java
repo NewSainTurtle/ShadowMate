@@ -50,7 +50,7 @@ class SocialRepositoryTest {
     private final String socialImage = "https://i.pinimg.com/564x/62/00/71/620071d0751e8cd562580a83ec834f7e.jpg";
 
     @BeforeEach
-    public void init() {
+    void init() {
         user1 = userRepository.save(User.builder()
                 .email("yntest@shadowmate.com")
                 .password("yntest1234")
