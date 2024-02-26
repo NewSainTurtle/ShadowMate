@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class UserControllerTest {
+class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
@@ -65,7 +65,7 @@ public class UserControllerTest {
             .build();
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(userController)
                 .setControllerAdvice(new GlobalExceptionHandler())
