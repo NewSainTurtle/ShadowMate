@@ -10,7 +10,7 @@ import { DeleteOutline } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { selectFriendId, setFriendInfo } from "@store/friendSlice";
-import { plannerApi, userApi } from "@api/Api";
+import { followApi, plannerApi } from "@api/Api";
 import { GuestBookConfig } from "@util/planner.interface";
 import { useNavigate } from "react-router-dom";
 import { FriendSearchResponse } from "@util/friend.interface";
@@ -142,7 +142,7 @@ const GuestBook = () => {
   };
 
   const handleMoveToFriendProfile = (id: number, nickname: string) => {
-    userApi
+    followApi
       .searches(userId, { nickname })
       .then((res) => {
         const response: FriendSearchResponse = res.data.data;

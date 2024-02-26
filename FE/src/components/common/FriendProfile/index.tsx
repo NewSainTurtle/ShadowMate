@@ -5,7 +5,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Avatar from "@components/common/Avatar";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
-import { followApi, userApi } from "@api/Api";
+import { followApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
 import { FollowType } from "@util/friend.interface";
@@ -34,7 +34,7 @@ const ProfileButton = ({ profileId, types, nickname }: ProfileButtonProps) => {
 
   useEffect(() => {
     if (types == "기본") {
-      userApi.searches(userId, { nickname }).then((res) => {
+      followApi.searches(userId, { nickname }).then((res) => {
         if (res.data.data.isFollow == "EMPTY") setType("아이콘");
         else setType("기본");
       });

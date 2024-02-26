@@ -16,7 +16,7 @@ import {
   selectFriendId,
   setFollowingList,
 } from "@store/friendSlice";
-import { authApi, followApi, userApi } from "@api/Api";
+import { authApi, followApi } from "@api/Api";
 
 interface Props {
   types: "기본" | "로그아웃";
@@ -73,7 +73,7 @@ const Profile = ({ types, profile }: Props) => {
 
   useEffect(() => {
     if (types == "기본" && friendId != userId) {
-      userApi.searches(userId, { nickname }).then((res) => {
+      followApi.searches(userId, { nickname }).then((res) => {
         if (res.data.data.isFollow == "EMPTY") setIsFollow(false);
         else setIsFollow(true);
       });
