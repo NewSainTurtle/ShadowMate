@@ -57,13 +57,15 @@ public class UserPlannerServiceImpl extends DateCommonService implements UserPla
     private CalendarDayTotalResponse getDayList(final User user, final User plannerWriter, final LocalDate date) {
         final List<CalendarDayResponse> dayList = new ArrayList<>();
         final List<Long> dailyPlannerIdList = new ArrayList<>();
-        int todoTotal = 0, todoIncomplete = 0;
+        int todoTotal = 0;
+        int todoIncomplete = 0;
         if (followService.havePermissionToSearch(user, plannerWriter)) {
             final int lastDay = YearMonth.from(date).lengthOfMonth();
             for (int i = 0; i < lastDay; i++) {
                 final String targetDate = localDateToString(date.plusDays(i));
                 final DailyPlanner dailyPlanner = dailyPlannerService.getDailyPlanner(plannerWriter, targetDate);
-                int todoCount = routineService.countRoutineTodo(plannerWriter, targetDate), dayStatus = 0;
+                int todoCount = routineService.countRoutineTodo(plannerWriter, targetDate);
+                int dayStatus = 0;
                 if (dailyPlanner != null) {
                     dailyPlannerIdList.add(dailyPlanner.getId());
                     final int totalCount = dailyPlannerService.countTodo(dailyPlanner) + todoCount;
