@@ -54,12 +54,7 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
               <Text types="small">이용약관 동의</Text>
               <Text types="small"> (필수)</Text>
             </div>
-            <Checkbox
-              data-cy="conditionsAgreed"
-              name="conditionsAgreed"
-              checked={conditionsAgreed}
-              onChange={handleAgreementChange}
-            />
+            <Checkbox name="conditionsAgreed" checked={conditionsAgreed} onChange={handleAgreementChange} />
           </div>
           <textarea className={styles["signup-contract__textarea"]} value={Conditions} readOnly>
             {Conditions}
@@ -72,12 +67,7 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
               <Text types="small">개인정보 수집 및 이용 동의</Text>
               <Text types="small"> (필수)</Text>
             </div>
-            <Checkbox
-              data-cy="personalInfoAgreed"
-              name="personalInfoAgreed"
-              checked={personalInfoAgreed}
-              onChange={handleAgreementChange}
-            />
+            <Checkbox name="personalInfoAgreed" checked={personalInfoAgreed} onChange={handleAgreementChange} />
           </div>
           <textarea className={styles["signup-contract__textarea"]} value={PersonalInformation} readOnly>
             {PersonalInformation}
