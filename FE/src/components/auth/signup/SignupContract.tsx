@@ -40,7 +40,12 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
       <div className={styles["signup-contract__form"]}>
         <div className={`${styles["signup-contract__line"]} ${styles["all-agree"]}`}>
           <Text types="small">전체 동의하기</Text>
-          <Checkbox name="allAgreed" checked={allAgreed} onChange={handleAllAgreementChange} />
+          <Checkbox
+            data-cy="allAgreedCheckbox"
+            name="allAgreed"
+            checked={allAgreed}
+            onChange={handleAllAgreementChange}
+          />
         </div>
 
         <div>
@@ -71,7 +76,9 @@ const SignupContract = ({ handleClickNext }: { handleClickNext: () => void }) =>
       </div>
 
       <div className={`${styles["signup-contract__button"]} ${!allAgreed ? styles["--disable"] : ""}`}>
-        <AuthButton onClick={onClickNext}>Next</AuthButton>
+        <AuthButton onClick={onClickNext} data-cy="nextButton">
+          Next
+        </AuthButton>
       </div>
     </>
   );

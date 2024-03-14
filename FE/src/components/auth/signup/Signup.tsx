@@ -16,7 +16,7 @@ const Signup = () => {
         {!isNext ? <SignupContract handleClickNext={handleClickNext} /> : <SignupAccount />}
         <div className={styles["signup_context"]}>
           <Text types="small">이미 회원이신가요?</Text>
-          <NavLink to={"/login"}>
+          <NavLink to={"/login"} data-cy="loginButton">
             <Text types="small">Login</Text>
           </NavLink>
         </div>

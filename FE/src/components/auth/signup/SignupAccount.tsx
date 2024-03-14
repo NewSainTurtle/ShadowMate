@@ -180,8 +180,9 @@ const SignupAccount = () => {
       <div className={styles["signup-account__form"]}>
         <div className={styles["signup-account__input"]}>
           <Input
-            placeholder="이메일"
             name="email"
+            dataCy="emailInput"
+            placeholder="이메일"
             value={email}
             onChange={handleInput}
             disabled={isEmailRedundancy}
@@ -190,15 +191,16 @@ const SignupAccount = () => {
             helperText={error.email || " "}
             maxLength={100}
           />
-          <Button types="gray" onClick={onClickEmail} disabled={isEmailRedundancy}>
+          <Button data-cy="emailButton" types="gray" onClick={onClickEmail} disabled={isEmailRedundancy}>
             {!isEmailAuthentication ? "메일인증" : "재전송"}
           </Button>
         </div>
         {isEmailAuthentication && (
           <div className={styles["signup-account__input"]}>
             <Input
-              placeholder="이메일 인증 코드"
               name="code"
+              dataCy="emailCodeInput"
+              placeholder="이메일 인증 코드"
               value={code}
               onChange={handleInput}
               disabled={isEmailRedundancy}
@@ -207,15 +209,16 @@ const SignupAccount = () => {
               helperText={error.code || " "}
               maxLength={6}
             />
-            <Button types="gray" onClick={onClickEmailCheck} disabled={isEmailRedundancy}>
+            <Button data-cy="emailCodeButton" types="gray" onClick={onClickEmailCheck} disabled={isEmailRedundancy}>
               {!isEmailRedundancy ? "인증확인" : "인증완료"}
             </Button>
           </div>
         )}
         <Input
+          name="password"
+          dataCy="passwordInput"
           placeholder="비밀번호(6~20자)"
           types="password"
-          name="password"
           value={password}
           onChange={handleInput}
           onBlur={checkError}
@@ -224,9 +227,10 @@ const SignupAccount = () => {
           maxLength={20}
         />
         <Input
+          name="passwordCheck"
+          dataCy="passwordCheckInput"
           placeholder="비밀번호 확인"
           types="password"
-          name="passwordCheck"
           value={passwordCheck}
           onChange={handleInput}
           onBlur={checkError}
@@ -236,8 +240,9 @@ const SignupAccount = () => {
         />
         <div className={styles["signup-account__input"]}>
           <Input
-            placeholder="닉네임(특수문자 제외, 2~10자)"
             name="nickname"
+            dataCy="nicknameInput"
+            placeholder="닉네임(특수문자 제외, 2~10자)"
             value={nickname}
             onChange={handleInput}
             onBlur={checkError}
@@ -245,7 +250,7 @@ const SignupAccount = () => {
             helperText={error.nickname || " "}
             maxLength={10}
           />
-          <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
+          <Button data-cy="nicknameButton" types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
             {!isNicknameAuthentication ? "중복확인" : "검사완료"}
           </Button>
         </div>
@@ -255,7 +260,7 @@ const SignupAccount = () => {
         <Text types="small">{errorMessage}</Text>
       </div>
 
-      <div className={styles["signup-account__button"]} onClick={onClickJoin}>
+      <div data-cy="signupButton" className={styles["signup-account__button"]} onClick={onClickJoin}>
         <AuthButton>Sign up</AuthButton>
       </div>
     </>
