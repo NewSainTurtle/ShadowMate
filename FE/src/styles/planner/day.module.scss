@@ -346,8 +346,7 @@ $color-btn-blue: var(--color-btn-blue);
     box-sizing: border-box;
   }
 
-  &--disable {
-    @extend .todo-item;
+  &.--disable {
     border-bottom: 1px solid $color-gray_3;
   }
 

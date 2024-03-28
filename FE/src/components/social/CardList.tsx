@@ -3,7 +3,7 @@ import styles from "@styles/social/Social.module.scss";
 import CardItem from "@components/social/CardItem";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
-import { ProfileConfig } from "@components/common/FriendProfile";
+import { ProfileConfig } from "@util/auth.interface";
 import { socialApi } from "@api/Api";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
@@ -61,20 +61,19 @@ const CardList = ({ scrollRef }: Props) => {
     if (pageNumber != 1) getPost(pageNumber);
   }, [pageNumber]);
 
-  const obsHandler = async (entries: IntersectionObserverEntry[]) => {
+  const obsHandler = (() => (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (!endRef.current && target.isIntersecting && preventRef.current) {
       preventRef.current = false;
       setPageNumber((prev) => prev + 1);
     }
-  };
+  })();
 
   const getPost = useCallback(
     async (pageNumber: number) => {
       setLoad(true);
       try {
-        let response: { totalPage: number; socialList: [] };
-        response = (
+        const response = (
           await socialApi.getSocial(userId, {
             sort: sort,
             "page-number": pageNumber,

@@ -46,7 +46,11 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
     private String createNicknameRandomCode(final String name) {
         final String temp = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        int length = name == null ? 0 : name.length() > 3 ? 4 : name.length();
+        int length = 0;
+        if (name != null) {
+            if (name.length() > 3) length = 4;
+            else length = name.length();
+        }
         final StringBuilder sb = new StringBuilder();
         final SecureRandom random = new SecureRandom();
 

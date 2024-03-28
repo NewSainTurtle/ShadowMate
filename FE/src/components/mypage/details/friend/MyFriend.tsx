@@ -12,7 +12,7 @@ const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색"
   const [followRequestData, setFollowRequestData] = useState<FollowRequestType[]>([]); // 팔로우 요청
   const [followerData, setFolloweData] = useState<FollowerType[]>([]); // 내 팔로워
   const [followingData, setFollowingData] = useState<FollowingType[]>([]); // 내 팔로잉
-  const followState: boolean = useAppSelector(selectFollowState);
+  const followState = useAppSelector(selectFollowState);
 
   useLayoutEffect(() => {
     switch (title) {
@@ -46,22 +46,20 @@ const MyFriend = ({ title }: { title: "팔로워" | "팔로잉" | "친구검색"
 
   return (
     <div className={styles["friend__cantainer"]}>
-      <div className={styles["friend__content"]}>
+      {
         {
-          {
-            팔로워: (
-              <>
-                {followRequestData.length != 0 && (
-                  <MyFriendFrame title="팔로우 요청 목록" friendList={followRequestData} />
-                )}
-                <MyFriendFrame title="내 팔로워" friendList={followerData} />
-              </>
-            ),
-            팔로잉: <MyFriendFrame title="내 팔로잉" friendList={followingData} />,
-            친구검색: <MyFriendFrame title="친구 검색" search />,
-          }[title]
-        }
-      </div>
+          팔로워: (
+            <>
+              {followRequestData.length != 0 && (
+                <MyFriendFrame title="팔로우 요청 목록" friendList={followRequestData} />
+              )}
+              <MyFriendFrame title="내 팔로워" friendList={followerData} />
+            </>
+          ),
+          팔로잉: <MyFriendFrame title="내 팔로잉" friendList={followingData} />,
+          친구검색: <MyFriendFrame title="친구 검색" search />,
+        }[title]
+      }
     </div>
   );
 };

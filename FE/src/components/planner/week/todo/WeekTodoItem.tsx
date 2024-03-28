@@ -44,13 +44,13 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
   };
 
   const handleUpdateState = () => {
-    let copyTodos = [...weeklyTodos];
+    const copyTodos = [...weeklyTodos];
     setTodo({ ...todo, oldTodo: copyTodos[idx].weeklyTodoContent });
     copyTodos[idx] = { ...copyTodos[idx], weeklyTodoUpdate: !copyTodos[idx].weeklyTodoUpdate };
     dispatch(setWeeklyTodos(copyTodos));
   };
 
-  const handleUpdateStatus = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleUpdateStatus = () => {
     putUpdateWeeklyTodoStatus();
   };
 
@@ -58,7 +58,7 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
     let content = e.target.value;
     if (content === "") content = todo.oldTodo;
 
-    let copyTodos = [...weeklyTodos];
+    const copyTodos = [...weeklyTodos];
     copyTodos[idx] = {
       ...copyTodos[idx],
       weeklyTodoContent: content,
@@ -69,7 +69,7 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
   };
 
   const handleDelete = () => {
-    let newTodos = weeklyTodos.filter((item, i) => idx != i);
+    const newTodos = weeklyTodos.filter((item, i) => idx != i);
     dispatch(setWeeklyTodos(newTodos));
     deleteWeeklyTodo();
   };
@@ -83,7 +83,7 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
         weeklyTodoContent: content,
       })
       .then()
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const putUpdateWeeklyTodoStatus = () => {
@@ -94,30 +94,24 @@ const WeekTodoItem = ({ id, idx, item, isMine }: Props) => {
         weeklyTodoId: id,
         weeklyTodoStatus: !checked,
       })
-      .then((res) => {
+      .then(() => {
         setChecked(!checked);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const deleteWeeklyTodo = () => {
     plannerApi
       .deleteWeeklyTodos(userId, { startDate: dates[0], endDate: dates[1], weeklyTodoId: id })
       .then()
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   return (
     <>
       <div className={styles[`todo__item${friend}`]} key={item.weeklyTodoId}>
         <div className={styles["todo__checkbox"]}>
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={(e) => {
-              handleUpdateStatus(e);
-            }}
-          />
+          <input type="checkbox" checked={checked} onChange={handleUpdateStatus} />
           {item.weeklyTodoUpdate ? (
             <input
               autoFocus

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 import styles from "@styles/planner/Week.module.scss";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { selectThisWeek, selectWeeklyTodos, setWeeklyTodos } from "@store/planner/weekSlice";
@@ -24,7 +24,7 @@ const WeekTodoInput = () => {
     setWeeklyTodo();
   };
 
-  const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleOnBlur = () => {
     if (todo === "") return;
     setWeeklyTodo();
   };
@@ -37,12 +37,12 @@ const WeekTodoInput = () => {
         weeklyTodoContent: todo,
       })
       .then((res) => {
-        const returnId = res.data.data.weeklyTodoId;
+        const weeklyTodoId: number = res.data.data.weeklyTodoId;
         dispatch(
           setWeeklyTodos([
             ...weeklyTodos,
             {
-              weeklyTodoId: returnId,
+              weeklyTodoId,
               weeklyTodoContent: todo,
               weeklyTodoStatus: false,
               weeklyTodoUpdate: false,
@@ -51,7 +51,7 @@ const WeekTodoInput = () => {
         );
         setTodo("");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {

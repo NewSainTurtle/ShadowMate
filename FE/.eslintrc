@@ -3,8 +3,7 @@
   "env": {
     "browser": true,
     "es2021": true,
-    "node": true,
-    "jest": true
+    "node": true
   },
   "extends": [
     "eslint:recommended",
@@ -12,15 +11,31 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:prettier/recommended",
-    "plugin:jest/recommended",
     "plugin:cypress/recommended"
   ],
-  "ignorePatterns": ["webpack.**.js", "jest.config.ts", "setupTests.ts"], // lint 설정을 무시할 설정 파일
+  "ignorePatterns": ["webpack.**.js", "setupTests.ts", "cypress.config.ts"], // lint 설정을 무시할 설정 파일
   "parser": "@typescript-eslint/parser",
-  "plugins": ["react", "@typescript-eslint", "jest", "cypress"],
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./cypress/tsconfig.json"]
+  },
+  "plugins": ["react", "@typescript-eslint", "cypress", "prettier"],
   "rules": {
     "no-var": "error",
-    "no-unused-vars": "error", // 사용하지 않는 변수 금지
-    "no-console": "off" // 콘솔 로그 사용 가능 (콘솔 로그 사용시 경고 → ["warn", { "allow": ["warn", "error", "info"] }] )
+    "no-unused-vars": "off", // @typescript-eslint/no-unused-vars로 대체
+    "no-console": ["warn", { "allow": ["warn", "error", "info"] }], // 콘솔 로그 사용시 경고
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ],
+    "@typescript-eslint/no-floating-promises": "off", // 함수 사용할 땐 void 명시하기
+    "@typescript-eslint/restrict-plus-operands": "off" // 덧셈 연산자는 모두 동일한 유형이고, 'number' 또는 'string'이어야 한다.
   }
 }

@@ -7,7 +7,6 @@ import DayPage from "@pages/Planner/DayPage";
 import MonthPage from "@pages/Planner/MonthPage";
 import WeekPage from "@pages/Planner/WeekPage";
 import SocialPage from "@pages/SocialPage";
-import CommonPage from "@pages/commonPage";
 import NotFoundPage from "@pages/NotFoundPage";
 import MyPage from "@pages/MyPage";
 import AuthPage from "@pages/AuthPage";
@@ -57,27 +56,19 @@ const App = () => {
         localStorage.removeItem("AL");
         navigator("/login");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleAutoLogin = async (key: string) => {
-    try {
-      const headers = {
-        "Auto-Login": key,
-      };
-      const res = await authApi.autoLogin(null, headers);
-      const accessToken = res.headers["authorization"];
-      const userId = res.headers["id"];
-      const type = res.headers["type"];
-      dispatch(setLogin({ accessToken, userId, type }));
-      navigator("/month");
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 403) {
-          localStorage.removeItem("AL");
-        }
-      }
-    }
+    const headers = {
+      "Auto-Login": key,
+    };
+    const res = await authApi.autoLogin(headers);
+    const accessToken = res.headers["authorization"] as string;
+    const userId = res.headers["id"] as number;
+    const type = res.headers["type"] as string;
+    dispatch(setLogin({ accessToken, userId, type }));
+    navigator("/month");
   };
 
   useEffect(() => {
@@ -95,7 +86,14 @@ const App = () => {
 
   useEffect(() => {
     const key = localStorage.getItem("AL");
-    if (key && !isLogin) handleAutoLogin(key);
+    if (key && !isLogin)
+      handleAutoLogin(key).catch((err) => {
+        if (err instanceof AxiosError) {
+          if (err.response?.status === 403) {
+            localStorage.removeItem("AL");
+          }
+        }
+      });
   }, []);
 
   return (
@@ -131,9 +129,7 @@ const App = () => {
               <Route path="/search" element={<MyPage name="친구 검색" />} />
               <Route path="/category" element={<MyPage name="카테고리 설정" />} />
             </Route>
-
             <Route path="*" element={<NotFoundPage />} />
-            <Route path="/common" element={<CommonPage />} />
           </Routes>
         </div>
         <Alert types={type} open={open} onClose={() => dispatch(setAlertClose())} message={message} />

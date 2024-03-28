@@ -6,6 +6,10 @@ import { selectUserId } from "@store/authSlice";
 import { selectFriendId } from "@store/friendSlice";
 import { userApi } from "@api/Api";
 
+export interface IntroductionConfig {
+  introduction: string;
+}
+
 interface Props {
   isEdit: boolean;
   introduction: string;
@@ -46,7 +50,7 @@ const Introduction = ({ isEdit, introduction, setIntroduction }: Props) => {
           {introduction ? (
             introduction.split("\n").map((item: string, idx: number) => {
               return (
-                <Fragment key={idx}>
+                <Fragment key={idx.toString()}>
                   <Text>{item}</Text>
                   <br />
                 </Fragment>

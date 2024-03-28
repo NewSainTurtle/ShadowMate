@@ -5,9 +5,10 @@ import WeekTodo from "@components/planner/week/todo/WeekTodo";
 import Text from "@components/common/Text";
 import FriendProfile from "@components/common/FriendProfile";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
-import { getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
+import { WeekInfoConfig, getThisWeek, getThisWeekCnt } from "@util/getThisWeek";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { DayListConfig, selectDayList, selectThisWeek, setThisWeek, setWeekInfo } from "@store/planner/weekSlice";
+import { ProfileConfig } from "@util/auth.interface";
 import { selectUserId } from "@store/authSlice";
 import { plannerApi } from "@api/Api";
 import { selectFriendId, selectFriendInfo } from "@store/friendSlice";
@@ -15,13 +16,13 @@ import dayjs from "dayjs";
 
 const Week = () => {
   const dispatch = useAppDispatch();
-  const userId = useAppSelector(selectUserId);
-  let friendId = useAppSelector(selectFriendId);
+  const userId: number = useAppSelector(selectUserId);
+  let friendId: number = useAppSelector(selectFriendId);
   friendId = friendId != 0 ? friendId : userId;
-  const friendInfo = useAppSelector(selectFriendInfo);
-  const dayList = useAppSelector(selectDayList);
-  const week = useAppSelector(selectThisWeek);
-  const thisWeekCnt = getThisWeekCnt(week);
+  const friendInfo: ProfileConfig = useAppSelector(selectFriendInfo);
+  const dayList: DayListConfig[] = useAppSelector(selectDayList);
+  const week: Date = useAppSelector(selectThisWeek);
+  const thisWeekCnt: WeekInfoConfig = getThisWeekCnt(week);
   const [isMine, setIsMine] = useState<boolean>(userId === friendId);
   const [retroClick, setRetroClick] = useState<number>(-1);
 
@@ -50,7 +51,7 @@ const Week = () => {
           }),
         );
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useLayoutEffect(() => {

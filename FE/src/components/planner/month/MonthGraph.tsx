@@ -4,11 +4,11 @@ import { monthStatusColor as statusColor } from "@util/colors";
 
 const MonthGraph = () => {
   return (
-    <div className={styles.graph}>
+    <div className={styles["graph"]}>
       <span>Less</span>
       <div>
         {statusColor.map((colors: string, i: number) => (
-          <div key={i} style={{ backgroundColor: colors }} />
+          <div key={i.toString()} style={{ backgroundColor: colors }} />
         ))}
       </div>
       <span>More</span>

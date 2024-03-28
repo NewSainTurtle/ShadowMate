@@ -2,7 +2,7 @@ import React from "react";
 import styles from "@styles/common/Profile.module.scss";
 import Text from "@components/common/Text";
 import Avatar from "@components/common/Avatar";
-import { ProfileConfig } from "@components/common/FriendProfile";
+import { ProfileConfig } from "@util/auth.interface";
 import { useAppDispatch } from "@hooks/hook";
 import { setFriendInfo } from "@store/friendSlice";
 import { useNavigate } from "react-router-dom";

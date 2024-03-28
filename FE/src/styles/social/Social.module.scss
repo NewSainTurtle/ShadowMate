@@ -128,7 +128,7 @@ $color-gray_5: var(--color-gray-5);
   place-items: center stretch;
   gap: 0.5em 2em;
 
-  > div:last-child(1) {
+  > div:last-child {
     height: 1px;
   }
 

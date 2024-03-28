@@ -11,15 +11,11 @@ import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
 import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
-import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
-import com.newsainturtle.shadowmate.user.exception.UserException;
-import com.newsainturtle.shadowmate.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,11 +25,10 @@ public class FollowServiceImpl implements FollowService {
 
     private final FollowRepository followRepository;
     private final FollowRequestRepository followRequestRepository;
-    private final UserRepository userRepository;
 
     @Override
     public List<FollowingResponse> getFollowing(final User user) {
-        List<Follow> followingList = followRepository.findAllByFollower(user);
+        final List<Follow> followingList = followRepository.findAllByFollower(user);
         return followingList.stream()
                 .map(follow -> FollowingResponse.builder()
                         .followId(follow.getId())
@@ -42,12 +37,13 @@ public class FollowServiceImpl implements FollowService {
                         .profileImage(follow.getFollowing().getProfileImage())
                         .statusMessage(follow.getFollowing().getStatusMessage())
                         .followingId(follow.getFollowing().getId())
-                        .build()).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<FollowerResponse> getFollower(final User user) {
-        List<Follow> followerList = followRepository.findAllByFollowing(user);
+        final List<Follow> followerList = followRepository.findAllByFollowing(user);
         return followerList.stream()
                 .map(follow -> FollowerResponse.builder()
                         .followId(follow.getId())
@@ -57,12 +53,13 @@ public class FollowServiceImpl implements FollowService {
                         .followerId(follow.getFollower().getId())
                         .statusMessage(follow.getFollower().getStatusMessage())
                         .isFollow(isFollow(user, follow.getFollower()))
-                        .build()).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<FollowRequestResponse> getFollowRequestList(final User user) {
-        List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiver(user);
+        final List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiver(user);
         return followRequestList.stream()
                 .map(followRequest -> FollowRequestResponse.builder()
                         .followRequestId(followRequest.getId())
@@ -72,13 +69,13 @@ public class FollowServiceImpl implements FollowService {
                         .profileImage(followRequest.getRequester().getProfileImage())
                         .statusMessage(followRequest.getRequester().getStatusMessage())
                         .plannerAccessScope(followRequest.getRequester().getPlannerAccessScope())
-                        .build()).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public AddFollowResponse addFollow(final User user, final Long targetUserId) {
-        User targetUser = certifyFollowUser(targetUserId);
+    public AddFollowResponse addFollow(final User user, final User targetUser) {
         if (targetUser.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC)) {
             return addFollowPublic(user, targetUser);
         } else {
@@ -88,32 +85,28 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public void deleteFollowing(final User user, final Long targetUserId) {
-        User targetUser = certifyFollowUser(targetUserId);
+    public void deleteFollowing(final User user, final User targetUser) {
         followRepository.deleteByFollowingAndFollower(targetUser, user);
     }
 
     @Override
     @Transactional
-    public void deleteFollower(final User user, final Long targetUserId) {
-        User targetUser = certifyFollowUser(targetUserId);
+    public void deleteFollower(final User user, final User targetUser) {
         followRepository.deleteByFollowingAndFollower(user, targetUser);
     }
 
     @Override
     @Transactional
-    public void deleteFollowRequest(final User user, final Long targetUserId) {
-        User targetUser = certifyFollowUser(targetUserId);
+    public void deleteFollowRequest(final User user, final User targetUser) {
         followRequestRepository.deleteByRequesterAndReceiver(user, targetUser);
     }
 
     @Override
     @Transactional
-    public String receiveFollow(final User user, final Long targetUserId, final boolean followReceive) {
-        User targetUser = certifyFollowUser(targetUserId);
-        FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(targetUser, user);
+    public String receiveFollow(final User user, final User targetUser, final boolean followReceive) {
+        final FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(targetUser, user);
         if (followRequest == null) {
-            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_REQUEST);
+            throw new FollowException(FollowErrorResult.NOT_FOUND_FOLLOW_REQUEST);
         }
         followRequestRepository.deleteByRequesterAndReceiver(targetUser, user);
         if (followReceive) {
@@ -128,9 +121,9 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public FollowStatus isFollow(final User user, final User searchUser) {
-        Follow follow = followRepository.findByFollowingAndFollower(searchUser, user);
+        final Follow follow = followRepository.findByFollowingAndFollower(searchUser, user);
         if (follow == null) {
-            FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(user, searchUser);
+            final FollowRequest followRequest = followRequestRepository.findByRequesterAndReceiver(user, searchUser);
             if (followRequest == null) {
                 return FollowStatus.EMPTY;
             }
@@ -140,15 +133,10 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public CountFollowResponse countFollow(final Long userId) {
-        Optional<User> result = userRepository.findById(userId);
-        if (!result.isPresent()) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
-        final User user = result.get();
+    public CountFollowResponse countFollow(final User targetUser) {
         return CountFollowResponse.builder()
-                .followerCount(followRepository.countByFollowing(user))
-                .followingCount(followRepository.countByFollower(user))
+                .followerCount(followRepository.countByFollowing(targetUser))
+                .followingCount(followRepository.countByFollower(targetUser))
                 .build();
     }
 
@@ -156,12 +144,12 @@ public class FollowServiceImpl implements FollowService {
         if (followRepository.findByFollowingAndFollower(following, follower) != null) {
             throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
         }
-        Follow result = followRepository.save(Follow.builder()
+        final long followId = followRepository.save(Follow.builder()
                 .follower(follower)
                 .following(following)
-                .build());
+                .build()).getId();
         return AddFollowResponse.builder()
-                .followId(result.getId())
+                .followId(followId)
                 .plannerAccessScope(following.getPlannerAccessScope())
                 .build();
     }
@@ -170,21 +158,57 @@ public class FollowServiceImpl implements FollowService {
         if (followRequestRepository.findByRequesterAndReceiver(requester, receiver) != null) {
             throw new FollowException(FollowErrorResult.DUPLICATED_FOLLOW);
         }
-        FollowRequest result = followRequestRepository.save(FollowRequest.builder()
+        final long followRequestId = followRequestRepository.save(FollowRequest.builder()
                 .requester(requester)
                 .receiver(receiver)
-                .build());
+                .build()).getId();
+
         return AddFollowResponse.builder()
-                .followId(result.getId())
+                .followId(followRequestId)
                 .plannerAccessScope(receiver.getPlannerAccessScope())
                 .build();
     }
 
-    private User certifyFollowUser(final Long userId) {
-        Optional<User> result = userRepository.findById(userId);
-        if (!result.isPresent() || result.get().getWithdrawal().booleanValue()) {
-            throw new FollowException(FollowErrorResult.NOTFOUND_FOLLOW_USER);
+    @Override
+    public SearchUserResponse searchNickname(final User user, final User searchUser) {
+        if (searchUser == null) {
+            return SearchUserResponse.builder().build();
         }
-        return result.get();
+        return SearchUserResponse.builder()
+                .userId(searchUser.getId())
+                .email(searchUser.getEmail())
+                .profileImage(searchUser.getProfileImage())
+                .nickname(searchUser.getNickname())
+                .statusMessage(searchUser.getStatusMessage())
+                .plannerAccessScope(searchUser.getPlannerAccessScope())
+                .isFollow(isFollow(user, searchUser))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void acceptAllFollowRequest(final User user) {
+        List<FollowRequest> followRequestList = followRequestRepository.findAllByReceiver(user);
+        for (FollowRequest followRequest : followRequestList) {
+            followRepository.save(Follow.builder()
+                    .follower(followRequest.getRequester())
+                    .following(user)
+                    .build());
+        }
+        followRequestRepository.deleteAllByReceiver(user.getId());
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(final User user) {
+        followRepository.deleteAllByFollowingOrFollower(user, user);
+        followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
+    }
+
+    @Override
+    public boolean havePermissionToSearch(final User user, final User plannerWriter) {
+        return user.getId().equals(plannerWriter.getId()) ||
+                plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.PUBLIC) ||
+                (plannerWriter.getPlannerAccessScope().equals(PlannerAccessScope.FOLLOW) && followRepository.findByFollowingAndFollower(plannerWriter, user) != null);
     }
 }

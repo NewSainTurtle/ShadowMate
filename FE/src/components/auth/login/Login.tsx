@@ -1,17 +1,17 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import styles from "@styles/auth/Login.module.scss";
 import Input from "@components/common/Input";
-import AuthButton from "../AuthButton";
+import AuthButton from "@components/auth/AuthButton";
 import Text from "@components/common/Text";
 import Google from "@assets/Icons/google_icon.svg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { authApi, userApi } from "@api/Api";
 import { useAppDispatch, useAppSelector } from "@hooks/hook";
 import { setLogin, selectAutoLogin, setAutoLogin, setIsGoogle, setUserInfo } from "@store/authSlice";
-import { setPopupOpen } from "@store/modalSlice";
 
 const getCookie = (name: string) => {
-  const value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  const regExp = new RegExp("(^|;) ?" + name + "=([^;]*)(;|$)");
+  const value = regExp.exec(document.cookie);
   return value ? value[2] : null;
 };
 
@@ -65,13 +65,13 @@ const Login = () => {
       .login({ email: email, password: password })
       .then((res) => {
         setShowAlert(false);
-        const accessToken = res.headers["authorization"];
-        const userId = res.headers["id"];
-        const type = res.headers["type"];
+        const accessToken = res.headers["authorization"] as string;
+        const userId = res.headers["id"] as number;
+        const type = res.headers["type"] as string;
         dispatch(setLogin({ accessToken, userId, type }));
 
         // 자동로그인 auto-login 코드 저장
-        const auto = res.headers["auto-login"];
+        const auto = res.headers["auto-login"] as string;
         if (auto) localStorage.setItem("AL", auto);
 
         userApi.getProfiles(userId).then((res) => {
@@ -83,7 +83,7 @@ const Login = () => {
       })
       .catch((err) => {
         setShowAlert(true);
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -104,7 +104,7 @@ const Login = () => {
           dispatch(setUserInfo(res.data.data));
           navigator("/month");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
   }, [document.cookie]);
 
@@ -115,23 +115,25 @@ const Login = () => {
         <div className={styles.login_input}>
           <Input
             name="email"
+            dataCy="emailInput"
             value={email}
             types="default"
             placeholder="이메일"
             onChange={onChange}
             error={!error.email} // false일 시 error
-            helperText={!error.email && "이메일을 입력해주세요."}
+            helperText={!error.email && <p id="helper-text__email">이메일을 입력해주세요.</p>}
             onKeyDown={handleOnKeyPress}
             maxLength={100}
           />
           <Input
             name="password"
+            dataCy="passwordInput"
             value={password}
             types="password"
             placeholder="비밀번호"
             onChange={onChange}
             error={!error.password}
-            helperText={!error.password && "비밀번호를 입력해주세요."}
+            helperText={!error.password && <p id="helper-text__password">비밀번호를 입력해주세요.</p>}
             onKeyDown={handleOnKeyPress}
             maxLength={20}
           />
@@ -145,14 +147,20 @@ const Login = () => {
           </div>
           {/* <Text types="small">비밀번호 찾기</Text> */}
         </div>
-        <div className={styles.login_warning} style={{ visibility: showAlert ? "visible" : "hidden" }}>
+        <div
+          className={styles.login_warning}
+          style={{ visibility: showAlert ? "visible" : "hidden" }}
+          data-testid="error-message"
+        >
           <Text types="small">이메일 또는 비밀번호를 잘못 입력했습니다.</Text>
           <Text types="small">입력하신 내용을 다시 확인해주세요</Text>
         </div>
-        <AuthButton onClick={handleLogin}>Login</AuthButton>
+        <AuthButton onClick={handleLogin} data-cy="loginButton">
+          Login
+        </AuthButton>
         <div className={styles.login_signup}>
           <Text types="small">아직 회원이 아니신가요? </Text>
-          <NavLink to="/signup">
+          <NavLink to="/signup" data-cy="signupButton">
             <Text types="small">Sign Up</Text>
           </NavLink>
         </div>
@@ -161,7 +169,7 @@ const Login = () => {
           <Text types="small">or</Text>
         </div>
         <div className={styles.login_social}>
-          <button onClick={handleGoogleLogin}>
+          <button onClick={handleGoogleLogin} data-cy="socialButton">
             <img src={Google} alt="Goolgle Icon" />
             <span>Continue with Google</span>
           </button>

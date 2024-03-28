@@ -21,7 +21,7 @@ const SocialProfile = ({ idx, item, setDeleteItem, handleDeleteModalOpen }: Prop
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
   const userName = useAppSelector(selectUserInfo).nickname;
-  const { socialId, socialImage, dailyPlannerDay, ...friend } = item;
+  const { socialId, ...friend } = item;
   const mine = userName == friend.nickname;
   const { profileImage, statusMessage, nickname } = friend;
 
@@ -61,7 +61,7 @@ const SocialProfile = ({ idx, item, setDeleteItem, handleDeleteModalOpen }: Prop
 const CardItem = ({ idx, item, setDeleteItem, handleDeleteModalOpen }: Props) => {
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
-  const { socialId, socialImage, dailyPlannerDay, ...user } = item;
+  const { dailyPlannerDay, ...user } = item;
   const [isLoading, setIsLoading] = useState(true);
 
   const handleClickImage = () => {

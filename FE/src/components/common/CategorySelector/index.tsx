@@ -23,7 +23,7 @@ const CategorySelector = ({ type, handleClick, addBtn }: Props) => {
         <Text>카테고리 선택</Text>
       </div>
       <div>
-        {categoryList.map((item, idx) => (
+        {categoryList.map((item) => (
           <div key={item.categoryId} className={styles["category__item--hover"]} onClick={() => handleClick(item)}>
             {
               {

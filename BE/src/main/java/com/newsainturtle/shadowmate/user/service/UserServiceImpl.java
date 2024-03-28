@@ -1,18 +1,11 @@
 package com.newsainturtle.shadowmate.user.service;
 
-import com.newsainturtle.shadowmate.auth.service.RedisServiceImpl;
-import com.newsainturtle.shadowmate.follow.repository.FollowRepository;
-import com.newsainturtle.shadowmate.follow.repository.FollowRequestRepository;
-import com.newsainturtle.shadowmate.follow.service.FollowServiceImpl;
-import com.newsainturtle.shadowmate.planner.repository.DailyPlannerRepository;
-import com.newsainturtle.shadowmate.planner.repository.VisitorBookRepository;
-import com.newsainturtle.shadowmate.social.repository.SocialRepository;
+import com.newsainturtle.shadowmate.auth.service.RedisService;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateIntroductionRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdatePasswordRequest;
 import com.newsainturtle.shadowmate.user.dto.request.UpdateUserRequest;
 import com.newsainturtle.shadowmate.user.dto.response.ProfileResponse;
 import com.newsainturtle.shadowmate.user.dto.response.SearchIntroductionResponse;
-import com.newsainturtle.shadowmate.user.dto.response.UserResponse;
 import com.newsainturtle.shadowmate.user.entity.User;
 import com.newsainturtle.shadowmate.user.enums.PlannerAccessScope;
 import com.newsainturtle.shadowmate.user.exception.UserErrorResult;
@@ -25,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,21 +25,13 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final FollowRepository followRepository;
-    private final FollowRequestRepository followRequestRepository;
-    private final SocialRepository socialRepository;
-    private final DailyPlannerRepository dailyPlannerRepository;
-    private final VisitorBookRepository visitorBookRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final RedisServiceImpl redisService;
-    private final FollowServiceImpl followService;
+    private final RedisService redisService;
 
     @Override
     public ProfileResponse getProfile(final Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (!optionalUser.isPresent()) throw new UserException(UserErrorResult.NOT_FOUND_PROFILE);
-        User user = optionalUser.get();
+        final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
+        if (user == null) throw new UserException(UserErrorResult.NOT_FOUND_PROFILE);
         return ProfileResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
@@ -58,27 +42,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse searchNickname(final User user, final String nickname) {
-        final User searchUser = userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
-        if (searchUser == null) {
-            return UserResponse.builder().build();
-        }
-        return UserResponse.builder()
-                .userId(searchUser.getId())
-                .email(searchUser.getEmail())
-                .profileImage(searchUser.getProfileImage())
-                .nickname(searchUser.getNickname())
-                .statusMessage(searchUser.getStatusMessage())
-                .plannerAccessScope(searchUser.getPlannerAccessScope())
-                .isFollow(followService.isFollow(user, searchUser))
-                .build();
-    }
-
-    @Override
     public SearchIntroductionResponse searchIntroduction(final Long userId) {
-        if (userRepository.findByIdAndWithdrawalIsFalse(userId) == null) {
-            throw new UserException(UserErrorResult.NOT_FOUND_USER);
-        }
+        getUserById(userId);
         return SearchIntroductionResponse.builder()
                 .introduction(userRepository.findIntroduction(userId))
                 .build();
@@ -120,11 +85,32 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(final User user) {
-        followRepository.deleteAllByFollowingOrFollower(user, user);
-        followRequestRepository.deleteAllByRequesterOrReceiver(user, user);
-        socialRepository.updateDeleteTimeAll(LocalDateTime.now(), dailyPlannerRepository.findAllByUser(user));
-        visitorBookRepository.deleteAllByVisitorId(user.getId());
         userRepository.deleteUser(LocalDateTime.now(), user.getId(), PlannerAccessScope.PRIVATE, createNicknameRandomCode());
+    }
+
+    @Override
+    public User getUserByNickname(final String nickname) {
+        return userRepository.findByNicknameAndWithdrawalIsFalse(nickname);
+    }
+
+    @Override
+    public User getUserById(final long userId) {
+        final User user = userRepository.findByIdAndWithdrawalIsFalse(userId);
+        if (user == null) {
+            throw new UserException(UserErrorResult.NOT_FOUND_USER);
+        }
+        return user;
+    }
+
+    @Override
+    public User getUserByNicknameAndScopePublic(final String nickname) {
+        return userRepository.findByNicknameAndPlannerAccessScopeAndWithdrawalIsFalse(nickname, PlannerAccessScope.PUBLIC);
+    }
+
+    @Override
+    @Transactional
+    public void updatePlannerAccessScope(final Long userId, final PlannerAccessScope plannerAccessScope) {
+        userRepository.updatePlannerAccessScope(plannerAccessScope, userId);
     }
 
     private String createNicknameRandomCode() {

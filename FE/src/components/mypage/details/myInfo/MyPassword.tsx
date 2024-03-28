@@ -42,7 +42,7 @@ const MyPassword = () => {
     });
   };
 
-  const saveMyInfo = async () => {
+  const saveMyInfo = () => {
     if (!password.oldPassword.length) setError({ ...error, oldPassword: true });
     else if (!(error.newPassword || error.newPasswordCheck)) {
       userApi
@@ -54,7 +54,7 @@ const MyPassword = () => {
             newPasswordCheck: "",
           });
         })
-        .catch((err) => setError({ ...error, oldPassword: true }));
+        .catch(() => setError({ ...error, oldPassword: true }));
     }
   };
 

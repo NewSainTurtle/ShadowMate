@@ -5,12 +5,10 @@ import AddIcon from "@mui/icons-material/Add";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId, selectUserInfo } from "@store/authSlice";
 import { FollowingType } from "@util/friend.interface";
+import { ProfileConfig } from "@util/auth.interface";
 import { throttle } from "@util/EventControlModule";
 import { useNavigate } from "react-router-dom";
-import { ProfileConfig } from "@components/common/FriendProfile";
 import { selectFollowingList } from "@store/friendSlice";
-// import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"; // 추후 추가 예정
-// import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const MonthFriends = () => {
   const navigator = useNavigate();
@@ -69,7 +67,7 @@ const MonthFriends = () => {
         <FriendProfileIcon profile={userProfile} />
         {followingList && followingList.length > 0 && (
           <>
-            {followingList.map((item: FollowingType, key: number) => {
+            {followingList.map((item: FollowingType) => {
               const { followingId, nickname, profileImage, statusMessage } = item;
               const followInfo = {
                 userId: followingId,

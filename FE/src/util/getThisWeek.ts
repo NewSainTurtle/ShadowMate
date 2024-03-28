@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export interface WeekConfig {
+export interface WeekInfoConfig {
   weekCnt: number;
   weekYear: number;
   weekMonth: number;
@@ -11,10 +11,6 @@ export interface DayInfoConfig {
   month: number;
   day: number;
   dayOfWeek: string;
-}
-
-interface Props {
-  date: string | number | Date | dayjs.Dayjs;
 }
 
 const dayOfWeekList = ["월", "화", "수", "목", "금", "토", "일"];
@@ -37,16 +33,21 @@ export const getThisWeek = (date: string | Date | dayjs.Dayjs) => {
 };
 
 export const getThisWeekCnt = (date: Date) => {
+  const getWeekMonth = () => {
+    if (date.getMonth() + 1 === 12) return 0;
+    return date.getMonth() + 1;
+  };
+
   let lastWeek = false;
-  let currentDate = date.getDate();
-  let firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const currentDate = date.getDate();
+  const firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
   const lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   if (currentDate + 6 > lastDate.getDate()) lastWeek = true;
   const firstDay = firstDate.getDay() === 0 ? 6 : firstDate.getDay() - 1;
   const weekCnt = lastWeek ? 1 : Math.ceil((currentDate + firstDay) / 7);
-  const weekMonth = lastWeek ? (date.getMonth() + 1 == 12 ? 0 : date.getMonth() + 1) : date.getMonth();
+  const weekMonth = lastWeek ? getWeekMonth() : date.getMonth();
 
-  const week: WeekConfig = {
+  const week: WeekInfoConfig = {
     weekCnt,
     weekYear: date.getFullYear(),
     weekMonth,

@@ -145,14 +145,15 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
   };
 
   useEffect(() => {
-    let tempArr = [...makeTimeArr];
+    const tempArr = [...makeTimeArr];
     todoList
       .filter((ele: TodoConfig) => ele.timeTables && ele.timeTables.length > 0)
-      .map((item: TodoConfig) => {
+      .forEach((item: TodoConfig) => {
         const { todoId, category, timeTables } = item;
-        timeTables?.map((time: TimeTableConfig) => {
+        timeTables?.forEach((time: TimeTableConfig) => {
           const miniArr: TimeTableType[] = [];
-          let { timeTableId, startTime, endTime } = time;
+          const { timeTableId, endTime } = time;
+          let { startTime } = time;
           let tempTime = startTime;
           while (tempTime != endTime) {
             tempTime = dayjs(tempTime).add(10, "m").format("YYYY-MM-DD HH:mm");
@@ -205,9 +206,10 @@ const TimeTable = ({ clicked, setClicked }: Props) => {
       <div className={styles["timetable__container"]} onClick={timeTableClick}>
         <div className={`${styles["timetable__container-box"]} ${styles[timeTableStyle]}`}>
           <div className={styles["timetable__hours"]}>
-            {Array.from({ length: 24 }).map((_, idx) => (
-              <div key={idx}>{String((4 + idx) % 24).padStart(2, "0")}</div>
-            ))}
+            {Array.from({ length: 24 }).map((_, idx) => {
+              const hour = (4 + idx) % 24;
+              return <div key={hour}>{String(hour).padStart(2, "0")}</div>;
+            })}
           </div>
           <div className={styles["timetable__minutes"]}>
             {timeArr.map((item) => (

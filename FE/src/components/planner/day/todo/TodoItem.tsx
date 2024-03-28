@@ -117,10 +117,10 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, dragModule, dailyTodos, se
       .addDailyTodos(userId, {
         date,
         todoContent: init.todoContent,
-        categoryId: init.category!.categoryId,
+        categoryId: init.category?.categoryId ?? 0,
       })
       .then((res) => {
-        const returnId = res.data.data["todoId"];
+        const returnId = res.data.data.todoId;
         insertTodo({ ...init, todoId: returnId });
       })
       .catch((err) => console.error(err));
@@ -152,10 +152,10 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, dragModule, dailyTodos, se
   };
 
   /**
-   * todo 상태를 "미완료"로 변경시 등록된 타임테이블 모두 삭제
+   * 할일 상태를 "미완료"로 변경시 등록된 타임테이블 모두 삭제
    */
   const deleteTimeTable = (todoId: number, timeTables: TimeTableConfig[]) => {
-    timeTables.map(async (item) => {
+    timeTables.forEach(async (item) => {
       const { timeTableId } = item;
       await plannerApi
         .deleteTimetable(userId, { date, todoId, timeTableId })
@@ -190,7 +190,7 @@ const TodoItem = ({ idx = -1, item, addTodo, disable, dragModule, dailyTodos, se
   };
 
   return (
-    <div className={styles[`todo-item${isDisableStyle}`]}>
+    <div className={`${styles[`todo-item`]} ${styles[isDisableStyle]}`}>
       <div ref={dropMenuRef} className={styles[`todo-item__category${isClickedStyle}`]} onClick={handleOpen}>
         <div className={styles["todo-item__category-box"]} style={categoryStyle(categoryColorCode)}>
           {disable ? addTodo && <AddOutlined /> : <Text>{categoryTitle}</Text>}

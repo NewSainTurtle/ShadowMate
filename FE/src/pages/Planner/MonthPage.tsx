@@ -16,13 +16,13 @@ const MonthPage = () => {
     settingApi
       .categories(userId)
       .then((res) => {
-        let response: CategoryItemConfig[] = res.data.data.categoryList;
+        const response: CategoryItemConfig[] = res.data.data.categoryList;
         if (response.length != 0) {
           dispatch(setCategoryList(response));
           dispatch(setCategoryInput(response[0]));
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const getCategoryColors = () => {
@@ -33,7 +33,7 @@ const MonthPage = () => {
         dispatch(setCategoryColors(response));
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -46,7 +46,7 @@ const MonthPage = () => {
           dispatch(setDdayList(response));
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const getProfileInfo = () => {
@@ -55,7 +55,7 @@ const MonthPage = () => {
       .then((res) => {
         dispatch(setUserInfo(res.data.data));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const getFollowing = () => {

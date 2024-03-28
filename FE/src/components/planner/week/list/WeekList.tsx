@@ -15,6 +15,7 @@ import { BASIC_TODO_ITEM, setDayDate } from "@store/planner/daySlice";
 import { plannerApi } from "@api/Api";
 import dragModule from "@util/DragModule";
 import dayjs from "dayjs";
+import { GenericReturnFunc } from "@components/mypage/MyPageFrame";
 
 interface Props {
   idx: number;
@@ -38,7 +39,10 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
   const friend = isMine ? "" : "--friend";
 
   const draggablesRef = useRef<HTMLDivElement[]>([]);
-  const copyDailyTodos: TodoConfig[] = useMemo(() => JSON.parse(JSON.stringify(dailyTodos)), [dailyTodos]);
+  const copyDailyTodos: TodoConfig[] = useMemo<TodoConfig[]>(
+    () => GenericReturnFunc(JSON.stringify(dailyTodos)),
+    [dailyTodos],
+  );
   const [clicked, setClicked] = useState<number>(-1);
 
   const handleSaveRetrospection = () => {
@@ -50,11 +54,11 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
         retrospection: retrospection,
       })
       .then(() => {
-        let copyDayList = [...dayList];
+        const copyDayList = [...dayList];
         copyDayList[idx].retrospection = retrospection;
         dispatch(setDayList(copyDayList));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   const handleMoveToDay = () => {
@@ -131,7 +135,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
             {Array.from({
               length: isMine ? listMaxLength - dailyTodos.length - 1 : listMaxLength - dailyTodos.length,
             }).map((_, idx) => (
-              <div key={idx} style={{ height: `calc(100% / ${listMaxLength})` }}>
+              <div key={idx.toString()} style={{ height: `calc(100% / ${listMaxLength})` }}>
                 <WeekItem
                   idx={idx}
                   item={BASIC_TODO_ITEM}
@@ -145,7 +149,7 @@ const WeekList = ({ idx, isMine, today, retroClick, setRetroClick }: Props) => {
           </>
         )}
       </div>
-      <div className={`${styles[`item__memo${friend}`]} `}>
+      <div className={styles[`item__memo${friend}`]}>
         <textarea
           disabled={!isMine}
           value={retrospection}

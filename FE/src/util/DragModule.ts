@@ -1,6 +1,5 @@
-import { DragEvent, MutableRefObject, useState } from "react";
+import { DragEvent, MutableRefObject, useState, Dispatch, SetStateAction, useRef } from "react";
 import { plannerApi } from "@api/Api";
-import { Dispatch, SetStateAction, useRef } from "react";
 import { TodoConfig } from "./planner.interface";
 import { useAppSelector } from "@hooks/hook";
 import { selectUserId } from "@store/authSlice";
@@ -15,7 +14,7 @@ interface Props {
   draggablesRef: MutableRefObject<HTMLDivElement[]>;
 }
 
-const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Props) => {
+function dragModule({ date, todos, setTodos, dragClassName, draggablesRef }: Props) {
   const userId = useAppSelector(selectUserId);
   const dragTargetRef = useRef<number>(-1);
   const dragEndRef = useRef<number>(-1);
@@ -47,7 +46,7 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
     dragEndRef.current = idx;
   };
 
-  const dragEnd = async (e: DragEvent<HTMLDivElement>, todoId: number) => {
+  const dragEnd = (e: DragEvent<HTMLDivElement>, todoId: number) => {
     e.preventDefault();
     e.currentTarget.classList.remove(dragClassName);
     dragTodo(todoId);
@@ -105,6 +104,6 @@ const dragModule = ({ date, todos, setTodos, dragClassName, draggablesRef }: Pro
     dragEnter,
     dragEnd,
   };
-};
+}
 
 export default dragModule;

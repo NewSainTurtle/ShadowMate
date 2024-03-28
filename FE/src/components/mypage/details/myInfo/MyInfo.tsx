@@ -7,7 +7,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import Button from "@components/common/Button";
 import Modal from "@components/common/Modal";
 import DeleteModal from "@components/common/Modal/DeleteModal";
-import { selectUserId, selectUserInfo, setUserInfo, UserInfoConfig } from "@store/authSlice";
+import { selectUserId, selectUserInfo, setUserInfo } from "@store/authSlice";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseStorage } from "@api/firebaseConfig";
 import { resizeImage } from "@util/resizeImage";
@@ -18,8 +18,8 @@ import { userRegex } from "@util/regex";
 const MyPageInfo = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectUserId);
-  const myInfoData: UserInfoConfig = useAppSelector(selectUserInfo);
-  const [userMyInfo, setUserMyInfo] = useState<UserInfoConfig>(myInfoData);
+  const myInfoData = useAppSelector(selectUserInfo);
+  const [userMyInfo, setUserMyInfo] = useState(myInfoData);
   const { email, nickname, profileImage, statusMessage } = userMyInfo;
   const [newNickname, setNewNickname] = useState(nickname);
   const [saveImageFile, setSaveImageFile] = useState<File | null>(null);
@@ -39,7 +39,7 @@ const MyPageInfo = () => {
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
   const handleDeleteModalClose = () => setDeleteModalOpen(false);
 
-  const handleUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLength({ ...length, [name]: value.length });
     setUserMyInfo({
@@ -55,13 +55,11 @@ const MyPageInfo = () => {
       if (myInfoData.nickname == value) setNicknameAuthentication(true);
       if (!userRegex.nickname.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
-      return;
     }
 
     if (name == "statusMessage") {
       if (!userRegex.statusMessage.test(value)) setError({ ...error, [name]: true });
       else setError({ ...error, [name]: false });
-      return;
     }
   };
 
@@ -147,18 +145,13 @@ const MyPageInfo = () => {
               value={nickname}
               onChange={handleUser}
               error={error.nickname || nicknameErrorMessage || isErrorButton}
-              helperText={
-                isErrorButton
-                  ? "닉네임 중복검사를 해주세요."
-                  : nicknameErrorMessage
-                  ? "중복된 닉네임 입니다."
-                  : error.nickname
-                  ? "2~10자의 공백과 특수문자를 제외한 문자를 사용해 주세요."
-                  : myInfoData.nickname != nickname && isNicknameAuthentication
-                  ? "사용가능한 닉네임 입니다."
-                  : `글자 수: ${length.nickname}/10`
-              }
-              maxLength={10}
+              helperText={(() => {
+                if (isErrorButton) return "닉네임 중복검사를 해주세요.";
+                if (nicknameErrorMessage) return "중복된 닉네임 입니다.";
+                if (error.nickname) return "2~10자의 공백과 특수문자를 제외한 문자를 사용해 주세요.";
+                if (myInfoData.nickname != nickname && isNicknameAuthentication) return "사용가능한 닉네임 입니다.";
+                return `글자 수: ${length.nickname}/10`;
+              })()}
             />
             <Button types="gray" onClick={onClickNickName} disabled={isNicknameAuthentication}>
               중복검사

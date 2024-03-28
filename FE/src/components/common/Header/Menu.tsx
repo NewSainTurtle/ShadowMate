@@ -9,11 +9,11 @@ import { setDayDate } from "@store/planner/daySlice";
 import dayjs from "dayjs";
 
 const values = [
-  { icon: <CalendarToday />, message: "월별", link: "/month" },
-  { icon: <EventNote />, message: "주별", link: "/week" },
-  { icon: <Today />, message: "일별", link: `/day` },
-  { icon: <Groups />, message: "소셜", link: "/social" },
-  { icon: <Settings />, message: "설정", link: "/mypage" },
+  { id: 0, icon: <CalendarToday />, message: "월별", link: "/month" },
+  { id: 1, icon: <EventNote />, message: "주별", link: "/week" },
+  { id: 2, icon: <Today />, message: "일별", link: `/day` },
+  { id: 3, icon: <Groups />, message: "소셜", link: "/social" },
+  { id: 4, icon: <Settings />, message: "설정", link: "/mypage" },
 ];
 
 const Menu = () => {
@@ -26,8 +26,8 @@ const Menu = () => {
 
   return (
     <div className={styles.menu_container}>
-      {values.map((item, idx) => (
-        <NavLink className={styles.menu_item} to={item.link} key={idx} onClick={() => handleClear(item.link)}>
+      {values.map((item) => (
+        <NavLink className={styles.menu_item} to={item.link} key={item.id} onClick={() => handleClear(item.link)}>
           {item.icon}
           <Text types="small">{item.message}</Text>
         </NavLink>

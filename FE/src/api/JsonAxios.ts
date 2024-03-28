@@ -1,6 +1,6 @@
-import baseAxios from "axios";
+import baseAxios, { AxiosError, AxiosResponse } from "axios";
 import { store } from "@hooks/configStore";
-import { authApi } from "@api/Api";
+import { ServerErrorResponse, authApi } from "@api/Api";
 import { setAccessToken, setAutoLogin } from "@store/authSlice";
 import { setModalOpen } from "@store/modalSlice";
 import { setAlertOpen } from "@store/alertSlice";
@@ -18,12 +18,11 @@ Axios.interceptors.request.use(
   (config) => {
     const accessToken = store.getState().auth.accessToken;
     const isAutoLogin = store.getState().auth.autoLogin;
-    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}` ?? "";
+    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
     if (isAutoLogin) {
       config.headers["Auto-Login"] = "true";
       store.dispatch(setAutoLogin(false));
     }
-
     return config;
   },
   (error) => {
@@ -32,34 +31,41 @@ Axios.interceptors.request.use(
 );
 
 Axios.interceptors.response.use(
-  (res) => {
-    if (res.status === 202) {
-      store.dispatch(setAlertOpen({ type: "success", message: res.data.message }));
-    }
-    return res;
-  },
-  async (err) => {
-    const {
-      config,
-      response: { status },
-    } = err;
+  (response: AxiosResponse): AxiosResponse => {
+    const { status } = response;
+    const message = response.data as string;
 
-    if (status === 401) {
-      if (err.response.data.code === "EXPIRED_ACCESS_TOKEN") {
-        const userId = store.getState().auth.userId;
-        const type = store.getState().auth.type;
-        const res = await authApi.token(userId, type);
-        if (res.status === 200) {
-          const accessToken = res.headers["authorization"].replace("Bearer ", "");
-          store.dispatch(setAccessToken(accessToken));
-          config.headers.Authorization = `Bearer ${accessToken}`;
-          return Axios(config);
+    if (status === 202) {
+      store.dispatch(setAlertOpen({ type: "success", message }));
+    }
+
+    return response;
+  },
+  async (error: AxiosError | Error): Promise<AxiosError> => {
+    if (baseAxios.isAxiosError(error)) {
+      const response = error.response as AxiosResponse;
+      const { status } = response;
+      if (status === 401) {
+        const { code } = response.data as ServerErrorResponse;
+        if (code === "EXPIRED_ACCESS_TOKEN") {
+          const { userId, type } = store.getState().auth;
+          const res = await authApi.token(userId, { type });
+          if (res.status === 200) {
+            const headers = res.headers["authorization"] as string;
+            const accessToken = headers.replace("Bearer ", "");
+            store.dispatch(setAccessToken(accessToken));
+            if (error?.config !== undefined) {
+              error.config.headers.Authorization = `Bearer ${accessToken}`;
+              return Axios(error.config);
+            }
+          }
+        } else if (code === "EXPIRED_REFRESH_TOKEN") {
+          store.dispatch(setModalOpen());
         }
-      } else if (err.response.data.code === "EXPIRED_REFRESH_TOKEN") {
-        store.dispatch(setModalOpen());
       }
     }
-    return Promise.reject(err);
+
+    return Promise.reject(error);
   },
 );
 
