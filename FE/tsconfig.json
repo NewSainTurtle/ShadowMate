@@ -26,6 +26,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "jest.config.ts", "setupTest.ts"],
-  "exclude": ["cypress", "./cypress.config.ts"]
+  "include": ["src", "setupTest.ts", "cypress.config.ts"]
 }
