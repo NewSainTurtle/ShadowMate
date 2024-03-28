@@ -1,5 +1,3 @@
-import { cy, it } from "local-cypress";
-
 describe("로그인 화면", () => {
   beforeEach(() => {
     // 페이지를 /login으로 이동
